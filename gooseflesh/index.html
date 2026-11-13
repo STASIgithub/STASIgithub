@@ -19,6 +19,7 @@
   --ember:#e3a64e;
   --paper:#d8cdb0;
   --paper-ink:#2b2219;
+  --frog:#a9c95f;
   --shade:rgba(5,5,6,.92);
   --f-display:"IM Fell English SC","Iowan Old Style","Palatino Linotype","Times New Roman",serif;
   --f-type:"Special Elite","Courier New",Courier,monospace;
@@ -84,11 +85,11 @@ body{font-family:var(--f-type);-webkit-font-smoothing:antialiased;user-select:no
 #note b{display:block;font-family:var(--f-type);font-weight:400;font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:#6d5d47;margin-bottom:8px}
 
 /* screens */
-.screen{position:fixed;inset:0;z-index:20;display:flex;flex-direction:column;justify-content:center;overflow-y:auto;box-sizing:border-box;
+.screen{position:fixed;inset:0;z-index:20;display:flex;flex-direction:column;justify-content:flex-start;overflow-y:auto;box-sizing:border-box;-webkit-overflow-scrolling:touch;
   padding-block:max(28px,env(safe-area-inset-top,0px)) max(28px,env(safe-area-inset-bottom,0px));
   padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
 #scr-start{background:linear-gradient(90deg,rgba(5,5,6,.94) 0%,rgba(5,5,6,.78) 36%,rgba(5,5,6,0) 68%)}
-.inner{max-width:540px;margin-left:clamp(0px,6vw,104px);display:flex;flex-direction:column;gap:22px}
+.inner{max-width:540px;margin-left:clamp(0px,6vw,104px);margin-block:auto;display:flex;flex-direction:column;gap:22px}
 .eyebrow{margin:0;font-size:12px;letter-spacing:.24em;text-transform:uppercase;color:var(--dim)}
 h1{margin:0;font-family:var(--f-display);font-weight:400;font-size:clamp(58px,10.5vw,138px);line-height:.82;letter-spacing:.005em;color:var(--ink);text-wrap:balance;
   text-shadow:0 0 34px rgba(179,25,30,.4);animation:flick 7s infinite}
@@ -109,7 +110,7 @@ button.ghost{background:rgba(221,214,198,.1);color:var(--ink)}
 button.ghost:hover{background:rgba(221,214,198,.2)}
 .fine{margin:0;font-size:12px;color:var(--dim);letter-spacing:.06em}
 .center{align-items:center;text-align:center;background:rgba(3,3,4,.88)}
-.center .inner{margin:0;align-items:center}
+.center .inner{margin-inline:0;align-items:center}
 .center .actions{justify-content:center}
 #scr-dead{background:radial-gradient(ellipse at center,rgba(60,0,0,.92),rgba(4,0,0,.98))}
 #scr-dead h2{color:#e8dccb;text-shadow:0 0 30px rgba(179,25,30,.8)}
@@ -135,8 +136,64 @@ button.ghost:hover{background:rgba(221,214,198,.2)}
 #secret .words span.on{opacity:1;transform:none}
 .win-actions{display:flex;justify-content:center;gap:14px;flex-wrap:wrap;opacity:0;transition:opacity .8s}
 .win-actions.on{opacity:1}
-#touch-note{color:var(--ember)}
+#mode-note{color:var(--dim)}
+.chip{display:inline-block;font-size:11px;letter-spacing:.14em;text-transform:uppercase;padding:3px 9px;border-radius:999px;border:1px solid rgba(221,214,198,.35);background:rgba(255,255,255,.04)}
 
+/* MERP captions */
+.merp{position:absolute;transform:translate(-50%,-50%);font-family:var(--f-display);color:var(--frog);letter-spacing:.04em;text-transform:none;white-space:nowrap;
+  text-shadow:0 0 14px rgba(0,0,0,.95),0 0 30px rgba(169,201,95,.35);animation:merp 1.15s ease-out forwards;pointer-events:none}
+.merp.muffled{color:rgba(169,201,95,.55);font-style:italic}
+@keyframes merp{0%{opacity:0;transform:translate(-50%,-50%) scale(.55)}12%{opacity:1;transform:translate(-50%,-50%) scale(1.08)}65%{opacity:.9}100%{opacity:0;transform:translate(-50%,-70%) scale(1)}}
+
+/* touch controls */
+#touch{position:fixed;inset:0;z-index:12;touch-action:none;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;-webkit-tap-highlight-color:transparent}
+#joy-base{position:absolute;left:110px;top:70%;width:124px;height:124px;margin:-62px 0 0 -62px;border-radius:50%;border:2px solid rgba(221,214,198,.3);background:radial-gradient(circle,rgba(221,214,198,.07),rgba(221,214,198,.02) 70%);opacity:.5;transition:opacity .25s;pointer-events:none}
+#joy-base.on{opacity:1;transition:none}
+#joy-knob{position:absolute;left:50%;top:50%;width:54px;height:54px;margin:-27px 0 0 -27px;border-radius:50%;background:rgba(221,214,198,.25);border:2px solid rgba(221,214,198,.55)}
+#touch .tb{position:absolute;display:grid;place-items:center;padding:0;border-radius:50%;clip-path:none;background:rgba(8,8,10,.5);color:var(--ink);border:2px solid rgba(221,214,198,.35);
+  font-size:11px;letter-spacing:.12em;touch-action:none;-webkit-tap-highlight-color:transparent;backdrop-filter:blur(2px)}
+#touch .tb:hover,#touch .tb:focus-visible{background:rgba(8,8,10,.5)}
+#touch .tb.on{background:rgba(227,166,78,.32);border-color:var(--ember);color:#fff}
+#touch .tb.ready{background:rgba(221,214,198,.24);border-color:var(--ink);color:#fff;box-shadow:0 0 18px rgba(221,214,198,.25)}
+#tb-use{width:86px;height:86px;right:calc(20px + env(safe-area-inset-right,0px));bottom:calc(34px + env(safe-area-inset-bottom,0px));font-size:12px}
+#tb-run{width:72px;height:72px;right:calc(122px + env(safe-area-inset-right,0px));bottom:calc(22px + env(safe-area-inset-bottom,0px))}
+#tb-crouch{width:62px;height:62px;right:calc(118px + env(safe-area-inset-right,0px));bottom:calc(112px + env(safe-area-inset-bottom,0px));font-size:10px}
+#tb-light{width:64px;height:64px;right:calc(32px + env(safe-area-inset-right,0px));bottom:calc(136px + env(safe-area-inset-bottom,0px))}
+#tb-pause{width:46px;height:46px;top:calc(12px + env(safe-area-inset-top,0px));right:calc(14px + env(safe-area-inset-right,0px));font-size:14px;letter-spacing:0}
+
+/* HUD layout in mobile mode */
+body.m #hud{font-size:11px}
+body.m #hud-batt{bottom:calc(10px + env(safe-area-inset-bottom,0px));left:max(14px,env(safe-area-inset-left,0px))}
+body.m #hud-batt .lbl{display:none}
+body.m #bpct{font-size:18px}
+body.m #hud-stam{bottom:calc(14px + env(safe-area-inset-bottom,0px));width:min(28vw,230px)}
+body.m #hud-status{bottom:auto;top:calc(68px + env(safe-area-inset-top,0px));right:max(16px,env(safe-area-inset-right,0px))}
+body.m #note{right:auto;left:max(16px,env(safe-area-inset-left,0px));top:calc(44px + env(safe-area-inset-top,0px));width:min(42vw,320px);font-size:15px;padding:12px 16px 16px}
+body.m #prompt{top:60%;font-size:12px}
+
+/* settings */
+.settings{width:100%;max-width:440px;gap:22px}
+.center .inner.settings{align-items:stretch}
+.setting{display:flex;flex-direction:column;gap:10px;margin:0;padding:0;border:0;min-width:0}
+.setting .lbl,.setting legend{font-size:12px;letter-spacing:.2em;text-transform:uppercase;color:var(--dim);padding:0;margin-bottom:10px}
+.setting .row{display:flex;justify-content:space-between;align-items:baseline}
+.setting .row .lbl{margin:0}
+.setting output{font-variant-numeric:tabular-nums;color:var(--ink);font-size:13px}
+.seg{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.seg button{clip-path:none;padding:13px 10px;font-size:13px;background:rgba(221,214,198,.07);color:var(--ink);border:1px solid rgba(221,214,198,.28)}
+.seg button:hover{background:rgba(221,214,198,.16)}
+.seg button[aria-pressed="true"]{background:var(--ink);color:var(--void);border-color:var(--ink)}
+.setting .fine{text-align:left}
+input[type=range]{width:100%;accent-color:var(--ember);height:28px}
+#settings-done{align-self:center}
+
+@media (max-height:540px){
+  h1{font-size:clamp(40px,8vw,72px)}
+  .inner{gap:14px}
+  .lede{font-size:14px;line-height:1.45}
+  .keys{font-size:12px;gap:5px 14px}
+  #scr-start .eyebrow{order:0} #scr-start h1{order:1} #scr-start .actions{order:2} #scr-start .lede{order:3} #scr-start .keys{order:4} #scr-start .fine{order:5}
+}
 @media (max-width:640px){
   #scr-start{background:rgba(5,5,6,.82)}
   #note{width:52vw;font-size:17px}
@@ -173,7 +230,7 @@ button.ghost:hover{background:rgba(221,214,198,.2)}
     <h1>Goose&shy;flesh</h1>
     <p class="lede">Five pieces of a torn letter are hidden in this maze. Find all five to read what it says.
       Something enormous lives here with you. It <em>hears</em> you run. It <em>smells</em> you when you stay still. It <em>sees</em> your light.</p>
-    <dl class="keys">
+    <dl class="keys" id="keys-pc">
       <dt><kbd>W</kbd> <kbd>A</kbd> <kbd>S</kbd> <kbd>D</kbd></dt><dd>Move. Mouse to look.</dd>
       <dt><kbd>Shift</kbd> hold</dt><dd>Sprint. 10 seconds of stamina, and very loud.</dd>
       <dt><kbd>Ctrl</kbd> or <kbd>C</kbd></dt><dd>Crouch (toggle). Slow and nearly silent.</dd>
@@ -181,8 +238,16 @@ button.ghost:hover{background:rgba(221,214,198,.2)}
       <dt><kbd>E</kbd></dt><dd>Pick up, hide in lockers, crawl under beds.</dd>
       <dt><kbd>Esc</kbd></dt><dd>Pause.</dd>
     </dl>
-    <div class="actions"><button id="btn-start" type="button">Enter the maze</button></div>
-    <p class="fine" id="touch-note" hidden>This game needs a keyboard and a mouse.</p>
+    <dl class="keys" id="keys-mobile" hidden>
+      <dt><span class="chip">Joystick</span></dt><dd>Left thumb. Move.</dd>
+      <dt><span class="chip">Drag</span></dt><dd>Right side of the screen. Look around.</dd>
+      <dt><span class="chip">Run</span></dt><dd>Tap to sprint, tap again to stop. 10 seconds of stamina, and very loud.</dd>
+      <dt><span class="chip">Crouch</span></dt><dd>Slow and nearly silent.</dd>
+      <dt><span class="chip">Light</span></dt><dd>Flashlight. 80 seconds of battery.</dd>
+      <dt><span class="chip">Use</span></dt><dd>Pick up, hide in lockers, crawl under beds.</dd>
+    </dl>
+    <div class="actions"><button id="btn-start" type="button">Enter the maze</button><button id="btn-settings" class="ghost" type="button">Settings</button></div>
+    <p class="fine" id="mode-note"></p>
   </div>
 </section>
 
@@ -190,8 +255,33 @@ button.ghost:hover{background:rgba(221,214,198,.2)}
   <div class="inner">
     <h2>Paused</h2>
     <p class="fine">He is still out there.</p>
-    <div class="actions"><button id="btn-resume" type="button">Resume</button><button id="btn-restart" class="ghost" type="button">Restart</button></div>
+    <div class="actions"><button id="btn-resume" type="button">Resume</button><button id="btn-settings-p" class="ghost" type="button">Settings</button><button id="btn-restart" class="ghost" type="button">Restart</button></div>
     <p class="fine" id="pause-hint"></p>
+  </div>
+</section>
+
+<section class="screen center" id="scr-settings" hidden>
+  <div class="inner settings">
+    <h2>Settings</h2>
+    <fieldset class="setting">
+      <legend>Controls</legend>
+      <div class="seg"><button type="button" data-set="controls" data-val="computer">Computer</button><button type="button" data-set="controls" data-val="mobile">Mobile</button></div>
+      <p class="fine" id="ctl-desc"></p>
+    </fieldset>
+    <fieldset class="setting">
+      <legend>Graphics</legend>
+      <div class="seg"><button type="button" data-set="quality" data-val="high">High</button><button type="button" data-set="quality" data-val="low">Low</button></div>
+      <p class="fine" id="gfx-desc"></p>
+    </fieldset>
+    <div class="setting">
+      <div class="row"><label class="lbl" for="set-sens">Look sensitivity</label><output id="out-sens" for="set-sens"></output></div>
+      <input type="range" id="set-sens" min="0.3" max="2.5" step="0.05">
+    </div>
+    <div class="setting">
+      <div class="row"><label class="lbl" for="set-vol">Volume</label><output id="out-vol" for="set-vol"></output></div>
+      <input type="range" id="set-vol" min="0" max="1" step="0.05">
+    </div>
+    <button id="settings-done" type="button">Done</button>
   </div>
 </section>
 
@@ -212,6 +302,15 @@ button.ghost:hover{background:rgba(221,214,198,.2)}
     <div class="win-actions" id="win-actions"><button id="btn-again" type="button">Play again</button></div>
   </div>
 </section>
+
+<div id="touch" hidden>
+  <div id="joy-base"><div id="joy-knob"></div></div>
+  <button class="tb" id="tb-light" type="button" aria-label="Flashlight">Light</button>
+  <button class="tb" id="tb-crouch" type="button" aria-label="Crouch">Crouch</button>
+  <button class="tb" id="tb-run" type="button" aria-label="Run">Run</button>
+  <button class="tb" id="tb-use" type="button" aria-label="Use">Use</button>
+  <button class="tb" id="tb-pause" type="button" aria-label="Pause">II</button>
+</div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script>
@@ -234,7 +333,7 @@ const CFG = {
   STAMINA_MAX: 10, STAMINA_DELAY: 5, STAMINA_REGEN: 1.25,
   BATTERY_MAX: 80, BATTERY_PICKUP: 10, MAX_BATTERIES: 5,
   PIECES: 5,
-  GOOSE_R: 0.65, GOOSE_EYE: 2.65,
+  GOOSE_R: 0.65, GOOSE_EYE: 2.8, MERP_RANGE: 24,
   PATROL: 2.3, SEARCH: 2.6, INVESTIGATE: 3.7, ALERTED: 4.8, HUNT: 5.0, CHASE: 6.6,
   CATCH: 1.45,
   SIGHT_DARK: 17, SIGHT_DARK_CROUCH: 10, SIGHT_LIGHT: 42, SIGHT_CLOSE: 3.5, FOV_COS: Math.cos(72 * Math.PI / 180),
@@ -266,10 +365,26 @@ const center = t => (t + 0.5) * T;
 const tileOf = v => Math.floor(v / T);
 const angDiff = (a, b) => { let d = (b - a) % (Math.PI * 2); if (d > Math.PI) d -= Math.PI * 2; if (d < -Math.PI) d += Math.PI * 2; return d; };
 
+/* ================= SETTINGS ================= */
+const TOUCH_DEVICE = matchMedia('(pointer: coarse)').matches && !matchMedia('(pointer: fine)').matches;
+const SETTINGS_KEY = 'gooseflesh.settings.v1';
+const settings = { controls: TOUCH_DEVICE ? 'mobile' : 'computer', quality: TOUCH_DEVICE ? 'low' : 'high', sens: 1, vol: 0.9 };
+try {
+  const saved = JSON.parse(localStorage.getItem(SETTINGS_KEY) || 'null');
+  if (saved && typeof saved === 'object') {
+    if (saved.controls === 'computer' || saved.controls === 'mobile') settings.controls = saved.controls;
+    if (saved.quality === 'high' || saved.quality === 'low') settings.quality = saved.quality;
+    if (isFinite(saved.sens)) settings.sens = clamp(+saved.sens, 0.3, 2.5);
+    if (isFinite(saved.vol)) settings.vol = clamp(+saved.vol, 0, 1);
+  }
+} catch (e) { /* storage unavailable: defaults are fine */ }
+function saveSettings() { try { localStorage.setItem(SETTINGS_KEY, JSON.stringify(settings)); } catch (e) { /* ignore */ } }
+const isMobile = () => settings.controls === 'mobile';
+
 /* ================= RENDERER ================= */
 const canvas = $('view');
-const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, powerPreference: 'high-performance' });
-renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.5));
+const renderer = new THREE.WebGLRenderer({ canvas, antialias: !TOUCH_DEVICE, powerPreference: 'high-performance' });
+renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, settings.quality === 'high' ? 1.5 : 1));
 renderer.setSize(innerWidth, innerHeight);
 renderer.setClearColor(0x000000);
 renderer.shadowMap.enabled = true;
@@ -363,19 +478,48 @@ function makeCrateTex() {
   speckle(g, S, S, 22);
   return c;
 }
-function makeFeatherTex() {
-  const S = 256, c = mkCanvas(S, S), g = c.getContext('2d');
-  g.fillStyle = '#8a8a8a'; g.fillRect(0, 0, S, S);
-  const rows = 8, cols = 6, w = S / cols, h = S / rows;
-  for (let r = 0; r < rows; r++) for (let k = -1; k <= cols; k++) {
-    const x = k * w + (r % 2 ? w / 2 : 0), y = r * h;
-    const gr = g.createLinearGradient(0, y, 0, y + h * 1.3);
-    gr.addColorStop(0, '#6e6e6e'); gr.addColorStop(0.75, '#9a9a9a'); gr.addColorStop(1, '#d6d6d6');
-    g.fillStyle = gr; g.beginPath(); g.ellipse(x + w / 2, y + h * 0.4, w * 0.55, h * 0.9, 0, 0, Math.PI); g.fill();
+function makeWingTex() {
+  // folded wing coverts: columns of dark feathers with pale scalloped edges
+  const S = 512, c = mkCanvas(S, S), g = c.getContext('2d');
+  g.fillStyle = '#3a2b1f'; g.fillRect(0, 0, S, S);
+  const cols = 8, rows = 7, w = S / cols, h = S / rows;
+  for (let k = cols; k >= -1; k--) for (let r = -1; r <= rows; r++) {
+    const x = k * w + rr(-3, 3), y = r * h + (k % 2 ? h / 2 : 0) + rr(-3, 3);
+    g.fillStyle = '#d2bf9f';
+    g.beginPath(); g.ellipse(x, y + h / 2, w * 0.95, h * 0.56, 0, -Math.PI / 2, Math.PI / 2); g.fill();
+    const gr = g.createLinearGradient(x, 0, x + w, 0); gr.addColorStop(0, '#2f2218'); gr.addColorStop(0.7, '#57412f'); gr.addColorStop(1, '#6c543f');
+    g.fillStyle = gr; g.beginPath(); g.ellipse(x, y + h / 2, w * 0.85, h * 0.5, 0, -Math.PI / 2, Math.PI / 2); g.fill();
   }
-  speckle(g, S, S, 18);
+  speckle(g, S, S, 14);
   return c;
 }
+function makeBarTex(base, bar, light, gap) {
+  // fine wavy horizontal barring, like the flanks and breast of a Canada goose
+  const S = 256, c = mkCanvas(S, S), g = c.getContext('2d');
+  g.fillStyle = base; g.fillRect(0, 0, S, S);
+  for (let y = 0; y < S; y += gap) {
+    const ph = Math.random() * 6;
+    for (const [col, off, lw] of [[bar, 0, gap * 0.4], [light, gap * 0.48, gap * 0.16]]) {
+      g.strokeStyle = col; g.lineWidth = lw; g.beginPath();
+      for (let x = -8; x <= S + 8; x += 8) { const yy = y + off + Math.sin(x * Math.PI / 64 + ph) * 1.6 + rr(-0.5, 0.5); if (x < 0) g.moveTo(x, yy); else g.lineTo(x, yy); }
+      g.stroke();
+    }
+  }
+  speckle(g, S, S, 12);
+  return c;
+}
+function makeLocTex() {
+  // twisted strands for the afro's locs
+  const W = 64, Hh = 128, c = mkCanvas(W, Hh), g = c.getContext('2d');
+  g.fillStyle = '#5c3a20'; g.fillRect(0, 0, W, Hh);
+  for (let k = -Hh; k < Hh * 2; k += 16) {
+    g.lineWidth = 7; g.strokeStyle = 'rgba(24,13,6,.75)'; g.beginPath(); g.moveTo(0, k); g.lineTo(W, k + 32); g.stroke();
+    g.lineWidth = 3; g.strokeStyle = 'rgba(150,104,62,.55)'; g.beginPath(); g.moveTo(0, k + 7); g.lineTo(W, k + 39); g.stroke();
+  }
+  speckle(g, W, Hh, 30);
+  return c;
+}
+function texRep(c, rx, ry) { const t = tex(c); t.wrapS = t.wrapT = THREE.RepeatWrapping; t.repeat.set(rx, ry); return t; }
 function makeNoiseTex(S = 128) {
   const c = mkCanvas(S, S), g = c.getContext('2d');
   g.fillStyle = '#808080'; g.fillRect(0, 0, S, S); speckle(g, S, S, 200);
@@ -433,7 +577,10 @@ const TEX = {
   floor: tex(makeFloorTex(), 1),
   ceil: tex(makeCeilTex(), 1),
   crate: tex(makeCrateTex()),
-  feather: tex(makeFeatherTex(), 3),
+  wing: texRep(makeWingTex(), 3, 2),
+  flank: texRep(makeBarTex('#837666', '#463b31', '#b9ae9c', 16), 3, 2),
+  breast: texRep(makeBarTex('#c4baa8', '#968874', '#ddd6c8', 16), 3, 2),
+  loc: texRep(makeLocTex(), 1, 1),
   noise: tex(makeNoiseTex(), 4),
   glow: tex(makeGlowTex()),
   paper: [0, 1, 2, 3, 4].map(i => tex(makePaperTex(i * 1.7))),
@@ -465,19 +612,23 @@ function geo(key, make) { if (!GEO[key]) { GEO[key] = make(); GEO[key].userData.
 geo('box', () => new THREE.BoxGeometry(1, 1, 1));
 
 /* ================= GOOSE MODEL ================= */
+// Canada goose (brown barred body, black neck, white chinstrap) wearing a flat-bottomed afro of twisted locs.
 const GM = {
-  brown: new THREE.MeshStandardMaterial({ color: 0x7a6450, roughness: 0.95, map: TEX.feather }),
-  wing: new THREE.MeshStandardMaterial({ color: 0x5f4c3b, roughness: 0.95, map: TEX.feather }),
-  breast: new THREE.MeshStandardMaterial({ color: 0xc4b9a3, roughness: 0.95, map: TEX.feather }),
-  white: new THREE.MeshStandardMaterial({ color: 0xe2ddd0, roughness: 0.9 }),
-  black: new THREE.MeshStandardMaterial({ color: 0x151413, roughness: 0.7 }),
-  beak: new THREE.MeshStandardMaterial({ color: 0x0d0d0d, roughness: 0.35 }),
-  leg: new THREE.MeshStandardMaterial({ color: 0x1d1d1d, roughness: 0.6 }),
-  eye: new THREE.MeshBasicMaterial({ color: 0xff2a12 }),
+  flank: new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.95, map: TEX.flank }),
+  breast: new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.95, map: TEX.breast }),
+  wing: new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.9, map: TEX.wing }),
+  prim: new THREE.MeshStandardMaterial({ color: 0x1d1712, roughness: 0.8 }),
+  white: new THREE.MeshStandardMaterial({ color: 0xcfcbc1, roughness: 0.9 }),
+  black: new THREE.MeshStandardMaterial({ color: 0x121212, roughness: 0.6 }),
+  beak: new THREE.MeshStandardMaterial({ color: 0x0b0b0b, roughness: 0.35 }),
+  leg: new THREE.MeshStandardMaterial({ color: 0x36383b, roughness: 0.7 }),
+  eye: new THREE.MeshStandardMaterial({ color: 0x050505, roughness: 0.1, metalness: 0.1 }),
   mouth: new THREE.MeshStandardMaterial({ color: 0x6a0f12, roughness: 0.4 }),
   tooth: new THREE.MeshStandardMaterial({ color: 0xdcd3bd, roughness: 0.5 }),
-  afro: new THREE.MeshStandardMaterial({ color: 0x2c1b10, roughness: 1, bumpMap: TEX.noise, bumpScale: 0.06 }),
-  pick: new THREE.MeshStandardMaterial({ color: 0x8e1d1d, roughness: 0.5 }),
+  afro: new THREE.MeshStandardMaterial({ color: 0x3d2615, roughness: 1, bumpMap: TEX.noise, bumpScale: 0.05 }),
+  afroUnder: new THREE.MeshStandardMaterial({ color: 0x24150b, roughness: 1, side: THREE.DoubleSide }),
+  loc: new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 1, map: TEX.loc, bumpMap: TEX.loc, bumpScale: 0.04 }),
+  clip: new THREE.MeshStandardMaterial({ color: 0x2f6fd8, roughness: 0.4, metalness: 0.2 }),
 };
 function addMesh(parent, g, m, pos, scl, rot, shadow = true) {
   const me = new THREE.Mesh(g, m);
@@ -488,77 +639,84 @@ function addMesh(parent, g, m, pos, scl, rot, shadow = true) {
 }
 const SPH = geo('sph', () => new THREE.SphereGeometry(1, 28, 18));
 function buildAfro() {
+  // origin = flat bottom of the afro
   const grp = new THREE.Group();
-  addMesh(grp, SPH, GM.afro, [0, 0.07, 0], [0.47, 0.37, 0.47]);
-  const n = 120, puff = geo('puff', () => new THREE.IcosahedronGeometry(0.15, 1));
-  const im = new THREE.InstancedMesh(puff, GM.afro, n);
-  const m4 = new THREE.Matrix4(), q = new THREE.Quaternion(), s = new V3(), p = new V3(), e = new THREE.Euler();
-  let k = 0;
-  for (let i = 0; i < n * 2 && k < n; i++) {
-    const y = 1 - (i + 0.5) / (n * 2) * 2, r = Math.sqrt(1 - y * y), th = i * 2.39996;
-    if (y < -0.4) continue;
-    const rad = 0.9 + Math.random() * 0.14;
-    p.set(Math.cos(th) * r * 0.52 * rad, y * 0.42 * rad + 0.07, Math.sin(th) * r * 0.52 * rad);
-    const sc = 0.72 + Math.random() * 0.6; s.set(sc, sc, sc);
-    e.set(Math.random() * 3, Math.random() * 3, Math.random() * 3); q.setFromEuler(e);
-    m4.compose(p, q, s); im.setMatrixAt(k++, m4);
+  const RX = 0.34, RY = 0.3, RZ = 0.32;
+  addMesh(grp, geo('dome', () => new THREE.SphereGeometry(1, 28, 12, 0, Math.PI * 2, 0, Math.PI / 2)), GM.afro, [0, 0, 0], [RX, RY, RZ]);
+  addMesh(grp, geo('afcap', () => { const g = new THREE.CircleGeometry(1, 28); g.rotateX(Math.PI / 2); return g; }), GM.afroUnder, [0, 0.002, 0], [RX * 1.05, 1, RZ * 1.05], null, false);
+  const n = 240, loc = geo('loc', () => { const g = new THREE.CylinderGeometry(0.019, 0.027, 1, 6, 1); g.translate(0, 0.5, 0); return g; });
+  const im = new THREE.InstancedMesh(loc, GM.loc, n);
+  const m4 = new THREE.Matrix4(), q = new THREE.Quaternion(), sc = new V3(), p = new V3(), nr = new V3(), up = new V3(0, 1, 0), col = new THREE.Color();
+  for (let i = 0; i < n; i++) {
+    const y = 1 - (i + 0.5) / n, r = Math.sqrt(1 - y * y), th = i * 2.39996;
+    const dx = Math.cos(th) * r, dz = Math.sin(th) * r;
+    p.set(dx * RX * 0.88, y * RY * 0.88, dz * RZ * 0.88);
+    nr.set(dx / RX + rr(-0.6, 0.6), y / RY + rr(-0.6, 0.6) - (y < 0.3 ? 0.9 : 0), dz / RZ + rr(-0.6, 0.6)).normalize();
+    const L = rr(0.08, 0.15) * (1 + (1 - y) * 0.55);
+    if (p.y + nr.y * L < -0.015) { nr.y = (-0.015 - p.y) / L; nr.normalize(); }
+    q.setFromUnitVectors(up, nr);
+    const t = rr(0.8, 1.25); sc.set(t, L, t);
+    m4.compose(p, q, sc); im.setMatrixAt(i, m4);
+    const v = rr(0.7, 1.15); col.setRGB(v, v * 0.92, v * 0.86); im.setColorAt(i, col);
   }
-  im.count = k; im.castShadow = true; grp.add(im);
-  const pk = new THREE.Group(); pk.position.set(0.2, 0.36, 0.02); pk.rotation.set(-0.15, 0, -0.55); grp.add(pk);
-  addMesh(pk, geo('box', () => new THREE.BoxGeometry(1, 1, 1)), GM.pick, [0, 0.14, 0], [0.05, 0.26, 0.025]);
-  addMesh(pk, geo('box'), GM.pick, [0, 0.3, 0], [0.12, 0.08, 0.035]);
+  im.castShadow = true; grp.add(im);
+  addMesh(grp, geo('box'), GM.clip, [0.13, 0.3, -0.17], [0.1, 0.035, 0.035], [0.3, 0.6, 0.45], false);
+  addMesh(grp, geo('clipb', () => new THREE.SphereGeometry(0.03, 10, 8)), GM.clip, [0.17, 0.33, -0.13], null, null, false);
   return grp;
 }
 function buildGooseHead() {
+  // origin = top of the neck
   const group = new THREE.Group();
-  addMesh(group, SPH, GM.black, [0, 0, 0], [0.24, 0.25, 0.34]);
-  for (const s of [-1, 1]) addMesh(group, SPH, GM.white, [0.183 * s, -0.07, 0.03], [0.05, 0.13, 0.15], [0, 0, 0.2 * s]);
-  addMesh(group, SPH, GM.white, [0, -0.19, 0.04], [0.16, 0.06, 0.13]);
-  const eyeG = geo('eye', () => new THREE.SphereGeometry(0.044, 12, 8));
-  for (const s of [-1, 1]) addMesh(group, eyeG, GM.eye, [0.168 * s, 0.075, 0.15], null, null, false);
-  const cone = geo('beak', () => { const g = new THREE.ConeGeometry(0.105, 0.42, 12); g.rotateX(Math.PI / 2); return g; });
-  addMesh(group, cone, GM.beak, [0, 0.0, 0.48], [1, 0.55, 1]);
-  const jaw = new THREE.Group(); jaw.position.set(0, -0.055, 0.28); group.add(jaw);
-  addMesh(jaw, cone, GM.beak, [0, -0.012, 0.19], [0.86, 0.35, 0.92]);
-  const inner = [addMesh(jaw, SPH, GM.mouth, [0, 0.02, 0.12], [0.068, 0.03, 0.17], null, false)];
-  const tooth = geo('tooth', () => new THREE.ConeGeometry(0.011, 0.045, 5));
-  for (let k = 0; k < 6; k++) {
-    const w = 0.07 * (1 - k / 7);
+  addMesh(group, SPH, GM.black, [0, 0.03, 0.08], [0.16, 0.155, 0.24]);
+  addMesh(group, SPH, GM.white, [0, -0.035, 0.035], [0.168, 0.125, 0.165]);   // chinstrap
+  const eyeG = geo('eye2', () => new THREE.SphereGeometry(0.026, 12, 8));
+  for (const s of [-1, 1]) addMesh(group, eyeG, GM.eye, [0.138 * s, 0.06, 0.15], null, null, false);
+  const cone = geo('beak2', () => { const g = new THREE.ConeGeometry(0.075, 0.3, 12); g.rotateX(Math.PI / 2); return g; });
+  addMesh(group, cone, GM.beak, [0, 0.0, 0.44], [1, 0.5, 1], [0.1, 0, 0]);
+  const jaw = new THREE.Group(); jaw.position.set(0, -0.035, 0.3); group.add(jaw);
+  addMesh(jaw, cone, GM.beak, [0, -0.005, 0.13], [0.86, 0.32, 0.88], [0.06, 0, 0]);
+  const inner = [addMesh(jaw, SPH, GM.mouth, [0, 0.015, 0.08], [0.05, 0.022, 0.12], null, false)];
+  const tooth = geo('tooth2', () => new THREE.ConeGeometry(0.009, 0.035, 5));
+  for (let k = 0; k < 5; k++) {
+    const w = 0.05 * (1 - k / 6);
     for (const s of [-1, 1]) {
-      inner.push(addMesh(jaw, tooth, GM.tooth, [w * s, 0.03, 0.04 + k * 0.045], null, null, false));
-      inner.push(addMesh(group, tooth, GM.tooth, [w * s * 1.1, -0.05, 0.32 + k * 0.045], null, [Math.PI, 0, 0], false));
+      inner.push(addMesh(jaw, tooth, GM.tooth, [w * s, 0.022, 0.03 + k * 0.035], null, null, false));
+      inner.push(addMesh(group, tooth, GM.tooth, [w * s * 1.05, -0.03, 0.33 + k * 0.035], null, [Math.PI, 0, 0], false));
     }
   }
-  const afro = buildAfro(); afro.position.set(0, 0.3, -0.06); group.add(afro);
+  const afro = buildAfro(); afro.position.set(0, 0.085, 0.04); group.add(afro);
   return { group, jaw, inner };
 }
 function buildGooseRig() {
   const root = new THREE.Group();
-  const body = new THREE.Group(); body.position.y = 1.3; root.add(body);
-  addMesh(body, SPH, GM.brown, [0, 0, 0], [0.82, 0.72, 1.3]);
-  addMesh(body, SPH, GM.breast, [0, -0.06, 0.55], [0.7, 0.62, 0.82]);
-  addMesh(body, SPH, GM.white, [0, -0.36, -0.15], [0.6, 0.38, 0.95]);
-  addMesh(body, SPH, GM.black, [0, 0.12, -1.28], [0.44, 0.22, 0.5], [0.25, 0, 0]);
-  addMesh(body, SPH, GM.white, [0, -0.06, -1.12], [0.42, 0.2, 0.3]);
+  const body = new THREE.Group(); body.position.y = 1.25; root.add(body);
+  addMesh(body, SPH, GM.flank, [0, 0.02, -0.05], [0.7, 0.6, 1.2]);
+  addMesh(body, SPH, GM.breast, [0, -0.04, 0.8], [0.52, 0.52, 0.52]);
+  addMesh(body, SPH, GM.white, [0, -0.33, -0.85], [0.46, 0.3, 0.6]);
+  addMesh(body, SPH, GM.white, [0, -0.04, -1.18], [0.36, 0.26, 0.42]);
+  addMesh(body, SPH, GM.prim, [0, 0.2, -1.45], [0.3, 0.1, 0.5], [0.3, 0, 0]);
   const wings = [];
+  const prim = geo('prim', () => { const g = new THREE.ConeGeometry(0.13, 0.85, 10); g.rotateX(-Math.PI / 2); return g; });
   for (const s of [-1, 1]) {
-    const piv = new THREE.Group(); piv.position.set(0.6 * s, 0.36, 0.25); body.add(piv);
-    addMesh(piv, SPH, GM.wing, [0.12 * s, -0.2, -0.42], [0.17, 0.48, 1.12], [0.12, 0, 0.1 * s]);
+    const piv = new THREE.Group(); piv.position.set(0.46 * s, 0.26, 0.35); body.add(piv);
+    addMesh(piv, SPH, GM.wing, [0.04 * s, -0.04, -0.72], [0.18, 0.4, 1.1], [0.1, 0, 0.25 * s]);
+    addMesh(piv, prim, GM.prim, [-0.3 * s, 0.12, -1.62], [1, 0.38, 1], [0.12, 0.14 * s, 0]);
     wings.push(piv);
   }
-  const neck = new THREE.Group(); neck.position.set(0, 0.4, 0.95); body.add(neck);
-  const curve = new THREE.CatmullRomCurve3([new V3(0, -0.2, -0.12), new V3(0, 0.3, 0.1), new V3(0, 0.65, 0.18), new V3(0, 0.97, 0.3)]);
-  addMesh(neck, geo('neck', () => new THREE.TubeGeometry(curve, 24, 0.15, 12)), GM.black);
-  const headPivot = new THREE.Group(); headPivot.position.set(0, 0.97, 0.3); neck.add(headPivot);
+  addMesh(body, SPH, GM.black, [0, 0.36, 0.86], [0.25, 0.3, 0.25]);   // base of the black neck
+  const neck = new THREE.Group(); neck.position.set(0, 0.45, 0.92); body.add(neck);
+  const curve = new THREE.CatmullRomCurve3([new V3(0, -0.12, -0.04), new V3(0, 0.35, 0.07), new V3(0, 0.75, 0.0), new V3(0, 1.05, 0.12)]);
+  addMesh(neck, geo('neck2', () => new THREE.TubeGeometry(curve, 24, 0.125, 12)), GM.black);
+  const headPivot = new THREE.Group(); headPivot.position.set(0, 1.05, 0.12); neck.add(headPivot);
   const head = buildGooseHead(); headPivot.add(head.group);
   const legs = [];
   for (const s of [-1, 1]) {
-    const hip = new THREE.Group(); hip.position.set(0.32 * s, 0.98, 0.1); root.add(hip);
-    addMesh(hip, geo('leg', () => new THREE.CylinderGeometry(0.075, 0.06, 0.95, 8)), GM.leg, [0, -0.47, 0]);
-    addMesh(hip, geo('foot', () => new THREE.CylinderGeometry(0.32, 0.32, 0.035, 3)), GM.leg, [0, -0.955, 0.14], [0.9, 1, 1.25], [0, Math.PI, 0]);
+    const hip = new THREE.Group(); hip.position.set(0.26 * s, 0.92, 0.12); root.add(hip);
+    addMesh(hip, SPH, GM.flank, [0, 0, 0], [0.16, 0.2, 0.18]);
+    addMesh(hip, geo('leg2', () => new THREE.CylinderGeometry(0.055, 0.045, 0.9, 8)), GM.leg, [0, -0.46, 0]);
+    addMesh(hip, geo('foot', () => new THREE.CylinderGeometry(0.32, 0.32, 0.035, 3)), GM.leg, [0, -0.905, 0.12], [0.85, 1, 1.2], [0, Math.PI, 0]);
     legs.push(hip);
   }
-  root.scale.setScalar(1.0);
   root.traverse(o => { if (o.isMesh) o.receiveShadow = false; });
   return { root, body, neck, headPivot, jaw: head.jaw, inner: head.inner, wings, legs, innerOpen: true };
 }
@@ -1062,7 +1220,7 @@ const AU = {
     const c = this.ctx = new AC();
     this.comp = c.createDynamicsCompressor();
     this.comp.threshold.value = -12; this.comp.knee.value = 10; this.comp.ratio.value = 5; this.comp.attack.value = 0.003; this.comp.release.value = 0.25;
-    this.master = c.createGain(); this.master.gain.value = 0.9;
+    this.master = c.createGain(); this.master.gain.value = settings.vol;
     this.master.connect(this.comp); this.comp.connect(c.destination);
     this.sfx = c.createGain(); this.sfx.connect(this.master);
     this.amb = c.createGain(); this.amb.gain.value = 0; this.amb.connect(this.master);
@@ -1200,6 +1358,42 @@ const AU = {
     const b = this.osc('sine', 62, t, 0.9); b.frequency.exponentialRampToValueAtTime(24, t + 0.8);
     const bg = this.gain(); this.env(bg, t, 0.005, 0.1, 0.7, 1.0); this.chain(b, bg, out);
   },
+  // "MERP": a high, nasal, warbly frog-puppet voice built from formant filters (m -> er -> p)
+  merp(x, z, o = {}) {
+    const urgent = !!o.urgent;
+    const out = o.direct ? this.direct(0.6 * (o.loud || 1)) : this.at(x, 2.8, z, urgent ? 70 : 52, 0.65 * (o.loud || 1)); if (!out) return;
+    const t = this.t + 0.01, f0 = 262 * (o.pitch || 1) * rr(0.95, 1.06) * (urgent ? 1.16 : 1);
+    const dur = urgent ? 0.44 : 0.37, tm = 0.075, tPeak = t + tm + (dur - tm) * 0.45, tClose = t + dur - 0.05;
+    const src = this.gain(1);
+    const o1 = this.osc('sawtooth', f0 * 0.9, t, dur + 0.1), o2 = this.osc('square', f0 * 0.9 * 1.004, t, dur + 0.1);
+    const g2 = this.gain(0.16); o2.connect(g2); g2.connect(src); o1.connect(src);
+    for (const os of [o1, o2]) {
+      os.frequency.setValueAtTime(f0 * 0.88, t);
+      os.frequency.linearRampToValueAtTime(f0, t + tm);
+      os.frequency.linearRampToValueAtTime(f0 * 1.24, tPeak);
+      os.frequency.linearRampToValueAtTime(f0 * 1.06, tClose);
+    }
+    const vib = this.osc('sine', rr(6.5, 8), t, dur + 0.1), vg = this.gain(f0 * 0.04);
+    vib.connect(vg); vg.connect(o1.frequency); vg.connect(o2.frequency);
+    const ng = this.gain(0.07); this.chain(this.noise(t, dur + 0.1), this.filt('bandpass', 3200, 0.7), ng, src);
+    const mix = this.gain(0);
+    // [freq during "m", freq during "er", Q, gain during "m", gain during "er"]
+    for (const [fm, fv, q, gm, gv] of [[250, 520, 4, 1.4, 1.0], [1000, 1350, 6, 0.15, 1.3], [2100, 1680, 7, 0.08, 1.3], [2800, 2750, 5, 0.06, 1.5]]) {
+      const b = this.filt('bandpass', fm, q); b.frequency.setValueAtTime(fm, t); b.frequency.linearRampToValueAtTime(fv, t + tm + 0.04);
+      const g = this.gain(gm); g.gain.setValueAtTime(gm, t); g.gain.linearRampToValueAtTime(gv, t + tm + 0.04);
+      src.connect(b); b.connect(g); g.connect(mix);
+    }
+    mix.gain.setValueAtTime(0.0001, t);
+    mix.gain.linearRampToValueAtTime(0.4, t + 0.02);
+    mix.gain.setValueAtTime(0.4, t + tm);
+    mix.gain.linearRampToValueAtTime(1, t + tm + 0.03);
+    mix.gain.setValueAtTime(1, tClose - 0.02);
+    mix.gain.linearRampToValueAtTime(0.0001, tClose + 0.012);   // lips close
+    const pk = this.filt('peaking', 1900, 1.2); pk.gain.value = 5;
+    this.chain(mix, this.filt('highpass', 170, 0.7), pk, out);
+    const tb = tClose + 0.035, bg = this.gain(); this.env(bg, tb, 0.002, 0.012, 0.05, 0.45);   // the "p" pop
+    this.chain(this.noise(tb, 0.08), this.filt('bandpass', 1500, 0.9), bg, out);
+  },
   sting() {
     const out = this.direct(0.28); if (!out) return; const t = this.t;
     const lp = this.filt('lowpass', 300, 1.5); lp.frequency.exponentialRampToValueAtTime(2600, t + 0.35);
@@ -1290,7 +1484,7 @@ function resetGoose() {
     x: center(i % N), z: center((i / N) | 0), yaw: rr(0, 6.28), state: 'patrol', target: null, path: null, pathI: 0, repathT: 0, pathGoal: -1,
     speed: 0, curSpeed: 0, stateT: 0, waitT: 3, lastSeen: null, lostT: 0, alertT: 0, knowT: 0, scent: false,
     honkT: rr(3, 6), stepAcc: 0, phase: 0, searchPts: [], searchPhase: 'look', lookT: 0, headYaw: 0, beakT: 0, flapT: 0,
-    sees: false, light: false, senseT: 0, msgCD: 0, forcePathT: 0, bestRem: 1e9, progT: 0, dist: 99, neckX: 0.2, occluded: true,
+    sees: false, light: false, senseT: 0, msgCD: 0, forcePathT: 0, merpT: 3, bestRem: 1e9, progT: 0, dist: 99, neckX: 0.2, occluded: true,
   };
   GOOSE_RIG.root.visible = true;
 }
@@ -1310,7 +1504,7 @@ function newGame() {
 
 let locked = false, lockEverWorked = false, fallbackLook = false, lockTimer = null;
 function requestLock() {
-  if (fallbackLook) return;
+  if (fallbackLook || isMobile()) return;
   try {
     const r = canvas.requestPointerLock();
     if (r && r.catch) r.catch(() => lockFailed());
@@ -1329,29 +1523,32 @@ function lockFailed() {
 document.addEventListener('pointerlockchange', () => {
   locked = document.pointerLockElement === canvas;
   if (locked) { lockEverWorked = true; fallbackLook = false; skipMoves = 2; canvas.classList.remove('drag'); }
-  else if (state === 'playing' && !fallbackLook) pauseGame();
+  else if (state === 'playing' && !fallbackLook && !isMobile()) pauseGame();
 });
 document.addEventListener('pointerlockerror', () => lockFailed());
 
 function startPlaying() {
   state = 'playing';
-  ['scr-start', 'scr-pause', 'scr-dead', 'scr-win'].forEach(id => $(id).hidden = true);
+  ['scr-start', 'scr-pause', 'scr-dead', 'scr-win', 'scr-settings'].forEach(id => $(id).hidden = true);
   els.hud.hidden = false;
+  $('touch').hidden = !isMobile(); releaseTouches();
   AU.setAmbient(true);
-  canvas.focus();
+  if (!isMobile()) canvas.focus();
 }
 function beginNewRun() {
   AU.init();
   newGame();
   startPlaying();
-  requestLock();
-  toast('Find the 5 pieces of the torn letter.', false, 4.5);
+  touch.run = false;
+  if (isMobile()) tryFullscreen(); else requestLock();
+  toast('Find the 5 pieces of the torn letter.' + (isMobile() && innerHeight > innerWidth ? ' Turn your phone sideways for a wider view.' : ''), false, 5);
   setTimeout(() => { if (state === 'playing' && W.goose) AU.honk(W.goose.x, W.goose.z, { pitch: 0.95, loud: 1.4 }); }, 3500);
 }
 function pauseGame(hint) {
   if (state !== 'playing') return;
   state = 'paused';
   $('scr-pause').hidden = false; $('pause-hint').textContent = hint || '';
+  $('touch').hidden = true; releaseTouches();
   AU.setAmbient(false); AU.setChase(0);
   for (const k in keys) keys[k] = false;
 }
@@ -1365,7 +1562,7 @@ function caught() {
   if (state !== 'playing') return;
   state = 'caught';
   if (player.hidden) { player.hidden = null; els.hide.hidden = true; }
-  els.hud.hidden = true;
+  els.hud.hidden = true; $('touch').hidden = true;
   GOOSE_RIG.root.visible = false;
   JS.group.visible = true; JS.start = performance.now();
   jsLight.intensity = 3.2; jsLight2.intensity = 0.9; renderer.shadowMap.autoUpdate = true;
@@ -1393,7 +1590,7 @@ function win() {
   if (state !== 'playing') return;
   state = 'won';
   if (document.pointerLockElement) document.exitPointerLock();
-  els.hud.hidden = true; els.hide.hidden = true; AU.setChase(0); AU.setAmbient(false);
+  els.hud.hidden = true; els.hide.hidden = true; $('touch').hidden = true; AU.setChase(0); AU.setAmbient(false);
   const L = $('letter'); L.innerHTML = ''; L.className = '';
   LETTER.forEach((txt, i) => {
     const s = document.createElement('div'); s.className = 'strip';
@@ -1427,7 +1624,7 @@ addEventListener('keydown', e => {
     if (e.code === 'KeyF') toggleFlash();
     else if (e.code === 'KeyE') interact();
     else if (e.code === 'ControlLeft' || e.code === 'ControlRight' || e.code === 'KeyC') toggleCrouch();
-    else if (e.code === 'Escape' && fallbackLook) pauseGame();
+    else if (e.code === 'Escape' && (fallbackLook || isMobile())) pauseGame();
   } else if ((state === 'dead' || state === 'won') && (e.code === 'KeyR' || e.code === 'Enter') && !e.repeat) {
     beginNewRun();
   }
@@ -1436,14 +1633,14 @@ addEventListener('keyup', e => { keys[e.code] = false; });
 addEventListener('blur', () => { for (const k in keys) keys[k] = false; if (state === 'playing' && fallbackLook) pauseGame(); });
 const SENS = 0.0022;
 let dragging = false, skipMoves = 0;
-canvas.addEventListener('mousedown', () => { dragging = true; if (state === 'playing' && !locked && !fallbackLook && lockEverWorked) requestLock(); });
+canvas.addEventListener('mousedown', () => { dragging = true; if (state === 'playing' && !isMobile() && !locked && !fallbackLook && lockEverWorked) requestLock(); });
 addEventListener('mouseup', () => { dragging = false; });
 addEventListener('mousemove', e => {
-  if (state !== 'playing') return;
+  if (state !== 'playing' || isMobile()) return;
   if (!locked && !(fallbackLook && dragging)) return;
   const mx = e.movementX || 0, my = e.movementY || 0;
   if (locked) { if (skipMoves > 0) { skipMoves--; return; } if (Math.abs(mx) > 250 || Math.abs(my) > 250) return; }
-  const k = locked ? 1 : 1.6;
+  const k = (locked ? 1 : 1.6) * settings.sens;
   player.yaw -= mx * SENS * k;
   player.pitch = clamp(player.pitch - my * SENS * k, -1.45, 1.45);
 });
@@ -1453,7 +1650,88 @@ $('btn-restart').addEventListener('click', beginNewRun);
 $('btn-retry').addEventListener('click', beginNewRun);
 $('btn-again').addEventListener('click', beginNewRun);
 document.addEventListener('visibilitychange', () => { if (document.hidden) pauseGame(); });
-if (matchMedia('(pointer: coarse)').matches && !matchMedia('(pointer: fine)').matches) $('touch-note').hidden = false;
+
+/* ---------- touch controls ---------- */
+const touch = { joyId: null, lookId: null, jx: 0, jy: 0, bx: 0, by: 0, lx: 0, ly: 0, run: false };
+const TOUCH_SENS = 0.005, JOY_R = 56;
+const touchEl = $('touch'), joyBase = $('joy-base'), joyKnob = $('joy-knob');
+const TB = { light: $('tb-light'), crouch: $('tb-crouch'), run: $('tb-run'), use: $('tb-use') };
+function joyHome() { return [Math.max(96, Math.min(150, innerWidth * 0.12)), innerHeight - Math.max(112, Math.min(170, innerHeight * 0.3))]; }
+function placeJoy(x, y, on) { joyBase.style.left = x + 'px'; joyBase.style.top = y + 'px'; joyBase.classList.toggle('on', on); }
+function resetJoy() { touch.joyId = null; touch.jx = touch.jy = 0; joyKnob.style.transform = ''; const [x, y] = joyHome(); placeJoy(x, y, false); }
+function releaseTouches() { resetJoy(); touch.lookId = null; }
+touchEl.addEventListener('pointerdown', e => {
+  if (e.target.closest('.tb')) return;
+  e.preventDefault();
+  if (e.clientX < innerWidth * 0.42 && touch.joyId === null) {
+    touch.joyId = e.pointerId; touch.bx = e.clientX; touch.by = e.clientY; touch.jx = touch.jy = 0;
+    joyKnob.style.transform = ''; placeJoy(e.clientX, e.clientY, true);
+  } else if (touch.lookId === null) { touch.lookId = e.pointerId; touch.lx = e.clientX; touch.ly = e.clientY; }
+  else return;
+  try { touchEl.setPointerCapture(e.pointerId); } catch (err) { /* not supported */ }
+});
+touchEl.addEventListener('pointermove', e => {
+  if (e.pointerId === touch.joyId) {
+    let dx = e.clientX - touch.bx, dy = e.clientY - touch.by; const m = Math.hypot(dx, dy);
+    if (m > JOY_R) { dx *= JOY_R / m; dy *= JOY_R / m; }
+    touch.jx = dx / JOY_R; touch.jy = dy / JOY_R; joyKnob.style.transform = `translate(${dx}px,${dy}px)`;
+  } else if (e.pointerId === touch.lookId) {
+    const dx = e.clientX - touch.lx, dy = e.clientY - touch.ly; touch.lx = e.clientX; touch.ly = e.clientY;
+    if (state !== 'playing') return;
+    const k = TOUCH_SENS * settings.sens;
+    player.yaw -= dx * k; player.pitch = clamp(player.pitch - dy * k, -1.35, 1.35);
+  }
+});
+const endPtr = e => { if (e.pointerId === touch.joyId) resetJoy(); if (e.pointerId === touch.lookId) touch.lookId = null; };
+['pointerup', 'pointercancel', 'lostpointercapture'].forEach(ev => touchEl.addEventListener(ev, endPtr));
+const onTap = (el, fn) => el.addEventListener('pointerdown', e => { e.preventDefault(); e.stopPropagation(); if (state === 'playing') fn(); });
+onTap(TB.light, toggleFlash);
+onTap(TB.crouch, toggleCrouch);
+onTap(TB.use, () => interact());
+onTap(TB.run, () => { touch.run = !touch.run; if (touch.run) player.crouch = false; });
+onTap($('tb-pause'), () => pauseGame());
+['contextmenu', 'gesturestart', 'dblclick'].forEach(ev => touchEl.addEventListener(ev, e => e.preventDefault()));
+function tryFullscreen() {
+  const el = document.documentElement;
+  if (document.fullscreenElement || !el.requestFullscreen) return;
+  try {
+    el.requestFullscreen({ navigationUI: 'hide' })
+      .then(() => { if (screen.orientation && screen.orientation.lock) screen.orientation.lock('landscape').catch(() => {}); })
+      .catch(() => {});
+  } catch (e) { /* not allowed here */ }
+}
+
+/* ---------- settings screen ---------- */
+let settingsFrom = 'scr-start';
+function openSettings(from) { settingsFrom = from; $(from).hidden = true; $('scr-settings').hidden = false; syncSettingsUI(); }
+function closeSettings() { $('scr-settings').hidden = true; $(settingsFrom).hidden = false; }
+function syncSettingsUI() {
+  document.querySelectorAll('[data-set]').forEach(b => b.setAttribute('aria-pressed', String(settings[b.dataset.set] === b.dataset.val)));
+  $('set-sens').value = settings.sens; $('out-sens').textContent = settings.sens.toFixed(2) + 'x';
+  $('set-vol').value = settings.vol; $('out-vol').textContent = Math.round(settings.vol * 100) + '%';
+  $('ctl-desc').textContent = isMobile()
+    ? 'On-screen joystick and buttons. Drag the right side of the screen to look.'
+    : 'Keyboard and mouse. WASD to move, Shift to run, Ctrl or C to crouch, F for the flashlight, E to use.';
+  $('gfx-desc').textContent = settings.quality === 'high' ? 'Sharper image and flashlight shadows.' : 'Faster on phones and older computers. No flashlight shadows.';
+  $('keys-pc').hidden = isMobile(); $('keys-mobile').hidden = !isMobile();
+  $('mode-note').textContent = isMobile()
+    ? 'Mobile controls. Play with your phone sideways. On iPhone, turn off silent mode to hear him.'
+    : 'Computer controls. Change controls and graphics in Settings.';
+}
+function applySettings() {
+  document.body.classList.toggle('m', isMobile());
+  const pr = Math.min(window.devicePixelRatio || 1, settings.quality === 'high' ? 1.5 : 1);
+  if (renderer.getPixelRatio() !== pr) { renderer.setPixelRatio(pr); renderer.setSize(innerWidth, innerHeight); }
+  flash.castShadow = settings.quality === 'high';
+  if (AU.master) AU.master.gain.value = settings.vol;
+  syncSettingsUI();
+}
+document.querySelectorAll('[data-set]').forEach(b => b.addEventListener('click', () => { settings[b.dataset.set] = b.dataset.val; saveSettings(); applySettings(); }));
+$('set-sens').addEventListener('input', e => { settings.sens = +e.target.value; saveSettings(); syncSettingsUI(); });
+$('set-vol').addEventListener('input', e => { settings.vol = +e.target.value; saveSettings(); applySettings(); });
+$('btn-settings').addEventListener('click', () => openSettings('scr-start'));
+$('btn-settings-p').addEventListener('click', () => openSettings('scr-pause'));
+$('settings-done').addEventListener('click', closeSettings);
 
 function toggleFlash() {
   const P = player;
@@ -1463,6 +1741,7 @@ function toggleFlash() {
 function toggleCrouch() {
   if (player.hidden) return;
   player.crouch = !player.crouch;
+  if (player.crouch) touch.run = false;
 }
 function interact() {
   const P = player, tgt = P.target;
@@ -1507,21 +1786,21 @@ function exitSpot() {
 /* ================= PLAYER ================= */
 function findInteract() {
   const P = player;
-  if (P.hidden) return { kind: 'leave', label: P.hidden.type === 'bed' ? '[E] Crawl out' : '[E] Step out' };
+  if (P.hidden) return { kind: 'leave', label: P.hidden.type === 'bed' ? 'Crawl out' : 'Step out' };
   const fx = -Math.sin(P.yaw), fz = -Math.cos(P.yaw);
   let best = null, bestD = 1e9;
   for (const p of W.pickups) {
     if (p.taken) continue;
     const dx = p.x - P.x, dz = p.z - P.z, d = Math.hypot(dx, dz); if (d > 1.9) continue;
     const dot = (dx * fx + dz * fz) / (d || 1); if (d > 0.8 && dot < 0.35) continue;
-    if (d < bestD) { bestD = d; best = { kind: 'pickup', p, label: p.type === 'piece' ? '[E] Pick up the torn letter piece' : '[E] Take the battery' }; }
+    if (d < bestD) { bestD = d; best = { kind: 'pickup', p, label: p.type === 'piece' ? 'Pick up the torn letter piece' : 'Take the battery' }; }
   }
   if (best) return best;
   for (const s of W.spots) {
     const d = Math.hypot(s.ex - P.x, s.ez - P.z); if (d > 1.45) continue;
     const tx = s.x - P.x, tz = s.z - P.z, td = Math.hypot(tx, tz), dot = (tx * fx + tz * fz) / (td || 1);
     if (dot < 0.25) continue;
-    if (d < bestD) { bestD = d; best = { kind: 'spot', s, label: s.type === 'bed' ? '[E] Crawl under the bed' : '[E] Hide in the locker' }; }
+    if (d < bestD) { bestD = d; best = { kind: 'spot', s, label: s.type === 'bed' ? 'Crawl under the bed' : 'Hide in the locker' }; }
   }
   return best;
 }
@@ -1541,11 +1820,16 @@ function updatePlayer(dt) {
     P.speedNow = 0;
   } else {
     let ix = (keys.KeyD ? 1 : 0) - (keys.KeyA ? 1 : 0), iz = (keys.KeyW ? 1 : 0) - (keys.KeyS ? 1 : 0);
-    const len = Math.hypot(ix, iz); if (len > 0) { ix /= len; iz /= len; }
-    const moving = len > 0, shift = keys.ShiftLeft || keys.ShiftRight;
+    let mag = Math.hypot(ix, iz), analog = 1;
+    if (mag === 0 && (touch.jx || touch.jy)) {
+      ix = touch.jx; iz = -touch.jy; mag = Math.hypot(ix, iz);
+      if (mag < 0.15) { ix = iz = 0; mag = 0; } else analog = Math.max(0.4, Math.min(1, mag));
+    }
+    if (mag > 0) { ix /= mag; iz /= mag; }
+    const moving = mag > 0, shift = keys.ShiftLeft || keys.ShiftRight || touch.run;
     if (shift && moving && P.crouch && !P.exhausted) P.crouch = false;
     P.sprinting = shift && moving && !P.exhausted && P.stamina > 0 && !P.crouch;
-    const speed = P.sprinting ? CFG.SPRINT : (P.crouch ? CFG.CROUCH : CFG.WALK);
+    const speed = (P.sprinting ? CFG.SPRINT : (P.crouch ? CFG.CROUCH : CFG.WALK)) * analog;
     const fx = -Math.sin(P.yaw), fz = -Math.cos(P.yaw), rx = Math.cos(P.yaw), rz = -Math.sin(P.yaw);
     const tvx = (fx * iz + rx * ix) * speed, tvz = (fz * iz + rz * ix) * speed;
     const a = 1 - Math.exp(-dt * 12);
@@ -1565,7 +1849,7 @@ function updatePlayer(dt) {
   // stamina: 10 s of sprint. Refills after 5 s without running. Once empty it must refill completely.
   if (P.sprinting && P.speedNow > 0.5) {
     P.stamina -= dt; P.sinceRun = 0;
-    if (P.stamina <= 0) { P.stamina = 0; P.exhausted = true; P.sprinting = false; toast('Out of breath.', true, 2.2); }
+    if (P.stamina <= 0) { P.stamina = 0; P.exhausted = true; P.sprinting = false; touch.run = false; toast('Out of breath.', true, 2.2); }
   } else {
     P.sinceRun += dt;
     if (P.sinceRun >= CFG.STAMINA_DELAY && P.stamina < CFG.STAMINA_MAX) P.stamina = Math.min(CFG.STAMINA_MAX, P.stamina + CFG.STAMINA_REGEN * dt);
@@ -1666,7 +1950,7 @@ function gooseHear(x, z, r, loud) {
   if (G.state === 'hunt') { G.knowT = Math.max(G.knowT, 1.2); return; }
   const j = loud ? 0 : 1.2;
   gooseInvestigate(G, x + rr(-j, j), z + rr(-j, j), loud ? CFG.ALERTED : CFG.INVESTIGATE);
-  if (loud && G.msgCD <= 0) { G.msgCD = 8; AU.honk(G.x, G.z, { pitch: 1.08, loud: 1.2 }); G.beakT = 0.4; toast('It heard you running.', true); }
+  if (loud && G.msgCD <= 0) { G.msgCD = 8; voice(G, { pitch: 1.08, loud: 1.2 }); G.beakT = 0.4; toast('It heard you running.', true); }
 }
 function moveGoose(G, tx, tz, speed, dt) {
   const N = W.N, gtx = tileOf(G.x), gtz = tileOf(G.z), ttx = tileOf(tx), ttz = tileOf(tz);
@@ -1704,6 +1988,28 @@ function moveGoose(G, tx, tz, speed, dt) {
 }
 function faceToward(G, dx, dz, dt, rate) { G.yaw += clamp(angDiff(G.yaw, Math.atan2(dx, dz)), -dt * rate, dt * rate); }
 
+function farHonk(G, o) { if (G.dist >= CFG.MERP_RANGE) { AU.honk(G.x, G.z, o); G.beakT = 0.35; } }
+// close up it MERPs, far away it honks
+function voice(G, o) { if (G.dist < CFG.MERP_RANGE + 8) merp(G, true, o.loud); else AU.honk(G.x, G.z, o); }
+function merp(G, urgent, loud) {
+  AU.merp(G.x, G.z, { urgent, loud: loud || 1 });
+  G.beakT = Math.max(G.beakT, 0.4);
+  showMerp(G, urgent);
+}
+function showMerp(G, urgent) {
+  const P = player, dx = G.x - P.x, dz = G.z - P.z, d = Math.hypot(dx, dz) || 1;
+  const fx = -Math.sin(P.yaw), fz = -Math.cos(P.yaw), rx = Math.cos(P.yaw), rz = -Math.sin(P.yaw);
+  const fwd = (dx * fx + dz * fz) / d, lat = (dx * rx + dz * rz) / d;
+  const xPct = fwd > 0.25 ? 50 + clamp(lat / fwd / 1.2, -1, 1) * 42 : (lat >= 0 ? 90 : 10);
+  const close = clamp(1 - d / (CFG.MERP_RANGE + 8), 0, 1);
+  const el = document.createElement('div');
+  el.className = 'merp' + (G.occluded ? ' muffled' : '');
+  el.textContent = urgent ? 'MERP!' : G.occluded ? '(merp)' : 'MERP';
+  el.style.left = xPct.toFixed(1) + '%'; el.style.top = (27 + rr(-5, 5)).toFixed(1) + '%';
+  el.style.fontSize = Math.round(lerp(16, 76, close * close) * (urgent ? 1.15 : 1)) + 'px';
+  els.hud.appendChild(el);
+  setTimeout(() => el.remove(), 1200);
+}
 function updateGoose(dt) {
   const G = W.goose, P = player;
   G.stateT += dt; G.msgCD -= dt; G.forcePathT = (G.forcePathT || 0) - dt;
@@ -1722,13 +2028,13 @@ function updateGoose(dt) {
     if (G.state !== 'chase' && G.state !== 'alert') {
       const quick = G.state === 'hunt';
       gooseSet(G, 'alert'); G.alertT = quick ? 0.15 : 0.55;
-      AU.honk(G.x, G.z, { alert: true, pitch: 1.1, loud: 1.4 }); AU.sting(); G.beakT = 0.6; G.flapT = 0.7;
+      voice(G, { alert: true, pitch: 1.1, loud: 1.4 }); AU.sting(); G.beakT = 0.6; G.flapT = 0.7; G.merpT = 1.3;
       toast('It sees you. RUN.', true, 2.5);
     }
   } else if (G.light) {
     G.knowT = 2.5; G.lastSeen = { x: P.x, z: P.z };
     if (G.state !== 'chase' && G.state !== 'alert' && G.state !== 'hunt') {
-      gooseSet(G, 'hunt'); AU.honk(G.x, G.z, { pitch: 1.05, loud: 1.2 }); G.beakT = 0.4;
+      gooseSet(G, 'hunt'); voice(G, { pitch: 1.05, loud: 1.2 }); G.beakT = 0.4;
       toast('It noticed your light.', true);
     }
   }
@@ -1798,16 +2104,23 @@ function updateGoose(dt) {
   if (G.honkT <= 0) {
     const r = Math.random();
     switch (G.state) {
-      case 'chase': AU.honk(G.x, G.z, { pitch: rr(1.02, 1.18), loud: 1.2 }); G.beakT = 0.35; G.honkT = rr(1.8, 3.4); break;
-      case 'hunt': if (r < 0.6) AU.sniff(G.x, G.z); else { AU.honk(G.x, G.z, { pitch: 1.0 }); G.beakT = 0.35; } G.honkT = rr(1.8, 3.5); break;
-      case 'search': if (r < 0.3) AU.hiss(G.x, G.z); else if (r < 0.6) AU.sniff(G.x, G.z); else if (r < 0.85) { AU.honk(G.x, G.z, { pitch: rr(0.9, 1.05) }); G.beakT = 0.35; } else AU.grunt(G.x, G.z); G.honkT = rr(3.5, 7); break;
+      case 'chase': farHonk(G, { pitch: rr(1.02, 1.18), loud: 1.2 }); G.beakT = 0.35; G.honkT = rr(1.8, 3.4); break;
+      case 'hunt': if (r < 0.6) AU.sniff(G.x, G.z); else { farHonk(G, { pitch: 1.0 }); G.beakT = 0.35; } G.honkT = rr(1.8, 3.5); break;
+      case 'search': if (r < 0.3) AU.hiss(G.x, G.z); else if (r < 0.6) AU.sniff(G.x, G.z); else if (r < 0.85) { farHonk(G, { pitch: rr(0.9, 1.05) }); G.beakT = 0.35; } else AU.grunt(G.x, G.z); G.honkT = rr(3.5, 7); break;
       default:
-        if (r < 0.5) { AU.honk(G.x, G.z, { pitch: rr(0.88, 1.05) }); G.beakT = 0.35; }
+        if (r < 0.5) { farHonk(G, { pitch: rr(0.88, 1.05) }); G.beakT = 0.35; }
         else if (r < 0.72) AU.grunt(G.x, G.z);
         else if (r < 0.85) AU.hiss(G.x, G.z);
         else { AU.flap(G.x, G.z); G.flapT = 0.7; }
         G.honkT = rr(7, 15);
     }
+  }
+  // MERP: it talks more the closer it gets
+  G.merpT -= dt;
+  if (G.dist < CFG.MERP_RANGE && G.merpT <= 0 && G.state !== 'alert') {
+    const urgent = G.state === 'chase';
+    merp(G, urgent);
+    G.merpT = lerp(0.9, 5.5, G.dist / CFG.MERP_RANGE) * rr(0.8, 1.25) * (urgent ? 0.75 : 1);
   }
   animateGoose(G, dt, moving);
 
@@ -1827,7 +2140,7 @@ function animateGoose(G, dt, moving) {
   G.phase += dt * spd * 2.1;
   const s = Math.sin(G.phase), amp = Math.min(1, spd / 2.5);
   R.legs[0].rotation.x = s * 0.65 * amp; R.legs[1].rotation.x = -s * 0.65 * amp;
-  R.body.position.y = 1.3 + Math.abs(Math.cos(G.phase)) * 0.07 * amp + Math.sin(gameTime * 2) * 0.012;
+  R.body.position.y = 1.25 + Math.abs(Math.cos(G.phase)) * 0.07 * amp + Math.sin(gameTime * 2) * 0.012;
   R.body.rotation.z = s * 0.08 * amp;
   const chase = G.state === 'chase' || G.state === 'alert';
   const sniffing = G.state === 'hunt' || (G.state === 'search' && G.searchPhase === 'look' && Math.sin(G.stateT * 0.6) > 0.5);
@@ -1882,9 +2195,16 @@ function updateHUD(dt) {
   if (hudCache.pct !== pct) { hudCache.pct = pct; els.bpct.textContent = pct + '%'; els.bfill.style.transform = `scaleX(${pct / 100})`; }
   setClass('b', els.batt, 'on', P.flashOn);
   setClass('b', els.batt, 'low', pct <= 20);
-  const label = P.target ? P.target.label : '';
+  const label = P.target ? (isMobile() ? P.target.label : '[E] ' + P.target.label) : '';
   if (hudCache.prompt !== label) { hudCache.prompt = label; els.prompt.textContent = label; els.prompt.hidden = !label; }
   setText('stance', els.stance, P.hidden ? 'Hidden' : P.crouch ? 'Crouched' : '');
+  if (isMobile()) {
+    setClass('tbr', TB.run, 'on', touch.run);
+    setClass('tbc', TB.crouch, 'on', P.crouch);
+    setClass('tbl', TB.light, 'on', P.flashOn);
+    setClass('tbu', TB.use, 'ready', !!P.target);
+    setText('tbut', TB.use, !P.target ? 'Use' : P.target.kind === 'leave' ? 'Leave' : P.target.kind === 'spot' ? 'Hide' : 'Take');
+  }
   const lf = P.linger / CFG.LINGER_TIME;
   const scent = lf >= 1 ? 'It smells you. Move.' : lf > 0.55 ? 'Your scent is building up' : '';
   setText('scent', els.scent, scent); els.scent.hidden = !scent; setClass('sc', els.scent, 'hot', lf >= 1);
@@ -1907,7 +2227,7 @@ function updateJumpscare(dt) {
 /* ================= MENU ================= */
 function updateMenu(dt) {
   menu.t += dt; const t = menu.t, R = menu.rig;
-  R.body.position.y = 1.3 + Math.sin(t * 1.4) * 0.025;
+  R.body.position.y = 1.25 + Math.sin(t * 1.4) * 0.025;
   R.body.scale.set(1 + Math.sin(t * 1.4) * 0.012, 1, 1);
   R.neck.rotation.x = 0.12 + Math.sin(t * 0.7) * 0.06;
   R.headPivot.rotation.y = 0.85 + Math.sin(t * 0.45) * 0.18 + (Math.sin(t * 0.13) > 0.85 ? -0.6 : 0);
@@ -1938,17 +2258,20 @@ function frame(now) {
   AU.listener();
   renderer.render(scene, camera);
 }
+applySettings();
+resetJoy();
 requestAnimationFrame(frame);
 
 addEventListener('resize', () => {
   renderer.setSize(innerWidth, innerHeight);
+  if (touch.joyId === null) resetJoy();
   camera.aspect = innerWidth / innerHeight; camera.updateProjectionMatrix();
   menu.cam.aspect = innerWidth / innerHeight; menu.cam.updateProjectionMatrix();
 });
 
 // test hooks
 window.__gooseflesh = {
-  get state() { return state; }, get W() { return W; }, player, AU, DBG,
+  get state() { return state; }, get W() { return W; }, player, AU, DBG, settings, touch, applySettings,
   start: beginNewRun, caught: () => caught(), win: () => { player.pieces = CFG.PIECES; win(); },
   goose: () => W && W.goose, step: (n = 60, dt = 1 / 60) => { for (let i = 0; i < n; i++) { if (state !== 'playing') break; gameTime += dt; updatePlayer(dt); if (!DBG.freeze) updateGoose(dt); if (state === 'playing') { updateFx(dt); updateHUD(dt); } } },
 };
