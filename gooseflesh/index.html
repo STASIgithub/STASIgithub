@@ -36,6 +36,12 @@ body{font-family:var(--f-type);-webkit-font-smoothing:antialiased;user-select:no
 #danger{z-index:3;opacity:0;background:radial-gradient(ellipse at center,transparent 38%,rgba(120,0,0,.55) 85%,rgba(60,0,0,.9) 100%);transition:opacity .25s}
 #grain{z-index:4;opacity:.12;mix-blend-mode:screen;background-size:192px 192px;animation:grain .45s steps(5) infinite}
 #flash{z-index:30;opacity:0;background:#fff}
+/* body-heat and exhaustion layers: opacity only, driven from JS */
+#heat-a{z-index:3;opacity:0;background:radial-gradient(ellipse at center,transparent 40%,rgba(205,45,32,.32) 72%,rgba(175,18,16,.72) 100%)}
+#heat-b{z-index:3;opacity:0;background:radial-gradient(ellipse at center,transparent 26%,rgba(110,0,0,.5) 62%,rgba(55,0,0,.95) 100%)}
+#tunnel{z-index:3;opacity:0;background:radial-gradient(circle at center,transparent 15%,rgba(0,0,0,.72) 40%,rgba(0,0,0,.97) 66%)}
+#tired{z-index:3;opacity:0;background:radial-gradient(ellipse at center,rgba(0,0,0,.28),rgba(0,0,0,.58) 60%,rgba(0,0,0,.86))}
+#fade{z-index:4;opacity:0;background:#000}
 @keyframes grain{0%{background-position:0 0}20%{background-position:-61px 37px}40%{background-position:83px -29px}60%{background-position:-17px -71px}80%{background-position:47px 59px}100%{background-position:0 0}}
 
 /* hiding overlays */
@@ -63,13 +69,19 @@ body{font-family:var(--f-type);-webkit-font-smoothing:antialiased;user-select:no
 #hud-batt.on #bpct{color:var(--ember);text-shadow:0 0 14px rgba(227,166,78,.45)}
 #hud-batt.low{color:var(--blood)}
 #hud-batt.low #bpct{color:var(--blood);text-shadow:none}
-#hud-stam{position:absolute;bottom:calc(26px + env(safe-area-inset-bottom,0px));left:50%;transform:translateX(-50%);width:min(44vw,340px);display:flex;flex-direction:column;gap:7px;transition:opacity .4s}
-#hud-stam.idle{opacity:.5}
-#hud-stam .row{display:flex;justify-content:space-between}
+#hud-stam{position:absolute;bottom:calc(30px + env(safe-area-inset-bottom,0px));left:50%;transform:translateX(-50%);width:min(44vw,340px);opacity:0;transition:opacity .35s ease-in}
+#hud-stam.show{opacity:1;transition:opacity .06s}
 .bar{height:6px;background:rgba(221,214,198,.13);position:relative;overflow:hidden}
 #sfill{position:absolute;inset:0;background:var(--ink);transform-origin:left}
 #hud-stam.out #sfill{background:var(--blood)}
-#hud-stam.out #stam-state{color:var(--blood)}
+#hud-stam.flash .bar{animation:stamflash .5s steps(1) 1}
+#hud-stam.crit #sfill{background:var(--blood);animation:stamcrit .4s steps(1) infinite}
+#hud-stam.crit .bar{box-shadow:0 0 12px rgba(179,25,30,.6)}
+@keyframes stamflash{0%,50%{opacity:1}25%,75%{opacity:.1}}
+@keyframes stamcrit{0%{opacity:1}50%{opacity:.2}}
+#hud-temp{position:absolute;bottom:calc(86px + env(safe-area-inset-bottom,0px));left:max(20px,env(safe-area-inset-left,0px));display:flex;align-items:baseline;gap:12px}
+#tval{font-size:20px;letter-spacing:.03em;font-variant-numeric:tabular-nums;color:var(--ink);padding:1px 6px;margin-left:-6px;border-radius:3px;text-shadow:0 0 6px rgba(0,0,0,.9)}
+#tval.hot{background:rgba(0,0,0,.45);text-shadow:0 0 1px rgba(255,236,228,.55),0 0 6px rgba(0,0,0,.9)}
 #hud-status{position:absolute;bottom:calc(22px + env(safe-area-inset-bottom,0px));right:max(20px,env(safe-area-inset-right,0px));display:flex;flex-direction:column;align-items:flex-end;gap:6px;text-align:right}
 #scent{color:var(--ember)}
 #scent.hot{color:var(--blood);animation:pulse .7s ease-in-out infinite alternate}
@@ -159,6 +171,8 @@ button.ghost:hover{background:rgba(221,214,198,.2)}
 #tb-run{width:72px;height:72px;right:calc(122px + env(safe-area-inset-right,0px));bottom:calc(22px + env(safe-area-inset-bottom,0px))}
 #tb-crouch{width:62px;height:62px;right:calc(118px + env(safe-area-inset-right,0px));bottom:calc(112px + env(safe-area-inset-bottom,0px));font-size:10px}
 #tb-light{width:64px;height:64px;right:calc(32px + env(safe-area-inset-right,0px));bottom:calc(136px + env(safe-area-inset-bottom,0px))}
+#tb-breath{width:62px;height:62px;right:calc(208px + env(safe-area-inset-right,0px));bottom:calc(56px + env(safe-area-inset-bottom,0px));font-size:10px}
+#touch .tb.off{opacity:.35}
 #tb-pause{width:46px;height:46px;top:calc(12px + env(safe-area-inset-top,0px));right:calc(14px + env(safe-area-inset-right,0px));font-size:14px;letter-spacing:0}
 
 /* HUD layout in mobile mode */
@@ -166,7 +180,10 @@ body.m #hud{font-size:11px}
 body.m #hud-batt{bottom:calc(10px + env(safe-area-inset-bottom,0px));left:max(14px,env(safe-area-inset-left,0px))}
 body.m #hud-batt .lbl{display:none}
 body.m #bpct{font-size:18px}
-body.m #hud-stam{bottom:calc(14px + env(safe-area-inset-bottom,0px));width:min(28vw,230px)}
+body.m #hud-stam{bottom:calc(16px + env(safe-area-inset-bottom,0px));width:min(28vw,230px)}
+body.m #hud-temp{bottom:calc(10px + env(safe-area-inset-bottom,0px));left:calc(max(14px,env(safe-area-inset-left,0px)) + 104px)}
+body.m #hud-temp .lbl{display:none}
+body.m #tval{font-size:16px}
 body.m #hud-status{bottom:auto;top:calc(68px + env(safe-area-inset-top,0px));right:max(16px,env(safe-area-inset-right,0px))}
 body.m #note{right:auto;left:max(16px,env(safe-area-inset-left,0px));top:calc(44px + env(safe-area-inset-top,0px));width:min(42vw,320px);font-size:15px;padding:12px 16px 16px}
 body.m #prompt{top:60%;font-size:12px}
@@ -209,7 +226,12 @@ input[type=range]{width:100%;accent-color:var(--ember);height:28px}
 <canvas id="view" tabindex="-1"></canvas>
 <div class="fx" id="vignette"></div>
 <div class="fx" id="danger"></div>
+<div class="fx" id="heat-a"></div>
+<div class="fx" id="heat-b"></div>
+<div class="fx" id="tunnel"></div>
+<div class="fx" id="tired"></div>
 <div class="fx" id="hide" hidden><div class="slits"></div></div>
+<div class="fx" id="fade"></div>
 <div class="fx" id="grain"></div>
 <div class="fx" id="flash"></div>
 
@@ -220,7 +242,8 @@ input[type=range]{width:100%;accent-color:var(--ember);height:28px}
   <div id="toast"></div>
   <div id="note" class="gone"><b id="note-h">Piece 1 of 5</b><span id="note-t"></span></div>
   <div id="hud-batt"><span class="bicon"><span id="bfill"></span></span><span id="bpct">100%</span><span class="lbl">Flashlight <kbd>F</kbd></span></div>
-  <div id="hud-stam" class="idle"><div class="row"><span class="lbl">Stamina</span><span id="stam-state"></span></div><div class="bar"><span id="sfill"></span></div></div>
+  <div id="hud-temp"><span class="lbl">Body</span><span id="tval">98.0°F</span></div>
+  <div id="hud-stam"><div class="bar"><span id="sfill"></span></div></div>
   <div id="hud-status"><span id="scent" hidden></span><span id="stance"></span></div>
 </div>
 
@@ -229,13 +252,15 @@ input[type=range]{width:100%;accent-color:var(--ember);height:28px}
     <p class="eyebrow">First-person horror. Headphones on.</p>
     <h1>Goose&shy;flesh</h1>
     <p class="lede">Five pieces of a torn letter are hidden in this maze. Find all five to read what it says.
-      Something enormous lives here with you. It <em>hears</em> you run. It <em>smells</em> you when you stay still. It <em>sees</em> your light.</p>
+      Something enormous lives here with you. It <em>hears</em> you run and breathe. It <em>smells</em> you when you stay still. It <em>sees</em> your light.
+      And it keeps getting hotter in here. Refrigerators cool you down.</p>
     <dl class="keys" id="keys-pc">
       <dt><kbd>W</kbd> <kbd>A</kbd> <kbd>S</kbd> <kbd>D</kbd></dt><dd>Move. Mouse to look.</dd>
       <dt><kbd>Shift</kbd> hold</dt><dd>Sprint. 10 seconds of stamina, and very loud.</dd>
       <dt><kbd>Ctrl</kbd> or <kbd>C</kbd></dt><dd>Crouch (toggle). Slow and nearly silent.</dd>
+      <dt><kbd>R</kbd> hold</dt><dd>Hold your breath. Costs stamina, needs at least 22%.</dd>
       <dt><kbd>F</kbd></dt><dd>Flashlight. 80 seconds of battery.</dd>
-      <dt><kbd>E</kbd></dt><dd>Pick up, hide in lockers, crawl under beds.</dd>
+      <dt><kbd>E</kbd></dt><dd>Pick up, hide, open and close refrigerators.</dd>
       <dt><kbd>Esc</kbd></dt><dd>Pause.</dd>
     </dl>
     <dl class="keys" id="keys-mobile" hidden>
@@ -243,8 +268,9 @@ input[type=range]{width:100%;accent-color:var(--ember);height:28px}
       <dt><span class="chip">Drag</span></dt><dd>Right side of the screen. Look around.</dd>
       <dt><span class="chip">Run</span></dt><dd>Tap to sprint, tap again to stop. 10 seconds of stamina, and very loud.</dd>
       <dt><span class="chip">Crouch</span></dt><dd>Slow and nearly silent.</dd>
+      <dt><span class="chip">Breath</span></dt><dd>Hold to hold your breath. Costs stamina, needs at least 22%.</dd>
       <dt><span class="chip">Light</span></dt><dd>Flashlight. 80 seconds of battery.</dd>
-      <dt><span class="chip">Use</span></dt><dd>Pick up, hide in lockers, crawl under beds.</dd>
+      <dt><span class="chip">Use</span></dt><dd>Pick up, hide, open and close refrigerators.</dd>
     </dl>
     <div class="actions"><button id="btn-start" type="button">Enter the maze</button><button id="btn-settings" class="ghost" type="button">Settings</button></div>
     <p class="fine" id="mode-note"></p>
@@ -287,7 +313,7 @@ input[type=range]{width:100%;accent-color:var(--ember);height:28px}
 
 <section class="screen center" id="scr-dead" hidden>
   <div class="inner">
-    <h2>He found you.</h2>
+    <h2 id="dead-title">He found you.</h2>
     <p id="dead-stats"></p>
     <div class="actions"><button id="btn-retry" type="button">Try again</button></div>
     <p class="fine">or press R</p>
@@ -308,6 +334,7 @@ input[type=range]{width:100%;accent-color:var(--ember);height:28px}
   <button class="tb" id="tb-light" type="button" aria-label="Flashlight">Light</button>
   <button class="tb" id="tb-crouch" type="button" aria-label="Crouch">Crouch</button>
   <button class="tb" id="tb-run" type="button" aria-label="Run">Run</button>
+  <button class="tb" id="tb-breath" type="button" aria-label="Hold breath">Breath</button>
   <button class="tb" id="tb-use" type="button" aria-label="Use">Use</button>
   <button class="tb" id="tb-pause" type="button" aria-label="Pause">II</button>
 </div>
@@ -339,6 +366,14 @@ const CFG = {
   SIGHT_DARK: 17, SIGHT_DARK_CROUCH: 10, SIGHT_LIGHT: 42, SIGHT_CLOSE: 3.5, FOV_COS: Math.cos(72 * Math.PI / 180),
   NOISE_WALK: 8, NOISE_SPRINT: 24, NOISE_CROUCH: 1.2,
   LINGER_RADIUS: 2.5, LINGER_TIME: 20,
+  // stamina drains, in stamina units per second (STAMINA_MAX = 10 units = 100%)
+  RUN_DRAIN: 1, HOLD_DRAIN: 0.5, HOLD_MIN: 0.22, HOLD_CRIT: 0.16, LOW_STAMINA: 0.22,
+  // body temperature (degrees F)
+  TEMP_START: 98.0, TEMP_MAX: 104.0, TEMP_FLOOR: 97.8, HEATSTROKE_TIME: 20, COOL_RATE: 0.1, COOL_PAUSE: 30,
+  // refrigerators
+  FRIDGES: 4, FRIDGE_POWER: 40, FRIDGE_OFF: 365, FRIDGE_RANGE: 2.1, FRIDGE_NOISE: 14,
+  // how far the goose can hear breathing
+  BREATH_R_MIN: 2.4, BREATH_R_MAX: 11, GASP_R: 22,
 };
 
 const LETTER = [
@@ -349,7 +384,9 @@ const LETTER = [
   "I was wrong. I understood when I saw how he stares at the empty feed bucket. Put the pieces together and you'll see. I'm sorry I ate the last of the {bread}.",
 ];
 const SIGNATURE = 'The Caretaker';
-const GRAFFITI = ['HE HEARS YOU RUN', 'DON\'T STAY STILL', 'LIGHTS OFF', 'HONK', 'HONK HONK HONK', 'IT CAN SMELL YOU', 'FIVE PIECES', 'NO EXIT', 'CROUCH', 'WHO COMBS HIS HAIR?', 'BREAD?', 'HIDE'];
+// [from F, stamina drain x, move speed x, extra recovery delay s]; 104 also disables running
+const HEAT_STEPS = [[104.0, 2.0, 0.75, 12], [103.4, 2.0, 0.80, 12], [102.6, 1.4, 0.88, 6.5], [102.0, 1.25, 0.90, 4], [101.3, 1.18, 0.92, 1.5], [100.5, 1.10, 0.95, 0]];
+const GRAFFITI = ['STAY COOL', 'HOLD YOUR BREATH', 'HE HEARS YOU RUN', 'DON\'T STAY STILL', 'LIGHTS OFF', 'HONK', 'HONK HONK HONK', 'IT CAN SMELL YOU', 'FIVE PIECES', 'NO EXIT', 'CROUCH', 'WHO COMBS HIS HAIR?', 'BREAD?', 'HIDE'];
 
 /* ================= UTIL ================= */
 const rr = (a, b) => a + Math.random() * (b - a);
@@ -606,6 +643,10 @@ const MAT = {
   batCap: new THREE.MeshStandardMaterial({ color: 0xb87333, roughness: 0.3, metalness: 0.9 }),
 };
 MAT.locker.shadowSide = THREE.FrontSide;
+MAT.fridge = new THREE.MeshStandardMaterial({ color: 0xc9c5b7, roughness: 0.42, metalness: 0.05, bumpMap: TEX.noise, bumpScale: 0.004 });
+MAT.shelf = new THREE.MeshStandardMaterial({ color: 0xcfd8dc, roughness: 0.2, metalness: 0.1, transparent: true, opacity: 0.55 });
+MAT.carton = new THREE.MeshStandardMaterial({ color: 0xe8e2d0, roughness: 0.8 });
+MAT.bottle = new THREE.MeshStandardMaterial({ color: 0x3d6b4a, roughness: 0.2, metalness: 0.1 });
 
 const GEO = {};
 function geo(key, make) { if (!GEO[key]) { GEO[key] = make(); GEO[key].userData.keep = true; } return GEO[key]; }
@@ -732,8 +773,7 @@ scene.add(camera);
 const ambient = new THREE.AmbientLight(0x1d2638, 1.3); scene.add(ambient);
 const aura = new THREE.PointLight(0x8a9ab4, 0.8, 7, 2); aura.position.set(0, 0.15, 0); camera.add(aura);
 const flash = new THREE.SpotLight(0xfff0d4, 0, 34, 0.42, 0.5, 1.3);
-flash.position.set(0.22, -0.16, 0.05); camera.add(flash);
-flash.target.position.set(0.05, -0.1, -6); camera.add(flash.target);
+scene.add(flash); scene.add(flash.target);   // driven by updateFlashRig(): lags behind the camera and sways
 flash.castShadow = true; flash.shadow.mapSize.set(1024, 1024);
 flash.shadow.camera.near = 0.2; flash.shadow.camera.far = 34; flash.shadow.bias = -0.0006;
 
@@ -913,7 +953,7 @@ function disposeGroup(g) {
 
 function buildWorld() {
   const { g, N, rooms } = generateMaze(CELLS);
-  W = { g, N, rooms, group: new THREE.Group(), obstacles: [], spots: [], pickups: [], avoid: new Uint8Array(N * N), used: new Uint8Array(N * N), sideUsed: new Set(), floors: [], glows: [] };
+  W = { g, N, rooms, group: new THREE.Group(), obstacles: [], spots: [], pickups: [], fridges: [], avoid: new Uint8Array(N * N), used: new Uint8Array(N * N), sideUsed: new Set(), floors: [], glows: [] };
   // geometry: floor, ceiling, walls
   const size = N * T;
   const floorTex = TEX.floor; floorTex.repeat.set(N, N);
@@ -1034,6 +1074,64 @@ function makeRubble(i, k) {
   for (let b = 0; b < 3; b++) addMesh(grp, geo('rebar', () => new THREE.CylinderGeometry(0.015, 0.015, 1, 5)), MAT.rebar, [rr(-0.4, 0.4), rr(0.7, 1.0), rr(-0.2, 0.2)], [1, rr(0.5, 0.9), 1], [rr(-0.8, 0.8), 0, rr(-0.8, 0.8)]);
   addObstacle(p.x, p.z, p.dx, 1.3, 0.95, 1.15);
 }
+function makeFridge(i, k) {
+  const Wd = 0.92, D = 0.78, Hh = 1.95, p = slotPose(i, k, D, 0), box = geo('box');
+  const grp = new THREE.Group(); grp.position.set(p.x, 0, p.z); grp.rotation.y = p.yaw;
+  // cabinet with an open front, so the inside shows when the door swings open
+  addMesh(grp, box, MAT.fridge, [0, Hh / 2, -D / 2 + 0.02], [Wd, Hh, 0.04]).receiveShadow = true;
+  for (const sx of [-1, 1]) addMesh(grp, box, MAT.fridge, [sx * (Wd / 2 - 0.02), Hh / 2, 0], [0.04, Hh, D]).receiveShadow = true;
+  addMesh(grp, box, MAT.fridge, [0, Hh - 0.02, 0], [Wd, 0.04, D]);
+  addMesh(grp, box, MAT.lockerDark, [0, 0.1, 0], [Wd, 0.2, D]);
+  const innerMat = new THREE.MeshStandardMaterial({ color: 0xdfe8ee, roughness: 0.6, emissive: 0x9cc3ff, emissiveIntensity: 0.9 }); innerMat.userData.own = true;
+  addMesh(grp, box, innerMat, [0, Hh / 2 + 0.05, -D / 2 + 0.045], [Wd - 0.08, Hh - 0.35, 0.01], null, false);
+  for (const y of [0.6, 1.0, 1.42]) addMesh(grp, box, MAT.shelf, [0, y, -0.02], [Wd - 0.09, 0.015, D - 0.14], null, false);
+  addMesh(grp, box, MAT.carton, [-0.22, 0.73, -0.1], [0.12, 0.24, 0.12], [0, 0.3, 0], false);
+  for (const [bx, by] of [[0.08, 1.12], [0.2, 1.12], [0.25, 0.7]]) addMesh(grp, geo('bottle', () => new THREE.CylinderGeometry(0.035, 0.04, 0.22, 10)), MAT.bottle, [bx, by, -0.05], null, null, false);
+  const door = new THREE.Group(); door.position.set(-Wd / 2, 0, D / 2); grp.add(door);
+  addMesh(door, box, MAT.fridge, [Wd / 2, Hh / 2 + 0.02, 0.035], [Wd, Hh - 0.04, 0.07]).receiveShadow = true;
+  addMesh(door, box, MAT.metal, [Wd - 0.08, 1.15, 0.1], [0.035, 0.5, 0.04]);
+  addMesh(door, box, MAT.lockerDark, [Wd / 2, 1.42, 0.072], [Wd - 0.02, 0.012, 0.005], null, false);
+  const ledMat = new THREE.MeshStandardMaterial({ color: 0x0a120c, emissive: 0x3cff74, emissiveIntensity: 1.4 }); ledMat.userData.own = true;
+  addMesh(door, geo('led', () => new THREE.SphereGeometry(0.018, 8, 6)), ledMat, [Wd - 0.12, Hh - 0.14, 0.075], null, null, false);
+  W.group.add(grp);
+  addObstacle(p.x, p.z, p.dx, Wd, D, Hh);
+  const gm = new THREE.SpriteMaterial({ map: TEX.glow, color: 0xbcd6ff, transparent: true, opacity: 0, depthWrite: false, blending: THREE.AdditiveBlending, fog: true }); gm.userData.own = true;
+  const glow = new THREE.Sprite(gm); glow.position.set(p.x - p.dx * 0.5, 1.0, p.z - p.dz * 0.5); glow.scale.set(1.6, 2.2, 1); W.group.add(glow);
+  const f = {
+    x: p.x, z: p.z, dx: p.dx, dz: p.dz, fx: p.x - p.dx * (D / 2 + 0.6), fz: p.z - p.dz * (D / 2 + 0.6),
+    door, open: false, anim: 0, used: 0, powered: true, offUntil: 0, ledMat, innerMat, glow, smokeAcc: 0, hum: AU.makeHum(p.x, p.z),
+  };
+  W.fridges.push(f); return f;
+}
+// one shared pool of cold-air puffs for every refrigerator
+const SMOKE = [];
+(() => {
+  const c = mkCanvas(64, 64), g = c.getContext('2d');
+  for (let k = 0; k < 6; k++) { const x = rr(20, 44), y = rr(20, 44), r = rr(12, 22), gr = g.createRadialGradient(x, y, 0, x, y, r); gr.addColorStop(0, 'rgba(255,255,255,.55)'); gr.addColorStop(1, 'rgba(255,255,255,0)'); g.fillStyle = gr; g.fillRect(0, 0, 64, 64); }
+  const t = tex(c);
+  for (let k = 0; k < 40; k++) {
+    const s2 = new THREE.Sprite(new THREE.SpriteMaterial({ map: t, color: 0xdfeaf6, transparent: true, opacity: 0, depthWrite: false, fog: true }));
+    s2.visible = false; scene.add(s2); SMOKE.push({ s: s2, life: 0, max: 1, vx: 0, vy: 0, vz: 0, s0: 0.3 });
+  }
+})();
+function emitSmoke(f, burst) {
+  const q = SMOKE.find(o => o.life <= 0); if (!q) return;
+  const px = -f.dz, pz = f.dx, side = rr(-0.35, 0.35), sp = rr(0.25, 0.6) * (burst ? 1.7 : 1);
+  q.s.position.set(f.x - f.dx * 0.42 + px * side, rr(0.3, 1.75), f.z - f.dz * 0.42 + pz * side);
+  q.vx = -f.dx * sp + px * rr(-0.15, 0.15); q.vz = -f.dz * sp + pz * rr(-0.15, 0.15); q.vy = rr(-0.28, -0.06);
+  q.max = q.life = rr(1.8, 2.8); q.s0 = rr(0.25, 0.45); q.s.visible = true;
+}
+function updateSmoke(dt) {
+  for (const q of SMOKE) {
+    if (q.life <= 0) continue;
+    q.life -= dt; if (q.life <= 0) { q.s.visible = false; q.s.material.opacity = 0; continue; }
+    const k = 1 - q.life / q.max, drag = 1 - dt * 0.8, P = q.s.position;
+    P.x += q.vx * dt; P.y += q.vy * dt; P.z += q.vz * dt; q.vx *= drag; q.vz *= drag;
+    if (P.y < 0.12) { P.y = 0.12; q.vy = 0; q.vx *= 1 + dt * 0.4; q.vz *= 1 + dt * 0.4; }   // cold air pools on the floor
+    const sc = q.s0 + k * 1.15; q.s.scale.set(sc, sc, 1); q.s.material.opacity = 0.42 * Math.sin(k * Math.PI);
+  }
+}
+function clearSmoke() { for (const q of SMOKE) { q.life = 0; q.s.visible = false; q.s.material.opacity = 0; } }
 function makeGlow(x, y, z, color, scale, opacity) {
   const m = new THREE.SpriteMaterial({ map: TEX.glow, color, transparent: true, opacity, depthWrite: false, blending: THREE.AdditiveBlending, fog: true });
   m.userData.own = true;
@@ -1117,6 +1215,20 @@ function populate() {
     if (deBeds >= 2) break; if (!canPlace(i) || letterSet.has(i) || sd[i] < 5) continue;
     const back = DIRS.findIndex(([dx, dz]) => { const o = openDirs(i)[0]; return dx === -DIRS[o][0] && dz === -DIRS[o][1]; });
     makeBed(i, back); placed(i, back); deBeds++;
+  }
+
+  // ---- refrigerators: exactly CFG.FRIDGES, spread one per quadrant where possible, never in the start area
+  const tdist = (a, b) => Math.abs(a % N - b % N) + Math.abs(((a / N) | 0) - ((b / N) | 0));
+  const fslots = [];
+  for (const i of W.floors) { if (sd[i] < 4 || letterSet.has(i)) continue; for (const k of wallDirs(i)) fslots.push([i, k]); }
+  const fr = [], half = N / 2;
+  for (const [qx, qz] of shuffle([[0, 0], [1, 0], [0, 1], [1, 1]])) {
+    const c = shuffle(fslots.filter(([i]) => canPlace(i) && (i % N >= half) === !!qx && (((i / N) | 0) >= half) === !!qz && fr.every(j => tdist(i, j) >= 7)));
+    if (c.length) { const [i, k] = c[0]; makeFridge(i, k); placed(i, k); fr.push(i); }
+  }
+  for (let sep = 7; fr.length < CFG.FRIDGES && sep >= 0;) {
+    const c = shuffle(fslots.filter(([i]) => canPlace(i) && fr.every(j => tdist(i, j) >= sep)));
+    if (c.length) { const [i, k] = c[0]; makeFridge(i, k); placed(i, k); fr.push(i); } else sep--;
   }
 
   // ---- lockers (some in pairs), spaced apart
@@ -1266,11 +1378,17 @@ const AU = {
   },
   startAmbient() {
     const c = this.ctx, t = c.currentTime;
+    // the building's air conditioning: fan rumble, airflow and a faint electrical hum, all through one level control
+    this.ac = this.gain(0); this.ac.connect(this.amb);
     const bn = c.createBufferSource(); bn.buffer = this.brownBuf; bn.loop = true; bn.start(t);
     const lp = this.filt('lowpass', 170, 0.6), g = this.gain(0.4);
-    this.chain(bn, lp, g, this.amb);
+    this.chain(bn, lp, g, this.ac);
     const lfo = this.ctx.createOscillator(); lfo.frequency.value = 0.06; const lg = this.gain(70); lfo.connect(lg); lg.connect(lp.frequency); lfo.start(t);
-    for (const f of [41, 43.3, 61.7]) { const o = c.createOscillator(); o.type = 'sine'; o.frequency.value = f; const og = this.gain(f > 60 ? 0.025 : 0.05); o.connect(og); og.connect(this.amb); o.start(t); }
+    for (const f of [41, 43.3, 61.7]) { const o = c.createOscillator(); o.type = 'sine'; o.frequency.value = f; const og = this.gain(f > 60 ? 0.025 : 0.05); o.connect(og); og.connect(this.ac); o.start(t); }
+    const air = c.createBufferSource(); air.buffer = this.noiseBuf; air.loop = true; air.start(t);
+    const airLfo = c.createOscillator(); airLfo.frequency.value = 0.13; const airG = this.gain(0.035), airL = this.gain(0.012); airLfo.connect(airL); airL.connect(airG.gain); airLfo.start(t);
+    this.chain(air, this.filt('bandpass', 1100, 0.4), this.filt('highpass', 380, 0.7), airG, this.ac);
+    for (const [f, v] of [[120, 0.01], [240, 0.004]]) { const o = c.createOscillator(); o.frequency.value = f; const og = this.gain(v); o.connect(og); og.connect(this.ac); o.start(t); }
     // chase pulse layer
     const co = c.createOscillator(); co.type = 'sawtooth'; co.frequency.value = 55;
     const co2 = c.createOscillator(); co2.type = 'sawtooth'; co2.frequency.value = 58.3;
@@ -1431,32 +1549,140 @@ const AU = {
       const g = this.gain(); this.env(g, t + off, 0.006, 0.02, 0.13, amp); this.chain(o, this.filt('lowpass', 140), g, out);
     }
   },
-  breath(inhale) {
-    const out = this.direct(inhale ? 0.05 : 0.07); if (!out) return; const t = this.t;
-    const g = this.gain(); this.env(g, t, inhale ? 0.22 : 0.08, 0.08, inhale ? 0.2 : 0.35, 1);
-    this.chain(this.noise(t, 0.7), this.filt('bandpass', inhale ? 1300 : 900, 0.8), g, out);
-  },
-  drip() {
-    if (!this.ctx) return; const t = this.t, c = this.ctx;
-    const pan = c.createStereoPanner ? c.createStereoPanner() : null; const g = this.gain(); this.env(g, t, 0.002, 0.01, 0.12, rr(0.02, 0.05));
-    const o = this.osc('sine', rr(1400, 2200), t, 0.15); o.frequency.exponentialRampToValueAtTime(rr(700, 900), t + 0.06);
-    if (pan) { pan.pan.value = rr(-1, 1); this.chain(o, g, pan, this.amb); } else this.chain(o, g, this.amb);
-  },
-  clank() {
+  // ---- the player's own breathing (heard directly, not spatialized). b = intensity 0..1
+  breathe(out, b, vol = 1) {
     if (!this.ctx) return; const t = this.t;
-    const g = this.gain(); this.env(g, t, 0.004, 0.05, 1.1, rr(0.03, 0.06));
-    this.chain(this.noise(t, 0.08), this.filt('bandpass', rr(300, 600), 9), g, this.amb);
-    const o = this.osc('triangle', rr(180, 260), t, 1.2), g2 = this.gain(); this.env(g2, t, 0.004, 0.02, 1.1, 0.025); this.chain(o, g2, this.amb);
+    const dur = out ? lerp(1.5, 0.36, b) : lerp(1.25, 0.3, b);
+    const v = lerp(0.02, 0.13, b) * (out ? 1 : 0.75) * (b > 0.78 ? 1.35 : 1) * vol;
+    const g = this.gain(); g.gain.setValueAtTime(0.0001, t); g.gain.linearRampToValueAtTime(v, t + dur * 0.35); g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+    this.chain(this.noise(t, dur + 0.05), this.filt('bandpass', out ? lerp(950, 780, b) : lerp(1900, 1350, b), out ? 0.7 : 0.9), g, this.sfx);
+    if (b > 0.55) {   // throaty, voiced panting once you are really out of breath
+      const vv = v * 0.4 * (b - 0.55) / 0.45, vg = this.gain();
+      vg.gain.setValueAtTime(0.0001, t); vg.gain.linearRampToValueAtTime(vv, t + dur * 0.3); vg.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+      const f = out ? lerp(115, 150, b) : lerp(165, 205, b), o = this.osc('sawtooth', f, t, dur); o.frequency.linearRampToValueAtTime(f * 0.88, t + dur);
+      this.chain(o, this.filt('bandpass', out ? 700 : 1150, 2.5), vg, this.sfx);
+    }
   },
+  gasp() {
+    const out = this.direct(1); if (!out) return; const t = this.t;
+    const bp = this.filt('bandpass', 700, 1.4); bp.frequency.exponentialRampToValueAtTime(2600, t + 0.4);
+    const g = this.gain(); this.env(g, t, 0.02, 0.25, 0.2, 0.5); this.chain(this.noise(t, 0.6), bp, g, out);
+    const o = this.osc('sawtooth', 170, t, 0.5); o.frequency.exponentialRampToValueAtTime(240, t + 0.35);
+    const vg = this.gain(); this.env(vg, t, 0.03, 0.22, 0.2, 0.17); this.chain(o, this.filt('bandpass', 950, 3), vg, out);
+    const t2 = t + 0.6, g2 = this.gain(); this.env(g2, t2, 0.01, 0.1, 0.3, 0.32); this.chain(this.noise(t2, 0.5), this.filt('bandpass', 800, 0.8), g2, out);
+    const o2 = this.osc('sawtooth', 130, t2, 0.4), vg2 = this.gain(); this.env(vg2, t2, 0.01, 0.08, 0.25, 0.1); this.chain(o2, this.filt('bandpass', 650, 3), vg2, out);
+  },
+  collapse() {
+    const out = this.direct(0.8); if (!out) return; const t = this.t;
+    [0, 1.1, 2.4].forEach((off, k) => {
+      for (const [o2, amp] of [[0, 1], [0.18, 0.6]]) {
+        const o = this.osc('sine', 58, t + off + o2, 0.25); o.frequency.exponentialRampToValueAtTime(36, t + off + o2 + 0.16);
+        const g = this.gain(); this.env(g, t + off + o2, 0.006, 0.03, 0.15, amp * (1 - k * 0.3)); this.chain(o, this.filt('lowpass', 140), g, out);
+      }
+    });
+    const b = this.osc('sine', 70, t + 1.9, 0.6); b.frequency.exponentialRampToValueAtTime(28, t + 2.4);
+    const bg = this.gain(); this.env(bg, t + 1.9, 0.004, 0.05, 0.5, 0.9); this.chain(b, bg, out);
+    const ng = this.gain(); this.env(ng, t + 1.9, 0.003, 0.03, 0.2, 0.5); this.chain(this.noise(t + 1.9, 0.3), this.filt('lowpass', 400), ng, out);
+  },
+  // ---- air conditioning (continuous). Level is driven by updateAmbient().
+  setAC(level, tc) { if (this.ac) this.ac.gain.setTargetAtTime(level, this.t, tc); },
+  acClunk(on) {
+    const out = this.direct(0.06); if (!out) return; const t = this.t;
+    const o = this.osc('sine', on ? 70 : 90, t, 0.4); o.frequency.exponentialRampToValueAtTime(on ? 45 : 35, t + 0.3);
+    const g = this.gain(); this.env(g, t, 0.004, 0.03, 0.3, 1); this.chain(o, g, out);
+    const g2 = this.gain(); this.env(g2, t, 0.002, 0.02, 0.1, 0.6); this.chain(this.noise(t, 0.15), this.filt('bandpass', 500, 2), g2, out);
+  },
+  // ---- random ambient events, placed somewhere in the maze away from the player
+  ambSteps(x, z) {
+    if (!this.ctx) return; const n = ri(5, 8), a = rr(0, 6.28), iv = rr(0.5, 0.65), t0 = this.t;
+    for (let k = 0; k < n; k++) {
+      const px = x + Math.cos(a) * k * 0.7, pz = z + Math.sin(a) * k * 0.7, out = this.at(px, 0.2, pz, 85, 0.6); if (!out) continue;
+      const t = t0 + k * iv * rr(0.93, 1.07), amp = 0.75 + 0.25 * Math.sin(k * 1.7);
+      const o = this.osc('sine', 85, t, 0.15); o.frequency.exponentialRampToValueAtTime(42, t + 0.1);
+      const g = this.gain(); this.env(g, t, 0.003, 0.01, 0.1, amp); this.chain(o, g, out);
+      const g2 = this.gain(); this.env(g2, t, 0.003, 0.02, 0.08, amp * 0.6); this.chain(this.noise(t, 0.12), this.filt('lowpass', 480, 0.8), g2, out);
+    }
+  },
+  ambHeavy(x, z) {
+    if (!this.ctx) return; const t0 = this.t;
+    [[0, 1], [rr(0.45, 0.8), 0.65], [rr(1.3, 1.8), Math.random() < 0.5 ? 0.85 : 0]].forEach(([off, amp]) => {
+      if (!amp) return; const out = this.at(x, 0.3, z, 90, 1.0); if (!out) return; const t = t0 + off;
+      const o = this.osc('sine', 58, t, 0.8); o.frequency.exponentialRampToValueAtTime(26, t + 0.55);
+      const g = this.gain(); this.env(g, t, 0.004, 0.05, 0.6, amp); this.chain(o, g, out);
+      const g2 = this.gain(); this.env(g2, t, 0.002, 0.03, 0.25, amp * 0.7); this.chain(this.noise(t, 0.3), this.filt('lowpass', 320, 0.9), g2, out);
+      const g3 = this.gain(); this.env(g3, t, 0.002, 0.02, 0.35, amp * 0.35); this.chain(this.noise(t, 0.4), this.filt('bandpass', rr(160, 240), 7), g3, out);
+    });
+  },
+  ambScrape(x, z) {
+    const out = this.at(x, 0.2, z, 90, 0.9); if (!out) return; const t = this.t, dur = rr(1.4, 2.8);
+    const bp = this.filt('bandpass', rr(220, 380), 4.5);
+    const wob = this.osc('sine', rr(0.6, 1.4), t, dur), wg = this.gain(rr(40, 80)); wob.connect(wg); wg.connect(bp.frequency);
+    const slip = this.gain(0.55), sl = this.osc('square', rr(9, 16), t, dur), slg = this.gain(0.45); sl.connect(slg); slg.connect(slip.gain);
+    const env = this.gain(); env.gain.setValueAtTime(0.0001, t); env.gain.linearRampToValueAtTime(0.9, t + 0.15); env.gain.setValueAtTime(0.9, t + dur - 0.3); env.gain.linearRampToValueAtTime(0.0001, t + dur);
+    this.chain(this.noise(t, dur), bp, slip, env, out);
+    const gr = this.osc('sawtooth', rr(40, 52), t, dur), gg = this.gain(0.35); this.chain(gr, this.filt('lowpass', 180, 1), gg, env);
+  },
+  ambClank(x, z) {
+    const out = this.at(x, 1.5, z, 90, 0.8); if (!out) return; const t = this.t;
+    const g = this.gain(); this.env(g, t, 0.004, 0.05, 1.1, 0.8); this.chain(this.noise(t, 0.08), this.filt('bandpass', rr(300, 600), 9), g, out);
+    const o = this.osc('triangle', rr(180, 260), t, 1.2), g2 = this.gain(); this.env(g2, t, 0.004, 0.02, 1.1, 0.35); this.chain(o, g2, out);
+  },
+  // ---- refrigerators
+  fridgeDoor(x, z, open) {
+    const out = this.at(x, 1.0, z, 34, 0.9); if (!out) return; const t = this.t;
+    if (open) {
+      const g = this.gain(); this.env(g, t, 0.002, 0.04, 0.12, 0.7); this.chain(this.noise(t, 0.2), this.filt('lowpass', 700, 0.8), g, out);
+      const o = this.osc('sine', 160, t, 0.15); o.frequency.exponentialRampToValueAtTime(80, t + 0.1);
+      const g2 = this.gain(); this.env(g2, t, 0.003, 0.02, 0.1, 0.5); this.chain(o, g2, out);
+    } else {
+      const o = this.osc('sine', 120, t, 0.25); o.frequency.exponentialRampToValueAtTime(55, t + 0.18);
+      const g = this.gain(); this.env(g, t, 0.002, 0.03, 0.18, 0.9); this.chain(o, g, out);
+      const g2 = this.gain(); this.env(g2, t, 0.002, 0.015, 0.08, 0.6); this.chain(this.noise(t, 0.12), this.filt('lowpass', 1200, 0.8), g2, out);
+    }
+    for (let k = 0; k < 3; k++) {   // bottles clinking
+      const tk = t + 0.05 + k * rr(0.05, 0.1), f = rr(2200, 3400), g = this.gain(); this.env(g, tk, 0.001, 0.005, 0.12, 0.12);
+      this.chain(this.osc('sine', f, tk, 0.15), g, out); const g2 = this.gain(); this.env(g2, tk, 0.001, 0.003, 0.08, 0.05); this.chain(this.osc('sine', f * 1.52, tk, 0.1), g2, out);
+    }
+  },
+  fridgeOff(x, z) {
+    const out = this.at(x, 1.0, z, 30, 0.7); if (!out) return; const t = this.t;
+    const o = this.osc('sawtooth', 60, t, 1.5); o.frequency.exponentialRampToValueAtTime(22, t + 1.3);
+    const g = this.gain(); this.env(g, t, 0.01, 0.5, 0.8, 0.5); this.chain(o, this.filt('lowpass', 300, 1), g, out);
+    const g2 = this.gain(); this.env(g2, t + 1.25, 0.001, 0.01, 0.04, 0.5); this.chain(this.noise(t + 1.25, 0.06), this.filt('highpass', 2000), g2, out);
+  },
+  fridgeOn(x, z) {
+    const out = this.at(x, 1.0, z, 30, 0.6); if (!out) return; const t = this.t;
+    const g2 = this.gain(); this.env(g2, t, 0.001, 0.01, 0.04, 0.5); this.chain(this.noise(t, 0.06), this.filt('highpass', 2000), g2, out);
+    const o = this.osc('sawtooth', 22, t + 0.05, 0.9); o.frequency.exponentialRampToValueAtTime(60, t + 0.7);
+    const g = this.gain(); this.env(g, t + 0.05, 0.2, 0.3, 0.3, 0.35); this.chain(o, this.filt('lowpass', 300, 1), g, out);
+  },
+  // continuous compressor hum for one refrigerator; gain is set by setHum()
+  makeHum(x, z) {
+    const c = this.ctx; if (!c) return null;
+    const g = this.gain(0), p = c.createPanner();
+    p.panningModel = 'equalpower'; p.distanceModel = 'linear'; p.rolloffFactor = 0; p.refDistance = 1; p.maxDistance = 10000;
+    if (p.positionX) { p.positionX.value = x; p.positionY.value = 1; p.positionZ.value = z; } else p.setPosition(x, 1, z);
+    const lp = this.filt('lowpass', 520, 0.7); lp.connect(g); g.connect(p); p.connect(this.amb);
+    const srcs = [];
+    for (const [type, f, v] of [['sine', 60, 0.5], ['sine', 120, 0.32], ['triangle', 180, 0.1]]) {
+      const o = c.createOscillator(); o.type = type; o.frequency.value = f * rr(0.995, 1.005); const og = this.gain(v); o.connect(og); og.connect(lp); o.start(); srcs.push(o);
+    }
+    const n = c.createBufferSource(); n.buffer = this.noiseBuf; n.loop = true; const ng = this.gain(0.07);
+    this.chain(n, this.filt('bandpass', 330, 2.5), ng, lp); n.start(c.currentTime, Math.random()); srcs.push(n);
+    return { g, srcs, cur: 0 };
+  },
+  setHum(h, v) { if (!h || Math.abs(v - h.cur) < 0.001) return; h.cur = v; h.g.gain.setTargetAtTime(v, this.t, 0.12); },
+  killHum(h) { if (!h) return; for (const s2 of h.srcs) { try { s2.stop(); } catch (e) { /* already stopped */ } } try { h.g.disconnect(); } catch (e) { /* ignore */ } },
 };
 const tmpV = new V3();
 
 /* ================= GAME FLOW ================= */
 const els = {
   hud: $('hud'), frags: [...$('frags').children], pc: $('pc'), bpct: $('bpct'), bfill: $('bfill'), batt: $('hud-batt'),
-  stam: $('hud-stam'), sfill: $('sfill'), stamState: $('stam-state'), prompt: $('prompt'), toast: $('toast'),
+  stam: $('hud-stam'), sfill: $('sfill'), tval: $('tval'), prompt: $('prompt'), toast: $('toast'),
   note: $('note'), noteH: $('note-h'), noteT: $('note-t'), scent: $('scent'), stance: $('stance'),
   hide: $('hide'), danger: $('danger'), flashFx: $('flash'),
+  heatA: $('heat-a'), heatB: $('heat-b'), tunnel: $('tunnel'), tired: $('tired'), fade: $('fade'),
 };
 const hudCache = {};
 let toastTimer = 0, noteTimer = 0;
@@ -1470,9 +1696,11 @@ function showNote(idx, count) {
 function resetPlayer() {
   Object.assign(player, {
     x: center(1), z: center(1), yaw: 0, pitch: 0, vx: 0, vz: 0, eye: CFG.STAND_EYE, crouch: false, hidden: null,
-    stamina: CFG.STAMINA_MAX, exhausted: false, sinceRun: 99, sprinting: false, speedNow: 0,
+    stamina: CFG.STAMINA_MAX, exhausted: false, sinceUse: 99, sprinting: false, speedNow: 0, consuming: false, stamShowT: 0,
+    holding: false, holdLatch: false, gaspT: 0, breathB: 0.1, breathT: 1.2, breathOut: false, breathPh: 0,
+    temp: CFG.TEMP_START, tempRiseT: rr(2, 3), tempPauseT: 0, heatT: 0, cooling: false, heatMsg: 0,
     battery: CFG.BATTERY_MAX, flashOn: false, flick: 1, flickT: 0, pieces: 0,
-    ax: center(1), az: center(1), linger: 0, stepAcc: 0, bob: 0, target: null, breathT: 0, breathIn: true, hbT: 0, fov: 72,
+    ax: center(1), az: center(1), linger: 0, stepAcc: 0, bob: 0, target: null, hbT: 0, fov: 72,
   });
   // face down an open corridor
   const od = openDirs(1 * W.N + 1);
@@ -1490,6 +1718,7 @@ function resetGoose() {
 }
 
 function newGame() {
+  if (W && W.fridges) W.fridges.forEach(f => AU.killHum(f.hum));
   if (W && W.group) { scene.remove(W.group); disposeGroup(W.group); }
   buildWorld();
   scene.add(W.group);
@@ -1500,6 +1729,8 @@ function newGame() {
   els.hide.hidden = true; els.note.classList.add('gone'); els.toast.style.opacity = 0;
   for (const k in hudCache) delete hudCache[k];
   els.frags.forEach(f => f.classList.remove('on'));
+  FL.init = false; clearSmoke(); resetAmbient(); resetScreenFx();
+  els.stam.classList.remove('show', 'flash', 'crit', 'out');
 }
 
 let locked = false, lockEverWorked = false, fallbackLook = false, lockTimer = null;
@@ -1548,6 +1779,7 @@ function pauseGame(hint) {
   if (state !== 'playing') return;
   state = 'paused';
   $('scr-pause').hidden = false; $('pause-hint').textContent = hint || '';
+  if (player.holding) player.holding = false;
   $('touch').hidden = true; releaseTouches();
   AU.setAmbient(false); AU.setChase(0);
   for (const k in keys) keys[k] = false;
@@ -1570,12 +1802,13 @@ function caught() {
   els.flashFx.style.transition = 'none'; els.flashFx.style.background = '#fff'; els.flashFx.style.opacity = 0.85;
   requestAnimationFrame(() => { els.flashFx.style.transition = 'opacity .35s'; els.flashFx.style.opacity = 0; });
 }
-function showDead() {
+function showDead(reason) {
   state = 'dead';
+  $('dead-title').textContent = reason === 'heat' ? 'The heat took you.' : 'He found you.';
   JS.group.visible = false; jsLight.intensity = 0; jsLight2.intensity = 0;
   if (document.pointerLockElement) document.exitPointerLock();
   const m = Math.floor(gameTime / 60), s = Math.floor(gameTime % 60);
-  $('dead-stats').textContent = `Letter pieces found: ${player.pieces} of ${CFG.PIECES}. Survived ${m}:${String(s).padStart(2, '0')}.`;
+  $('dead-stats').textContent = `Letter pieces found: ${player.pieces} of ${CFG.PIECES}. Survived ${m}:${String(s).padStart(2, '0')}. Body temperature ${tempQ().toFixed(1)}°F.`;
   $('scr-dead').hidden = false;
   els.danger.style.opacity = 0;
 }
@@ -1615,7 +1848,7 @@ function win() {
 }
 
 /* ================= INPUT ================= */
-const GAME_CODES = new Set(['KeyW', 'KeyA', 'KeyS', 'KeyD', 'KeyF', 'KeyE', 'KeyC', 'Space', 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'ShiftLeft', 'ShiftRight', 'ControlLeft', 'ControlRight']);
+const GAME_CODES = new Set(['KeyR', 'KeyW', 'KeyA', 'KeyS', 'KeyD', 'KeyF', 'KeyE', 'KeyC', 'Space', 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'ShiftLeft', 'ShiftRight', 'ControlLeft', 'ControlRight']);
 addEventListener('keydown', e => {
   if (state === 'playing') {
     if (GAME_CODES.has(e.code) || e.ctrlKey) e.preventDefault();
@@ -1652,14 +1885,14 @@ $('btn-again').addEventListener('click', beginNewRun);
 document.addEventListener('visibilitychange', () => { if (document.hidden) pauseGame(); });
 
 /* ---------- touch controls ---------- */
-const touch = { joyId: null, lookId: null, jx: 0, jy: 0, bx: 0, by: 0, lx: 0, ly: 0, run: false };
+const touch = { joyId: null, lookId: null, jx: 0, jy: 0, bx: 0, by: 0, lx: 0, ly: 0, run: false, breath: false };
 const TOUCH_SENS = 0.005, JOY_R = 56;
 const touchEl = $('touch'), joyBase = $('joy-base'), joyKnob = $('joy-knob');
-const TB = { light: $('tb-light'), crouch: $('tb-crouch'), run: $('tb-run'), use: $('tb-use') };
+const TB = { light: $('tb-light'), crouch: $('tb-crouch'), run: $('tb-run'), use: $('tb-use'), breath: $('tb-breath') };
 function joyHome() { return [Math.max(96, Math.min(150, innerWidth * 0.12)), innerHeight - Math.max(112, Math.min(170, innerHeight * 0.3))]; }
 function placeJoy(x, y, on) { joyBase.style.left = x + 'px'; joyBase.style.top = y + 'px'; joyBase.classList.toggle('on', on); }
 function resetJoy() { touch.joyId = null; touch.jx = touch.jy = 0; joyKnob.style.transform = ''; const [x, y] = joyHome(); placeJoy(x, y, false); }
-function releaseTouches() { resetJoy(); touch.lookId = null; }
+function releaseTouches() { resetJoy(); touch.lookId = null; touch.breath = false; }
 touchEl.addEventListener('pointerdown', e => {
   if (e.target.closest('.tb')) return;
   e.preventDefault();
@@ -1690,6 +1923,9 @@ onTap(TB.crouch, toggleCrouch);
 onTap(TB.use, () => interact());
 onTap(TB.run, () => { touch.run = !touch.run; if (touch.run) player.crouch = false; });
 onTap($('tb-pause'), () => pauseGame());
+// Breath is a hold button: held = holding your breath
+TB.breath.addEventListener('pointerdown', e => { e.preventDefault(); e.stopPropagation(); touch.breath = true; try { TB.breath.setPointerCapture(e.pointerId); } catch (err) { /* ignore */ } });
+['pointerup', 'pointercancel', 'lostpointercapture'].forEach(ev => TB.breath.addEventListener(ev, () => { touch.breath = false; }));
 ['contextmenu', 'gesturestart', 'dblclick'].forEach(ev => touchEl.addEventListener(ev, e => e.preventDefault()));
 function tryFullscreen() {
   const el = document.documentElement;
@@ -1761,13 +1997,14 @@ function interact() {
     }
     p.taken = true; p.mesh.visible = false; p.glow.visible = false;
   } else if (tgt.kind === 'spot') enterSpot(tgt.s);
+  else if (tgt.kind === 'fridge') toggleFridge(tgt.f);
 }
 function enterSpot(s) {
   const P = player;
   P.hidden = s; P.x = s.x; P.z = s.z; P.yaw = s.viewYaw; P.pitch = 0; P.eye = s.eye; P.crouch = false; P.vx = P.vz = 0;
   els.hide.className = 'fx ' + s.type; els.hide.hidden = false;
   if (s.type === 'locker') { s.openT = 0.45; AU.creak(); } else AU.paper();
-  gooseHear(s.x, s.z, 3.5, false);
+  gooseHear(s.x, s.z, 3.5, { kind: 'hide', pri: 1.5, player: true });
   if (s.battery) {
     s.battery = false;
     if (P.battery < CFG.BATTERY_MAX - 0.05) { P.battery = Math.min(CFG.BATTERY_MAX, P.battery + CFG.BATTERY_PICKUP); AU.battery(); toast(`Found a battery ${s.type === 'bed' ? 'under the bed' : 'in the locker'}. +10 seconds.`); }
@@ -1780,7 +2017,7 @@ function exitSpot() {
   P.eye = s.type === 'bed' ? CFG.CROUCH_EYE : CFG.STAND_EYE; P.crouch = s.type === 'bed';
   els.hide.hidden = true;
   if (s.type === 'locker') { s.openT = 0.45; AU.creak(); } else AU.paper();
-  gooseHear(s.x, s.z, 3.5, false);
+  gooseHear(s.x, s.z, 3.5, { kind: 'hide', pri: 1.5, player: true });
 }
 
 /* ================= PLAYER ================= */
@@ -1796,6 +2033,12 @@ function findInteract() {
     if (d < bestD) { bestD = d; best = { kind: 'pickup', p, label: p.type === 'piece' ? 'Pick up the torn letter piece' : 'Take the battery' }; }
   }
   if (best) return best;
+  for (const f of W.fridges) {
+    const d = Math.hypot(f.fx - P.x, f.fz - P.z); if (d > 1.5) continue;
+    const tx = f.x - P.x, tz = f.z - P.z, td = Math.hypot(tx, tz), dot = (tx * fx + tz * fz) / (td || 1);
+    if (dot < 0.3) continue;
+    if (d < bestD) { bestD = d; best = { kind: 'fridge', f, label: (f.open ? 'Close the refrigerator' : 'Open the refrigerator') + (f.powered ? '' : ' (no power)') }; }
+  }
   for (const s of W.spots) {
     const d = Math.hypot(s.ex - P.x, s.ez - P.z); if (d > 1.45) continue;
     const tx = s.x - P.x, tz = s.z - P.z, td = Math.hypot(tx, tz), dot = (tx * fx + tz * fz) / (td || 1);
@@ -1807,10 +2050,12 @@ function findInteract() {
 function footstep() {
   const P = player, kind = P.sprinting ? 'run' : (P.crouch ? 'crouch' : 'walk');
   AU.playerStep(kind);
-  gooseHear(P.x, P.z, kind === 'run' ? CFG.NOISE_SPRINT : kind === 'crouch' ? CFG.NOISE_CROUCH : CFG.NOISE_WALK, kind === 'run');
+  if (kind === 'crouch' && P.holding) return;   // crouched and holding your breath: nothing for the goose to hear
+  if (kind === 'run') gooseHear(P.x, P.z, CFG.NOISE_SPRINT, { kind: 'run', pri: 3, player: true, exact: true });
+  else gooseHear(P.x, P.z, kind === 'crouch' ? CFG.NOISE_CROUCH : CFG.NOISE_WALK, { kind: 'step', pri: 1, player: true });
 }
 function updatePlayer(dt) {
-  const P = player;
+  const P = player, HE = heatEffects();
   const turn = (keys.ArrowLeft ? 1 : 0) - (keys.ArrowRight ? 1 : 0), tilt = (keys.ArrowUp ? 1 : 0) - (keys.ArrowDown ? 1 : 0);
   P.yaw += turn * 2.3 * dt; P.pitch = clamp(P.pitch + tilt * 1.6 * dt, -1.45, 1.45);
   P.sprinting = false;
@@ -1827,9 +2072,10 @@ function updatePlayer(dt) {
     }
     if (mag > 0) { ix /= mag; iz /= mag; }
     const moving = mag > 0, shift = keys.ShiftLeft || keys.ShiftRight || touch.run;
-    if (shift && moving && P.crouch && !P.exhausted) P.crouch = false;
-    P.sprinting = shift && moving && !P.exhausted && P.stamina > 0 && !P.crouch;
-    const speed = (P.sprinting ? CFG.SPRINT : (P.crouch ? CFG.CROUCH : CFG.WALK)) * analog;
+    const canRun = !P.exhausted && P.stamina > 0 && !HE.noRun;
+    if (shift && moving && P.crouch && canRun) P.crouch = false;
+    P.sprinting = shift && moving && canRun && !P.crouch;
+    const speed = (P.sprinting ? CFG.SPRINT : (P.crouch ? CFG.CROUCH : CFG.WALK)) * analog * HE.speed;
     const fx = -Math.sin(P.yaw), fz = -Math.cos(P.yaw), rx = Math.cos(P.yaw), rz = -Math.sin(P.yaw);
     const tvx = (fx * iz + rx * ix) * speed, tvz = (fz * iz + rz * ix) * speed;
     const a = 1 - Math.exp(-dt * 12);
@@ -1846,15 +2092,11 @@ function updatePlayer(dt) {
       P.bob += moved * (P.sprinting ? 3.2 : P.crouch ? 4.6 : 4.2);
     }
   }
-  // stamina: 10 s of sprint. Refills after 5 s without running. Once empty it must refill completely.
-  if (P.sprinting && P.speedNow > 0.5) {
-    P.stamina -= dt; P.sinceRun = 0;
-    if (P.stamina <= 0) { P.stamina = 0; P.exhausted = true; P.sprinting = false; touch.run = false; toast('Out of breath.', true, 2.2); }
-  } else {
-    P.sinceRun += dt;
-    if (P.sinceRun >= CFG.STAMINA_DELAY && P.stamina < CFG.STAMINA_MAX) P.stamina = Math.min(CFG.STAMINA_MAX, P.stamina + CFG.STAMINA_REGEN * dt);
-    if (P.exhausted && P.stamina >= CFG.STAMINA_MAX) P.exhausted = false;
-  }
+  updateBreathHold();
+  updateStamina(dt, HE);
+  updateBreathing(dt);
+  updateFridges(dt);
+  updateTemperature(dt);
   // flashlight battery
   if (P.flashOn) {
     P.battery -= dt;
@@ -1865,7 +2107,7 @@ function updatePlayer(dt) {
   if (P.flickT <= 0) { P.flickT = rr(0.04, 0.16); P.flick = frac < 0.15 && Math.random() < 0.35 ? rr(0.15, 0.6) : 1; }
   flash.intensity = P.flashOn ? 2.7 * (0.1 + 0.9 * frac) * P.flick : 0;
   flash.distance = 12 + 22 * frac; flash.angle = 0.33 + 0.1 * frac;
-  renderer.shadowMap.autoUpdate = P.flashOn;
+  renderer.shadowMap.autoUpdate = P.flashOn && flash.castShadow;
   // linger / scent
   if (Math.hypot(P.x - P.ax, P.z - P.az) > CFG.LINGER_RADIUS) { P.ax = P.x; P.az = P.z; P.linger = 0; } else P.linger += dt;
   // eye height + camera
@@ -1873,17 +2115,16 @@ function updatePlayer(dt) {
   P.eye += (targetEye - P.eye) * (1 - Math.exp(-dt * 10));
   const bobAmt = P.hidden ? 0 : (P.sprinting ? 0.075 : P.crouch ? 0.025 : 0.045) * Math.min(1, P.speedNow / 2);
   const bobY = Math.sin(P.bob) * bobAmt, bobX = Math.cos(P.bob * 0.5) * bobAmt * 0.6;
-  const breathe = Math.sin(gameTime * (P.exhausted ? 5 : 1.6)) * (P.exhausted ? 0.012 : 0.004);
+  const breathe = Math.sin(P.breathPh) * lerp(0.003, 0.014, P.breathB) * (P.holding ? 0.15 : 1);
   const rx = Math.cos(P.yaw), rz = -Math.sin(P.yaw);
   shakeAmt = Math.max(0, shakeAmt - dt * 0.08);
-  const sh = shakeAmt;
+  const sh = shakeAmt, dis = FX.distort;
   camera.position.set(P.x + rx * bobX, P.eye + bobY + breathe + rr(-sh, sh), P.z + rz * bobX);
-  camera.rotation.set(P.pitch + rr(-sh, sh) * 0.5, P.yaw + rr(-sh, sh) * 0.5, -bobX * 0.15);
-  const wantFov = P.sprinting && P.speedNow > 2 ? 79 : 72;
+  camera.rotation.set(P.pitch + rr(-sh, sh) * 0.5 + dis * 0.02 * Math.sin(gameTime * 0.9), P.yaw + rr(-sh, sh) * 0.5, -bobX * 0.15 + dis * 0.06 * Math.sin(gameTime * 0.73));
+  const wantFov = (P.sprinting && P.speedNow > 2 ? 79 : 72) + dis * 3.5 * Math.sin(gameTime * 1.13);
   P.fov += (wantFov - P.fov) * (1 - Math.exp(-dt * 6));
   if (Math.abs(camera.fov - P.fov) > 0.01) { camera.fov = P.fov; camera.updateProjectionMatrix(); }
-  // breathing when exhausted
-  if (P.exhausted) { P.breathT -= dt; if (P.breathT <= 0) { AU.breath(P.breathIn); P.breathIn = !P.breathIn; P.breathT = P.breathIn ? 0.5 : 0.42; } }
+  updateFlashRig(dt);
   // locker doors
   for (const s of W.spots) if (s.door) {
     if (s.openT > 0) s.openT -= dt;
@@ -1892,6 +2133,208 @@ function updatePlayer(dt) {
     s.door.visible = P.hidden !== s;
   }
   P.target = findInteract();
+}
+
+/* ---------- flashlight rig: lags behind the camera like something with weight, and sways ---------- */
+const FL = { init: false, yaw: 0, pitch: 0, vy: 0, vp: 0, cy: 0, cp: 0, spd: 0, n: [0, 0, 0, 0, 0], m: [0, 0, 0, 0, 0],
+  dir: new V3(0, 0, -1), q: new THREE.Quaternion(), e: new THREE.Euler(0, 0, 0, 'YXZ'), off: new V3() };
+const HAND = new V3(0.22, -0.17, 0.02);
+function updateFlashRig(dt) {
+  const P = player, cy = camera.rotation.y, cp = camera.rotation.x;
+  if (!FL.init) { FL.yaw = FL.cy = cy; FL.pitch = FL.cp = cp; FL.vy = FL.vp = 0; FL.init = true; }
+  // how fast the camera is turning (smoothed). Slow turns get a softer spring: heavier, slower to settle.
+  const inst = Math.hypot(angDiff(FL.cy, cy), cp - FL.cp) / Math.max(dt, 1e-4); FL.cy = cy; FL.cp = cp;
+  FL.spd += (Math.min(inst, 12) - FL.spd) * (1 - Math.exp(-dt * 6));
+  const w = lerp(9.5, 15, clamp(FL.spd / 2.5, 0, 1));   // critically damped: settles in about 0.5 s (slow) to 0.33 s (fast)
+  const n = Math.max(1, Math.ceil(dt / 0.012)), h = dt / n;
+  for (let k = 0; k < n; k++) {
+    const ey = angDiff(FL.yaw, cy), ep = cp - FL.pitch;
+    FL.vy += (w * w * ey - 2 * w * FL.vy) * h; FL.vp += (w * w * ep - 2 * w * FL.vp) * h;
+    FL.yaw += FL.vy * h; FL.pitch += FL.vp * h;
+  }
+  // smoothed random drift (Ornstein-Uhlenbeck, then low-passed) so the sway never repeats
+  const sq = Math.sqrt(dt), lp = 1 - Math.exp(-dt * 2.5);
+  for (let k = 0; k < 5; k++) { FL.n[k] += -FL.n[k] * 0.9 * dt + (Math.random() * 2 - 1) * 1.4 * sq; FL.m[k] += (FL.n[k] - FL.m[k]) * lp; }
+  const t = gameTime, move = clamp(P.speedNow / CFG.WALK, 0, 1.8), br = Math.sin(P.breathPh);
+  const steady = P.holding ? 0.35 : 1 + P.breathB * 1.3;   // holding your breath steadies the light, panting shakes it
+  const idle = 0.0055 * steady, step = Math.sin(P.bob * 0.5);
+  const swayY = idle * (Math.sin(t * 0.71) * 0.55 + Math.sin(t * 1.63 + 1.1) * 0.25 + FL.m[0]) + 0.011 * move * step;
+  const swayP = idle * (Math.sin(t * 0.93 + 0.4) * 0.45 + Math.sin(t * 2.07) * 0.18 + FL.m[1] + br * 0.8) - 0.008 * move * Math.abs(step);
+  const roll = idle * 2.5 * FL.m[2] + 0.02 * move * step;
+  FL.e.set(FL.pitch + swayP, FL.yaw + swayY, roll, 'YXZ'); FL.q.setFromEuler(FL.e);
+  FL.off.set(HAND.x + (0.01 * FL.m[3] + 0.006 * Math.sin(t * 0.8)) * steady + 0.01 * move * step,
+    HAND.y + (0.01 * FL.m[4] + 0.007 * br) * steady - 0.012 * move * Math.abs(Math.cos(P.bob * 0.5)), HAND.z).applyQuaternion(FL.q);
+  flash.position.copy(camera.position).add(FL.off);
+  FL.dir.set(0, 0, -1).applyQuaternion(FL.q);
+  flash.target.position.copy(flash.position).addScaledVector(FL.dir, 6);
+}
+
+/* ---------- stamina: the one place stamina is spent and recovered ---------- */
+function heatEffects() {
+  const t = tempQ();
+  for (const [from, drain, speed, delay] of HEAT_STEPS) if (t >= from - 1e-6) return { drain, speed, delay, noRun: t >= CFG.TEMP_MAX - 1e-6 };
+  return { drain: 1, speed: 1, delay: 0, noRun: false };
+}
+const tempQ = () => Math.round(player.temp * 10) / 10;
+function updateStamina(dt, HE) {
+  const P = player, MAX = CFG.STAMINA_MAX;
+  const running = P.sprinting && P.speedNow > 0.5;
+  let drain = 0;
+  if (running) drain += CFG.RUN_DRAIN * (P.holding ? 2 : 1);   // running costs double while holding your breath
+  if (P.holding) drain += CFG.HOLD_DRAIN;                      // plus the cost of holding it
+  drain *= HE.drain;                                           // a fever makes everything cost more
+  P.consuming = drain > 0;
+  if (P.consuming) {
+    P.stamina = Math.max(0, P.stamina - drain * dt); P.sinceUse = 0; P.stamShowT = 3;
+    if (P.stamina <= 0) {
+      if (!P.exhausted) { P.exhausted = true; P.sprinting = false; touch.run = false; if (!P.holding) toast('Out of breath.', true, 2.2); }
+      if (P.holding) stopHold(true);
+    }
+  } else {
+    P.sinceUse += dt;
+    if (P.sinceUse >= CFG.STAMINA_DELAY + HE.delay && P.stamina < MAX) P.stamina = Math.min(MAX, P.stamina + CFG.STAMINA_REGEN * dt);
+    if (P.exhausted && P.stamina >= MAX) P.exhausted = false;
+    if (P.stamShowT > 0) P.stamShowT -= dt;
+  }
+}
+
+/* ---------- breath holding (R / Breath button) ---------- */
+function updateBreathHold() {
+  const P = player, want = !!(keys.KeyR || touch.breath);
+  if (want && !P.holding && !P.holdLatch) {
+    P.holdLatch = true;   // one attempt per press
+    if (P.gaspT <= 0 && P.stamina / CFG.STAMINA_MAX >= CFG.HOLD_MIN - 1e-9) P.holding = true;
+    else { P.stamShowT = 3; stamFlash(); }
+  }
+  if (!want) { P.holdLatch = false; if (P.holding) stopHold(false); }
+}
+function stopHold(gasp) {
+  const P = player; if (!P.holding) return;
+  P.holding = false;
+  if (gasp) {
+    P.gaspT = 2.5; P.breathB = 1; P.breathOut = true; P.breathT = 0.9;
+    AU.gasp(); toast('You gasp for air.', true, 2.2);
+    gooseHear(P.x, P.z, CFG.GASP_R * (P.hidden ? 0.75 : 1), { kind: 'gasp', pri: 4, player: true, exact: true, reveal: true });
+  } else {
+    const b = Math.max(P.breathB, 0.3);
+    AU.breathe(true, b, 1.2); P.breathOut = true; P.breathT = lerp(1.6, 0.5, b) * 0.6;
+    breathEvent(b);
+  }
+}
+function stamFlash() {
+  const el = els.stam; el.classList.remove('flash'); void el.offsetWidth; el.classList.add('flash');
+  clearTimeout(stamFlash.t); stamFlash.t = setTimeout(() => el.classList.remove('flash'), 520);
+}
+
+/* ---------- breathing: audible to the player and to the goose ---------- */
+function updateBreathing(dt) {
+  const P = player, f = P.stamina / CFG.STAMINA_MAX;
+  if (P.gaspT > 0) P.gaspT -= dt;
+  let bt = P.crouch || P.hidden ? 0.07 : 0.1;
+  if (P.speedNow > 0.5) bt = Math.max(bt, P.crouch ? 0.09 : 0.17);
+  if (P.sprinting && P.speedNow > 0.5) bt = Math.max(bt, 0.4 + 0.45 * (1 - f));
+  if (f <= CFG.LOW_STAMINA) bt = Math.max(bt, 0.82 + 0.18 * (1 - f / CFG.LOW_STAMINA));
+  if (P.gaspT > 0) bt = 1;
+  P.breathB += (bt - P.breathB) * (1 - Math.exp(-dt * (bt > P.breathB ? 1.8 : 0.3)));
+  const cycle = lerp(3.8, 0.8, P.breathB);
+  P.breathPh += dt * 2 * Math.PI / cycle;
+  if (P.holding) return;   // holding your breath: silent
+  P.breathT -= dt;
+  if (P.breathT <= 0) {
+    P.breathOut = !P.breathOut;
+    AU.breathe(P.breathOut, P.breathB);
+    P.breathT = cycle * (P.breathOut ? 0.58 : 0.42) * rr(0.9, 1.12);
+    if (P.breathOut) breathEvent(P.breathB);
+  }
+}
+function breathEvent(b) {
+  const P = player, r = lerp(CFG.BREATH_R_MIN, CFG.BREATH_R_MAX, b) * (P.hidden ? 0.55 : 1);
+  gooseHear(P.x, P.z, r, { kind: 'breath', pri: 1 + 2 * b, player: true, reveal: true });
+}
+
+/* ---------- body temperature ---------- */
+function updateTemperature(dt) {
+  const P = player;
+  if (P.tempPauseT > 0) P.tempPauseT -= dt;
+  else if (!P.cooling) {
+    P.tempRiseT -= dt;
+    if (P.tempRiseT <= 0) { P.tempRiseT = rr(2, 3); P.temp = Math.min(CFG.TEMP_MAX, Math.round((P.temp + 0.1) * 10) / 10); }
+  }
+  const tq = tempQ();
+  const lvl = tq >= 104 ? 4 : tq >= 102.6 ? 3 : tq >= 101.3 ? 2 : tq >= 100.5 ? 1 : 0;
+  if (lvl > P.heatMsg) {
+    const m = ['', "You're running a fever. Find a refrigerator.", 'The heat is wearing you down.', 'Your vision is closing in.', "You're about to pass out. Cool down now."][lvl];
+    toast(m, lvl >= 3, 4);
+  }
+  P.heatMsg = lvl;
+  if (tq >= CFG.TEMP_MAX - 1e-6) {   // invisible 20 s countdown; cancelled the moment you cool below 104
+    P.heatT += dt;
+    if (P.heatT >= CFG.HEATSTROKE_TIME) heatstroke();
+  } else P.heatT = 0;
+}
+let collapseT = 0;
+function heatstroke() {
+  if (state !== 'playing') return;
+  state = 'collapse'; collapseT = 0;
+  if (player.hidden) { player.hidden = null; els.hide.hidden = true; }
+  els.hud.hidden = true; $('touch').hidden = true;
+  AU.setChase(0); AU.setAmbient(false); AU.collapse();
+}
+function updateCollapse(dt) {
+  collapseT += dt; const k = Math.min(1, collapseT / 2.2), e = k * k;
+  camera.rotation.z = lerp(camera.rotation.z, 0.95, e * 0.2); camera.rotation.x = lerp(camera.rotation.x, -0.35, e * 0.15);
+  camera.position.y = lerp(camera.position.y, 0.35, e * 0.12);
+  els.fade.style.opacity = k.toFixed(3);
+  if (collapseT > 2.7) showDead('heat');
+}
+
+/* ---------- refrigerators ---------- */
+function setFridgePower(f, on) {
+  f.powered = on;
+  f.ledMat.emissiveIntensity = on ? 1.4 : 0; f.innerMat.emissiveIntensity = on ? 0.9 : 0;
+  if (on) { f.used = 0; AU.fridgeOn(f.x, f.z); }
+  else {
+    f.offUntil = gameTime + CFG.FRIDGE_OFF; AU.fridgeOff(f.x, f.z);
+    if (Math.hypot(player.x - f.fx, player.z - f.fz) < 4) toast('The refrigerator shut off. It needs time to come back on.', false, 3.5);
+  }
+}
+function toggleFridge(f) {
+  f.open = !f.open;
+  AU.fridgeDoor(f.x, f.z, f.open);
+  gooseHear(f.x, f.z, CFG.FRIDGE_NOISE, { kind: 'fridge', pri: 2, player: false, exact: true });
+  if (f.open && f.powered) for (let k = 0; k < 10; k++) emitSmoke(f, true);
+}
+let humT = 0;
+function updateFridges(dt) {
+  const P = player;
+  let best = null, bd = 1e9;
+  for (const f of W.fridges) {
+    if (!f.powered && gameTime >= f.offUntil) setFridgePower(f, true);   // cooldown runs whether or not you are nearby
+    f.anim += ((f.open ? 1 : 0) - f.anim) * (1 - Math.exp(-dt * 7));
+    f.door.rotation.y = -1.75 * f.anim * f.anim * (3 - 2 * f.anim);
+    const cold = f.open && f.powered;
+    f.glow.material.opacity = cold ? 0.22 * f.anim : 0;
+    if (cold) { f.smokeAcc += dt * 6; while (f.smokeAcc >= 1) { f.smokeAcc -= 1; emitSmoke(f, false); } }
+    if (cold && !P.hidden) { const d = Math.hypot(P.x - f.fx, P.z - f.fz); if (d < CFG.FRIDGE_RANGE && d < bd) { bd = d; best = f; } }
+  }
+  P.cooling = false;
+  if (best && P.temp > CFG.TEMP_FLOOR + 1e-6) {
+    P.cooling = true;
+    P.temp = Math.max(CFG.TEMP_FLOOR, P.temp - CFG.COOL_RATE * dt);
+    best.used += dt;   // cumulative cooling time: survives closing, reopening and walking away
+    if (P.temp <= CFG.TEMP_FLOOR + 1e-6) { P.temp = CFG.TEMP_FLOOR; P.tempPauseT = CFG.COOL_PAUSE; P.tempRiseT = rr(2, 3); toast('You feel cool again.', false, 2.5); }
+    if (best.used >= CFG.FRIDGE_POWER) setFridgePower(best, false);
+  }
+  updateSmoke(dt);
+  humT -= dt;
+  if (humT <= 0) {
+    humT = 0.15;
+    const cp = camera.position;
+    for (const f of W.fridges) {
+      const d = Math.hypot(cp.x - f.x, cp.z - f.z), att = Math.max(0, 1 - d / 13);
+      AU.setHum(f.hum, f.powered && att > 0 ? 0.09 * att * att * (wallsBetween(f.x, f.z, cp.x, cp.z) ? 0.45 : 1) : 0);
+    }
+  }
 }
 
 /* ================= GOOSE AI ================= */
@@ -1928,7 +2371,7 @@ function gooseSees(G) {
   return los3(ex, ey, ez, P.x, P.eye - 0.15, P.z) || los3(G.x, CFG.GOOSE_EYE, G.z, P.x, P.eye - 0.15, P.z);
 }
 function beamSpot() {
-  const dir = camera.getWorldDirection(tmpV), o = camera.position, maxD = flash.distance;
+  const dir = FL.dir, o = flash.position, maxD = flash.distance;
   for (let d = 0.3; d < maxD; d += 0.25) {
     const x = o.x + dir.x * d, y = o.y + dir.y * d, z = o.z + dir.z * d;
     if (y <= 0.02 || y >= H - 0.02 || isWallAt(x, z)) { const b = Math.max(0.3, d - 0.35); return [o.x + dir.x * b, Math.max(0.15, o.y + dir.y * b), o.z + dir.z * b]; }
@@ -1941,16 +2384,37 @@ function gooseNoticesLight(G) {
   if (d > 9) { const dot = (dx * Math.sin(G.yaw) + dz * Math.cos(G.yaw)) / d; if (dot < -0.25) return false; }
   return los3(G.x, CFG.GOOSE_EYE, G.z, sx, sy, sz);
 }
-function gooseHear(x, z, r, loud) {
-  const G = W && W.goose; if (!G || state !== 'playing') return;
+// One entry point for everything the goose can hear.
+// o.kind: run, step, breath, gasp, fridge, hide. o.pri: importance. o.player: the sound is the player's own body.
+// o.exact: no position error. o.reveal: close and clear enough, it tells the goose exactly where the player is.
+function gooseHear(x, z, r, o = {}) {
+  const G = W && W.goose; if (!G || state !== 'playing') return false;
   const d = Math.hypot(x - G.x, z - G.z);
   if (wallsBetween(G.x, G.z, x, z)) r *= 0.65;
-  if (d > r) return;
-  if (G.state === 'chase' || G.state === 'alert') return;
-  if (G.state === 'hunt') { G.knowT = Math.max(G.knowT, 1.2); return; }
-  const j = loud ? 0 : 1.2;
-  gooseInvestigate(G, x + rr(-j, j), z + rr(-j, j), loud ? CFG.ALERTED : CFG.INVESTIGATE);
-  if (loud && G.msgCD <= 0) { G.msgCD = 8; voice(G, { pitch: 1.08, loud: 1.2 }); G.beakT = 0.4; toast('It heard you running.', true); }
+  if (d > r) return false;
+  if (G.state === 'chase' || G.state === 'alert') return true;
+  const pri = o.pri || 1;
+  if (o.reveal && o.player && d < r * 0.45) {
+    G.lastSeen = { x: player.x, z: player.z }; G.knowT = Math.max(G.knowT, 2.2);
+    if (G.state !== 'hunt') { gooseSet(G, 'hunt'); voice(G, { pitch: 1.05, loud: 1.1 }); G.beakT = 0.4; hearMsg(G, o.kind, true); }
+    return true;
+  }
+  if (G.state === 'hunt') { if (o.player) G.knowT = Math.max(G.knowT, 1.2); return true; }
+  if (G.state === 'investigate' && pri < (G.invPri || 0) && G.stateT < 3) return true;   // busy with a more important sound
+  const j = o.exact ? 0 : lerp(0.4, 1.8, clamp(d / r, 0, 1));
+  gooseInvestigate(G, x + rr(-j, j), z + rr(-j, j), pri >= 3 ? CFG.ALERTED : CFG.INVESTIGATE);
+  G.invPri = pri;
+  hearMsg(G, o.kind, false);
+  return true;
+}
+function hearMsg(G, kind, located) {
+  if (G.msgCD > 0) return;
+  const m = located ? { breath: 'It heard you breathing. It knows where you are.', gasp: 'It heard you gasp. It knows where you are.' }[kind]
+    : { run: 'It heard you running.', breath: 'It heard you breathing.', gasp: 'It heard you gasp.', fridge: 'It heard the refrigerator.' }[kind];
+  if (!m) return;
+  G.msgCD = 8;
+  if (!located && (kind === 'run' || kind === 'gasp')) { voice(G, { pitch: 1.08, loud: 1.2 }); G.beakT = 0.4; }
+  toast(m, true);
 }
 function moveGoose(G, tx, tz, speed, dt) {
   const N = W.N, gtx = tileOf(G.x), gtz = tileOf(G.z), ttx = tileOf(tx), ttz = tileOf(tz);
@@ -2161,7 +2625,68 @@ function animateGoose(G, dt, moving) {
 }
 
 /* ================= FX + HUD ================= */
-let ambT = 4;
+/* ---------- ambient sound: air conditioning plus rare random events ---------- */
+const AMB = { t: 0, p: 0.5, plays: 0, misses: 0 };
+const AC = { on: true, t: 0, varT: 0 };
+function resetAmbient() { AMB.t = rr(20, 35); AMB.p = 0.5; AMB.plays = AMB.misses = 0; AC.on = true; AC.t = rr(70, 160); AC.varT = 0; }
+function ambientSpot() {
+  const P = player, N = W.N, c = W.floors.filter(i => { const d = Math.hypot(center(i % N) - P.x, center((i / N) | 0) - P.z); return d > 16 && d < 42; });
+  const i = c.length ? pick(c) : pick(W.floors);
+  return [center(i % N) + rr(-1, 1), center((i / N) | 0) + rr(-1, 1)];
+}
+function updateAmbient(dt) {
+  // air conditioning: on most of the time, gently drifting in level, with short quiet spells
+  AC.t -= dt; AC.varT -= dt;
+  if (AC.t <= 0) { AC.on = !AC.on; AC.t = AC.on ? rr(70, 160) : rr(10, 25); AU.acClunk(AC.on); AU.setAC(AC.on ? 0.9 : 0, AC.on ? 2.5 : 1.5); AC.varT = 4; }
+  if (AC.on && AC.varT <= 0) { AC.varT = rr(3, 7); AU.setAC(rr(0.7, 1.05), 2.5); }
+  // random events: every 20-35 s roll the current chance. A hit halves the next chance; a miss resets it to 50%.
+  AMB.t -= dt;
+  if (AMB.t <= 0) {
+    AMB.t = rr(20, 35);
+    if (Math.random() < AMB.p) {
+      const [x, z] = ambientSpot();
+      pick([() => AU.ambSteps(x, z), () => AU.ambHeavy(x, z), () => AU.ambScrape(x, z), () => AU.ambClank(x, z)])();
+      AMB.p /= 2; AMB.plays++;
+    } else { AMB.p = 0.5; AMB.misses++; }
+  }
+}
+
+/* ---------- screen effects: heat vignette, tunnel vision, fading, exhaustion. All smoothed, opacity only. ---------- */
+const FX = { red: 0, dark: 0, tunnel: 0, fade: 0, tired: 0, distort: 0, filt: '', shown: {} };
+function piece(x, pts) {
+  if (x <= pts[0][0]) return pts[0][1];
+  for (let i = 1; i < pts.length; i++) if (x <= pts[i][0]) { const [x0, y0] = pts[i - 1], [x1, y1] = pts[i]; return y0 + (y1 - y0) * (x - x0) / (x1 - x0); }
+  return pts[pts.length - 1][1];
+}
+function setOpacity(key, el, v) { if (Math.abs((FX.shown[key] ?? -1) - v) > 0.004) { FX.shown[key] = v; el.style.opacity = v.toFixed(3); } }
+function resetScreenFx() {
+  Object.assign(FX, { red: 0, dark: 0, tunnel: 0, fade: 0, tired: 0, distort: 0, filt: '', shown: {} });
+  for (const el of [els.heatA, els.heatB, els.tunnel, els.tired, els.fade]) el.style.opacity = 0;
+  canvas.style.filter = '';
+}
+function updateScreenFx(dt) {
+  const P = player, t = P.temp, f = P.stamina / CFG.STAMINA_MAX, pulse = 0.5 + 0.5 * Math.sin(gameTime * 1.6);
+  const tgt = {
+    red: piece(t, [[100.45, 0], [100.5, 0.15], [101.3, 0.3], [102.0, 0.55], [102.6, 0.7], [103.4, 0.9], [104, 1]]),
+    dark: piece(t, [[101.0, 0], [101.3, 0.2], [102.0, 0.35], [102.6, 0.55], [103.4, 0.85], [104, 1]]),
+    tunnel: piece(t, [[102.55, 0], [102.6, 0.15], [103.4, 0.5], [104, 0.8]]),
+    fade: piece(t, [[102.55, 0], [102.6, 0.03], [103.4, 0.12], [104, 0.24]]) + piece(t, [[103.35, 0], [103.4, 0.06], [104, 0.24]]) * pulse,
+    distort: piece(t, [[103.6, 0], [104, 1]]),
+    tired: f <= CFG.LOW_STAMINA ? 0.35 + 0.3 * (1 - f / CFG.LOW_STAMINA) : 0,
+  };
+  const k = 1 - Math.exp(-dt * 1.5), kt = 1 - Math.exp(-dt * 2.5);
+  for (const key of ['red', 'dark', 'tunnel', 'fade', 'distort']) FX[key] += (tgt[key] - FX[key]) * k;
+  FX.tired += (tgt.tired - FX.tired) * kt;
+  setOpacity('a', els.heatA, FX.red); setOpacity('b', els.heatB, FX.dark); setOpacity('t', els.tunnel, FX.tunnel);
+  setOpacity('f', els.fade, Math.min(0.6, FX.fade)); setOpacity('r', els.tired, FX.tired);
+  let filt = '';
+  if (FX.distort > 0.02) {
+    const blur = FX.distort * (0.5 + 1.6 * (0.5 + 0.5 * Math.sin(gameTime * 2.1)));
+    filt = `blur(${blur.toFixed(1)}px) saturate(${(1 - 0.35 * FX.distort).toFixed(2)})`;
+  }
+  if (filt !== FX.filt) { FX.filt = filt; canvas.style.filter = filt; }
+}
+
 function updateFx(dt) {
   for (const L of EMERG) {
     if (!L.on) continue;
@@ -2171,8 +2696,8 @@ function updateFx(dt) {
     L.light.intensity = L.cur * 1.4; L.mat.emissiveIntensity = L.cur;
   }
   for (const g of W.glows) g.s.material.opacity = g.base * (0.7 + 0.3 * Math.sin(gameTime * 2.2 + g.ph));
-  ambT -= dt;
-  if (ambT <= 0) { if (Math.random() < 0.6) AU.drip(); else AU.clank(); ambT = rr(3, 9); }
+  updateAmbient(dt);
+  updateScreenFx(dt);
   const G = W.goose, P = player;
   const chase = G.state === 'chase' || G.state === 'alert';
   const danger = chase ? 1 : G.state === 'hunt' ? 0.7 : clamp(1 - G.dist / 18, 0, 1) * 0.75;
@@ -2186,24 +2711,38 @@ function setClass(key, el, cls, on) { const k = key + cls; if (hudCache[k] !== o
 function updateHUD(dt) {
   const P = player;
   setText('pc', els.pc, `${P.pieces} / ${CFG.PIECES}`);
-  const sf = P.stamina / CFG.STAMINA_MAX;
+  // stamina bar: hidden until stamina is spent, stays 3 s after, then fades; flashes red while holding your breath at 16% or less
+  const sf = clamp(P.stamina / CFG.STAMINA_MAX, 0, 1), crit = P.holding && sf <= CFG.HOLD_CRIT + 1e-9;
   const sfs = sf.toFixed(3); if (hudCache.sf !== sfs) { hudCache.sf = sfs; els.sfill.style.transform = `scaleX(${sfs})`; }
-  setClass('st', els.stam, 'out', P.exhausted);
-  setClass('st', els.stam, 'idle', sf >= 1 && !P.sprinting);
-  setText('sst', els.stamState, P.exhausted ? 'Recovering' : P.sprinting ? 'Sprinting' : '');
+  setClass('st', els.stam, 'out', P.exhausted || crit);
+  setClass('st', els.stam, 'crit', crit);
+  setClass('st', els.stam, 'show', P.consuming || P.stamShowT > 0 || crit);
+  // body temperature: light red from 99.8 F, deepening toward 104
+  const tq = tempQ(), ts = tq.toFixed(1) + '°F';
+  if (hudCache.temp !== ts) {
+    hudCache.temp = ts; els.tval.textContent = ts;
+    if (tq < 99.8 - 1e-6) { els.tval.style.color = ''; els.tval.classList.remove('hot'); }
+    else {
+      const k = clamp((tq - 99.8) / (CFG.TEMP_MAX - 99.8), 0, 1);
+      els.tval.style.color = `rgb(${Math.round(lerp(242, 200, k))},${Math.round(lerp(176, 24, k))},${Math.round(lerp(166, 30, k))})`;
+      els.tval.classList.toggle('hot', k > 0.35);
+    }
+  }
   const pct = Math.ceil(P.battery / CFG.BATTERY_MAX * 100 - 1e-6);
   if (hudCache.pct !== pct) { hudCache.pct = pct; els.bpct.textContent = pct + '%'; els.bfill.style.transform = `scaleX(${pct / 100})`; }
   setClass('b', els.batt, 'on', P.flashOn);
   setClass('b', els.batt, 'low', pct <= 20);
   const label = P.target ? (isMobile() ? P.target.label : '[E] ' + P.target.label) : '';
   if (hudCache.prompt !== label) { hudCache.prompt = label; els.prompt.textContent = label; els.prompt.hidden = !label; }
-  setText('stance', els.stance, P.hidden ? 'Hidden' : P.crouch ? 'Crouched' : '');
+  setText('stance', els.stance, [P.hidden ? 'Hidden' : P.crouch ? 'Crouched' : '', P.holding ? 'Holding breath' : ''].filter(Boolean).join(' · '));
   if (isMobile()) {
     setClass('tbr', TB.run, 'on', touch.run);
+    setClass('tbr', TB.run, 'off', P.exhausted || tq >= CFG.TEMP_MAX - 1e-6);
+    setClass('tbb', TB.breath, 'on', P.holding);
     setClass('tbc', TB.crouch, 'on', P.crouch);
     setClass('tbl', TB.light, 'on', P.flashOn);
     setClass('tbu', TB.use, 'ready', !!P.target);
-    setText('tbut', TB.use, !P.target ? 'Use' : P.target.kind === 'leave' ? 'Leave' : P.target.kind === 'spot' ? 'Hide' : 'Take');
+    setText('tbut', TB.use, !P.target ? 'Use' : P.target.kind === 'leave' ? 'Leave' : P.target.kind === 'spot' ? 'Hide' : P.target.kind === 'fridge' ? (P.target.f.open ? 'Close' : 'Open') : 'Take');
   }
   const lf = P.linger / CFG.LINGER_TIME;
   const scent = lf >= 1 ? 'It smells you. Move.' : lf > 0.55 ? 'Your scent is building up' : '';
@@ -2221,7 +2760,7 @@ function updateJumpscare(dt) {
   camera.rotation.x = player.pitch * (1 - e) + rr(-j, j) * 2; camera.rotation.z = rr(-j, j) * 2;
   flash.intensity = 1.5;
   jsLight.intensity = 3.2 * (Math.random() < 0.15 ? 0.3 : 1);
-  if (t > 1.45 && state === 'caught') showDead();
+  if (t > 1.45 && state === 'caught') showDead('goose');
 }
 
 /* ================= MENU ================= */
@@ -2255,6 +2794,7 @@ function frame(now) {
     if (!DBG.freeze) updateGoose(dt); else animateGoose(W.goose, dt, false);
     if (state === 'playing') { updateFx(dt); updateHUD(dt); }
   } else if (state === 'caught') updateJumpscare(dt);
+  else if (state === 'collapse') updateCollapse(dt);
   AU.listener();
   renderer.render(scene, camera);
 }
@@ -2271,7 +2811,7 @@ addEventListener('resize', () => {
 
 // test hooks
 window.__gooseflesh = {
-  get state() { return state; }, get W() { return W; }, player, AU, DBG, settings, touch, applySettings,
+  get state() { return state; }, get W() { return W; }, player, AU, DBG, settings, touch, applySettings, AMB, AC, FX, FL, keys, heatEffects, updateAmbient,
   start: beginNewRun, caught: () => caught(), win: () => { player.pieces = CFG.PIECES; win(); },
   goose: () => W && W.goose, step: (n = 60, dt = 1 / 60) => { for (let i = 0; i < n; i++) { if (state !== 'playing') break; gameTime += dt; updatePlayer(dt); if (!DBG.freeze) updateGoose(dt); if (state === 'playing') { updateFx(dt); updateHUD(dt); } } },
 };
