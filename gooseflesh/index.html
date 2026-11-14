@@ -40,6 +40,8 @@ body.lit #grain{opacity:.04}
 #xray-fx.on{opacity:1}
 #frost-fx{z-index:3;opacity:0;transition:opacity .6s;background:radial-gradient(ellipse at center,transparent 50%,rgba(200,235,255,.16) 80%,rgba(220,245,255,.36) 100%)}
 #frost-fx.on{opacity:1}
+#speed-fx{z-index:3;opacity:0;transition:opacity .3s}
+#speed-fx.on{opacity:1}
 #flash{z-index:30;opacity:0;background:#fff}
 /* body-heat and exhaustion layers: opacity only, driven from JS */
 #heat-a{z-index:3;opacity:0;background:radial-gradient(ellipse at center,transparent 40%,rgba(205,45,32,.32) 72%,rgba(175,18,16,.72) 100%)}
@@ -60,11 +62,11 @@ body.lit #grain{opacity:.04}
 /* HUD */
 #hud{position:fixed;inset:0;pointer-events:none;z-index:13;color:var(--ink);text-transform:uppercase;letter-spacing:.14em;font-size:12px}
 #hud .lbl{color:var(--dim)}
-#hud-tapes{position:absolute;top:calc(18px + env(safe-area-inset-top,0px));left:max(20px,env(safe-area-inset-left,0px));display:flex;align-items:center;gap:12px}
-.frags{display:flex;gap:5px}
-.frags i{display:block;width:18px;height:12px;border-radius:2px;background:rgba(216,205,176,.13)}
-.frags i.on{background:var(--paper);box-shadow:0 0 12px var(--ember)}
-#pc{font-variant-numeric:tabular-nums}
+#hud-tapes{position:absolute;top:calc(18px + env(safe-area-inset-top,0px));left:max(20px,env(safe-area-inset-left,0px));display:flex;align-items:center;gap:9px}
+.vhs{display:block;width:30px;height:20px;transform-origin:center}
+#hud-tapes.got .vhs{animation:got .9s ease-out}
+@keyframes got{0%{transform:scale(1.55);filter:drop-shadow(0 0 7px #fff)}100%{transform:scale(1);filter:none}}
+#pc{font-variant-numeric:tabular-nums;font-size:15px;letter-spacing:.08em;color:#fff}
 #hud-batt{position:absolute;bottom:calc(22px + env(safe-area-inset-bottom,0px));left:max(20px,env(safe-area-inset-left,0px));display:grid;grid-template-columns:auto auto;align-items:center;column-gap:12px;row-gap:4px}
 #hud-batt .lbl{grid-column:1 / -1}
 .bicon{position:relative;width:34px;height:15px;border:2px solid currentColor;border-radius:2px;padding:2px;box-sizing:border-box}
@@ -77,8 +79,20 @@ body.lit #grain{opacity:.04}
 #hud-stam{position:absolute;bottom:calc(30px + env(safe-area-inset-bottom,0px));left:50%;transform:translateX(-50%);width:min(44vw,340px);opacity:0;transition:opacity .35s ease-in}
 #hud-stam.show{opacity:1;transition:opacity .06s}
 .bar{height:6px;background:rgba(221,214,198,.13);position:relative;overflow:hidden}
-#sfill{position:absolute;inset:0;background:var(--ink);transform-origin:left}
-#hud-stam.out #sfill{background:var(--blood)}
+/* stamina: framed track, 1-second tick marks, a ghost of what you just spent, diamond end caps */
+.sbar{position:relative;height:10px;padding:2px;box-sizing:border-box;border:1px solid rgba(221,214,198,.34);border-radius:3px;background:linear-gradient(180deg,rgba(0,0,0,.6),rgba(22,20,17,.72));box-shadow:0 0 0 1px rgba(0,0,0,.55),0 2px 12px rgba(0,0,0,.6)}
+.sbar::before,.sbar::after{content:"";position:absolute;top:50%;width:4px;height:4px;margin-top:-2px;background:rgba(221,214,198,.6);transform:rotate(45deg)}
+.sbar::before{left:-8px}.sbar::after{right:-8px}
+.sbar .track{position:relative;height:100%;overflow:hidden;border-radius:1px;background:rgba(221,214,198,.07)}
+#sghost{position:absolute;inset:0;background:rgba(227,166,78,.6);transform-origin:left}
+#sfill{position:absolute;inset:0;background:linear-gradient(180deg,#f6f1e4 0%,#d5cdbb 55%,#a39b8b 100%);transform-origin:left;box-shadow:0 0 8px rgba(246,241,228,.35)}
+.sbar .ticks{position:absolute;inset:0;pointer-events:none;background:repeating-linear-gradient(90deg,transparent 0 calc(10% - 1px),rgba(0,0,0,.62) calc(10% - 1px) 10%)}
+#hud-stam.out #sfill{background:linear-gradient(180deg,#e45b4f,#9f161b);box-shadow:0 0 8px rgba(179,25,30,.5)}
+#hud-stam.out .sbar{border-color:rgba(179,25,30,.65);animation:stamOut .6s ease-in-out infinite alternate}
+@keyframes stamOut{to{box-shadow:0 0 0 1px rgba(0,0,0,.55),0 0 16px rgba(179,25,30,.6)}}
+#hud-stam.inf #sfill{background:linear-gradient(90deg,#9fdcff,#effaff,#9fdcff);background-size:200% 100%;animation:shimmer 1.1s linear infinite;box-shadow:0 0 10px rgba(127,211,255,.6)}
+#hud-stam.inf .sbar{border-color:rgba(127,211,255,.55)}
+@keyframes shimmer{to{background-position:-200% 0}}
 #hud-temp{position:absolute;bottom:calc(86px + env(safe-area-inset-bottom,0px));left:max(20px,env(safe-area-inset-left,0px));display:flex;align-items:baseline;gap:12px}
 #tval{font-size:20px;letter-spacing:.03em;font-variant-numeric:tabular-nums;color:var(--ink);padding:1px 6px;margin-left:-6px;border-radius:3px;text-shadow:0 0 6px rgba(0,0,0,.9)}
 #tval.hot{background:rgba(0,0,0,.45);text-shadow:0 0 1px rgba(255,236,228,.55),0 0 6px rgba(0,0,0,.9)}
@@ -86,7 +100,9 @@ body.lit #grain{opacity:.04}
 #scent{color:var(--ember)}
 #scent.hot{color:var(--blood);animation:pulse .7s ease-in-out infinite alternate}
 @keyframes pulse{from{opacity:1}to{opacity:.35}}
-#cross{position:absolute;left:50%;top:50%;width:3px;height:3px;margin:-1.5px 0 0 -1.5px;border-radius:50%;background:rgba(221,214,198,.55)}
+#cross{position:absolute;left:50%;top:50%;width:12px;height:12px;margin:-6px 0 0 -6px;box-sizing:border-box;border-radius:50%;border:1.5px solid rgba(255,248,232,.9);box-shadow:0 0 6px rgba(0,0,0,.85);animation:cross .18s ease-out}
+#cross::after{content:"";position:absolute;left:50%;top:50%;width:2px;height:2px;margin:-1px 0 0 -1px;border-radius:50%;background:#fff}
+@keyframes cross{from{transform:scale(1.6);opacity:0}}
 #prompt{position:absolute;left:50%;top:57%;transform:translateX(-50%);padding:7px 14px;background:rgba(0,0,0,.6);font-size:13px;white-space:nowrap;color:var(--ink)}
 #toast{position:absolute;left:50%;top:calc(15% + env(safe-area-inset-top,0px));transform:translateX(-50%);text-align:center;font-size:15px;letter-spacing:.2em;max-width:80vw;transition:opacity .6s;text-shadow:0 0 8px #000}
 #toast.bad{color:#e04a3f}
@@ -224,13 +240,38 @@ body.m #prompt{top:60%;font-size:12px}
 .setting .fine{text-align:left}
 input[type=range]{width:100%;accent-color:var(--ember);height:28px}
 #settings-done{align-self:center}
+/* main menu, perks and loadout, skins */
+.menu-list{display:flex;flex-direction:column;align-items:flex-start;gap:10px}
+.menu-list button{min-width:min(260px,100%);text-align:left}
+#loadout-sum{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+#loadout-sum .chip{display:inline-flex;align-items:center;gap:6px;color:var(--ink)}
+#loadout-sum svg{width:15px;height:15px}
+.ico{fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+.loadout{width:100%;max-width:780px;gap:14px}
+.center .inner.loadout{align-items:stretch}
+.sub{margin:8px 0 0;font-size:12px;font-weight:400;letter-spacing:.2em;text-transform:uppercase;color:var(--dim);display:flex;justify-content:space-between}
+.sub span{color:var(--ink);font-variant-numeric:tabular-nums}
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:10px}
+button.card{clip-path:none;display:grid;grid-template-columns:40px 1fr;gap:4px 12px;align-items:start;text-align:left;text-transform:none;letter-spacing:.02em;padding:12px 14px;background:rgba(221,214,198,.06);color:var(--ink);border:1px solid rgba(221,214,198,.22);border-radius:4px}
+button.card:hover{background:rgba(221,214,198,.13)}
+button.card:focus-visible{background:rgba(221,214,198,.13);outline:2px solid var(--ember);outline-offset:2px}
+button.card svg{grid-row:1 / span 2;width:40px;height:40px;color:var(--dim)}
+button.card b{font-weight:400;font-size:14px;letter-spacing:.12em;text-transform:uppercase}
+button.card span{font-size:12px;line-height:1.45;color:var(--dim)}
+button.card[aria-pressed="true"]{border-color:var(--ember);background:rgba(227,166,78,.12);box-shadow:inset 0 0 0 1px rgba(227,166,78,.35)}
+button.card[aria-pressed="true"] svg{color:var(--ember)}
+button:disabled{opacity:.4;cursor:not-allowed}
+#perks-done{align-self:center}
+.skins-empty{width:100%;min-height:200px;border:1px dashed rgba(221,214,198,.25);border-radius:4px;display:grid;place-items:center;color:var(--dim);font-size:13px;letter-spacing:.16em;text-transform:uppercase}
 
 @media (max-height:540px){
   h1{font-size:clamp(40px,8vw,72px)}
   .inner{gap:14px}
   .lede{font-size:14px;line-height:1.45}
   .keys{font-size:12px;gap:5px 14px}
-  #scr-start .eyebrow{order:0} #scr-start h1{order:1} #scr-start .actions{order:2} #scr-start .lede{order:3} #scr-start .keys{order:4} #scr-start .fine{order:5}
+  #scr-start .eyebrow{order:0} #scr-start h1{order:1} #scr-start .menu-list{order:2} #loadout-sum{order:3} #scr-start .lede{order:4} #scr-start .keys{order:5} #scr-start .fine{order:6}
+  .menu-list{flex-direction:row;flex-wrap:wrap}
+  .menu-list button{min-width:0}
 }
 @media (max-width:640px){
   #scr-start{background:rgba(5,5,6,.82)}
@@ -253,13 +294,14 @@ input[type=range]{width:100%;accent-color:var(--ember);height:28px}
 <div class="fx" id="hide" hidden><div class="slits"></div></div>
 <div class="fx" id="xray-fx"></div>
 <div class="fx" id="frost-fx"></div>
+<canvas class="fx" id="speed-fx"></canvas>
 <div class="fx" id="fade"></div>
 <div class="fx" id="grain"></div>
 <div class="fx" id="flash"></div>
 
 <div id="hud" hidden>
-  <div id="hud-tapes"><span class="lbl">Tapes</span><span class="frags" id="frags"><i></i><i></i><i></i><i></i><i></i></span><span id="pc">0 / 5</span></div>
-  <div id="cross"></div>
+  <div id="hud-tapes" aria-label="Tapes found"><svg class="vhs" viewBox="0 0 30 20" aria-hidden="true"><path fill="#fff" fill-rule="evenodd" d="M2.5 1h25A1.5 1.5 0 0 1 29 2.5v15a1.5 1.5 0 0 1-1.5 1.5h-25A1.5 1.5 0 0 1 1 17.5v-15A1.5 1.5 0 0 1 2.5 1zM5 3.2v2.2h20V3.2zM7.5 7.5v6.5h15V7.5zM6 16.2v1.3h2.5v-1.3zM21.5 16.2v1.3H24v-1.3z"/><path fill="#fff" fill-rule="evenodd" d="M11.3 8.4a2.35 2.35 0 1 1 0 4.7 2.35 2.35 0 1 1 0-4.7zm0 1.5a.85.85 0 1 0 0 1.7.85.85 0 1 0 0-1.7zM18.7 8.4a2.35 2.35 0 1 1 0 4.7 2.35 2.35 0 1 1 0-4.7zm0 1.5a.85.85 0 1 0 0 1.7.85.85 0 1 0 0-1.7z"/></svg><span id="pc">0/5</span></div>
+  <div id="cross" hidden></div>
   <div id="blind" hidden><svg viewBox="0 0 40 40"><circle class="trk" cx="20" cy="20" r="16"/><circle class="arc" id="blind-arc" cx="20" cy="20" r="16"/></svg></div>
   <div id="hud-tr"><div id="hud-inv"></div><div id="hud-fx"></div></div>
   <div id="tape" hidden><div class="reels"><i></i><i></i></div><div><b id="tape-h">Tape 1 of 5</b><span id="tape-s">Playing</span><div class="tbar"><span id="tape-p"></span></div></div></div>
@@ -267,7 +309,7 @@ input[type=range]{width:100%;accent-color:var(--ember);height:28px}
   <div id="toast"></div>
   <div id="hud-batt"><span class="bicon"><span id="bfill"></span></span><span id="bpct">100%</span><span class="lbl">Flashlight <kbd>F</kbd></span></div>
   <div id="hud-temp"><span class="lbl">Body</span><span id="tval">98.0°F</span></div>
-  <div id="hud-stam"><div class="bar"><span id="sfill"></span></div></div>
+  <div id="hud-stam"><div class="sbar"><div class="track"><span id="sghost"></span><span id="sfill"></span><i class="ticks"></i></div></div></div>
   <div id="hud-status"><span id="scent" hidden></span><span id="stance"></span></div>
 </div>
 
@@ -275,17 +317,24 @@ input[type=range]{width:100%;accent-color:var(--ember);height:28px}
   <div class="inner">
     <p class="eyebrow">Third-person horror. Headphones on.</p>
     <h1>Goose&shy;flesh</h1>
+    <nav class="menu-list" aria-label="Main menu">
+      <button id="btn-start" type="button">Play</button>
+      <button id="btn-settings" class="ghost" type="button">Settings</button>
+      <button id="btn-skins" class="ghost" type="button">Skins</button>
+      <button id="btn-perks" class="ghost" type="button">Perks</button>
+    </nav>
+    <div id="loadout-sum"></div>
     <p class="lede">Five cassette tapes are hidden in this maze. Find all five to hear the whole story.
-      Something enormous lives here with you. It <em>hears</em> you run and breathe. It <em>smells</em> you when you stay still. It <em>sees</em> your light.
-      And it keeps getting hotter in here. Refrigerators cool you down.</p>
+      Something enormous lives here with you. It's called <em>The Voice</em>. It <em>hears</em> you run and breathe. It <em>smells</em> you when you stay still. It <em>sees</em> your light.
+      Its surveillance geese follow you and honk for it. And it keeps getting hotter in here. Refrigerators cool you down.</p>
     <dl class="keys" id="keys-pc">
       <dt><kbd>W</kbd> <kbd>A</kbd> <kbd>S</kbd> <kbd>D</kbd></dt><dd>Move. Mouse to look.</dd>
       <dt><kbd>Shift</kbd> hold</dt><dd>Sprint. 10 seconds of stamina, and very loud.</dd>
       <dt><kbd>Ctrl</kbd> or <kbd>C</kbd></dt><dd>Crouch (toggle). Slow and nearly silent.</dd>
-      <dt><kbd>F</kbd></dt><dd>Flashlight. 110 seconds of battery. Hold it on his face to blind him.</dd>
+      <dt><kbd>F</kbd></dt><dd>Flashlight. 125 seconds of battery, and it slowly recharges while it's off. Shine it in The Voice's eyes to blind it.</dd>
       <dt><kbd>E</kbd></dt><dd>Pick up, hide, open and search refrigerators, search cabinets.</dd>
-      <dt><kbd>Q</kbd></dt><dd>Throw a blueberry muffin. He can't resist them.</dd>
-      <dt><kbd>1</kbd> <kbd>2</kbd> <kbd>3</kbd> <kbd>4</kbd></dt><dd>Propel, Adam's Underwear, HardLife's Glasses, Ice pack.</dd>
+      <dt><kbd>Q</kbd></dt><dd>Throw a blueberry muffin. The Voice can't resist them.</dd>
+      <dt><kbd>1</kbd> <kbd>2</kbd> <kbd>3</kbd> <kbd>4</kbd></dt><dd>Propel, Adam's Underwear, HardLife's Glasses, ice pack.</dd>
       <dt><kbd>Esc</kbd></dt><dd>Pause.</dd>
     </dl>
     <dl class="keys" id="keys-mobile" hidden>
@@ -293,11 +342,10 @@ input[type=range]{width:100%;accent-color:var(--ember);height:28px}
       <dt><span class="chip">Drag</span></dt><dd>Right side of the screen. Look around.</dd>
       <dt><span class="chip">Run</span></dt><dd>Tap to sprint, tap again to stop. 10 seconds of stamina, and very loud.</dd>
       <dt><span class="chip">Crouch</span></dt><dd>Slow and nearly silent.</dd>
-      <dt><span class="chip">Light</span></dt><dd>Flashlight. 110 seconds of battery.</dd>
+      <dt><span class="chip">Light</span></dt><dd>Flashlight. 125 seconds of battery, and it slowly recharges while it's off.</dd>
       <dt><span class="chip">Use</span></dt><dd>Pick up, hide, open and search refrigerators, search cabinets.</dd>
-      <dt><span class="chip">Items</span></dt><dd>Tap an item at the top right to use it. Shine the light in his face to blind him.</dd>
+      <dt><span class="chip">Items</span></dt><dd>Tap an item at the top right to use it. Shine the light in The Voice's eyes to blind it.</dd>
     </dl>
-    <div class="actions"><button id="btn-start" type="button">Enter the maze</button><button id="btn-settings" class="ghost" type="button">Settings</button></div>
     <p class="fine" id="mode-note"></p>
   </div>
 </section>
@@ -305,7 +353,7 @@ input[type=range]{width:100%;accent-color:var(--ember);height:28px}
 <section class="screen center" id="scr-pause" hidden>
   <div class="inner">
     <h2>Paused</h2>
-    <p class="fine">He is still out there.</p>
+    <p class="fine">The Voice is still out there.</p>
     <div class="actions"><button id="btn-resume" type="button">Resume</button><button id="btn-settings-p" class="ghost" type="button">Settings</button><button id="btn-restart" class="ghost" type="button">Restart</button></div>
     <p class="fine" id="pause-hint"></p>
   </div>
@@ -346,9 +394,29 @@ input[type=range]{width:100%;accent-color:var(--ember);height:28px}
   </div>
 </section>
 
+<section class="screen center" id="scr-perks" hidden>
+  <div class="inner loadout">
+    <h2>Perks</h2>
+    <p class="fine">Bring exactly 2 perks and 1 item into each run.</p>
+    <h3 class="sub">Perks <span id="perk-n">0 / 2</span></h3>
+    <div class="cards" id="perk-cards"></div>
+    <h3 class="sub">Item <span id="item-n">0 / 1</span></h3>
+    <div class="cards" id="item-cards"></div>
+    <button id="perks-done" type="button">Done</button>
+  </div>
+</section>
+
+<section class="screen center" id="scr-skins" hidden>
+  <div class="inner settings">
+    <h2>Skins</h2>
+    <div class="skins-empty">Coming soon</div>
+    <div class="actions"><button id="skins-back" type="button">Back</button></div>
+  </div>
+</section>
+
 <section class="screen center" id="scr-dead" hidden>
   <div class="inner">
-    <h2 id="dead-title">He found you.</h2>
+    <h2 id="dead-title">The Voice found you.</h2>
     <p id="dead-stats"></p>
     <div class="actions"><button id="btn-retry" type="button">Try again</button></div>
     <p class="fine">or press R</p>
@@ -388,11 +456,11 @@ const T = 3.2;            // tile size (corridor width)
 const H = 4.0;            // wall height
 const CELLS = 12;         // maze is CELLS x CELLS cells
 const CFG = {
-  WALK: 3.1, SPRINT: 5.6, CROUCH: 1.45,
+  WALK: 3.1 * 0.95, SPRINT: 5.6 * 0.95, CROUCH: 1.45 * 0.95,   // base speeds, 5% under the original 3.1 / 5.6 / 1.45
   STAND_EYE: 1.6, CROUCH_EYE: 0.85, BED_EYE: 0.3,
   PLAYER_R: 0.3,
   STAMINA_MAX: 10, STAMINA_DELAY: 5, STAMINA_REGEN: 1.25,
-  BATTERY_MAX: 110, BATTERY_PICKUP: 10, MAX_BATTERIES: 5,
+  BATTERY_MAX: 125, BATTERY_PICKUP: 15, MAX_BATTERIES: 7, BATTERY_REGEN: 0.1, FLASH_TOGGLE_COST: 0.6,   // regen: 1 s of light per 10 s off
   TAPES: 5,
   GOOSE_R: 0.65, GOOSE_EYE: 2.8, MERP_RANGE: 24,
   PATROL: 2.3, SEARCH: 2.6, INVESTIGATE: 3.7, ALERTED: 4.8, HUNT: 5.0, CHASE: 6.6,
@@ -406,23 +474,29 @@ const CFG = {
   TEMP_START: 98.0, TEMP_MAX: 104.0, TEMP_FLOOR: 97.8, HEATSTROKE_TIME: 20, COOL_RATE: 0.1, COOL_PAUSE: 30,
   // refrigerators
   FRIDGES: 4, FRIDGE_POWER: 25, FRIDGE_OFF: 200, FRIDGE_RANGE: 2.1, FRIDGE_NOISE: 14, FRIDGE_SEARCH_TIME: 1.2,
+  FRIDGE_LOW: 0.3,   // below 30% power a fridge can't cool you; it runs itself down, then recharges
   ICE_TIME: 20, ICE_RATE: 0.1,
-  // surveillance geese: two ordinary-sized geese that honk for the big one
-  SG_COUNT: 2, SG_SCALE: 0.34, SG_SPEED: 0.85, SG_R: 0.3, SG_SEPARATION: 18, SG_EYE: 0.92,
+  // surveillance geese: three ordinary-sized geese that follow you and honk for The Voice
+  SG_COUNT: 3, SG_SCALE: 0.34, SG_SPEED: 0.85, SG_R: 0.3, SG_SEPARATION: 18, SG_EYE: 0.92,
   SG_SIGHT: 6, SG_SIGHT_RUN: 8.5, SG_SMELL: 2.6, SG_HEAR_RUN: 7, SG_TOUCH: 0.95,
-  SG_HONK_EVERY: 0.9, SG_BLIND_TIME: 1.65, SG_DISABLED: 45, SG_ALERT_SPEED: 5.4,
+  SG_HONK_EVERY: 0.9, SG_BLIND_TIME: 0.8, SG_DISABLED: 45, SG_ALERT_SPEED: 5.4,
+  SG_FOLLOW_SPEED: 3.4, SG_KEEP: 1.7, SG_OUTRUN: 14, SG_OUTRUN_TIME: 1,   // faster than walking, slower than sprinting
   // how far the goose can hear breathing
   BREATH_R_MIN: 2.4, BREATH_R_MAX: 11,
   // defenses and items
   BLIND_TIME: 0.6, BLIND_DUR: 3.5, BLIND_IMMUNE: 12, CABINETS: 10, SEARCH_TIME: 1.6,
-  PROPEL_TIME: 15, UNDIES_TIME: 30, GLASSES_TIME: 15, EAT_MIN: 5, EAT_MAX: 10,
+  PROPEL_TIME: 10, PROPEL_SPEED: 1.11, UNDIES_TIME: 30, GLASSES_TIME: 15, EAT_MIN: 5, EAT_MAX: 10,
+  VOICE_FLICKER: 5,   // the flashlight sputters this long after you blind The Voice
+  // perks
+  LIGHTBRINGER: 1.7, LIGHTBRINGER_SG: 20, ENDURANCE_WALK: 1.3, ENDURANCE_REGEN: 1.12, HYPO_COOL: 1.1, ASE_TIME: 10,
+  EVADE_SPEED_T: 3, EVADE_HIDE_T: 8, EVADE_LOCK: 4, SCAVENGER_PICKUP: 40, HEAD_REVEAL: 6, HEAD_STAMINA: 8,
 };
 
 // what the five tapes say, shown as a transcript on the ending screen; {word} marks the circled word of the secret message
 const TAPE_TRANSCRIPTS = [
   "To whoever finds this. I hid these tapes so {he} couldn't hear them. Yes, he listens. Keep your light off when you can. He notices it from very far away.",
   "I was the caretaker here. I fed him every morning and he grew, and not {only} taller. His hair grew too. I never asked about the hair.",
-  "Don't run. He hears it from across the maze. Crouch and he hears almost nothing. But never stay in one place for long. He has never, {ever} lost a scent.",
+  "Don't run. He hears it from across the maze. Crouch and he hears almost nothing. But never stay in one place for long. He's never, {ever} lost a scent.",
   "The lockers and the beds hide you from his eyes, not from his nose. I learned that the hard way. All these years I thought he {wanted} me dead.",
   "I was wrong. I understood when I saw how he stares at the empty feed bucket. Play all five tapes and you'll see. I'm sorry I ate the last of the {bread}.",
 ];
@@ -435,7 +509,7 @@ const SAMPLE_FILES = {
 };
 // [from F, stamina drain x, move speed x, extra recovery delay s]; 104 also disables running
 const HEAT_STEPS = [[104.0, 2.0, 0.75, 12], [103.4, 2.0, 0.80, 12], [102.6, 1.4, 0.88, 6.5], [102.0, 1.25, 0.90, 4], [101.3, 1.18, 0.92, 1.5], [100.5, 1.10, 0.95, 0]];
-const GRAFFITI = ['STAY COOL', 'KEEP MOVING', 'HE HEARS YOU RUN', 'DON\'T STAY STILL', 'LIGHTS OFF', 'HONK', 'HONK HONK HONK', 'IT CAN SMELL YOU', 'FIVE TAPES', 'NO EXIT', 'CROUCH', 'WHO COMBS HIS HAIR?', 'BREAD?', 'HIDE'];
+const GRAFFITI = ['STAY COOL', 'KEEP MOVING', 'THE VOICE HEARS YOU', 'DON\'T STAY STILL', 'LIGHTS OFF', 'HONK', 'HONK HONK HONK', 'IT CAN SMELL YOU', 'FIVE TAPES', 'NO EXIT', 'CROUCH', 'WHO COMBS HIS HAIR?', 'BREAD?', 'HIDE'];
 
 /* ================= UTIL ================= */
 const rr = (a, b) => a + Math.random() * (b - a);
@@ -469,6 +543,46 @@ try {
 function saveSettings() { try { localStorage.setItem(SETTINGS_KEY, JSON.stringify(settings)); } catch (e) { /* ignore */ } }
 const isMobile = () => settings.controls === 'mobile';
 const firstPerson = () => settings.view === 'first';
+
+/* ================= PERKS + LOADOUT ================= */
+// line icons on a 24 x 24 grid, drawn with currentColor
+const ICON = {
+  lightbringer: '<rect x="2" y="10" width="9" height="4.5" rx="1"/><path d="M11 9l4-2.2v11.4L11 16z"/><path d="M18 8l3.2-2.2M18.5 12.2H22M18 16.4l3.2 2.2"/>',
+  endurance: '<path d="M12 3v8.5"/><path d="M12 9c-1.4 0-2-1.2-3.6-1.2C6 7.8 4 12.6 4 16.6 4 18.8 5.4 20 7 20c2.6 0 4-1.6 4-4.2V11.5"/><path d="M12 9c1.4 0 2-1.2 3.6-1.2 2.4 0 4.4 4.8 4.4 8.8 0 2.2-1.4 3.4-3 3.4-2.6 0-4-1.6-4-4.2V11.5"/>',
+  hypothermia: '<path d="M12 2.5v19M3.8 7.2l16.4 9.6M3.8 16.8l16.4-9.6"/><path d="M9.4 4.2L12 6.6l2.6-2.4M9.4 19.8l2.6-2.4 2.6 2.4M4.6 10.5l3.4-.9-.9-3.4M19.4 13.5l-3.4.9.9 3.4M4.6 13.5l3.4.9-.9 3.4M19.4 10.5l-3.4-.9.9-3.4"/>',
+  ase: '<path d="M12 2.8l9.6 17.2H2.4z"/><path d="M7.4 14.8c1.4-2 2.9-3 4.6-3s3.2 1 4.6 3c-1.4 2-2.9 3-4.6 3s-3.2-1-4.6-3z"/><circle cx="12" cy="14.8" r="1.3" fill="currentColor"/>',
+  evasive: '<path d="M2.5 18.5l5-5.2 4 4 8-9.6"/><path d="M14.4 7.5h5.4v5.4"/><path d="M3 9.5h4M4.5 6h3.5"/>',
+  scavenger: '<rect x="2.5" y="4" width="11" height="6.5" rx="1"/><path d="M13.5 6.2h1.6v2.1h-1.6M5.5 7.2h4"/><circle cx="15.5" cy="15.5" r="3.6"/><path d="M18.1 18.1L21.5 21.5"/>',
+  headstart: '<path d="M3 5.5l7.5 6.5L3 18.5z"/><path d="M11.5 5.5l7.5 6.5-7.5 6.5z"/><path d="M21.5 4.5v15"/>',
+  muffin: '<path d="M6 13h12l-1.6 7.5H7.6z"/><path d="M4.8 13c0-4.2 3.2-7.4 7.2-7.4s7.2 3.2 7.2 7.4"/><path d="M9 15.5l.5 3M12 15.5v3M15 15.5l-.5 3"/><circle cx="9.4" cy="10.2" r="1" fill="currentColor"/><circle cx="13.2" cy="8.8" r="1" fill="currentColor"/><circle cx="15.2" cy="11.4" r="1" fill="currentColor"/>',
+  ice: '<path d="M10 2.5h4v3.2h-4z"/><path d="M9.2 5.7h5.6c3 2 4.2 5.2 4.2 8.3 0 4.2-3.1 7.5-7 7.5S5 18.2 5 14c0-3.1 1.2-6.3 4.2-8.3z"/><path d="M9.4 12.6L12 11l2.6 1.6v3.2L12 17.4l-2.6-1.6zM9.4 12.6L12 14.2l2.6-1.6M12 14.2v3.2"/>',
+  propel: '<path d="M10 2h4v3h-4z"/><path d="M9.5 5h5l1.2 3.2v11.6a2.2 2.2 0 0 1-2.2 2.2h-3a2.2 2.2 0 0 1-2.2-2.2V8.2z"/><path d="M13 9.6l-2.4 4.2h3l-2.4 4.2"/>',
+};
+const icon = id => `<svg class="ico" viewBox="0 0 24 24" aria-hidden="true">${ICON[id]}</svg>`;
+const PERKS = {
+  lightbringer: { name: 'LightBringer', desc: 'Your flashlight is far brighter. A blinded surveillance goose stays down 20 seconds longer.' },
+  endurance: { name: 'Endurance', desc: "Once you're completely out of stamina, you walk 30% faster and recover stamina 12% faster until you're rested." },
+  hypothermia: { name: 'Hypothermia', desc: 'The first refrigerator you open always has an ice pack. Refrigerators cool you 10% faster.' },
+  ase: { name: 'All Seeing Eye', desc: 'For 10 seconds after you pick up a tape, see The Voice, every surveillance goose and the nearest refrigerator through walls.' },
+  evasive: { name: 'Evasive Maneuvers', desc: "The first time The Voice chases you, you move twice as fast for 3 seconds and it can't detect you for 8. Then your stamina's empty for 4 seconds." },
+  scavenger: { name: 'Scavenger', desc: "When your flashlight dies, see the nearest battery through walls. That battery gives 40 seconds. Works once per run." },
+  headstart: { name: 'Headstart', desc: "The nearest tape is revealed for 6 seconds when you start. Every tape you pick up gives 8 seconds of endless stamina." },
+};
+const LOADOUT_ITEMS = {
+  muffin: { name: 'Blueberry Muffin', desc: 'Throw it and The Voice goes straight for it.' },
+  ice: { name: 'Ice Pack', desc: 'Cools you down by up to 2 degrees over 20 seconds, anywhere.' },
+  propel: { name: 'Blueberry Propel', desc: '10 seconds of endless stamina and 11% more speed.' },
+};
+const LOADOUT_KEY = 'gooseflesh.loadout.v1';
+const loadout = { perks: ['endurance', 'headstart'], item: 'muffin' };
+try {
+  const saved = JSON.parse(localStorage.getItem(LOADOUT_KEY) || 'null');
+  if (saved && Array.isArray(saved.perks) && saved.perks.length === 2 && saved.perks[0] !== saved.perks[1] && saved.perks.every(k => PERKS[k]) && LOADOUT_ITEMS[saved.item]) {
+    loadout.perks = saved.perks.slice(); loadout.item = saved.item;
+  }
+} catch (e) { /* storage unavailable: defaults are fine */ }
+const loadoutValid = () => loadout.perks.length === 2 && !!LOADOUT_ITEMS[loadout.item];
+function saveLoadout() { if (!loadoutValid()) return; try { localStorage.setItem(LOADOUT_KEY, JSON.stringify(loadout)); } catch (e) { /* ignore */ } }
 
 /* ================= RENDERER ================= */
 const canvas = $('view');
@@ -953,6 +1067,7 @@ for (let i = 0; i < 5; i++) {
 
 const GOOSE_RIG = buildGooseRig(); scene.add(GOOSE_RIG.root);
 const GOOSE_XRAY = [];   // filled on the first new game (addXray is defined further down)
+const GOOSE_OL = [];     // The Voice's perk outline, also filled on the first new game
 scene.add(DUSTY.root);
 
 // jumpscare head, attached to the camera
@@ -1266,8 +1381,9 @@ function makeFridge(i, k) {
   addObstacle(p.x, p.z, p.dx, Wd, D, Hh);
   const gm = new THREE.SpriteMaterial({ map: TEX.glow, color: 0xbcd6ff, transparent: true, opacity: 0, depthWrite: false, blending: THREE.AdditiveBlending, fog: true }); gm.userData.own = true;
   const glow = new THREE.Sprite(gm); glow.position.set(p.x - p.dx * 0.5, 1.0, p.z - p.dz * 0.5); glow.scale.set(1.6, 2.2, 1); W.group.add(glow);
+  const ol = outlineBox(grp, Wd, Hh, D, Hh / 2);
   const f = {
-    isFridge: true, searched: false, warned: false, flickerT: 0,
+    isFridge: true, searched: false, warned: false, flickerT: 0, ol, iceGuaranteed: false,
     x: p.x, z: p.z, dx: p.dx, dz: p.dz, fx: p.x - p.dx * (D / 2 + 0.6), fz: p.z - p.dz * (D / 2 + 0.6),
     door, open: false, anim: 0, used: 0, powered: true, offUntil: 0, ledMat, innerMat, glow, smokeAcc: 0, hum: AU.makeHum(p.x, p.z),
   };
@@ -1321,6 +1437,45 @@ function addXray(root, mat, list) {
     x.userData.xr = true; x.renderOrder = 20; x.visible = false; o.add(x); list.push(x);
   }
 }
+// perk outlines: yellow silhouettes seen through walls. A stencil mask of the object, then a slightly inflated
+// copy drawn only where the mask isn't, which leaves a clean outline of constant on-screen thickness.
+const OL_MASK = new THREE.MeshBasicMaterial({ colorWrite: false, depthTest: false, depthWrite: false, transparent: true,
+  stencilWrite: true, stencilRef: 1, stencilFunc: THREE.AlwaysStencilFunc, stencilFail: THREE.ReplaceStencilOp, stencilZFail: THREE.ReplaceStencilOp, stencilZPass: THREE.ReplaceStencilOp });
+const OL_HULL = new THREE.ShaderMaterial({
+  uniforms: { color: { value: new THREE.Color(0xffd23a) }, width: { value: 0.006 } },
+  vertexShader: `uniform float width;
+void main() {
+  vec3 p = position; vec3 n = normal;
+#ifdef USE_INSTANCING
+  p = (instanceMatrix * vec4(p, 1.0)).xyz; n = mat3(instanceMatrix) * n;
+#endif
+  vec4 mv = modelViewMatrix * vec4(p, 1.0);
+  mv.xyz += normalize(normalMatrix * n) * width * max(0.6, -mv.z);
+  gl_Position = projectionMatrix * mv;
+}`,
+  fragmentShader: 'uniform vec3 color; void main() { gl_FragColor = vec4(color, 0.95); }',
+  transparent: true, depthTest: false, depthWrite: false,
+  stencilWrite: true, stencilRef: 1, stencilFunc: THREE.NotEqualStencilFunc, stencilFail: THREE.KeepStencilOp, stencilZFail: THREE.KeepStencilOp, stencilZPass: THREE.KeepStencilOp,
+});
+function olCopy(o, list) {
+  for (const [mat, order] of [[OL_MASK, 40], [OL_HULL, 41]]) {
+    let x;
+    if (o.isInstancedMesh) { x = new THREE.InstancedMesh(o.geometry, mat, o.count); x.instanceMatrix = o.instanceMatrix; }
+    else x = new THREE.Mesh(o.geometry, mat);
+    x.userData.xr = true; x.renderOrder = order; x.visible = false; o.add(x); list.push(x);
+  }
+}
+function addOutline(root, list) { const found = []; root.traverse(o => { if (o.isMesh && !o.userData.xr) found.push(o); }); for (const o of found) olCopy(o, list); return list; }
+// a box with corner-pointing normals: inflates evenly, so a box outline has no gaps at the corners
+function outlineBox(parent, sx, sy, sz, y) {
+  const g = geo('olbox', () => { const b = new THREE.BoxGeometry(1, 1, 1), ps = b.attributes.position, ns = b.attributes.normal, v = new V3(); for (let i = 0; i < ps.count; i++) { v.set(ps.getX(i), ps.getY(i), ps.getZ(i)).normalize(); ns.setXYZ(i, v.x, v.y, v.z); } return b; });
+  const holder = new THREE.Mesh(g, OL_MASK); holder.visible = false; holder.userData.xr = true;
+  const box = new THREE.Object3D(); box.position.y = y; box.scale.set(sx, sy, sz); parent.add(box);
+  const list = []; olCopy(holder, list); for (const m of list) { holder.remove(m); box.add(m); }
+  list.box = box; list.base = [sx, sy, sz];
+  return list;
+}
+function setOutline(list, on) { if (!list || list.on === on) return; list.on = on; for (const m of list) m.visible = on; }
 function makeSprite(x, y, z, color, scale, opacity, fog = true) {
   const m = new THREE.SpriteMaterial({ map: TEX.glow, color, transparent: true, opacity, depthWrite: false, blending: THREE.AdditiveBlending, fog });
   m.userData.own = true;
@@ -1342,8 +1497,9 @@ function makeTape(idx, x, z) {
   for (const sx of [-1, 1]) addMesh(grp, CYL, TAPE_MAT.reel, [0.033 * sx, 0.019, 0.012], [0.013, 0.003, 0.013]);
   W.group.add(grp);
   const xr = []; addXray(grp, XRAY_TAPE, xr); W.xray.push(...xr);
+  const ol = outlineBox(grp, 0.3, 0.12, 0.2, 0.03);
   const glow = makeSprite(x, 0.25, z, 0xffd9a0, 1.4, 0.5, false);
-  W.pickups.push({ type: 'tape', idx, x, z, mesh: grp, glow, labelMat, hl: 0, ph: rr(0, 6), taken: false });
+  W.pickups.push({ type: 'tape', idx, x, z, mesh: grp, glow, labelMat, ol, hl: 0, ph: rr(0, 6), taken: false });
 }
 const MUFFIN_MAT = {
   cup: new THREE.MeshStandardMaterial({ color: 0x8fb3e0, roughness: 0.7 }),
@@ -1377,14 +1533,17 @@ function makeCabinet(i, k) {
   addObstacle(p.x, p.z, p.dx, Wd, D, Hh);
   W.cabinets.push({ x: p.x, z: p.z, fx: p.x - p.dx * (D / 2 + 0.6), fz: p.z - p.dz * (D / 2 + 0.6), doors, open: 0, searched: false });
 }
+// a battery: barely glowing from afar; up close it lights up, lifts and turns, like the tapes
 function makeBattery(x, z) {
   const grp = new THREE.Group(); grp.position.set(x, 0.058, z); grp.rotation.set(0, rr(0, 6.28), Math.PI / 2);
+  const band = MAT.batBand.clone(); band.emissive = new THREE.Color(0x7dff8a); band.emissiveIntensity = 0; band.userData.own = true;
   addMesh(grp, geo('batB', () => new THREE.CylinderGeometry(0.055, 0.055, 0.2, 14)), MAT.batBody, [0, 0, 0]);
-  addMesh(grp, geo('batL', () => new THREE.CylinderGeometry(0.057, 0.057, 0.1, 14)), MAT.batBand, [0, -0.03, 0]);
+  addMesh(grp, geo('batL', () => new THREE.CylinderGeometry(0.057, 0.057, 0.1, 14)), band, [0, -0.03, 0]);
   addMesh(grp, geo('batC', () => new THREE.CylinderGeometry(0.022, 0.022, 0.025, 10)), MAT.batCap, [0, 0.11, 0]);
   W.group.add(grp);
-  const glow = makeGlow(x, 0.12, z, 0x9dff9d, 0.5, 0.5);
-  W.pickups.push({ type: 'battery', x, z, mesh: grp, glow, taken: false });
+  const ol = outlineBox(grp, 0.13, 0.26, 0.13, 0);
+  const glow = makeSprite(x, 0.12, z, 0x9dff9d, 0.45, 0.12);
+  W.pickups.push({ type: 'battery', x, z, mesh: grp, glow, band, ol, hl: 0, ph: rr(0, 6), taken: false });
 }
 
 function populate() {
@@ -1975,8 +2134,8 @@ const EAR = new V3(), tmpH = new V3();   // where the player hears from: their h
 
 /* ================= GAME FLOW ================= */
 const els = {
-  hud: $('hud'), frags: [...$('frags').children], pc: $('pc'), bpct: $('bpct'), bfill: $('bfill'), batt: $('hud-batt'),
-  stam: $('hud-stam'), sfill: $('sfill'), tval: $('tval'), prompt: $('prompt'), toast: $('toast'),
+  hud: $('hud'), tapes: $('hud-tapes'), pc: $('pc'), cross: $('cross'), bpct: $('bpct'), bfill: $('bfill'), batt: $('hud-batt'),
+  stam: $('hud-stam'), sfill: $('sfill'), sghost: $('sghost'), tval: $('tval'), prompt: $('prompt'), toast: $('toast'), speed: $('speed-fx'),
   scent: $('scent'), stance: $('stance'),
   hide: $('hide'), danger: $('danger'), flashFx: $('flash'),
   heatA: $('heat-a'), heatB: $('heat-b'), tunnel: $('tunnel'), tired: $('tired'), fade: $('fade'), xrayFx: $('xray-fx'), frostFx: $('frost-fx'),
@@ -1994,8 +2153,11 @@ function resetPlayer() {
     breathB: 0.1, breathT: 1.2, breathOut: false, breathPh: 0,
     temp: CFG.TEMP_START, tempRiseT: rr(3, 5), tempPauseT: 0, heatT: 0, cooling: false, heatMsg: 0,
     face: 0, turnRate: 0, searching: null, searchT: 0, searchDur: 0, propelT: 0, undiesT: 0, glassesT: 0, iceLeft: 0, iceOn: false, iceCooling: false,
-    battery: CFG.BATTERY_MAX, flashOn: false, flick: 1, flickT: 0, expo: 1, tapes: 0,
-    ax: center(1), az: center(1), linger: 0, stepAcc: 0, bob: 0, target: null, hbT: 0, fov: 72,
+    battery: CFG.BATTERY_MAX, flashOn: false, flick: 1, flickT: 0, expo: 1, tapes: 0, lightDead: false, flickerT: 0, blinkT: 0,
+    ax: center(1), az: center(1), linger: 0, stepAcc: 0, bob: 0, target: null, hbT: 0, fov: 72, stamGhost: 1, ghostHold: 0,
+    // perks chosen in the loadout, and their timers
+    perks: new Set(loadout.perks), infStamT: 0, aseT: 0, aseFridge: null, headT: 0, headTape: null, scavUsed: false, scavBat: null,
+    evadeUsed: false, evadeSpeedT: 0, evadeHideT: 0, evadePending: false, stamLockT: 0, firstFridge: false,
   });
   // face down an open corridor
   const od = openDirs(1 * W.N + 1);
@@ -2003,6 +2165,9 @@ function resetPlayer() {
   player.face = player.yaw + Math.PI; player.pitch = -0.12;
   CAM.cur = CAM.dist; CAM.sideCur = CAM.side;
 }
+const hasPerk = id => !!(player.perks && player.perks.has(id));
+// The Voice can't sense you: Adam's Underwear, or Evasive Maneuvers
+const unseen = () => player.undiesT > 0 || player.evadeHideT > 0;
 function resetGoose() {
   const i = W.gooseStart, N = W.N;
   W.goose = {
@@ -2021,18 +2186,25 @@ function newGame() {
   buildWorld();
   scene.add(W.group);
   resetPlayer(); resetGoose(); spawnSurveillance();
+  if (hasPerk('headstart')) {   // the nearest tape (by walking distance) is outlined for the first seconds
+    const d = bfs(1, 1); let bd = 1e9;
+    for (const p of W.pickups) { if (p.type !== 'tape') continue; const v = d[tileOf(p.z) * W.N + tileOf(p.x)]; if (v >= 0 && v < bd) { bd = v; player.headTape = p; } }
+    player.headT = CFG.HEAD_REVEAL;
+  }
   gameTime = 0; shakeAmt = 0;
   JS.group.visible = false; jsLight.intensity = 0; jsLight2.intensity = 0;
   els.flashFx.style.opacity = 0; els.danger.style.opacity = 0;
   els.hide.hidden = true; els.toast.style.opacity = 0;
   for (const k in hudCache) delete hudCache[k];
-  els.frags.forEach(f => f.classList.remove('on'));
-  FL.init = false; clearSmoke(); resetAmbient(); resetScreenFx();
+  els.tapes.classList.remove('got');
+  FL.init = false; clearSmoke(); resetAmbient(); resetScreenFx(); hideSpeedLines();
   if (!GOOSE_XRAY.length) addXray(GOOSE_RIG.root, XRAY_GOOSE, GOOSE_XRAY);
+  if (!GOOSE_OL.length) addOutline(GOOSE_RIG.root, GOOSE_OL);
   for (const k in INV) INV[k] = 0;
+  INV[loadout.item] = 1;   // the item you chose to bring
   stopTape(); els.tape.hidden = true;
   DUSTY.root.rotation.set(0, 0, 0); DUSTY.root.position.y = 0;
-  els.stam.classList.remove('show', 'flash', 'crit', 'out');
+  els.stam.classList.remove('show', 'out', 'inf');
 }
 
 let locked = false, lockEverWorked = false, fallbackLook = false, lockTimer = null;
@@ -2062,7 +2234,7 @@ document.addEventListener('pointerlockerror', () => lockFailed());
 
 function startPlaying() {
   state = 'playing';
-  ['scr-start', 'scr-pause', 'scr-dead', 'scr-win', 'scr-settings'].forEach(id => $(id).hidden = true);
+  ['scr-start', 'scr-pause', 'scr-dead', 'scr-win', 'scr-settings', 'scr-perks', 'scr-skins'].forEach(id => $(id).hidden = true);
   els.hud.hidden = false;
   $('touch').hidden = !isMobile(); releaseTouches();
   AU.setAmbient(true);
@@ -2074,7 +2246,7 @@ function beginNewRun() {
   startPlaying();
   touch.run = false;
   if (isMobile()) tryFullscreen(); else requestLock();
-  toast('Find the 5 tapes.' + (isMobile() && innerHeight > innerWidth ? ' Turn your phone sideways for a wider view.' : ''), false, 5);
+  toast('Find the 5 tapes.' + (hasPerk('headstart') ? ' Headstart: the nearest tape is outlined.' : '') + (isMobile() && innerHeight > innerWidth ? ' Turn your phone sideways for a wider view.' : ''), false, 5);
   if (Math.random() < 0.001) playWhenReady('jafggm', { gain: 1.1 }, 1.2);   // 1 in 1000
   setTimeout(() => { if (state === 'playing' && W.goose) AU.honk(W.goose.x, W.goose.z, { pitch: 0.95, loud: 1.4 }); }, 3500);
 }
@@ -2096,7 +2268,7 @@ function caught() {
   if (state !== 'playing') return;
   state = 'caught';
   if (player.hidden) { player.hidden = null; els.hide.hidden = true; }
-  els.hud.hidden = true; $('touch').hidden = true;
+  els.hud.hidden = true; $('touch').hidden = true; hideSpeedLines();
   GOOSE_RIG.root.visible = false;
   JS.group.visible = true; JS.start = performance.now();
   jsLight.intensity = 3.2; jsLight2.intensity = 0.9; renderer.shadowMap.autoUpdate = true;
@@ -2106,7 +2278,7 @@ function caught() {
 }
 function showDead(reason) {
   state = 'dead';
-  $('dead-title').textContent = reason === 'heat' ? 'The heat took you.' : 'He found you.';
+  $('dead-title').textContent = reason === 'heat' ? 'The heat took you.' : 'The Voice found you.';
   JS.group.visible = false; jsLight.intensity = 0; jsLight2.intensity = 0;
   if (document.pointerLockElement) document.exitPointerLock();
   const m = Math.floor(gameTime / 60), s = Math.floor(gameTime % 60);
@@ -2125,7 +2297,7 @@ function win() {
   if (state !== 'playing') return;
   state = 'won';
   if (document.pointerLockElement) document.exitPointerLock();
-  els.hud.hidden = true; els.hide.hidden = true; $('touch').hidden = true; AU.setChase(0); AU.setAmbient(false);
+  els.hud.hidden = true; els.hide.hidden = true; $('touch').hidden = true; AU.setChase(0); AU.setAmbient(false); hideSpeedLines();
   const L = $('transcript'); L.innerHTML = ''; L.className = '';
   TAPE_TRANSCRIPTS.forEach((txt, i) => {
     const s = document.createElement('div'); s.className = 'strip';
@@ -2255,10 +2427,10 @@ function syncSettingsUI() {
     : 'Keyboard and mouse. WASD to move, Shift to run, Ctrl or C to crouch, F for the flashlight, E to use.';
   $('gfx-desc').textContent = settings.quality === 'high' ? 'Sharper image and flashlight shadows.' : 'Faster on phones and older computers. No flashlight shadows.';
   $('view-desc').textContent = firstPerson() ? 'You see through Dusty\'s eyes.' : 'The camera follows behind Dusty.';
-  $('flavor-desc').textContent = settings.flavor === 'on' ? 'Story and status messages such as "You\'ve caught a fever." are shown.' : 'Story and status messages are hidden. Everything they describe still happens.';
+  $('flavor-desc').textContent = settings.flavor === 'on' ? 'Captions like MERP and peww, and story and status messages like "You\'ve caught a fever.", are shown.' : "Only essential text is shown: prompts, items, pickups and perks. Everything else still happens, you just won't read about it.";
   $('keys-pc').hidden = isMobile(); $('keys-mobile').hidden = !isMobile();
   $('mode-note').textContent = isMobile()
-    ? 'Mobile controls. Play with your phone sideways. On iPhone, turn off silent mode to hear him.'
+    ? 'Mobile controls. Play with your phone sideways. On iPhone, turn off silent mode to hear The Voice.'
     : 'Computer controls. Change controls and graphics in Settings.';
 }
 function applySettings() {
@@ -2273,13 +2445,51 @@ document.querySelectorAll('[data-set]').forEach(b => b.addEventListener('click',
 $('set-sens').addEventListener('input', e => { settings.sens = +e.target.value; saveSettings(); syncSettingsUI(); });
 $('set-vol').addEventListener('input', e => { settings.vol = +e.target.value; saveSettings(); applySettings(); });
 $('btn-settings').addEventListener('click', () => openSettings('scr-start'));
+// perks and loadout: exactly 2 perks and 1 item
+function renderLoadout() {
+  $('perk-cards').innerHTML = Object.entries(PERKS).map(([id, k]) => `<button class="card" type="button" data-perk="${id}" aria-pressed="${loadout.perks.includes(id)}">${icon(id)}<b>${k.name}</b><span>${k.desc}</span></button>`).join('');
+  $('item-cards').innerHTML = Object.entries(LOADOUT_ITEMS).map(([id, k]) => `<button class="card" type="button" data-pick="${id}" aria-pressed="${loadout.item === id}">${icon(id)}<b>${k.name}</b><span>${k.desc}</span></button>`).join('');
+  $('perk-n').textContent = `${loadout.perks.length} / 2`; $('item-n').textContent = `${LOADOUT_ITEMS[loadout.item] ? 1 : 0} / 1`;
+  $('perks-done').disabled = !loadoutValid();
+  renderLoadoutSummary();
+}
+function renderLoadoutSummary() {
+  $('loadout-sum').innerHTML = loadoutValid()
+    ? loadout.perks.map(id => `<span class="chip">${icon(id)}${PERKS[id].name}</span>`).join('') + `<span class="chip">${icon(loadout.item)}${LOADOUT_ITEMS[loadout.item].name}</span>`
+    : '<span class="chip">Choose your perks</span>';
+}
+$('perk-cards').addEventListener('click', e => {
+  const b = e.target.closest('[data-perk]'); if (!b) return;
+  const id = b.dataset.perk, i = loadout.perks.indexOf(id);
+  if (i >= 0) loadout.perks.splice(i, 1);
+  else { loadout.perks.push(id); if (loadout.perks.length > 2) loadout.perks.shift(); }   // a third pick replaces your first
+  saveLoadout(); renderLoadout(); const nb = $('perk-cards').querySelector(`[data-perk="${id}"]`); if (nb) nb.focus();
+});
+$('item-cards').addEventListener('click', e => {
+  const b = e.target.closest('[data-pick]'); if (!b) return;
+  loadout.item = b.dataset.pick; saveLoadout(); renderLoadout(); const nb = $('item-cards').querySelector(`[data-pick="${loadout.item}"]`); if (nb) nb.focus();
+});
+$('btn-perks').addEventListener('click', () => { $('scr-start').hidden = true; $('scr-perks').hidden = false; renderLoadout(); });
+$('perks-done').addEventListener('click', () => { if (!loadoutValid()) return; saveLoadout(); $('scr-perks').hidden = true; $('scr-start').hidden = false; renderLoadoutSummary(); });
+$('btn-skins').addEventListener('click', () => { $('scr-start').hidden = true; $('scr-skins').hidden = false; });
+$('skins-back').addEventListener('click', () => { $('scr-skins').hidden = true; $('scr-start').hidden = false; });
 $('btn-settings-p').addEventListener('click', () => openSettings('scr-pause'));
 $('settings-done').addEventListener('click', closeSettings);
 
+// every switch, on or off, costs 0.6 s of battery
 function toggleFlash() {
   const P = player;
-  if (!P.flashOn && P.battery <= 0) { AU.click(); toast('The battery is dead. Find another one.', true); return; }
+  if (!P.flashOn && P.battery <= 0) { AU.click(); toast("The battery's dead. Find another one.", true); return; }
+  if (!P.flashOn && P.battery <= CFG.FLASH_TOGGLE_COST) { AU.click(); toast("There isn't enough charge to turn it on.", true, 2.4); return; }
   P.flashOn = !P.flashOn; AU.click();
+  P.battery = Math.max(0, P.battery - CFG.FLASH_TOGGLE_COST);
+  if (P.battery <= 0) flashDied(false);
+}
+function flashDied(wasOn = true) {
+  const P = player;
+  P.battery = 0; P.flashOn = false; P.lightDead = true;
+  if (wasOn) { AU.click(); toast('The flashlight died.', true, 3.2, true); }
+  if (hasPerk('scavenger') && !P.scavUsed) toast('Scavenger: the nearest battery is outlined.', false, 3.5);
 }
 function toggleCrouch() {
   if (player.hidden) return;
@@ -2294,19 +2504,26 @@ function interact() {
   if (tgt.kind === 'pickup') {
     const p = tgt.p;
     if (p.type === 'battery') {
-      if (P.battery >= CFG.BATTERY_MAX - 0.05) { toast('Your flashlight is already full.'); return; }
-      P.battery = Math.min(CFG.BATTERY_MAX, P.battery + CFG.BATTERY_PICKUP);
-      AU.battery(); toast('+10 seconds of flashlight.');
+      const scav = p === P.scavBat;   // Scavenger's outlined battery
+      if (!scav && P.battery >= CFG.BATTERY_MAX - 0.05) { toast("Your flashlight's already full."); return; }
+      P.battery = Math.min(CFG.BATTERY_MAX, P.battery + (scav ? CFG.SCAVENGER_PICKUP : CFG.BATTERY_PICKUP)); P.lightDead = false;
+      if (scav) { P.scavUsed = true; P.scavBat = null; }
+      AU.battery(); toast(scav ? `Scavenger: +${CFG.SCAVENGER_PICKUP} seconds of flashlight.` : `+${CFG.BATTERY_PICKUP} seconds of flashlight.`);
     } else {
       // tapes always play in order: the first one you find plays recording 1, the second recording 2, and so on
       P.tapes++; AU.click();
-      els.frags[P.tapes - 1].classList.add('on');
+      els.tapes.classList.remove('got'); void els.tapes.offsetWidth; els.tapes.classList.add('got');
       playTape(P.tapes);
-      if (P.tapes >= CFG.TAPES) { p.taken = true; p.mesh.visible = false; p.glow.visible = false; toast('That was the last tape.', false, 2); setTimeout(win, 900); return; }
+      if (hasPerk('headstart')) P.infStamT = CFG.HEAD_STAMINA;
+      if (hasPerk('ase')) {   // All Seeing Eye: The Voice, the surveillance geese and the nearest fridge, through walls
+        P.aseT = CFG.ASE_TIME; let bd = 1e9;
+        for (const f of W.fridges) { const d = Math.hypot(f.x - P.x, f.z - P.z); if (d < bd) { bd = d; P.aseFridge = f; } }
+      }
+      if (P.tapes >= CFG.TAPES) { p.taken = true; p.mesh.visible = false; p.glow.visible = false; toast('That was the last tape.', false, 2, true); setTimeout(win, 900); return; }
     }
     p.taken = true; p.mesh.visible = false; p.glow.visible = false;
   } else if (tgt.kind === 'spot') enterSpot(tgt.s);
-  else if (tgt.kind === 'fridge') toggleFridge(tgt.f);
+  else if (tgt.kind === 'fridge') toggleFridge(tgt.f, true);
   else if (tgt.kind === 'fsearch') startSearch(tgt.f);
   else if (tgt.kind === 'cabinet') startSearch(tgt.c);
 }
@@ -2318,8 +2535,8 @@ function enterSpot(s) {
   gooseHear(s.x, s.z, 3.5, { kind: 'hide', pri: 1.5, player: true });
   if (s.battery) {
     s.battery = false;
-    if (P.battery < CFG.BATTERY_MAX - 0.05) { P.battery = Math.min(CFG.BATTERY_MAX, P.battery + CFG.BATTERY_PICKUP); AU.battery(); toast(`Found a battery ${s.type === 'bed' ? 'under the bed' : 'in the locker'}. +10 seconds.`); }
-    else { s.battery = true; toast(`There's a battery in here, but your flashlight is full.`); }
+    if (P.battery < CFG.BATTERY_MAX - 0.05) { P.battery = Math.min(CFG.BATTERY_MAX, P.battery + CFG.BATTERY_PICKUP); P.lightDead = false; AU.battery(); toast(`Found a battery ${s.type === 'bed' ? 'under the bed' : 'in the locker'}. +${CFG.BATTERY_PICKUP} seconds.`); }
+    else { s.battery = true; toast("There's a battery in here, but your flashlight's full."); }
   }
 }
 function exitSpot() {
@@ -2334,10 +2551,10 @@ function exitSpot() {
 /* ================= ITEMS ================= */
 const INV = { muffin: 0, propel: 0, undies: 0, glasses: 0, ice: 0 };
 const ITEMS = {
-  muffin: { name: 'Blueberry muffin', key: 'Q', found: 'A blueberry muffin. Throw it and he will go for it.' },
-  propel: { name: 'Blueberry Propel', key: '1', found: 'Blueberry Propel! Drink it for 15 seconds of endless stamina.' },
-  undies: { name: "Adam's Underwear", key: '2', found: "Adam's Underwear! Put it on your head to become undetectable for 30 seconds." },
-  glasses: { name: "HardLife's Glasses", key: '3', found: "HardLife's Glasses! See him and the tapes through walls for 15 seconds." },
+  muffin: { name: 'Blueberry muffin', key: 'Q', found: "A blueberry muffin. Throw it and The Voice will go for it." },
+  propel: { name: 'Blueberry Propel', key: '1', found: 'Blueberry Propel! Drink it for 10 seconds of endless stamina and extra speed.' },
+  undies: { name: "Adam's Underwear", key: '2', found: "Adam's Underwear! Put it on your head and The Voice can't detect you for 30 seconds." },
+  glasses: { name: "HardLife's Glasses", key: '3', found: "HardLife's Glasses! See The Voice and the tapes through walls for 15 seconds." },
   ice: { name: 'Ice pack', key: '4', found: 'An ice pack. Use it anywhere to cool down by up to 2 degrees.' },
 };
 function giveItem(kind) {
@@ -2358,9 +2575,9 @@ function useItem(kind) {
   if (!INV[kind]) return;
   if (kind === 'muffin') { if (P.hidden) { toast("You can't throw from in here."); return; } throwMuffin(); return; }
   INV[kind]--;
-  if (kind === 'propel') { P.propelT = CFG.PROPEL_TIME; if (P.stamina < CFG.STAMINA_MAX) P.stamShowT = 3; P.stamina = CFG.STAMINA_MAX; P.exhausted = false; AU.drink(); toast('Endless stamina, a little faster, wider view. 15 seconds.', false, 3); }
-  if (kind === 'undies') { P.undiesT = CFG.UNDIES_TIME; P.linger = 0; if (!AU.play('supadam', { gain: 1.2 })) AU.paper(); toast("Adam's Underwear is on your head. He can't detect you for 30 seconds.", false, 3.5); }
-  if (kind === 'glasses') { P.glassesT = CFG.GLASSES_TIME; AU.click(); toast("HardLife's Glasses on. You can see him and the tapes through walls.", false, 3); }
+  if (kind === 'propel') { P.propelT = CFG.PROPEL_TIME; if (P.stamina < CFG.STAMINA_MAX) P.stamShowT = 3; P.stamina = CFG.STAMINA_MAX; P.exhausted = false; AU.drink(); toast('Endless stamina and 11% more speed for 10 seconds.', false, 3); }
+  if (kind === 'undies') { P.undiesT = CFG.UNDIES_TIME; P.linger = 0; if (!AU.play('supadam', { gain: 1.2 })) AU.paper(); toast("Adam's Underwear is on your head. The Voice can't detect you for 30 seconds.", false, 3.5); }
+  if (kind === 'glasses') { P.glassesT = CFG.GLASSES_TIME; AU.click(); toast("HardLife's Glasses are on. You can see The Voice and the tapes through walls.", false, 3); }
 }
 function throwMuffin() {
   const P = player; INV.muffin--;
@@ -2370,7 +2587,7 @@ function throwMuffin() {
   const m = { x: tmpH.x, y: Math.max(1.0, tmpH.y), z: tmpH.z, vx: d.x * 9, vy: d.y * 9 + 3.2, vz: d.z * 9, mesh, landed: false, gone: false, spin: rr(5, 9) };
   if (isWallAt(m.x, m.z)) { m.x = P.x; m.z = P.z; }
   mesh.position.set(m.x, m.y, m.z); W.group.add(mesh); W.thrown.push(m);
-  AU.click(); toast('You threw the muffin.', false, 1.5);
+  AU.click(); toast('You threw the muffin.', false, 1.5, true);
 }
 function updateThrown(dt) {
   for (const m of W.thrown) {
@@ -2395,7 +2612,7 @@ function muffinLanded(m) {
   // it forgets your trail
   P.linger = 0; P.ax = P.x; P.az = P.z; G.scent = false; G.knowT = 0; G.lastSeen = { x: m.x, z: m.z };
   if (!gooseVoice(G, 'muffins', 'BLUEBERRY MUFFINS', { maxD: 95, gain: 1.35, urgent: true, beak: 1.2, range: 60 })) AU.honk(G.x, G.z, { pitch: 1.2, loud: 1.3 });
-  toast('He smells the muffin. He forgot about you.', false, 3, true);
+  toast('The Voice smells the muffin. It forgot about you.', false, 3, true);
 }
 function gooseAfterMuffin(G) {
   const next = W.thrown.find(m => m.landed && !m.gone);
@@ -2409,11 +2626,12 @@ function startSearch(c) {
   AU.rummage(c.x, c.z, P.searchDur);
   gooseHear(c.x, c.z, 7, { kind: 'search', pri: 1.5, player: true });
 }
-function cancelSearch() { player.searching = null; toast('You stopped searching.', false, 1.2); }
+function cancelSearch() { player.searching = null; toast('You stopped searching.', false, 1.2, true); }
 function finishSearch(c) {
   c.searched = true; player.searching = null;
   const r = Math.random() * 100;
-  if (c.isFridge) {   // refrigerator: 30% muffin, 15% ice pack, 55% nothing
+  if (c.isFridge) {   // refrigerator: 30% muffin, 15% ice pack, 55% nothing (Hypothermia: the first one you open has an ice pack)
+    if (c.iceGuaranteed) { c.iceGuaranteed = false; giveItem('ice'); return; }
     if (r < 30) giveItem('muffin');
     else if (r < 45) giveItem('ice');
     else toast('Nothing in here.', false, 1.8);
@@ -2443,17 +2661,37 @@ function playTape(n) {
   const buf = AU.samples['tape' + n];
   TAPEUI.n = n; TAPEUI.t = 0; TAPEUI.dur = buf ? buf.duration : 3;
   els.tapeH.textContent = `Tape ${n} of ${CFG.TAPES}`;
-  els.tapeS.textContent = tapeSrc ? 'Playing' : 'This tape will not play here.';
+  els.tapeS.textContent = tapeSrc ? 'Playing' : "This tape won't play here.";
   els.tape.hidden = false;
 }
 function updateItems(dt) {
   const P = player;
-  for (const [k, msg] of [['propelT', 'The Propel wore off.'], ['undiesT', "Adam's Underwear fell off. He can sense you again."], ['glassesT', "HardLife's Glasses stopped working."]]) {
+  for (const [k, msg] of [['propelT', 'The Propel wore off.'], ['undiesT', "Adam's Underwear fell off. The Voice can sense you again."], ['glassesT', "HardLife's Glasses stopped working."]]) {
     if (P[k] > 0) { P[k] -= dt; if (P[k] <= 0) { P[k] = 0; toast(msg, k === 'undiesT', 2.5, true); } }
   }
+  updatePerks(dt);
   const xr = P.glassesT > 0;
   if (FX.xray !== xr) { FX.xray = xr; for (const x of GOOSE_XRAY) x.visible = xr; for (const x of W.xray) x.visible = xr; }
   updateThrown(dt); updateCabinets(dt);
+}
+// perk timers, and what each perk is pointing at right now
+function updatePerks(dt) {
+  const P = player;
+  for (const k of ['infStamT', 'aseT', 'headT', 'evadeSpeedT', 'evadeHideT', 'flickerT', 'blinkT']) if (P[k] > 0) P[k] = Math.max(0, P[k] - dt);
+  if (P.evadePending && P.evadeSpeedT <= 0 && P.evadeHideT <= 0) {   // Evasive Maneuvers is over: stamina empties and stays empty
+    P.evadePending = false; P.stamina = 0; P.exhausted = true; P.stamLockT = CFG.EVADE_LOCK; P.sprinting = false; touch.run = false;
+    toast("Evasive Maneuvers wore off. You're out of breath.", true, 2.6);
+  }
+  P.scavBat = null;
+  if (hasPerk('scavenger') && !P.scavUsed && P.lightDead) {
+    let bd = 1e9;
+    for (const p of W.pickups) { if (p.type !== 'battery' || p.taken) continue; const d = Math.hypot(p.x - P.x, p.z - P.z); if (d < bd) { bd = d; P.scavBat = p; } }
+  }
+}
+function startEvasive() {
+  const P = player; P.evadeUsed = true; P.evadePending = true;
+  P.evadeSpeedT = CFG.EVADE_SPEED_T; P.evadeHideT = CFG.EVADE_HIDE_T;
+  toast("Evasive Maneuvers! Double speed for 3 seconds, and The Voice can't detect you for 8.", false, 3.5);
 }
 function playWhenReady(key, o, wait) {
   let tries = 0;
@@ -2482,7 +2720,7 @@ function findInteract() {
       bestD = d;
       const left = 1 - f.used / CFG.FRIDGE_POWER;
       best = f.open && !f.searched ? { kind: 'fsearch', f, label: 'Search the refrigerator' }
-        : { kind: 'fridge', f, label: (f.open ? 'Close the refrigerator' : 'Open the refrigerator') + (!f.powered ? ' (no power)' : left < 0.3 ? ' (low power)' : '') };
+        : { kind: 'fridge', f, label: (f.open ? 'Close the refrigerator' : 'Open the refrigerator') + (!f.powered ? ' (no power)' : left < CFG.FRIDGE_LOW ? ' (low power)' : '') };
     }
   }
   for (const c of W.cabinets) {
@@ -2529,14 +2767,18 @@ function updatePlayer(dt) {
     const canRun = !P.exhausted && P.stamina > 0 && !HE.noRun;
     if (shift && moving && P.crouch && canRun) P.crouch = false;
     P.sprinting = shift && moving && canRun && !P.crouch;
-    const speed = (P.sprinting ? CFG.SPRINT : (P.crouch ? CFG.CROUCH : CFG.WALK)) * analog * HE.speed * (P.propelT > 0 ? 1.1 : 1);
+    let mult = HE.speed;
+    if (P.propelT > 0) mult *= CFG.PROPEL_SPEED;
+    if (P.evadeSpeedT > 0) mult *= 2;
+    if (P.exhausted && !P.sprinting && !P.crouch && hasPerk('endurance')) mult *= CFG.ENDURANCE_WALK;
+    const speed = (P.sprinting ? CFG.SPRINT : (P.crouch ? CFG.CROUCH : CFG.WALK)) * analog * mult;
     const fx = -Math.sin(P.yaw), fz = -Math.cos(P.yaw), rx = Math.cos(P.yaw), rz = -Math.sin(P.yaw);
     const tvx = (fx * iz + rx * ix) * speed, tvz = (fz * iz + rz * ix) * speed;
     const a = 1 - Math.exp(-dt * 12);
     P.vx += (tvx - P.vx) * a; P.vz += (tvz - P.vz) * a;
     const ox = P.x, oz = P.z;
-    P.x += P.vx * dt; collide(P, CFG.PLAYER_R);
-    P.z += P.vz * dt; collide(P, CFG.PLAYER_R);
+    const subs = Math.max(1, Math.ceil(Math.hypot(P.vx, P.vz) * dt / 0.2));   // small steps, so a fast player can't clip through furniture
+    for (let k = 0; k < subs; k++) { P.x += P.vx * dt / subs; collide(P, CFG.PLAYER_R); P.z += P.vz * dt / subs; collide(P, CFG.PLAYER_R); }
     const moved = Math.hypot(P.x - ox, P.z - oz);
     P.speedNow = moved / Math.max(dt, 1e-4);
     if (moving && moved > 0.0005) {
@@ -2551,17 +2793,22 @@ function updatePlayer(dt) {
   updateBreathing(dt);
   updateFridges(dt);
   updateTemperature(dt);
-  // flashlight battery
+  // flashlight battery: drains while on, trickles back while off (1 second of light per 10 seconds)
   if (P.flashOn) {
     P.battery -= dt;
-    if (P.battery <= 0) { P.battery = 0; P.flashOn = false; AU.click(); toast('The flashlight died.', true, 3.2, true); }
-  }
+    if (P.battery <= 0) flashDied();
+  } else if (P.battery < CFG.BATTERY_MAX) P.battery = Math.min(CFG.BATTERY_MAX, P.battery + CFG.BATTERY_REGEN * dt);
   const frac = P.battery / CFG.BATTERY_MAX;
   P.flickT -= dt;
-  if (P.flickT <= 0) { P.flickT = rr(0.04, 0.16); P.flick = frac < 0.15 && Math.random() < 0.35 ? rr(0.15, 0.6) : 1; }
+  if (P.flickT <= 0) {   // a weak battery sputters; so does the light for 5 s after you blind The Voice
+    P.flickT = rr(0.04, 0.16);
+    const shaky = P.flickerT > 0 ? 0.55 : frac < 0.15 ? 0.35 : 0;
+    P.flick = Math.random() < shaky ? rr(P.flickerT > 0 ? 0.03 : 0.15, 0.6) : 1;
+  }
   // eye adaptation: when the beam lands on something close, it is turned down so near surfaces don't burn out to white
   if (P.flashOn) { const k = clamp(Math.pow(beamHitDist() / 4.2, 0.9), 0.4, 1); P.expo += (k - P.expo) * (1 - Math.exp(-dt * 8)); } else P.expo = 1;
-  flash.intensity = P.flashOn ? 5.4 * (0.12 + 0.88 * frac) * P.flick * P.expo : 0;
+  const dip = P.blinkT > 0 ? 0.04 : 1;   // one quick flicker: a surveillance goose just went down
+  flash.intensity = P.flashOn ? 5.4 * (hasPerk('lightbringer') ? CFG.LIGHTBRINGER : 1) * (0.12 + 0.88 * frac) * P.flick * dip * P.expo : 0;
   flash.distance = 20 + 26 * frac; flash.angle = 0.38 + 0.1 * frac;
   renderer.shadowMap.autoUpdate = P.flashOn && flash.castShadow;
   // linger / scent
@@ -2590,7 +2837,7 @@ function updatePlayer(dt) {
     EAR.set(P.x, P.eye, P.z);
   }
   aura.position.set(EAR.x, EAR.y + 0.25, EAR.z);
-  const wantFov = ((fp ? 72 : 74) + (P.sprinting && P.speedNow > 2 ? 5 : 0)) * (P.propelT > 0 ? 1.25 : 1) + dis * 3.5 * Math.sin(gameTime * 1.13);
+  const wantFov = (fp ? 72 : 74) + (P.sprinting && P.speedNow > 2 ? 5 : 0) + dis * 3.5 * Math.sin(gameTime * 1.13);
   P.fov += (wantFov - P.fov) * (1 - Math.exp(-dt * 6));
   if (Math.abs(camera.fov - P.fov) > 0.01) { camera.fov = P.fov; camera.updateProjectionMatrix(); }
   DUSTY.root.visible = !fp && CAM.cur > 0.6;
@@ -2715,9 +2962,15 @@ function heatEffects() {
 const tempQ = () => Math.round(player.temp * 10) / 10;
 function updateStamina(dt, HE) {
   const P = player, MAX = CFG.STAMINA_MAX;
-  if (P.propelT > 0) {   // Blueberry Propel: endless stamina
+  if (P.propelT > 0 || P.infStamT > 0) {   // Blueberry Propel or Headstart: endless stamina
+    if (P.stamLockT > 0) P.stamLockT = Math.max(0, P.stamLockT - dt);
     if (P.stamina < MAX) P.stamShowT = 3; else if (P.stamShowT > 0) P.stamShowT -= dt;
     P.stamina = MAX; P.exhausted = false; P.consuming = false; P.sinceUse = 99; return;
+  }
+  if (P.stamLockT > 0) {   // after Evasive Maneuvers: empty, and it stays empty for 4 s
+    P.stamLockT -= dt; P.stamina = 0; P.exhausted = true; P.consuming = false; P.stamShowT = 0;
+    if (P.stamLockT <= 0) { P.stamLockT = 0; P.sinceUse = 999; }   // then recovery starts at once
+    return;
   }
   const running = P.sprinting && P.speedNow > 0.5;
   let drain = 0;
@@ -2732,7 +2985,7 @@ function updateStamina(dt, HE) {
   } else {
     P.sinceUse += dt;
     if (P.sinceUse >= CFG.STAMINA_DELAY + HE.delay && P.stamina < MAX) {
-      P.stamina = Math.min(MAX, P.stamina + CFG.STAMINA_REGEN * (P.crouch ? CFG.CROUCH_REGEN : 1) * dt);
+      P.stamina = Math.min(MAX, P.stamina + CFG.STAMINA_REGEN * (P.crouch ? CFG.CROUCH_REGEN : 1) * (P.exhausted && hasPerk('endurance') ? CFG.ENDURANCE_REGEN : 1) * dt);
       if (P.stamina >= MAX) P.stamShowT = 3;   // fully recovered: keep the bar up 3 more seconds
     } else if (P.stamShowT > 0) P.stamShowT -= dt;
     if (P.exhausted && P.stamina >= MAX) P.exhausted = false;
@@ -2805,14 +3058,15 @@ function setFridgePower(f, on) {
   if (on) { f.used = 0; f.warned = false; AU.fridgeOn(f.x, f.z); }
   else {
     f.offUntil = gameTime + CFG.FRIDGE_OFF; f.flickerT = 0.7; AU.fridgeOff(f.x, f.z);
-    if (Math.hypot(player.x - f.fx, player.z - f.fz) < 4) toast('The refrigerator is out of power. It needs time to come back on.', false, 3.5, true);
+    if (Math.hypot(player.x - f.fx, player.z - f.fz) < 4) toast("The refrigerator's out of power. It needs time to come back on.", false, 3.5, true);
   }
 }
-function toggleFridge(f) {
+function toggleFridge(f, byPlayer) {
   f.open = !f.open;
+  if (byPlayer && f.open && hasPerk('hypothermia') && !player.firstFridge) { player.firstFridge = true; if (!f.searched) f.iceGuaranteed = true; }
   AU.fridgeDoor(f.x, f.z, f.open);
   gooseHear(f.x, f.z, CFG.FRIDGE_NOISE, { kind: 'fridge', pri: 2, player: false, exact: true });
-  if (f.open && f.powered) for (let k = 0; k < 10; k++) emitSmoke(f, true);
+  if (f.open && f.powered && f.used < CFG.FRIDGE_POWER * (1 - CFG.FRIDGE_LOW)) for (let k = 0; k < 10; k++) emitSmoke(f, true);
 }
 let humT = 0;
 function updateFridges(dt) {
@@ -2822,13 +3076,15 @@ function updateFridges(dt) {
     if (!f.powered && gameTime >= f.offUntil) setFridgePower(f, true);   // cooldown runs whether or not you are nearby
     f.anim += ((f.open ? 1 : 0) - f.anim) * (1 - Math.exp(-dt * 7));
     f.door.rotation.y = -1.75 * f.anim * f.anim * (3 - 2 * f.anim);
-    const cold = f.open && f.powered, left = f.powered ? clamp(1 - f.used / CFG.FRIDGE_POWER, 0, 1) : 0;
+    const left = f.powered ? clamp(1 - f.used / CFG.FRIDGE_POWER, 0, 1) : 0, low = f.powered && left < CFG.FRIDGE_LOW;
+    const cold = f.open && f.powered && !low;   // a fridge on low power can't cool you
+    if (low) { f.used += dt; if (f.used >= CFG.FRIDGE_POWER) { setFridgePower(f, false); continue; } }   // it runs itself down, then recharges
     let light = f.powered ? 0.12 + 0.78 * left : 0;
     if (f.flickerT > 0) { f.flickerT -= dt; light = Math.random() < 0.5 ? 0.9 : 0.05; }   // sputters as it dies
     f.innerMat.emissiveIntensity = light;
     if (!f.powered) { f.ledMat.emissive.setHex(0xff2414); f.ledMat.emissiveIntensity = 1.2; }
-    else if (left > 0.4) { f.ledMat.emissive.setHex(0x3cff74); f.ledMat.emissiveIntensity = 1.4; }
-    else if (left > 0.15) { f.ledMat.emissive.setHex(0xffaa22); f.ledMat.emissiveIntensity = 1.4; }
+    else if (left >= 0.6) { f.ledMat.emissive.setHex(0x3cff74); f.ledMat.emissiveIntensity = 1.4; }
+    else if (!low) { f.ledMat.emissive.setHex(0xffaa22); f.ledMat.emissiveIntensity = 1.4; }
     else { f.ledMat.emissive.setHex(0xff2414); f.ledMat.emissiveIntensity = Math.sin(gameTime * 10) > 0 ? 1.6 : 0.15; }
     f.glow.material.opacity = cold ? 0.22 * f.anim * (0.25 + 0.75 * left) : 0;
     if (cold) { f.smokeAcc += dt * 6; while (f.smokeAcc >= 1) { f.smokeAcc -= 1; emitSmoke(f, false); } }
@@ -2837,11 +3093,10 @@ function updateFridges(dt) {
   P.cooling = false;
   if (best && P.temp > CFG.TEMP_FLOOR + 1e-6) {
     P.cooling = true;
-    P.temp = Math.max(CFG.TEMP_FLOOR, P.temp - CFG.COOL_RATE * dt);
+    P.temp = Math.max(CFG.TEMP_FLOOR, P.temp - CFG.COOL_RATE * (hasPerk('hypothermia') ? CFG.HYPO_COOL : 1) * dt);
     best.used += dt;   // cumulative cooling time: survives closing, reopening and walking away
-    if (!best.warned && best.used >= CFG.FRIDGE_POWER * 0.8) { best.warned = true; toast('This refrigerator is almost out of power.', false, 2.5, true); }
+    if (!best.warned && best.used >= CFG.FRIDGE_POWER * (1 - CFG.FRIDGE_LOW)) { best.warned = true; toast("This refrigerator's power is low. It can't cool you anymore.", false, 3); }
     if (P.temp <= CFG.TEMP_FLOOR + 1e-6) { P.temp = CFG.TEMP_FLOOR; P.tempPauseT = CFG.COOL_PAUSE; P.tempRiseT = rr(3, 5); toast('You feel cool again.', false, 2.5, true); }
-    if (best.used >= CFG.FRIDGE_POWER) setFridgePower(best, false);
   }
   P.iceCooling = false;
   if (!P.cooling && P.iceOn && P.iceLeft > 0 && P.temp > CFG.TEMP_FLOOR + 1e-6) {
@@ -2849,7 +3104,7 @@ function updateFridges(dt) {
     P.temp = Math.max(CFG.TEMP_FLOOR, P.temp - CFG.ICE_RATE * use); P.iceLeft -= use;
     P.cooling = true; P.iceCooling = true;
     if (P.temp <= CFG.TEMP_FLOOR + 1e-6) { P.temp = CFG.TEMP_FLOOR; P.tempPauseT = CFG.COOL_PAUSE; P.tempRiseT = rr(3, 5); toast('You feel cool again.', false, 2.5, true); }
-    if (P.iceLeft <= 1e-9) { P.iceLeft = 0; P.iceOn = false; toast('The ice pack has melted.', false, 2.5); }
+    if (P.iceLeft <= 1e-9) { P.iceLeft = 0; P.iceOn = false; toast('The ice pack has melted.', false, 2.5, true); }
   }
   updateSmoke(dt);
   humT -= dt;
@@ -2915,7 +3170,7 @@ function gooseNoticesLight(G) {
 // o.exact: no position error. o.reveal: close and clear enough, it tells the goose exactly where the player is.
 function gooseHear(x, z, r, o = {}) {
   const G = W && W.goose; if (!G || state !== 'playing') return false;
-  if (G.state === 'bait' || G.state === 'blind' || (o.player && player.undiesT > 0)) return false;
+  if (G.state === 'bait' || G.state === 'blind' || (o.player && unseen())) return false;
   const d = Math.hypot(x - G.x, z - G.z);
   if (wallsBetween(G.x, G.z, x, z)) r *= 0.65;
   if (d > r) return false;
@@ -2936,8 +3191,8 @@ function gooseHear(x, z, r, o = {}) {
 }
 function hearMsg(G, kind, located) {
   if (G.msgCD > 0) return;
-  const m = located ? { breath: 'It heard you breathing. It knows where you are.' }[kind]
-    : { run: 'It heard you running.', breath: 'It heard you breathing.', fridge: 'It heard the refrigerator.' }[kind];
+  const m = located ? { breath: 'The Voice heard you breathing. It knows where you are.' }[kind]
+    : { run: 'The Voice heard you running.', breath: 'The Voice heard you breathing.', fridge: 'The Voice heard the refrigerator.' }[kind];
   if (!m) return;
   G.msgCD = 8;
   if (!located && kind === 'run') { voice(G, { pitch: 1.08, loud: 1.2 }); G.beakT = 0.4; }
@@ -2990,6 +3245,7 @@ function merp(G, urgent, loud) {
 }
 // on-screen caption placed toward where the goose is, sized by distance
 function caption(G, text, urgent, range = CFG.MERP_RANGE + 8) {
+  if (settings.flavor === 'off') return;   // MERP, peww, HONK and the rest are flavor text
   const P = player, dx = G.x - P.x, dz = G.z - P.z, d = Math.hypot(dx, dz) || 1;
   if (d > range * 1.6) return;
   const fx = -Math.sin(P.yaw), fz = -Math.cos(P.yaw), rx = Math.cos(P.yaw), rz = -Math.sin(P.yaw);
@@ -3018,7 +3274,7 @@ function gooseCorner(G) {
   let ax = G.x, az = G.z;
   if (G.path && G.path.length) { const w = G.path[Math.min(G.pathI, G.path.length - 1)]; ax = center(w.x); az = center(w.z); }
   const inView = !wallsBetween(G.x, G.z, tx, tz) || !wallsBetween(ax, az, tx, tz);
-  const finalCorner = tracking && !G.sees && P.undiesT <= 0 && G.swerveCD <= 0 && Math.hypot(tx - G.x, tz - G.z) < 20 && inView;
+  const finalCorner = tracking && !G.sees && !unseen() && G.swerveCD <= 0 && Math.hypot(tx - G.x, tz - G.z) < 20 && inView;
   if (finalCorner && gooseVoice(G, 'swerve', 'NEREW SWERVE', { maxD: 75, gain: 1.25, urgent: true, beak: 0.8 })) {
     G.swerveCD = 8; G.rearCD = 2.4; G.voiceBusyUntil = gameTime + (AU.samples.swerve ? AU.samples.swerve.duration : 0); return;
   }
@@ -3029,7 +3285,8 @@ function blindGoose(G) {
   G.lastSeen = { x: player.x, z: player.z };
   gooseSet(G, 'blind');
   AU.honk(G.x, G.z, { alert: true, pitch: 1.35, loud: 1.5 }); AU.flap(G.x, G.z); G.beakT = 1.2;
-  toast('You blinded it! Go!', false, 2.5, true);
+  player.flickerT = CFG.VOICE_FLICKER;   // the flashlight sputters for the next 5 seconds
+  toast('You blinded The Voice! Go!', false, 2.5, true);
 }
 function updateBlind(G, dt) {
   const P = player;
@@ -3052,7 +3309,7 @@ function updateGoose(dt) {
   G.stateT += dt; G.msgCD -= dt; G.forcePathT = (G.forcePathT || 0) - dt;
   const dx = P.x - G.x, dz = P.z - G.z; G.dist = Math.hypot(dx, dz);
   G.senseT -= dt;
-  const numb = G.state === 'blind' || G.state === 'bait' || P.undiesT > 0;   // blind, busy with a muffin, or you are undetectable
+  const numb = G.state === 'blind' || G.state === 'bait' || unseen();   // blind, busy with a muffin, or you're undetectable
   if (G.senseT <= 0) {
     G.senseT = 0.08;
     G.sees = !numb && gooseSees(G);
@@ -3078,20 +3335,21 @@ function updateGoose(dt) {
       else voice(G, { alert: true, pitch: 1.1, loud: 1.4 });
       if (G.stingCD <= 0) { AU.chaseSting(); G.stingCD = 4; }   // a new chase begins
       G.beakT = Math.max(G.beakT, 0.6); G.flapT = 0.7; G.merpT = 1.6;
-      toast('It sees you. RUN.', true, 2.5, true);
+      toast('The Voice sees you. Run!', true, 2.5, true);
+      if (hasPerk('evasive') && !P.evadeUsed) startEvasive();   // the first chase of the run
     }
   } else if (G.light) {
     G.knowT = 2.5; G.lastSeen = { x: P.x, z: P.z };
     if (G.state !== 'chase' && G.state !== 'alert' && G.state !== 'hunt') {
       gooseSet(G, 'hunt'); voice(G, { pitch: 1.05, loud: 1.2 }); G.beakT = 0.4;
-      toast('It noticed your light.', true, 3.2, true);
+      toast('The Voice noticed your light.', true, 3.2, true);
     }
   }
   const scentReady = P.linger >= CFG.LINGER_TIME && G.state !== 'bait' && G.state !== 'blind';
   if (scentReady && G.state !== 'chase' && G.state !== 'alert' && !G.scent) {
     G.scent = true; if (G.state !== 'hunt') gooseSet(G, 'hunt');
     AU.sniff(G.x, G.z, true); AU.sniff(G.x, G.z, false);
-    toast('It caught your scent.', true, 3.2, true);
+    toast('The Voice caught your scent.', true, 3.2, true);
   }
   if (!scentReady && G.scent) G.scent = false;
 
@@ -3172,7 +3430,7 @@ function updateGoose(dt) {
     if (G.cornerCD <= 0 && turned > 1.1) { G.cornerCD = 1.2; G.hHist.length = 0; gooseCorner(G); }
   } else G.hHist.length = 0;
   // DaNaNaNaNa: it is about to get you
-  const closing = (G.state === 'chase' || G.state === 'alert' || (G.state === 'hunt' && (G.knowT > 0 || G.scent))) && P.undiesT <= 0;
+  const closing = (G.state === 'chase' || G.state === 'alert' || (G.state === 'hunt' && (G.knowT > 0 || G.scent))) && !unseen();
   if (closing && G.dist < 6.5 && G.dananaArmed) {
     if (AU.play('danana', { gain: 1.1 })) { caption(G, 'DaNaNaNaNa', true); G.merpT = Math.max(G.merpT, 2.2); }
     G.dananaArmed = false;
@@ -3210,7 +3468,7 @@ function updateGoose(dt) {
   animateGoose(G, dt, moving);
 
   // catching
-  if (G.state === 'blind' || G.state === 'bait' || P.undiesT > 0) { /* preoccupied, blind, or can't sense you */ }
+  if (G.state === 'blind' || G.state === 'bait' || unseen()) { /* preoccupied, blind, or can't sense you */ }
   else if (!P.hidden) {
     if (G.dist < CFG.CATCH && (G.sees || G.state === 'chase' || G.state === 'alert' || G.state === 'hunt')) caught();
   } else if (G.state === 'hunt' && (G.knowT > 0 || G.scent)) {
@@ -3235,12 +3493,12 @@ function animateGoose(G, dt, moving, R = GOOSE_RIG) {
   if (G.state === 'blind') neckWant = -0.35 + Math.sin(gameTime * 13) * 0.25;
   if (G.state === 'bait' && G.baitPhase === 'eat') neckWant = 1.05 + Math.abs(Math.sin(gameTime * 9)) * 0.25;
   if (sitting) neckWant = 1.25;
-  if (G.state === 'alarm') neckWant = -0.3;
+  if (G.state === 'follow') neckWant = moving ? 0.35 : -0.3;
   G.neckX += (neckWant - G.neckX) * k; R.neck.rotation.x = G.neckX;
   let headWant = 0;
   if (G.state === 'search' && G.searchPhase === 'look') headWant = Math.sin(G.stateT * 1.7) * 0.85;
   else if (G.state === 'patrol' && !G.target) headWant = Math.sin(gameTime * 0.9) * 0.6;
-  else if (G.state === 'chase' || G.state === 'alert' || G.state === 'alarm') headWant = clamp(angDiff(G.yaw, Math.atan2(player.x - G.x, player.z - G.z)), -0.6, 0.6);
+  else if (G.state === 'chase' || G.state === 'alert' || G.state === 'follow') headWant = clamp(angDiff(G.yaw, Math.atan2(player.x - G.x, player.z - G.z)), -0.6, 0.6);
   else if (G.state === 'blind') headWant = Math.sin(gameTime * 7.3) * 0.9;
   G.headYaw += (headWant - G.headYaw) * k; R.headPivot.rotation.y = G.headYaw;
   if (G.beakT > 0) G.beakT -= dt;
@@ -3252,8 +3510,9 @@ function animateGoose(G, dt, moving, R = GOOSE_RIG) {
 }
 
 /* ================= SURVEILLANCE GEESE ================= */
-// Two ordinary-sized geese that walk the halls very slowly, keep apart, and honk for the big goose when they
-// notice you. They never chase. 1.65 s of flashlight in their eyes switches one off for 45 s.
+// Three ordinary-sized geese that walk the halls very slowly and keep apart. Once one notices you it follows you,
+// honking so The Voice comes to it, until you outrun it or blind it. They never attack.
+// 0.8 s of flashlight in their eyes switches one off for 45 s (65 s with LightBringer).
 const SG_RIGS = [];
 function surveillanceRig(k) {
   if (SG_RIGS[k]) return SG_RIGS[k];
@@ -3262,6 +3521,7 @@ function surveillanceRig(k) {
   R.root.traverse(o => { if (o.userData.afro) o.visible = false; });   // plain geese, no afro
   R.ledMat = new THREE.MeshBasicMaterial({ color: 0xff2a1a });   // a little red recording light
   addMesh(R.headPivot, geo('sgled', () => new THREE.SphereGeometry(0.075, 8, 6)), R.ledMat, [0, 0.2, 0], null, null, false);
+  R.ol = addOutline(R.root, []);
   scene.add(R.root); SG_RIGS[k] = R; return R;
 }
 function spawnSurveillance() {
@@ -3269,6 +3529,7 @@ function spawnSurveillance() {
   const far = W.floors.filter(i => sd[i] >= 9 && !W.avoid[i] && i !== W.gooseStart);
   for (let k = 0; k < CFG.SG_COUNT; k++) {
     let c = far.filter(i => out.every(o => Math.hypot(center(i % N) - o.x, center((i / N) | 0) - o.z) > CFG.SG_SEPARATION * 1.3));
+    if (!c.length) c = far.filter(i => out.every(o => Math.hypot(center(i % N) - o.x, center((i / N) | 0) - o.z) > CFG.SG_SEPARATION * 0.6));
     if (!c.length) c = far;
     const i = pick(c), R = surveillanceRig(k); R.root.visible = true;
     out.push({ id: k, rig: R, x: center(i % N), z: center((i / N) | 0), r: CFG.SG_R, yaw: rr(0, 6.28), state: 'patrol', target: null,
@@ -3287,7 +3548,7 @@ function sgPatrolTarget(S) {
   if (!c.length) return null;
   const i = pick(c); return { x: center(i % N), z: center((i / N) | 0) };
 }
-// what a surveillance goose notices. Crouching: only when you are practically touching it, and it can't smell you.
+// what a surveillance goose notices. Crouching: only when you're practically touching it, and it can't smell you.
 function sgDetects(S) {
   const P = player;
   if (P.hidden || P.undiesT > 0) return false;
@@ -3302,7 +3563,7 @@ function sgDetects(S) {
   if ((dx * Math.sin(hy) + dz * Math.cos(hy)) / d < 0.25) return false;   // has to be looking your way
   return los3(S.x, CFG.SG_EYE, S.z, P.x, P.eye - 0.15, P.z);
 }
-// the big goose hears the honking and heads for where it came from, fast
+// The Voice hears the honking and heads for where it came from, fast
 function alertMainGoose(x, z) {
   const G = W.goose; if (!G) return false;
   if (G.state === 'chase' || G.state === 'alert' || G.state === 'bait' || G.state === 'blind') return false;
@@ -3328,45 +3589,57 @@ function updateSgBlind(S, dt) {
   }
   S.blindCharge = on ? S.blindCharge + dt : 0;   // looking away starts the count over
   if (S.blindCharge >= CFG.SG_BLIND_TIME) {
-    S.blindCharge = 0; S.state = 'disabled'; S.disabledT = CFG.SG_DISABLED; S.stateT = 0; S.flapT = 0.8; S.target = null; S.path = null;
+    const secs = CFG.SG_DISABLED + (hasPerk('lightbringer') ? CFG.LIGHTBRINGER_SG : 0);
+    S.blindCharge = 0; S.state = 'disabled'; S.disabledT = secs; S.stateT = 0; S.flapT = 0.8; S.target = null; S.path = null; S.lostT = 0;
     AU.honk(S.x, S.z, { pitch: 1.15, loud: 0.7 });
-    toast('Surveillance goose disabled for 45 seconds.', false, 2.5);
+    P.blinkT = 0.14;   // the flashlight flickers once: it worked
+    toast(`Surveillance goose disabled for ${secs} seconds.`, false, 2.5);
   }
 }
+function sgGiveUp(S, wait) { S.state = 'patrol'; S.target = null; S.path = null; S.waitT = wait ?? rr(1.5, 3); S.stateT = 0; S.lostT = 0; S.bestRem = 1e9; S.progT = 0; }
 function updateSurveillance(dt) {
   const P = player;
   for (const S of W.sgeese) {
-    S.stateT += dt; S.sepCD -= dt; S.occluded = wallsBetween(S.x, S.z, P.x, P.z);
+    S.stateT += dt; S.sepCD -= dt; S.forcePathT = (S.forcePathT || 0) - dt; S.occluded = wallsBetween(S.x, S.z, P.x, P.z);
     let moving = false;
     if (S.state === 'disabled') {
       S.curSpeed = 0; S.disabledT -= dt;
-      if (S.disabledT <= 0) { S.state = 'patrol'; S.target = null; S.waitT = 1; S.stateT = 0; }
+      if (S.disabledT <= 0) sgGiveUp(S, 1);
     } else {
       updateSgBlind(S, dt);
-      if (S.state !== 'disabled') {
-        const sees = sgDetects(S);
-        if (sees && S.state !== 'alarm') { S.state = 'alarm'; S.stateT = 0; S.honkT = 0; S.lostT = 0; toast('A surveillance goose spotted you. He knows where you are.', true, 3, true); }
-        if (S.state === 'alarm') {
-          S.curSpeed = Math.max(0, S.curSpeed - dt * 6); faceToward(S, P.x - S.x, P.z - S.z, dt, 5);
-          if (sees) S.lostT = 0; else S.lostT += dt;
+      if (S.state === 'patrol' && sgDetects(S)) {
+        S.state = 'follow'; S.stateT = 0; S.honkT = 0; S.lostT = 0; S.target = null; S.path = null; S.bestRem = 1e9; S.progT = 0;
+        toast("A surveillance goose spotted you. It's following you.", true, 3, true);
+      }
+      if (S.state === 'follow') {
+        // follows you until you outrun it or blind it; it waits outside if you hide. Adam's Underwear shakes it off.
+        const d = Math.hypot(P.x - S.x, P.z - S.z);
+        S.lostT = d > CFG.SG_OUTRUN ? S.lostT + dt : 0;
+        if (P.undiesT > 0 || S.lostT >= CFG.SG_OUTRUN_TIME) sgGiveUp(S);
+        else {
+          const tx = P.hidden ? P.hidden.ex : P.x, tz = P.hidden ? P.hidden.ez : P.z;
+          if (Math.hypot(tx - S.x, tz - S.z) > CFG.SG_KEEP) {
+            moveGoose(S, tx, tz, CFG.SG_FOLLOW_SPEED, dt); moving = true;
+            if (S.progT > 2.5) { S.bestRem = 1e9; S.progT = 0; }   // you keep moving, so "no progress" isn't stuck
+          } else { S.curSpeed = Math.max(0, S.curSpeed - dt * 8); faceToward(S, P.x - S.x, P.z - S.z, dt, 6); }
           S.honkT -= dt;
-          if (S.honkT <= 0 && S.lostT < 1) { S.honkT = CFG.SG_HONK_EVERY; sgHonk(S); }
-          if (S.lostT > 2.5) { S.state = 'patrol'; S.target = null; S.waitT = rr(1, 2); S.stateT = 0; }
+          if (S.honkT <= 0) { S.honkT = CFG.SG_HONK_EVERY; sgHonk(S); }
+        }
+      }
+      if (S.state === 'patrol') {
+        const near = W.sgeese.some(o => o !== S && o.state === 'patrol' && Math.hypot(o.x - S.x, o.z - S.z) < CFG.SG_SEPARATION * 0.6);
+        if (near && S.sepCD <= 0) { S.target = sgPatrolTarget(S); S.sepCD = 4; S.bestRem = 1e9; S.progT = 0; }   // drift apart
+        if (!S.target) {
+          S.curSpeed = Math.max(0, S.curSpeed - dt * 4); S.waitT -= dt;
+          if (S.waitT <= 0) { S.target = sgPatrolTarget(S); S.waitT = 2; S.bestRem = 1e9; S.progT = 0; S.stateT = 0; }
         } else {
-          const near = W.sgeese.some(o => o !== S && Math.hypot(o.x - S.x, o.z - S.z) < CFG.SG_SEPARATION * 0.6);
-          if (near && S.sepCD <= 0) { S.target = sgPatrolTarget(S); S.sepCD = 4; S.bestRem = 1e9; S.progT = 0; }   // drift apart
-          if (!S.target) {
-            S.curSpeed = Math.max(0, S.curSpeed - dt * 4); S.waitT -= dt;
-            if (S.waitT <= 0) { S.target = sgPatrolTarget(S); S.waitT = 2; S.bestRem = 1e9; S.progT = 0; S.stateT = 0; }
-          } else {
-            const rem = moveGoose(S, S.target.x, S.target.z, CFG.SG_SPEED, dt); moving = true;
-            if (rem < 0.7 || S.stateT > 70) { S.target = null; S.waitT = rr(2, 4.5); }
-          }
+          const rem = moveGoose(S, S.target.x, S.target.z, CFG.SG_SPEED, dt); moving = true;
+          if (rem < 0.7 || S.stateT > 70) { S.target = null; S.waitT = rr(2, 4.5); }
         }
       }
     }
     animateGoose(S, dt, moving, S.rig);
-    const blink = S.state === 'disabled' ? false : S.state === 'alarm' ? Math.sin(gameTime * 14) > 0 : Math.sin(gameTime * 3 + S.id) > 0.6;
+    const blink = S.state === 'disabled' ? false : S.state === 'follow' ? Math.sin(gameTime * 14) > 0 : Math.sin(gameTime * 3 + S.id) > 0.6;
     S.rig.ledMat.color.setHex(blink ? 0xff2a1a : 0x2a0606);
   }
 }
@@ -3456,6 +3729,20 @@ function updateFx(dt) {
     p.glow.position.y = p.mesh.position.y + 0.08; p.glow.scale.setScalar(1.3 + 1.8 * h);
     p.glow.material.opacity = (0.35 + 0.6 * h) * pulse; p.glow.material.depthTest = !xr;
   }
+  // batteries: a faint glint from afar; within about 4 m they light up, lift and turn
+  for (const p of W.pickups) {
+    if (p.type !== 'battery' || p.taken) continue;
+    const d = Math.hypot(p.x - player.x, p.z - player.z), want = clamp(1 - (d - 1) / 3, 0, 1);
+    p.hl += (want - p.hl) * (1 - Math.exp(-dt * 5));
+    const h = p.hl, pulse = 0.75 + 0.25 * Math.sin(gameTime * 3.4 + p.ph);
+    p.mesh.position.y = 0.058 + h * (0.22 + Math.sin(gameTime * 2.2 + p.ph) * 0.03);
+    p.mesh.rotation.y += dt * h * 1.8;
+    p.band.emissiveIntensity = 1.6 * h * pulse;
+    p.glow.position.y = p.mesh.position.y + 0.04; p.glow.scale.setScalar(0.45 + 1.1 * h);
+    p.glow.material.opacity = 0.12 + 0.7 * h * pulse;
+  }
+  updateOutlines();
+  updateSpeedLines(dt);
   updateAmbient(dt);
   updateScreenFx(dt);
   document.body.classList.toggle('lit', player.flashOn);
@@ -3467,18 +3754,56 @@ function updateFx(dt) {
   // rapid heartbeat for exactly as long as the chase lasts (one scheduler, so beats never stack)
   if (chase) { P.hbT -= dt; if (P.hbT <= 0) { AU.heart(0.6); P.hbT = 0.36; } } else P.hbT = 0;
 }
+// perk outlines through walls: All Seeing Eye, Headstart, Scavenger
+function updateOutlines() {
+  const P = player, ase = P.aseT > 0;
+  setOutline(GOOSE_OL, ase);
+  for (const S of W.sgeese) setOutline(S.rig.ol, ase);
+  for (const f of W.fridges) setOutline(f.ol, ase && f === P.aseFridge);
+  for (const p of W.pickups) {
+    const on = !p.taken && ((P.headT > 0 && p === P.headTape) || p === P.scavBat);
+    setOutline(p.ol, on);
+    if (on) {   // tapes and batteries are tiny: grow the outline with distance so it stays readable from far away
+      const k = Math.max(1, Math.hypot(p.x - camera.position.x, p.z - camera.position.z) / 6), [a, b, c] = p.ol.base;
+      p.ol.box.scale.set(a * k, b * k, c * k);
+    }
+  }
+}
+// Blueberry Propel: streaks rushing in from the edges of the screen
+const SPD = { on: false, g: null, w: 0, h: 0, t: 0 };
+function hideSpeedLines() { SPD.on = false; els.speed.classList.remove('on'); if (SPD.g) SPD.g.clearRect(0, 0, SPD.w, SPD.h); }
+function updateSpeedLines(dt) {
+  const P = player, on = P.propelT > 0;
+  if (on !== SPD.on) { if (on) { SPD.on = true; els.speed.classList.add('on'); } else hideSpeedLines(); }
+  if (!on) return;
+  SPD.t -= dt; if (SPD.t > 0) return; SPD.t = 1 / 30;
+  if (!SPD.g || SPD.w !== innerWidth || SPD.h !== innerHeight) { SPD.w = els.speed.width = innerWidth; SPD.h = els.speed.height = innerHeight; SPD.g = els.speed.getContext('2d'); }
+  const g = SPD.g, cx = SPD.w / 2, cy = SPD.h / 2, R = Math.hypot(cx, cy), k = 0.45 + 0.55 * clamp(P.speedNow / CFG.SPRINT, 0, 1);
+  const fade = clamp(P.propelT / 0.6, 0, 1);   // eases out in the last moment
+  g.clearRect(0, 0, SPD.w, SPD.h); g.lineCap = 'round';
+  for (let i = 0, n = Math.round(24 + 36 * k); i < n; i++) {
+    const a = Math.random() * Math.PI * 2, r0 = R * rr(0.48, 0.78), r1 = R * rr(0.95, 1.08), c = Math.cos(a), s = Math.sin(a);
+    g.strokeStyle = `rgba(236,246,255,${(rr(0.06, 0.26) * k * fade).toFixed(3)})`; g.lineWidth = rr(0.8, 2.8);
+    g.beginPath(); g.moveTo(cx + c * r0, cy + s * r0); g.lineTo(cx + c * r1, cy + s * r1); g.stroke();
+  }
+}
 function setText(key, el, v) { if (hudCache[key] !== v) { hudCache[key] = v; el.textContent = v; } }
 function setClass(key, el, cls, on) { const k = key + cls; if (hudCache[k] !== on) { hudCache[k] = on; el.classList.toggle(cls, on); } }
 function updateHUD(dt) {
   const P = player;
-  setText('pc', els.pc, `${P.tapes} / ${CFG.TAPES}`);
+  setText('pc', els.pc, `${P.tapes}/${CFG.TAPES}`);
+  // the reticle only shows when you're looking at something you can use
+  const aimOn = !!(P.target && P.target.kind !== 'leave');
+  if (hudCache.cross !== aimOn) { hudCache.cross = aimOn; els.cross.hidden = !aimOn; }
   // items you are carrying (click or tap to use) and what is active
   const invKey = Object.keys(ITEMS).map(k => INV[k]).join(',') + (P.iceLeft > 0 ? 'i' : '');
   if (hudCache.inv !== invKey) {
     hudCache.inv = invKey;
     els.inv.innerHTML = Object.keys(ITEMS).filter(k => INV[k] > 0 || (k === 'ice' && P.iceLeft > 0)).map(k => `<button class="slot" type="button" data-item="${k}"><b>${ITEMS[k].name}</b><span class="n">x${INV[k]}</span><kbd>${ITEMS[k].key}</kbd></button>`).join('');
   }
-  const act = [['propelT', 'Propel', CFG.PROPEL_TIME], ['undiesT', 'Undetectable', CFG.UNDIES_TIME], ['glassesT', 'X-ray', CFG.GLASSES_TIME], ['iceLeft', 'Ice pack', CFG.ICE_TIME]].filter(([k]) => P[k] > 0);
+  const act = [['propelT', 'Propel', CFG.PROPEL_TIME], ['infStamT', 'Endless stamina', CFG.HEAD_STAMINA], ['evadeSpeedT', 'Evasive speed', CFG.EVADE_SPEED_T],
+    ['evadeHideT', 'Unseen by The Voice', CFG.EVADE_HIDE_T], ['stamLockT', 'Winded', CFG.EVADE_LOCK], ['undiesT', 'Undetectable', CFG.UNDIES_TIME],
+    ['glassesT', 'X-ray', CFG.GLASSES_TIME], ['aseT', 'All Seeing Eye', CFG.ASE_TIME], ['headT', 'Tape revealed', CFG.HEAD_REVEAL], ['iceLeft', 'Ice pack', CFG.ICE_TIME]].filter(([k]) => P[k] > 0);
   const fxKey = act.map(([k]) => k + Math.ceil(P[k])).join('|') + (P.iceOn ? '' : 'p');
   if (hudCache.fx !== fxKey) {
     hudCache.fx = fxKey;
@@ -3497,8 +3822,12 @@ function updateHUD(dt) {
   // stamina bar: shows as soon as stamina is spent, stays up while it refills, then 3 more seconds once full
   const sf = clamp(P.stamina / CFG.STAMINA_MAX, 0, 1);
   const sfs = sf.toFixed(3); if (hudCache.sf !== sfs) { hudCache.sf = sfs; els.sfill.style.transform = `scaleX(${sfs})`; }
+  // ghost: what you just spent hangs on for a moment, then drains down to the real value
+  if (sf >= P.stamGhost) { P.stamGhost = sf; P.ghostHold = 0.45; } else if (P.ghostHold > 0) P.ghostHold -= dt; else P.stamGhost = Math.max(sf, P.stamGhost - dt * 0.6);
+  const sgs = P.stamGhost.toFixed(3); if (hudCache.sg !== sgs) { hudCache.sg = sgs; els.sghost.style.transform = `scaleX(${sgs})`; }
   setClass('st', els.stam, 'out', P.exhausted);
-  setClass('st', els.stam, 'show', P.consuming || sf < 1 || P.stamShowT > 0);
+  setClass('st', els.stam, 'inf', P.propelT > 0 || P.infStamT > 0);
+  setClass('st', els.stam, 'show', P.consuming || sf < 1 || P.stamShowT > 0 || P.propelT > 0 || P.infStamT > 0);
   // body temperature: light red from 99.8 F, deepening toward 104
   const tq = tempQ(), ts = tq.toFixed(1) + '°F';
   if (hudCache.temp !== ts) {
@@ -3526,7 +3855,7 @@ function updateHUD(dt) {
     setText('tbut', TB.use, !P.target ? 'Use' : P.target.kind === 'leave' ? 'Leave' : P.target.kind === 'spot' ? 'Hide' : P.target.kind === 'fridge' ? (P.target.f.open ? 'Close' : 'Open') : P.target.kind === 'cabinet' || P.target.kind === 'fsearch' ? 'Search' : 'Take');
   }
   const lf = P.linger / CFG.LINGER_TIME;
-  const scent = lf >= 1 ? 'It smells you. Move.' : lf > 0.55 ? 'Your scent is building up' : '';
+  const scent = lf >= 1 ? 'The Voice smells you. Move.' : lf > 0.55 ? "Your scent's building up" : '';
   setText('scent', els.scent, scent); els.scent.hidden = !scent || settings.flavor === 'off'; setClass('sc', els.scent, 'hot', lf >= 1);
   if (toastTimer > 0) { toastTimer -= dt; if (toastTimer <= 0) els.toast.style.opacity = 0; }
 }
@@ -3585,6 +3914,7 @@ function frame(now) {
   renderer.render(scene, camera);
 }
 applySettings();
+renderLoadoutSummary();
 resetJoy();
 requestAnimationFrame(frame);
 
@@ -3598,7 +3928,8 @@ addEventListener('resize', () => {
 // test hooks
 window.__gooseflesh = {
   get state() { return state; }, get W() { return W; }, player, AU, DBG, settings, touch, applySettings, AMB, AC, FX, FL, keys, heatEffects, updateAmbient,
-  camera, GOOSE_RIG, DUSTY, CAM, INV, useItem, giveItem, finishSearch, TAPEUI, CFG,
+  camera, GOOSE_RIG, DUSTY, CAM, INV, useItem, giveItem, finishSearch, TAPEUI, CFG, loadout, PERKS, hasPerk, renderLoadout, toggleFlash, GOOSE_OL, SG_RIGS, flash,
+  interact: () => interact(), blindVoice: () => blindGoose(W.goose), sgDetects: S => sgDetects(S),
   start: beginNewRun, caught: () => caught(), win: () => { player.tapes = CFG.TAPES; win(); },
   goose: () => W && W.goose, step: (n = 60, dt = 1 / 60) => { for (let i = 0; i < n; i++) { if (state !== 'playing') break; gameTime += dt; updatePlayer(dt); if (!DBG.freeze) { updateGoose(dt); if (state === 'playing') updateSurveillance(dt); } if (state === 'playing') { updateFx(dt); updateHUD(dt); } } },
 };
