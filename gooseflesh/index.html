@@ -34,7 +34,10 @@ body{font-family:var(--f-type);-webkit-font-smoothing:antialiased;user-select:no
 .fx{position:fixed;inset:0;pointer-events:none}
 #vignette{z-index:2;background:radial-gradient(ellipse at center,transparent 42%,rgba(0,0,0,.55) 78%,rgba(0,0,0,.94) 100%)}
 #danger{z-index:3;opacity:0;background:radial-gradient(ellipse at center,transparent 38%,rgba(120,0,0,.55) 85%,rgba(60,0,0,.9) 100%);transition:opacity .25s}
-#grain{z-index:4;opacity:.12;mix-blend-mode:screen;background-size:192px 192px;animation:grain .45s steps(5) infinite}
+#grain{z-index:4;opacity:.085;mix-blend-mode:screen;background-size:192px 192px;animation:grain .45s steps(5) infinite;transition:opacity .4s}
+body.lit #grain{opacity:.04}
+#xray-fx{z-index:3;opacity:0;transition:opacity .5s;background:radial-gradient(ellipse at center,transparent 55%,rgba(60,200,255,.18) 85%,rgba(40,160,230,.38) 100%)}
+#xray-fx.on{opacity:1}
 #flash{z-index:30;opacity:0;background:#fff}
 /* body-heat and exhaustion layers: opacity only, driven from JS */
 #heat-a{z-index:3;opacity:0;background:radial-gradient(ellipse at center,transparent 40%,rgba(205,45,32,.32) 72%,rgba(175,18,16,.72) 100%)}
@@ -53,11 +56,11 @@ body{font-family:var(--f-type);-webkit-font-smoothing:antialiased;user-select:no
 #hide.bed .slits{display:none}
 
 /* HUD */
-#hud{position:fixed;inset:0;pointer-events:none;z-index:10;color:var(--ink);text-transform:uppercase;letter-spacing:.14em;font-size:12px}
+#hud{position:fixed;inset:0;pointer-events:none;z-index:13;color:var(--ink);text-transform:uppercase;letter-spacing:.14em;font-size:12px}
 #hud .lbl{color:var(--dim)}
 #hud-pieces{position:absolute;top:calc(18px + env(safe-area-inset-top,0px));left:max(20px,env(safe-area-inset-left,0px));display:flex;align-items:center;gap:12px}
 .frags{display:flex;gap:5px}
-.frags i{display:block;width:13px;height:17px;background:rgba(216,205,176,.13);clip-path:polygon(0 8%,30% 0,62% 6%,100% 0,94% 38%,100% 70%,88% 100%,46% 93%,8% 100%,0 64%)}
+.frags i{display:block;width:18px;height:12px;border-radius:2px;background:rgba(216,205,176,.13)}
 .frags i.on{background:var(--paper);box-shadow:0 0 12px var(--ember)}
 #pc{font-variant-numeric:tabular-nums}
 #hud-batt{position:absolute;bottom:calc(22px + env(safe-area-inset-bottom,0px));left:max(20px,env(safe-area-inset-left,0px));display:grid;grid-template-columns:auto auto;align-items:center;column-gap:12px;row-gap:4px}
@@ -149,6 +152,35 @@ button.ghost:hover{background:rgba(221,214,198,.2)}
 .win-actions{display:flex;justify-content:center;gap:14px;flex-wrap:wrap;opacity:0;transition:opacity .8s}
 .win-actions.on{opacity:1}
 #mode-note{color:var(--dim)}
+/* items, effects, tape player, blind meter */
+#hud-tr{position:absolute;top:calc(14px + env(safe-area-inset-top,0px));right:max(18px,env(safe-area-inset-right,0px));display:flex;flex-direction:column;align-items:flex-end;gap:10px;max-width:62vw}
+#hud-inv{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end}
+#hud-inv .slot{pointer-events:auto;clip-path:none;display:flex;align-items:center;gap:8px;padding:7px 10px;font-size:11px;letter-spacing:.1em;background:rgba(8,8,10,.62);color:var(--ink);border:1px solid rgba(221,214,198,.3);border-radius:3px}
+#hud-inv .slot:hover{background:rgba(221,214,198,.16)}
+#hud-inv .slot b{font-weight:400}
+#hud-inv .slot .n{color:var(--ember)}
+#hud-inv kbd{font-size:10px;padding:0 5px}
+#hud-fx{display:flex;flex-direction:column;gap:7px;align-items:flex-end}
+.fxrow{display:flex;align-items:center;gap:10px;font-size:11px;color:#bfe9ff}
+.fxrow .bar{width:90px;height:4px}
+.fxrow .bar span{position:absolute;inset:0;background:#7fd3ff;transform-origin:left}
+#tape{position:absolute;right:max(28px,env(safe-area-inset-right,0px));top:30%;display:flex;gap:16px;align-items:center;padding:14px 18px;background:#131315;border:1px solid rgba(221,214,198,.22);border-radius:6px;box-shadow:0 10px 30px rgba(0,0,0,.7)}
+#tape .reels{display:flex;gap:10px}
+#tape .reels i{width:24px;height:24px;border-radius:50%;border:4px dotted var(--paper);box-sizing:border-box;animation:spin 1.3s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+#tape b{display:block;font-weight:400;font-size:13px;letter-spacing:.18em}
+#tape span{display:block;font-size:11px;color:var(--dim);text-transform:none;letter-spacing:.04em;margin:3px 0 8px}
+#tape .tbar{width:150px;height:3px;background:rgba(221,214,198,.15);overflow:hidden}
+#tape-p{display:block;height:100%;background:var(--ember);transform-origin:left;transform:scaleX(0)}
+#blind{position:absolute;left:50%;top:50%;width:46px;height:46px;margin:-23px 0 0 -23px}
+#blind svg{width:100%;height:100%;transform:rotate(-90deg)}
+#blind .trk{fill:none;stroke:rgba(255,255,255,.15);stroke-width:3}
+#blind .arc{fill:none;stroke:#fff3cf;stroke-width:3;stroke-dasharray:100.5;stroke-dashoffset:100.5}
+body.m #hud-tr{right:calc(72px + env(safe-area-inset-right,0px));max-width:52vw}
+body.m #hud-inv kbd{display:none}
+body.m #hud-inv .slot{padding:10px 12px}
+body.m #tape{right:auto;left:max(16px,env(safe-area-inset-left,0px));top:calc(44px + env(safe-area-inset-top,0px));padding:10px 14px}
+
 .chip{display:inline-block;font-size:11px;letter-spacing:.14em;text-transform:uppercase;padding:3px 9px;border-radius:999px;border:1px solid rgba(221,214,198,.35);background:rgba(255,255,255,.04)}
 
 /* MERP captions */
@@ -217,7 +249,7 @@ input[type=range]{width:100%;accent-color:var(--ember);height:28px}
   .keys{font-size:12px}
 }
 @media (prefers-reduced-motion:reduce){
-  h1,#grain,#scent.hot{animation:none}
+  h1,#grain,#scent.hot,#tape .reels i{animation:none}
   .strip,#secret .words span{transition-duration:.01s;transition-delay:0s}
 }
 </style>
@@ -231,13 +263,17 @@ input[type=range]{width:100%;accent-color:var(--ember);height:28px}
 <div class="fx" id="tunnel"></div>
 <div class="fx" id="tired"></div>
 <div class="fx" id="hide" hidden><div class="slits"></div></div>
+<div class="fx" id="xray-fx"></div>
 <div class="fx" id="fade"></div>
 <div class="fx" id="grain"></div>
 <div class="fx" id="flash"></div>
 
 <div id="hud" hidden>
-  <div id="hud-pieces"><span class="lbl">Letter</span><span class="frags" id="frags"><i></i><i></i><i></i><i></i><i></i></span><span id="pc">0 / 5</span></div>
+  <div id="hud-pieces"><span class="lbl">Tapes</span><span class="frags" id="frags"><i></i><i></i><i></i><i></i><i></i></span><span id="pc">0 / 5</span></div>
   <div id="cross"></div>
+  <div id="blind" hidden><svg viewBox="0 0 40 40"><circle class="trk" cx="20" cy="20" r="16"/><circle class="arc" id="blind-arc" cx="20" cy="20" r="16"/></svg></div>
+  <div id="hud-tr"><div id="hud-inv"></div><div id="hud-fx"></div></div>
+  <div id="tape" hidden><div class="reels"><i></i><i></i></div><div><b id="tape-h">Tape 1 of 5</b><span id="tape-s">Playing</span><div class="tbar"><span id="tape-p"></span></div></div></div>
   <div id="prompt" hidden></div>
   <div id="toast"></div>
   <div id="note" class="gone"><b id="note-h">Piece 1 of 5</b><span id="note-t"></span></div>
@@ -249,9 +285,9 @@ input[type=range]{width:100%;accent-color:var(--ember);height:28px}
 
 <section class="screen" id="scr-start">
   <div class="inner">
-    <p class="eyebrow">First-person horror. Headphones on.</p>
+    <p class="eyebrow">Third-person horror. Headphones on.</p>
     <h1>Goose&shy;flesh</h1>
-    <p class="lede">Five pieces of a torn letter are hidden in this maze. Find all five to read what it says.
+    <p class="lede">Five cassette tapes are hidden in this maze. Find all five to hear the whole story.
       Something enormous lives here with you. It <em>hears</em> you run and breathe. It <em>smells</em> you when you stay still. It <em>sees</em> your light.
       And it keeps getting hotter in here. Refrigerators cool you down.</p>
     <dl class="keys" id="keys-pc">
@@ -259,8 +295,10 @@ input[type=range]{width:100%;accent-color:var(--ember);height:28px}
       <dt><kbd>Shift</kbd> hold</dt><dd>Sprint. 10 seconds of stamina, and very loud.</dd>
       <dt><kbd>Ctrl</kbd> or <kbd>C</kbd></dt><dd>Crouch (toggle). Slow and nearly silent.</dd>
       <dt><kbd>R</kbd> hold</dt><dd>Hold your breath. Costs stamina, needs at least 22%.</dd>
-      <dt><kbd>F</kbd></dt><dd>Flashlight. 80 seconds of battery.</dd>
-      <dt><kbd>E</kbd></dt><dd>Pick up, hide, open and close refrigerators.</dd>
+      <dt><kbd>F</kbd></dt><dd>Flashlight. 80 seconds of battery. Hold it on his face to blind him.</dd>
+      <dt><kbd>E</kbd></dt><dd>Pick up, hide, open refrigerators, search cabinets.</dd>
+      <dt><kbd>Q</kbd></dt><dd>Throw a blueberry muffin. He can't resist them.</dd>
+      <dt><kbd>1</kbd> <kbd>2</kbd> <kbd>3</kbd></dt><dd>Propel, Adam's Underwear, HardLife's Glasses.</dd>
       <dt><kbd>Esc</kbd></dt><dd>Pause.</dd>
     </dl>
     <dl class="keys" id="keys-mobile" hidden>
@@ -270,7 +308,8 @@ input[type=range]{width:100%;accent-color:var(--ember);height:28px}
       <dt><span class="chip">Crouch</span></dt><dd>Slow and nearly silent.</dd>
       <dt><span class="chip">Breath</span></dt><dd>Hold to hold your breath. Costs stamina, needs at least 22%.</dd>
       <dt><span class="chip">Light</span></dt><dd>Flashlight. 80 seconds of battery.</dd>
-      <dt><span class="chip">Use</span></dt><dd>Pick up, hide, open and close refrigerators.</dd>
+      <dt><span class="chip">Use</span></dt><dd>Pick up, hide, open refrigerators, search cabinets.</dd>
+      <dt><span class="chip">Items</span></dt><dd>Tap an item at the top right to use it. Shine the light in his face to blind him.</dd>
     </dl>
     <div class="actions"><button id="btn-start" type="button">Enter the maze</button><button id="btn-settings" class="ghost" type="button">Settings</button></div>
     <p class="fine" id="mode-note"></p>
@@ -322,7 +361,7 @@ input[type=range]{width:100%;accent-color:var(--ember);height:28px}
 
 <section class="screen" id="scr-win" hidden>
   <div class="win-wrap">
-    <div class="win-head"><p class="eyebrow">All five pieces</p></div>
+    <div class="win-head"><p class="eyebrow">All five tapes</p></div>
     <div id="letter"></div>
     <div id="secret"><p class="eyebrow" id="secret-lbl" style="opacity:0;transition:opacity .6s">The secret message</p><div class="words" id="secret-words"></div></div>
     <div class="win-actions" id="win-actions"><button id="btn-again" type="button">Play again</button></div>
@@ -374,6 +413,9 @@ const CFG = {
   FRIDGES: 4, FRIDGE_POWER: 40, FRIDGE_OFF: 365, FRIDGE_RANGE: 2.1, FRIDGE_NOISE: 14,
   // how far the goose can hear breathing
   BREATH_R_MIN: 2.4, BREATH_R_MAX: 11, GASP_R: 22,
+  // defenses and items
+  BLIND_TIME: 0.6, BLIND_DUR: 3.5, BLIND_IMMUNE: 12, CABINETS: 10, SEARCH_TIME: 1.6,
+  PROPEL_TIME: 15, UNDIES_TIME: 30, GLASSES_TIME: 15, EAT_MIN: 5, EAT_MAX: 10,
 };
 
 const LETTER = [
@@ -384,6 +426,12 @@ const LETTER = [
   "I was wrong. I understood when I saw how he stares at the empty feed bucket. Put the pieces together and you'll see. I'm sorry I ate the last of the {bread}.",
 ];
 const SIGNATURE = 'The Caretaker';
+// recorded clips in ./audio. Anything missing falls back to the synthesized sound.
+const SAMPLE_FILES = {
+  merp: 'MERP.wav', rear: 'Rear.wav', eydam: 'EYDAM.wav', danana: 'DaNaNaNaNa.wav', peww: 'Peww.wav', swerve: 'Nerew_Swerve.wav',
+  kill: 'Pusssyyyyyyyyy.wav', jafggm: 'ja_fggm.wav', muffins: 'BLUEBERRY_MUFFINS.wav', supadam: 'Sup_Adam.wav',
+  tape1: 'LETTER_1.wav', tape2: 'LETTER_2.wav', tape3: 'LETTER_3.wav', tape4: 'LETTER_4.wav', tape5: 'LETTER_5.wav',
+};
 // [from F, stamina drain x, move speed x, extra recovery delay s]; 104 also disables running
 const HEAT_STEPS = [[104.0, 2.0, 0.75, 12], [103.4, 2.0, 0.80, 12], [102.6, 1.4, 0.88, 6.5], [102.0, 1.25, 0.90, 4], [101.3, 1.18, 0.92, 1.5], [100.5, 1.10, 0.95, 0]];
 const GRAFFITI = ['STAY COOL', 'HOLD YOUR BREATH', 'HE HEARS YOU RUN', 'DON\'T STAY STILL', 'LIGHTS OFF', 'HONK', 'HONK HONK HONK', 'IT CAN SMELL YOU', 'FIVE PIECES', 'NO EXIT', 'CROUCH', 'WHO COMBS HIS HAIR?', 'BREAD?', 'HIDE'];
@@ -762,6 +810,117 @@ function buildGooseRig() {
   return { root, body, neck, headPivot, jaw: head.jaw, inner: head.inner, wings, legs, innerOpen: true };
 }
 
+/* ================= PLAYER CHARACTER (third person) ================= */
+// A look is just data: add an entry here to make a new skin.
+const SKINS = {
+  dusty: { name: 'Dusty', skin: 0xc8916c, hair: 0x4a2e1d, jacket: 0x7a5d3f, trim: 0x54402c, shirt: 0x6d7a5a, pants: 0x2c3746, shoes: 0x2a1e15 },
+};
+const SKIN_MATS = {};
+function skinMats(id) {
+  if (SKIN_MATS[id]) return SKIN_MATS[id];
+  const S = SKINS[id] || SKINS.dusty, m = c => new THREE.MeshStandardMaterial({ color: c, roughness: 0.85 });
+  return (SKIN_MATS[id] = {
+    skin: m(S.skin), hair: m(S.hair), jacket: m(S.jacket), trim: m(S.trim), shirt: m(S.shirt), pants: m(S.pants), shoes: m(S.shoes),
+    eye: new THREE.MeshStandardMaterial({ color: 0x141414, roughness: 0.25 }),
+    torch: new THREE.MeshStandardMaterial({ color: 0x2a2a2c, roughness: 0.4, metalness: 0.6 }),
+    lens: new THREE.MeshBasicMaterial({ color: 0x55524a }),
+    undies: m(0xf0efe8), band: m(0x2f5fd0), frames: new THREE.MeshStandardMaterial({ color: 0x101010, roughness: 0.3 }),
+    shades: new THREE.MeshBasicMaterial({ color: 0x5fe0ff, transparent: true, opacity: 0.55 }),
+  });
+}
+function buildCharacter(id) {
+  const M = skinMats(id), B = geo('box'), CYL = geo('cyl', () => new THREE.CylinderGeometry(1, 1, 1, 10));
+  const root = new THREE.Group(); root.rotation.order = 'YXZ';
+  const hips = new THREE.Group(); hips.position.y = 0.95; root.add(hips);
+  addMesh(hips, B, M.pants, [0, -0.02, 0], [0.34, 0.2, 0.21]);
+  const spine = new THREE.Group(); spine.position.y = 0.06; hips.add(spine);
+  addMesh(spine, B, M.jacket, [0, 0.26, -0.005], [0.42, 0.48, 0.24]);
+  addMesh(spine, B, M.shirt, [0, 0.3, 0.118], [0.15, 0.34, 0.012]);
+  addMesh(spine, B, M.trim, [0, 0.52, -0.01], [0.32, 0.06, 0.23]);
+  addMesh(spine, B, M.trim, [0, 0.03, 0], [0.43, 0.05, 0.25]);
+  addMesh(spine, CYL, M.skin, [0, 0.57, 0], [0.055, 0.08, 0.055]);
+  const head = new THREE.Group(); head.position.set(0, 0.62, 0.01); spine.add(head);
+  addMesh(head, SPH, M.skin, [0, 0.1, 0], [0.105, 0.125, 0.115]);
+  addMesh(head, SPH, M.hair, [0, 0.165, -0.02], [0.112, 0.085, 0.118]);
+  for (const [x, y, z, r] of [[0.05, 0.22, 0.03, 0.045], [-0.04, 0.225, 0.01, 0.05], [0, 0.215, -0.06, 0.05], [0.07, 0.19, -0.05, 0.04], [-0.07, 0.19, -0.04, 0.04], [0.02, 0.2, 0.08, 0.04]])
+    addMesh(head, SPH, M.hair, [x, y, z], [r, r * 0.8, r]);
+  for (const sx of [-1, 1]) {
+    addMesh(head, SPH, M.skin, [0.105 * sx, 0.09, -0.005], [0.022, 0.035, 0.02]);
+    addMesh(head, geo('eyeC', () => new THREE.SphereGeometry(0.016, 8, 6)), M.eye, [0.038 * sx, 0.115, 0.1]);
+    addMesh(head, B, M.hair, [0.038 * sx, 0.145, 0.105], [0.04, 0.008, 0.01]);
+  }
+  addMesh(head, B, M.skin, [0, 0.085, 0.115], [0.022, 0.035, 0.025]);
+  const undies = new THREE.Group(); undies.visible = false; head.add(undies);   // Adam's Underwear, worn as a hat
+  addMesh(undies, SPH, M.undies, [0, 0.2, -0.01], [0.135, 0.095, 0.14]);
+  addMesh(undies, CYL, M.band, [0, 0.14, -0.01], [0.138, 0.028, 0.142]);
+  for (const sx of [-1, 1]) addMesh(undies, SPH, M.undies, [0.09 * sx, 0.155, 0.08], [0.05, 0.03, 0.04]);
+  const glasses = new THREE.Group(); glasses.visible = false; head.add(glasses);   // HardLife's Glasses
+  for (const sx of [-1, 1]) {
+    addMesh(glasses, geo('ring', () => new THREE.TorusGeometry(0.027, 0.006, 6, 14)), M.frames, [0.04 * sx, 0.115, 0.12]);
+    addMesh(glasses, geo('lensC', () => new THREE.CircleGeometry(0.026, 14)), M.shades, [0.04 * sx, 0.115, 0.121]);
+  }
+  addMesh(glasses, B, M.frames, [0, 0.118, 0.12], [0.03, 0.006, 0.006]);
+  const arms = [];
+  for (const sx of [-1, 1]) {
+    const sh = new THREE.Group(); sh.position.set(0.255 * sx, 0.46, 0); spine.add(sh);
+    addMesh(sh, CYL, M.jacket, [0, -0.15, 0], [0.058, 0.3, 0.058]);
+    const el = new THREE.Group(); el.position.y = -0.3; sh.add(el);
+    addMesh(el, CYL, M.jacket, [0, -0.13, 0], [0.05, 0.27, 0.05]);
+    addMesh(el, CYL, M.trim, [0, -0.255, 0], [0.053, 0.03, 0.053]);
+    const hand = new THREE.Group(); hand.position.y = -0.3; el.add(hand);
+    addMesh(hand, SPH, M.skin, [0, 0, 0], [0.045, 0.055, 0.035]);
+    arms.push({ sh, el, hand });
+  }
+  const torch = new THREE.Group(); torch.position.set(0, -0.03, 0.02); arms[1].hand.add(torch);   // points along the forearm
+  addMesh(torch, CYL, M.torch, [0, -0.07, 0], [0.022, 0.16, 0.022]);
+  addMesh(torch, CYL, M.torch, [0, -0.16, 0], [0.032, 0.04, 0.032]);
+  const lens = addMesh(torch, CYL, M.lens, [0, -0.181, 0], [0.028, 0.004, 0.028]);
+  const tip = new THREE.Object3D(); tip.position.y = -0.2; torch.add(tip);
+  const legs = [];
+  for (const sx of [-1, 1]) {
+    const hp = new THREE.Group(); hp.position.set(0.095 * sx, -0.07, 0); hips.add(hp);
+    addMesh(hp, CYL, M.pants, [0, -0.21, 0], [0.075, 0.43, 0.075]);
+    const kn = new THREE.Group(); kn.position.y = -0.43; hp.add(kn);
+    addMesh(kn, CYL, M.pants, [0, -0.2, 0], [0.065, 0.41, 0.065]);
+    addMesh(kn, B, M.shoes, [0, -0.43, 0.04], [0.1, 0.07, 0.24]);
+    legs.push({ hp, kn });
+  }
+  root.traverse(o => { if (o.isMesh) { o.castShadow = false; o.receiveShadow = false; } });
+  root.scale.setScalar(0.92);
+  return { root, hips, spine, head, arms, legs, torch, tip, lens, undies, glasses, pose: {} };
+}
+// Procedural animation in the style of the old Dead by Daylight survivors: stiff forward-leaning run with big
+// arm pumps, snappy turns into the direction of travel, low sneaking crouch, hands-on-knees when out of breath.
+function animateCharacter(C, dt, o) {
+  const k = 1 - Math.exp(-dt * 14), P = C.pose;
+  const set = (key, obj, axis, v) => { const cur = P[key] ?? v; const nv = cur + (v - cur) * k; P[key] = nv; obj.rotation[axis] = nv; };
+  const g = o.phase, sn = Math.sin(g), cs = Math.cos(g);
+  const full = o.run ? CFG.SPRINT : o.crouch ? CFG.CROUCH : CFG.WALK, mv = clamp(o.speed / full, 0, 1.15);
+  let legA = 0.5, kneeA = 0.65, armA = 0.42, elbow = 0.25, lean = 0.06 * mv, bob = 0.03, hipY = 0.95, hipBend = 0, kneeBend = 0.06;
+  if (o.run) { legA = 0.85; kneeA = 1.35; armA = 0.95; elbow = 1.35; lean = 0.32 * mv; bob = 0.06; }
+  if (o.crouch) { legA = 0.32; kneeA = 0.45; armA = 0.25; elbow = 0.5; lean = 0.55; bob = 0.02; hipY = 0.6; hipBend = -0.95; kneeBend = 1.55; }
+  let shL = sn * armA * mv, shR = -sn * armA * mv, elL = -elbow - 0.15 * mv, elR = -elbow - 0.15 * mv, rollL = 0, rollR = 0;
+  let thL = hipBend - sn * legA * mv, thR = hipBend + sn * legA * mv;
+  let knL = kneeBend + kneeA * mv * Math.max(0, cs), knR = kneeBend + kneeA * mv * Math.max(0, -cs);
+  let spineX = lean, headX = -lean * 0.7 - o.aimPitch * 0.35;
+  if (o.exhausted && mv < 0.1 && !o.crouch) {   // hands on knees, catching breath
+    spineX = 0.75; headX = -0.55; hipY = 0.88; thL = thR = -0.35; knL = knR = 0.4; shL = shR = -0.55; elL = elR = -0.25;
+  }
+  if (o.searching) { spineX = 0.5; hipY = 0.7; thL = thR = -0.8; knL = knR = 1.3; shL = -1.2 + Math.sin(o.t * 13) * 0.3; shR = -1.2 + Math.cos(o.t * 11) * 0.3; elL = elR = -0.4; }
+  if (o.holding) { shL = -2.2; elL = -1.9; rollL = 0.35; }   // hand over the mouth
+  if (o.flash && !o.searching) { shR = -Math.PI / 2 - o.aimPitch - spineX; elR = -0.12; rollR = 0.12; }   // flashlight aimed where you look
+  C.hips.position.y += ((hipY + bob * mv * (1 - Math.abs(sn))) - C.hips.position.y) * k;
+  set('spX', C.spine, 'x', spineX + Math.sin(o.breathPh) * 0.02 * (1 + o.breathB * 2));
+  set('spZ', C.spine, 'z', clamp(-o.turnRate * 0.035, -0.22, 0.22));
+  set('hdX', C.head, 'x', headX);
+  set('shL', C.arms[0].sh, 'x', shL); set('shR', C.arms[1].sh, 'x', shR);
+  set('rlL', C.arms[0].sh, 'z', -rollL); set('rlR', C.arms[1].sh, 'z', rollR);
+  set('elL', C.arms[0].el, 'x', elL); set('elR', C.arms[1].el, 'x', elR);
+  set('thL', C.legs[0].hp, 'x', thL); set('thR', C.legs[1].hp, 'x', thR);
+  set('knL', C.legs[0].kn, 'x', knL); set('knR', C.legs[1].kn, 'x', knR);
+}
+const DUSTY = buildCharacter('dusty'); DUSTY.root.visible = false;
+
 /* ================= SCENE ================= */
 const scene = new THREE.Scene();
 scene.background = new THREE.Color(0x000000);
@@ -770,12 +929,13 @@ const camera = new THREE.PerspectiveCamera(72, innerWidth / innerHeight, 0.04, 1
 camera.rotation.order = 'YXZ';
 scene.add(camera);
 
-const ambient = new THREE.AmbientLight(0x1d2638, 1.3); scene.add(ambient);
-const aura = new THREE.PointLight(0x8a9ab4, 0.8, 7, 2); aura.position.set(0, 0.15, 0); camera.add(aura);
-const flash = new THREE.SpotLight(0xfff0d4, 0, 34, 0.42, 0.5, 1.3);
+const ambient = new THREE.AmbientLight(0x1d2638, 0.7); scene.add(ambient);
+const aura = new THREE.PointLight(0x8a9ab4, 0.45, 5.5, 2); scene.add(aura);   // faint light around the player so they are not totally blind
+const fill = new THREE.PointLight(0x9aa8c0, 0.28, 4.2, 2); camera.add(fill);   // barely-there fill so you can make out Dusty from behind
+const flash = new THREE.SpotLight(0xfff0d4, 0, 40, 0.45, 0.45, 1.2);
 scene.add(flash); scene.add(flash.target);   // driven by updateFlashRig(): lags behind the camera and sways
 flash.castShadow = true; flash.shadow.mapSize.set(1024, 1024);
-flash.shadow.camera.near = 0.2; flash.shadow.camera.far = 34; flash.shadow.bias = -0.0006;
+flash.shadow.camera.near = 0.2; flash.shadow.camera.far = 40; flash.shadow.bias = -0.0006;
 
 const EMERG = [];
 for (let i = 0; i < 5; i++) {
@@ -789,6 +949,8 @@ for (let i = 0; i < 5; i++) {
 }
 
 const GOOSE_RIG = buildGooseRig(); scene.add(GOOSE_RIG.root);
+const GOOSE_XRAY = [];   // filled on the first new game (addXray is defined further down)
+scene.add(DUSTY.root);
 
 // jumpscare head, attached to the camera
 const JS = buildGooseHead();
@@ -819,6 +981,8 @@ menu.scene.fog = new THREE.FogExp2(0x000000, 0.1);
   menu.rim = new THREE.PointLight(0x7f9bd0, 1.6, 9, 2); menu.rim.position.set(0.6, 3.4, -3.2); ms.add(menu.rim);
   menu.rig = buildGooseRig(); menu.rig.root.position.set(0, 0, -0.6); menu.rig.root.rotation.y = -1.15; ms.add(menu.rig.root);
   menu.cam.position.set(-0.55, 1.15, 6.2);
+  menu.dusty = buildCharacter('dusty'); menu.dusty.root.position.set(0.45, 0, 3.0); menu.dusty.root.rotation.y = Math.PI + 0.12; ms.add(menu.dusty.root);
+  menu.torch = new THREE.SpotLight(0xfff0d4, 2.2, 14, 0.32, 0.5, 1.2); ms.add(menu.torch); ms.add(menu.torch.target);
 })();
 
 /* ================= WORLD STATE ================= */
@@ -953,7 +1117,7 @@ function disposeGroup(g) {
 
 function buildWorld() {
   const { g, N, rooms } = generateMaze(CELLS);
-  W = { g, N, rooms, group: new THREE.Group(), obstacles: [], spots: [], pickups: [], fridges: [], avoid: new Uint8Array(N * N), used: new Uint8Array(N * N), sideUsed: new Set(), floors: [], glows: [] };
+  W = { g, N, rooms, group: new THREE.Group(), obstacles: [], spots: [], pickups: [], fridges: [], cabinets: [], thrown: [], xray: [], avoid: new Uint8Array(N * N), used: new Uint8Array(N * N), sideUsed: new Set(), floors: [], glows: [] };
   // geometry: floor, ceiling, walls
   const size = N * T;
   const floorTex = TEX.floor; floorTex.repeat.set(N, N);
@@ -1097,7 +1261,9 @@ function makeFridge(i, k) {
   addObstacle(p.x, p.z, p.dx, Wd, D, Hh);
   const gm = new THREE.SpriteMaterial({ map: TEX.glow, color: 0xbcd6ff, transparent: true, opacity: 0, depthWrite: false, blending: THREE.AdditiveBlending, fog: true }); gm.userData.own = true;
   const glow = new THREE.Sprite(gm); glow.position.set(p.x - p.dx * 0.5, 1.0, p.z - p.dz * 0.5); glow.scale.set(1.6, 2.2, 1); W.group.add(glow);
+  const muffin = makeMuffinMesh(); muffin.position.set(-0.05, 1.01, 0.02); grp.add(muffin);   // one blueberry muffin per fridge
   const f = {
+    muffin: true, muffinMesh: muffin,
     x: p.x, z: p.z, dx: p.dx, dz: p.dz, fx: p.x - p.dx * (D / 2 + 0.6), fz: p.z - p.dz * (D / 2 + 0.6),
     door, open: false, anim: 0, used: 0, powered: true, offUntil: 0, ledMat, innerMat, glow, smokeAcc: 0, hum: AU.makeHum(p.x, p.z),
   };
@@ -1139,14 +1305,73 @@ function makeGlow(x, y, z, color, scale, opacity) {
   W.glows.push({ s, base: opacity, ph: Math.random() * 6 });
   return s;
 }
-function makePiece(idx, x, z) {
-  const m = new THREE.MeshStandardMaterial({ map: TEX.paper[idx], alphaTest: 0.5, side: THREE.DoubleSide, roughness: 1, emissive: 0x3a2e1c, emissiveMap: TEX.paper[idx], emissiveIntensity: 0.7 });
+// x-ray copies drawn through walls while HardLife's Glasses are on
+const XRAY_GOOSE = new THREE.MeshBasicMaterial({ color: 0xff4a3a, transparent: true, opacity: 0.42, depthTest: false, depthWrite: false, fog: false });
+const XRAY_TAPE = new THREE.MeshBasicMaterial({ color: 0x6fe7ff, transparent: true, opacity: 0.85, depthTest: false, depthWrite: false, fog: false });
+function addXray(root, mat, list) {
+  const found = []; root.traverse(o => { if (o.isMesh && !o.userData.xr) found.push(o); });
+  for (const o of found) {
+    let x;
+    if (o.isInstancedMesh) { x = new THREE.InstancedMesh(o.geometry, mat, o.count); x.instanceMatrix = o.instanceMatrix; }
+    else x = new THREE.Mesh(o.geometry, mat);
+    x.userData.xr = true; x.renderOrder = 20; x.visible = false; o.add(x); list.push(x);
+  }
+}
+function makeSprite(x, y, z, color, scale, opacity, fog = true) {
+  const m = new THREE.SpriteMaterial({ map: TEX.glow, color, transparent: true, opacity, depthWrite: false, blending: THREE.AdditiveBlending, fog });
   m.userData.own = true;
-  const mesh = new THREE.Mesh(geo('paper', () => new THREE.PlaneGeometry(0.34, 0.42)), m);
-  mesh.rotation.set(-Math.PI / 2 + rr(-0.08, 0.08), 0, rr(0, Math.PI * 2)); mesh.position.set(x, 0.012, z);
-  W.group.add(mesh);
-  const glow = makeGlow(x, 0.14, z, 0xffd9a0, 1.1, 0.42);
-  W.pickups.push({ type: 'piece', idx, x, z, mesh, glow, taken: false });
+  const sp = new THREE.Sprite(m); sp.position.set(x, y, z); sp.scale.set(scale, scale, scale); W.group.add(sp); return sp;
+}
+const TAPE_MAT = {
+  body: new THREE.MeshStandardMaterial({ color: 0x1c1c20, roughness: 0.35, metalness: 0.1 }),
+  reel: new THREE.MeshStandardMaterial({ color: 0xf1f1f1, roughness: 0.5 }),
+  window: new THREE.MeshStandardMaterial({ color: 0x0b0b0d, roughness: 0.1 }),
+};
+// a cassette tape lying on the floor; it lifts, spins and glows brighter as you get close
+function makeTape(idx, x, z) {
+  const B = geo('box'), CYL = geo('cyl', () => new THREE.CylinderGeometry(1, 1, 1, 10));
+  const grp = new THREE.Group(); grp.position.set(x, 0.02, z); grp.rotation.y = rr(0, 6.28);
+  const labelMat = new THREE.MeshStandardMaterial({ color: 0xe9dfc6, roughness: 0.8, emissive: 0xffcf8a, emissiveIntensity: 0.4 }); labelMat.userData.own = true;
+  addMesh(grp, B, TAPE_MAT.body, [0, 0, 0], [0.26, 0.034, 0.16]);
+  addMesh(grp, B, labelMat, [0, 0.0175, 0.012], [0.22, 0.002, 0.085]);
+  addMesh(grp, B, TAPE_MAT.window, [0, 0.0185, 0.012], [0.12, 0.002, 0.032]);
+  for (const sx of [-1, 1]) addMesh(grp, CYL, TAPE_MAT.reel, [0.033 * sx, 0.019, 0.012], [0.013, 0.003, 0.013]);
+  W.group.add(grp);
+  const xr = []; addXray(grp, XRAY_TAPE, xr); W.xray.push(...xr);
+  const glow = makeSprite(x, 0.25, z, 0xffd9a0, 1.4, 0.5, false);
+  W.pickups.push({ type: 'piece', idx, x, z, mesh: grp, glow, labelMat, hl: 0, ph: rr(0, 6), taken: false });
+}
+const MUFFIN_MAT = {
+  cup: new THREE.MeshStandardMaterial({ color: 0x8fb3e0, roughness: 0.7 }),
+  top: new THREE.MeshStandardMaterial({ color: 0xa4703f, roughness: 0.9, bumpMap: TEX.noise, bumpScale: 0.03 }),
+  berry: new THREE.MeshStandardMaterial({ color: 0x2b2f6e, roughness: 0.4 }),
+};
+function makeMuffinMesh() {
+  const g = new THREE.Group();
+  addMesh(g, geo('mcup', () => new THREE.CylinderGeometry(0.075, 0.055, 0.08, 14)), MUFFIN_MAT.cup, [0, 0.04, 0]);
+  addMesh(g, SPH, MUFFIN_MAT.top, [0, 0.09, 0], [0.088, 0.06, 0.088]);
+  for (let k = 0; k < 6; k++) { const a = k * 1.05; addMesh(g, geo('berry', () => new THREE.SphereGeometry(0.014, 8, 6)), MUFFIN_MAT.berry, [Math.cos(a) * 0.05, 0.125 + (k % 2) * 0.01, Math.sin(a) * 0.05]); }
+  return g;
+}
+MAT.wood = new THREE.MeshStandardMaterial({ color: 0x5b3d25, roughness: 0.8, bumpMap: TEX.noise, bumpScale: 0.01 });
+function makeCabinet(i, k) {
+  const Wd = 1.0, D = 0.5, Hh = 0.95, p = slotPose(i, k, D, rr(-0.5, 0.5)), B = geo('box');
+  const grp = new THREE.Group(); grp.position.set(p.x, 0, p.z); grp.rotation.y = p.yaw;
+  addMesh(grp, B, MAT.wood, [0, Hh / 2, -D / 2 + 0.02], [Wd, Hh, 0.04]).receiveShadow = true;
+  for (const sx of [-1, 1]) addMesh(grp, B, MAT.wood, [sx * (Wd / 2 - 0.02), Hh / 2, 0], [0.04, Hh, D]).receiveShadow = true;
+  addMesh(grp, B, MAT.wood, [0, Hh - 0.02, 0], [Wd + 0.04, 0.04, D + 0.03]);
+  addMesh(grp, B, MAT.lockerDark, [0, 0.05, 0], [Wd, 0.1, D]);
+  addMesh(grp, B, MAT.lockerDark, [0, Hh / 2, -0.02], [Wd - 0.06, Hh - 0.12, D - 0.06], null, false);
+  const doors = [];
+  for (const sx of [-1, 1]) {
+    const piv = new THREE.Group(); piv.position.set(sx * Wd / 2, 0, D / 2); grp.add(piv);
+    addMesh(piv, B, MAT.wood, [-sx * Wd / 4, Hh / 2 + 0.02, 0.015], [Wd / 2 - 0.01, Hh - 0.12, 0.03]).receiveShadow = true;
+    addMesh(piv, B, MAT.metal, [-sx * (Wd / 2 - 0.08), Hh / 2 + 0.05, 0.04], [0.025, 0.12, 0.025]);
+    doors.push({ piv, sx });
+  }
+  W.group.add(grp);
+  addObstacle(p.x, p.z, p.dx, Wd, D, Hh);
+  W.cabinets.push({ x: p.x, z: p.z, fx: p.x - p.dx * (D / 2 + 0.6), fz: p.z - p.dz * (D / 2 + 0.6), doors, open: 0, searched: false });
 }
 function makeBattery(x, z) {
   const grp = new THREE.Group(); grp.position.set(x, 0.058, z); grp.rotation.set(0, rr(0, 6.28), Math.PI / 2);
@@ -1196,7 +1421,7 @@ function populate() {
     const od = openDirs(i);
     if (od.length === 1) { const [dx, dz] = DIRS[od[0]]; px -= dx * 0.7; pz -= dz * 0.7; }
     px += rr(-0.35, 0.35); pz += rr(-0.35, 0.35);
-    makePiece(idx, px, pz); W.used[i] = 1;
+    makeTape(idx, px, pz); W.used[i] = 1;
   });
 
   // ---- beds: one per room corner (never a doorway), plus a couple in dead ends
@@ -1229,6 +1454,16 @@ function populate() {
   for (let sep = 7; fr.length < CFG.FRIDGES && sep >= 0;) {
     const c = shuffle(fslots.filter(([i]) => canPlace(i) && fr.every(j => tdist(i, j) >= sep)));
     if (c.length) { const [i, k] = c[0]; makeFridge(i, k); placed(i, k); fr.push(i); } else sep--;
+  }
+
+  // ---- cabinets to search for items
+  const cabs = [];
+  for (let sep = 5; cabs.length < CFG.CABINETS && sep >= 1; sep--) {
+    for (const [i, k] of shuffle(fslots.slice())) {
+      if (cabs.length >= CFG.CABINETS) break;
+      if (!canPlace(i) || cabs.some(j => tdist(i, j) < sep)) continue;
+      makeCabinet(i, k); placed(i, k); cabs.push(i);
+    }
   }
 
   // ---- lockers (some in pairs), spaced apart
@@ -1344,6 +1579,28 @@ const AU = {
     this.brownBuf = bb;
     this.curve = this.makeCurve(14); this.hardCurve = this.makeCurve(60);
     this.startAmbient();
+    this.loadSamples();
+  },
+  samples: {},
+  loadSamples() {
+    if (this.loading || !this.ctx) return; this.loading = true;
+    for (const [key, file] of Object.entries(SAMPLE_FILES)) {
+      fetch('audio/' + encodeURIComponent(file))
+        .then(r => { if (!r.ok) throw new Error(String(r.status)); return r.arrayBuffer(); })
+        .then(b => new Promise((res, rej) => this.ctx.decodeAudioData(b, res, rej)))
+        .then(buf => { this.samples[key] = buf; })
+        .catch(() => { /* not available here: the synthesized fallback is used */ });
+    }
+  },
+  has(key) { return !!this.samples[key]; },
+  // play a clip. o.pos = [x, y, z] makes it directional with distance falloff (o.maxD); otherwise it plays straight to the ears.
+  play(key, o = {}) {
+    const buf = this.samples[key]; if (!buf || !this.ctx) return null;
+    const out = o.pos ? this.at(o.pos[0], o.pos[1], o.pos[2], o.maxD || 60, o.gain ?? 1) : this.direct(o.gain ?? 1);
+    if (!out) return null;
+    const src = this.ctx.createBufferSource(); src.buffer = buf; src.playbackRate.value = o.rate || 1;
+    src.connect(out); src.start(this.t + (o.delay || 0));
+    return src;
   },
   makeCurve(k) { const n = 1024, cv = new Float32Array(n); for (let i = 0; i < n; i++) { const x = i * 2 / n - 1; cv[i] = (1 + k) * x / (1 + k * Math.abs(x)); } return cv; },
   get t() { return this.ctx.currentTime; },
@@ -1356,7 +1613,7 @@ const AU = {
   // spatial output at a world position. Custom distance falloff, muffled behind walls.
   at(x, y, z, maxD, base) {
     if (!this.ctx) return null;
-    const cp = camera.position, d = Math.hypot(x - cp.x, y - cp.y, z - cp.z);
+    const cp = EAR, d = Math.hypot(x - cp.x, y - cp.y, z - cp.z);
     let att = 1 - d / maxD; if (att <= 0.01) return null; att *= att;
     const occl = W && wallsBetween(x, z, cp.x, cp.z);
     const c = this.ctx, p = c.createPanner();
@@ -1370,7 +1627,7 @@ const AU = {
   direct(v) { if (!this.ctx) return null; const g = this.gain(v); g.connect(this.sfx); return g; },
   listener() {
     if (!this.ctx) return;
-    const l = this.ctx.listener, p = camera.position, f = camera.getWorldDirection(tmpV);
+    const l = this.ctx.listener, p = EAR, f = camera.getWorldDirection(tmpV);
     if (l.positionX) {
       l.positionX.value = p.x; l.positionY.value = p.y; l.positionZ.value = p.z;
       l.forwardX.value = f.x; l.forwardY.value = f.y; l.forwardZ.value = f.z; l.upX.value = 0; l.upY.value = 1; l.upZ.value = 0;
@@ -1462,6 +1719,12 @@ const AU = {
   },
   scream() {
     const out = this.direct(1.0); if (!out) return; const c = this.ctx, t = this.t;
+    if (this.samples.kill) {
+      this.play('kill', { gain: 1.5 });
+      const b = this.osc('sine', 62, t, 0.9); b.frequency.exponentialRampToValueAtTime(24, t + 0.8);
+      const bg = this.gain(); this.env(bg, t, 0.005, 0.1, 0.7, 0.8); this.chain(b, bg, out);
+      return;
+    }
     const sh = c.createWaveShaper(); sh.curve = this.hardCurve;
     const pk = this.filt('peaking', 2400, 1.2); pk.gain.value = 10;
     const g = this.gain(); this.env(g, t, 0.01, 0.95, 0.45, 0.85);
@@ -1479,6 +1742,7 @@ const AU = {
   // "MERP": a high, nasal, warbly frog-puppet voice built from formant filters (m -> er -> p)
   merp(x, z, o = {}) {
     const urgent = !!o.urgent;
+    if (this.samples.merp && !o.direct) { this.play('merp', { pos: [x, 2.8, z], maxD: urgent ? 70 : 52, gain: 1.1 * (o.loud || 1) * (urgent ? 1.2 : 1), rate: rr(0.95, 1.05) * (urgent ? 1.06 : 1) }); return; }
     const out = o.direct ? this.direct(0.6 * (o.loud || 1)) : this.at(x, 2.8, z, urgent ? 70 : 52, 0.65 * (o.loud || 1)); if (!out) return;
     const t = this.t + 0.01, f0 = 262 * (o.pitch || 1) * rr(0.95, 1.06) * (urgent ? 1.16 : 1);
     const dur = urgent ? 0.44 : 0.37, tm = 0.075, tPeak = t + tm + (dur - tm) * 0.45, tClose = t + dur - 0.05;
@@ -1627,6 +1891,28 @@ const AU = {
     const g = this.gain(); this.env(g, t, 0.004, 0.05, 1.1, 0.8); this.chain(this.noise(t, 0.08), this.filt('bandpass', rr(300, 600), 9), g, out);
     const o = this.osc('triangle', rr(180, 260), t, 1.2), g2 = this.gain(); this.env(g2, t, 0.004, 0.02, 1.1, 0.35); this.chain(o, g2, out);
   },
+  munch(x, z) {   // eating a muffin
+    const out = this.at(x, 2.2, z, 30, 0.9); if (!out) return; const t = this.t;
+    for (let k = 0; k < 3; k++) {
+      const t0 = t + k * rr(0.04, 0.07), g = this.gain(); this.env(g, t0, 0.002, 0.015, 0.05, rr(0.4, 0.8));
+      this.chain(this.noise(t0, 0.08), this.filt('bandpass', rr(1400, 3200), 1.2), g, out);
+    }
+    const o = this.osc('sine', 110, t, 0.12); o.frequency.exponentialRampToValueAtTime(70, t + 0.1);
+    const g2 = this.gain(); this.env(g2, t, 0.004, 0.02, 0.08, 0.3); this.chain(o, g2, out);
+  },
+  drink() {   // cracking open and chugging a bottle
+    const out = this.direct(0.4); if (!out) return; const t = this.t;
+    const g = this.gain(); this.env(g, t, 0.001, 0.02, 0.15, 0.8); this.chain(this.noise(t, 0.2), this.filt('highpass', 2500, 0.7), g, out);
+    for (let k = 0; k < 4; k++) { const t0 = t + 0.25 + k * 0.28, o = this.osc('sine', rr(180, 240), t0, 0.2); o.frequency.exponentialRampToValueAtTime(rr(90, 120), t0 + 0.15);
+      const g2 = this.gain(); this.env(g2, t0, 0.01, 0.06, 0.1, 0.5); this.chain(o, this.filt('lowpass', 600), g2, out); }
+  },
+  rummage(x, z, dur) {   // searching a cabinet
+    const out = this.at(x, 0.6, z, 30, 0.9); if (!out) return; const t = this.t;
+    for (let k = 0; k < Math.round(dur / 0.16); k++) {
+      const t0 = t + k * rr(0.12, 0.2), g = this.gain(); this.env(g, t0, 0.002, 0.02, 0.07, rr(0.25, 0.6));
+      this.chain(this.noise(t0, 0.1), this.filt('bandpass', rr(500, 2200), 1.5), g, out);
+    }
+  },
   // ---- refrigerators
   fridgeDoor(x, z, open) {
     const out = this.at(x, 1.0, z, 34, 0.9); if (!out) return; const t = this.t;
@@ -1675,6 +1961,7 @@ const AU = {
   killHum(h) { if (!h) return; for (const s2 of h.srcs) { try { s2.stop(); } catch (e) { /* already stopped */ } } try { h.g.disconnect(); } catch (e) { /* ignore */ } },
 };
 const tmpV = new V3();
+const EAR = new V3(), tmpH = new V3();   // where the player hears from: their head (or the camera while hiding)
 
 /* ================= GAME FLOW ================= */
 const els = {
@@ -1682,7 +1969,8 @@ const els = {
   stam: $('hud-stam'), sfill: $('sfill'), tval: $('tval'), prompt: $('prompt'), toast: $('toast'),
   note: $('note'), noteH: $('note-h'), noteT: $('note-t'), scent: $('scent'), stance: $('stance'),
   hide: $('hide'), danger: $('danger'), flashFx: $('flash'),
-  heatA: $('heat-a'), heatB: $('heat-b'), tunnel: $('tunnel'), tired: $('tired'), fade: $('fade'),
+  heatA: $('heat-a'), heatB: $('heat-b'), tunnel: $('tunnel'), tired: $('tired'), fade: $('fade'), xrayFx: $('xray-fx'),
+  inv: $('hud-inv'), fxl: $('hud-fx'), tape: $('tape'), tapeH: $('tape-h'), tapeS: $('tape-s'), tapeP: $('tape-p'), blind: $('blind'), blindArc: $('blind-arc'),
 };
 const hudCache = {};
 let toastTimer = 0, noteTimer = 0;
@@ -1698,13 +1986,16 @@ function resetPlayer() {
     x: center(1), z: center(1), yaw: 0, pitch: 0, vx: 0, vz: 0, eye: CFG.STAND_EYE, crouch: false, hidden: null,
     stamina: CFG.STAMINA_MAX, exhausted: false, sinceUse: 99, sprinting: false, speedNow: 0, consuming: false, stamShowT: 0,
     holding: false, holdLatch: false, gaspT: 0, breathB: 0.1, breathT: 1.2, breathOut: false, breathPh: 0,
-    temp: CFG.TEMP_START, tempRiseT: rr(2, 3), tempPauseT: 0, heatT: 0, cooling: false, heatMsg: 0,
+    temp: CFG.TEMP_START, tempRiseT: rr(3, 5), tempPauseT: 0, heatT: 0, cooling: false, heatMsg: 0,
+    face: 0, turnRate: 0, searching: null, searchT: 0, propelT: 0, undiesT: 0, glassesT: 0,
     battery: CFG.BATTERY_MAX, flashOn: false, flick: 1, flickT: 0, pieces: 0,
     ax: center(1), az: center(1), linger: 0, stepAcc: 0, bob: 0, target: null, hbT: 0, fov: 72,
   });
   // face down an open corridor
   const od = openDirs(1 * W.N + 1);
   if (od.length) { const [dx, dz] = DIRS[od[0]]; player.yaw = camYawFor(dx, dz); }
+  player.face = player.yaw + Math.PI; player.pitch = -0.12;
+  CAM.cur = CAM.dist; CAM.sideCur = CAM.side;
 }
 function resetGoose() {
   const i = W.gooseStart, N = W.N;
@@ -1712,7 +2003,8 @@ function resetGoose() {
     x: center(i % N), z: center((i / N) | 0), yaw: rr(0, 6.28), state: 'patrol', target: null, path: null, pathI: 0, repathT: 0, pathGoal: -1,
     speed: 0, curSpeed: 0, stateT: 0, waitT: 3, lastSeen: null, lostT: 0, alertT: 0, knowT: 0, scent: false,
     honkT: rr(3, 6), stepAcc: 0, phase: 0, searchPts: [], searchPhase: 'look', lookT: 0, headYaw: 0, beakT: 0, flapT: 0,
-    sees: false, light: false, senseT: 0, msgCD: 0, forcePathT: 0, merpT: 3, bestRem: 1e9, progT: 0, dist: 99, neckX: 0.2, occluded: true,
+    sees: false, light: false, senseT: 0, msgCD: 0, forcePathT: 0, merpT: 3, eydamCD: 0, swerveCD: 0, rearCD: 0, cornerCD: 0, hHist: [], dananaArmed: true,
+    blindCharge: 0, blindImm: 0, blindT: 0, bait: null, baitPhase: 'go', eatT: 0, eatTotal: 1, munchT: 0, bestRem: 1e9, progT: 0, dist: 99, neckX: 0.2, occluded: true,
   };
   GOOSE_RIG.root.visible = true;
 }
@@ -1730,6 +2022,10 @@ function newGame() {
   for (const k in hudCache) delete hudCache[k];
   els.frags.forEach(f => f.classList.remove('on'));
   FL.init = false; clearSmoke(); resetAmbient(); resetScreenFx();
+  if (!GOOSE_XRAY.length) addXray(GOOSE_RIG.root, XRAY_GOOSE, GOOSE_XRAY);
+  for (const k in INV) INV[k] = 0;
+  stopTape(); els.tape.hidden = true;
+  DUSTY.root.rotation.set(0, 0, 0); DUSTY.root.position.y = 0;
   els.stam.classList.remove('show', 'flash', 'crit', 'out');
 }
 
@@ -1772,7 +2068,8 @@ function beginNewRun() {
   startPlaying();
   touch.run = false;
   if (isMobile()) tryFullscreen(); else requestLock();
-  toast('Find the 5 pieces of the torn letter.' + (isMobile() && innerHeight > innerWidth ? ' Turn your phone sideways for a wider view.' : ''), false, 5);
+  toast('Find the 5 tapes.' + (isMobile() && innerHeight > innerWidth ? ' Turn your phone sideways for a wider view.' : ''), false, 5);
+  if (Math.random() < 0.001) playWhenReady('jafggm', { gain: 1.1 }, 1.2);   // 1 in 1000
   setTimeout(() => { if (state === 'playing' && W.goose) AU.honk(W.goose.x, W.goose.z, { pitch: 0.95, loud: 1.4 }); }, 3500);
 }
 function pauseGame(hint) {
@@ -1848,7 +2145,7 @@ function win() {
 }
 
 /* ================= INPUT ================= */
-const GAME_CODES = new Set(['KeyR', 'KeyW', 'KeyA', 'KeyS', 'KeyD', 'KeyF', 'KeyE', 'KeyC', 'Space', 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'ShiftLeft', 'ShiftRight', 'ControlLeft', 'ControlRight']);
+const GAME_CODES = new Set(['KeyQ', 'Digit1', 'Digit2', 'Digit3', 'KeyR', 'KeyW', 'KeyA', 'KeyS', 'KeyD', 'KeyF', 'KeyE', 'KeyC', 'Space', 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'ShiftLeft', 'ShiftRight', 'ControlLeft', 'ControlRight']);
 addEventListener('keydown', e => {
   if (state === 'playing') {
     if (GAME_CODES.has(e.code) || e.ctrlKey) e.preventDefault();
@@ -1856,6 +2153,10 @@ addEventListener('keydown', e => {
     if (e.repeat) return;
     if (e.code === 'KeyF') toggleFlash();
     else if (e.code === 'KeyE') interact();
+    else if (e.code === 'KeyQ') useItem('muffin');
+    else if (e.code === 'Digit1') useItem('propel');
+    else if (e.code === 'Digit2') useItem('undies');
+    else if (e.code === 'Digit3') useItem('glasses');
     else if (e.code === 'ControlLeft' || e.code === 'ControlRight' || e.code === 'KeyC') toggleCrouch();
     else if (e.code === 'Escape' && (fallbackLook || isMobile())) pauseGame();
   } else if ((state === 'dead' || state === 'won') && (e.code === 'KeyR' || e.code === 'Enter') && !e.repeat) {
@@ -1878,6 +2179,7 @@ addEventListener('mousemove', e => {
   player.pitch = clamp(player.pitch - my * SENS * k, -1.45, 1.45);
 });
 $('btn-start').addEventListener('click', beginNewRun);
+els.inv.addEventListener('pointerdown', e => { const b = e.target.closest('.slot'); if (!b) return; e.preventDefault(); e.stopPropagation(); useItem(b.dataset.item); });
 $('btn-resume').addEventListener('click', resumeGame);
 $('btn-restart').addEventListener('click', beginNewRun);
 $('btn-retry').addEventListener('click', beginNewRun);
@@ -1982,6 +2284,7 @@ function toggleCrouch() {
 function interact() {
   const P = player, tgt = P.target;
   if (P.hidden) { exitSpot(); return; }
+  if (P.searching) return;
   if (!tgt) return;
   if (tgt.kind === 'pickup') {
     const p = tgt.p;
@@ -1990,14 +2293,17 @@ function interact() {
       P.battery = Math.min(CFG.BATTERY_MAX, P.battery + CFG.BATTERY_PICKUP);
       AU.battery(); toast('+10 seconds of flashlight.');
     } else {
-      P.pieces++; AU.paper();
+      // tapes always play in order: the first one you find is LETTER 1, the second LETTER 2, and so on
+      P.pieces++; AU.click();
       els.frags[P.pieces - 1].classList.add('on');
-      if (P.pieces >= CFG.PIECES) { p.taken = true; p.mesh.visible = false; p.glow.visible = false; toast('That was the last piece.', false, 2); setTimeout(win, 900); return; }
-      showNote(p.idx, P.pieces);
+      playTape(P.pieces);
+      if (P.pieces >= CFG.PIECES) { p.taken = true; p.mesh.visible = false; p.glow.visible = false; toast('That was the last tape.', false, 2); setTimeout(win, 900); return; }
     }
     p.taken = true; p.mesh.visible = false; p.glow.visible = false;
   } else if (tgt.kind === 'spot') enterSpot(tgt.s);
   else if (tgt.kind === 'fridge') toggleFridge(tgt.f);
+  else if (tgt.kind === 'muffin') { tgt.f.muffin = false; tgt.f.muffinMesh.visible = false; giveItem('muffin'); }
+  else if (tgt.kind === 'cabinet') startSearch(tgt.c);
 }
 function enterSpot(s) {
   const P = player;
@@ -2020,6 +2326,118 @@ function exitSpot() {
   gooseHear(s.x, s.z, 3.5, { kind: 'hide', pri: 1.5, player: true });
 }
 
+/* ================= ITEMS ================= */
+const INV = { muffin: 0, propel: 0, undies: 0, glasses: 0 };
+const ITEMS = {
+  muffin: { name: 'Blueberry muffin', key: 'Q', found: 'A blueberry muffin. Throw it and he will go for it.' },
+  propel: { name: 'Blueberry Propel', key: '1', found: 'Blueberry Propel! Drink it for 15 seconds of endless stamina.' },
+  undies: { name: "Adam's Underwear", key: '2', found: "Adam's Underwear! Put it on your head to become undetectable for 30 seconds." },
+  glasses: { name: "HardLife's Glasses", key: '3', found: "HardLife's Glasses! See him and the tapes through walls for 15 seconds." },
+};
+function giveItem(kind) {
+  INV[kind]++; AU.battery();
+  const k = isMobile() ? 'Tap it at the top right.' : `Press ${ITEMS[kind].key}.`;
+  toast(ITEMS[kind].found + ' ' + k, false, 4.5);
+}
+function useItem(kind) {
+  const P = player;
+  if (state !== 'playing' || !INV[kind]) return;
+  if (kind === 'muffin') { if (P.hidden) { toast("You can't throw from in here."); return; } throwMuffin(); return; }
+  INV[kind]--;
+  if (kind === 'propel') { P.propelT = CFG.PROPEL_TIME; P.stamina = CFG.STAMINA_MAX; P.exhausted = false; AU.drink(); toast('Endless stamina, a little faster, wider view. 15 seconds.', false, 3); }
+  if (kind === 'undies') { P.undiesT = CFG.UNDIES_TIME; P.linger = 0; if (!AU.play('supadam', { gain: 1.2 })) AU.paper(); toast("Adam's Underwear is on your head. He can't detect you for 30 seconds.", false, 3.5); }
+  if (kind === 'glasses') { P.glassesT = CFG.GLASSES_TIME; AU.click(); toast("HardLife's Glasses on. You can see him and the tapes through walls.", false, 3); }
+}
+function throwMuffin() {
+  const P = player; INV.muffin--;
+  const d = camera.getWorldDirection(tmpV), mesh = makeMuffinMesh();
+  DUSTY.arms[1].hand.getWorldPosition(tmpH);
+  const m = { x: tmpH.x, y: Math.max(1.0, tmpH.y), z: tmpH.z, vx: d.x * 9, vy: d.y * 9 + 3.2, vz: d.z * 9, mesh, landed: false, gone: false, spin: rr(5, 9) };
+  if (isWallAt(m.x, m.z)) { m.x = P.x; m.z = P.z; }
+  mesh.position.set(m.x, m.y, m.z); W.group.add(mesh); W.thrown.push(m);
+  AU.click(); toast('You threw the muffin.', false, 1.5);
+}
+function updateThrown(dt) {
+  for (const m of W.thrown) {
+    if (m.landed || m.gone) continue;
+    m.vy -= 15 * dt;
+    let nx = m.x + m.vx * dt, nz = m.z + m.vz * dt;
+    if (isWallAt(nx, m.z)) { m.vx *= -0.35; nx = m.x; }
+    if (isWallAt(nx, nz)) { m.vz *= -0.35; nz = m.z; }
+    m.x = nx; m.z = nz; m.y += m.vy * dt;
+    if (m.y > H - 0.1) { m.y = H - 0.1; m.vy = -Math.abs(m.vy) * 0.3; }
+    if (m.y <= 0.0) {
+      m.y = 0; m.vx *= 0.55; m.vz *= 0.55;
+      if (Math.abs(m.vy) > 2.5) m.vy = -m.vy * 0.3;
+      else { m.landed = true; m.vy = 0; m.mesh.rotation.set(0, rr(0, 6.28), 0); muffinLanded(m); }
+    }
+    m.mesh.position.set(m.x, m.y, m.z); if (!m.landed) m.mesh.rotation.x += m.spin * dt;
+  }
+}
+function muffinLanded(m) {
+  const G = W.goose, P = player; if (!G || state !== 'playing') return;
+  G.bait = m; G.baitPhase = 'go'; gooseSet(G, 'bait');
+  // it forgets your trail
+  P.linger = 0; P.ax = P.x; P.az = P.z; G.scent = false; G.knowT = 0; G.lastSeen = { x: m.x, z: m.z };
+  if (!gooseVoice(G, 'muffins', 'BLUEBERRY MUFFINS', { maxD: 95, gain: 1.35, urgent: true, beak: 1.2, range: 60 })) AU.honk(G.x, G.z, { pitch: 1.2, loud: 1.3 });
+  toast('He smells the muffin. He forgot about you.', false, 3);
+}
+function gooseAfterMuffin(G) {
+  const next = W.thrown.find(m => m.landed && !m.gone);
+  if (next) { G.bait = next; G.baitPhase = 'go'; gooseSet(G, 'bait'); return; }
+  G.bait = null; gooseSearch(G);
+}
+// cabinets: a short search that locks you in place, like a chest in Dead by Daylight
+function startSearch(c) {
+  const P = player; P.searching = c; P.searchT = 0; P.vx = P.vz = 0;
+  AU.rummage(c.x, c.z, CFG.SEARCH_TIME);
+  gooseHear(c.x, c.z, 7, { kind: 'search', pri: 1.5, player: true });
+}
+function cancelSearch() { player.searching = null; toast('You stopped searching.', false, 1.2); }
+function finishSearch(c) {
+  c.searched = true; player.searching = null;
+  const r = Math.random() * 100;   // 1% glasses, 5% underwear, 15% Propel, 79% nothing
+  if (r < 1) giveItem('glasses');
+  else if (r < 6) giveItem('undies');
+  else if (r < 21) giveItem('propel');
+  else toast('Nothing in here.', false, 1.8);
+}
+function updateCabinets(dt) {
+  const P = player;
+  if (P.searching) { P.searchT += dt; if (P.searchT >= CFG.SEARCH_TIME) finishSearch(P.searching); }
+  for (const c of W.cabinets) {
+    const want = c.searched ? 1 : P.searching === c ? 0.4 + 0.3 * Math.abs(Math.sin(gameTime * 9)) : 0;
+    c.open += (want - c.open) * (1 - Math.exp(-dt * 8));
+    for (const d of c.doors) d.piv.rotation.y = d.sx * 1.9 * c.open;
+  }
+}
+// cassette playback (always LETTER_1 .. LETTER_5 in the order you find them)
+let tapeSrc = null; const TAPEUI = { n: 0, t: 0, dur: 0 };
+function stopTape() { if (tapeSrc) { try { tapeSrc.stop(); } catch (e) { /* already done */ } } tapeSrc = null; TAPEUI.dur = 0; }
+function playTape(n) {
+  stopTape();
+  tapeSrc = AU.play('tape' + n, { gain: 1.1 });
+  const buf = AU.samples['tape' + n];
+  TAPEUI.n = n; TAPEUI.t = 0; TAPEUI.dur = buf ? buf.duration : 3;
+  els.tapeH.textContent = `Tape ${n} of ${CFG.PIECES}`;
+  els.tapeS.textContent = tapeSrc ? 'Playing' : 'This tape will not play here.';
+  els.tape.hidden = false;
+}
+function updateItems(dt) {
+  const P = player;
+  for (const [k, msg] of [['propelT', 'The Propel wore off.'], ['undiesT', "Adam's Underwear fell off. He can sense you again."], ['glassesT', "HardLife's Glasses stopped working."]]) {
+    if (P[k] > 0) { P[k] -= dt; if (P[k] <= 0) { P[k] = 0; toast(msg, k === 'undiesT', 2.5); } }
+  }
+  const xr = P.glassesT > 0;
+  if (FX.xray !== xr) { FX.xray = xr; for (const x of GOOSE_XRAY) x.visible = xr; for (const x of W.xray) x.visible = xr; }
+  updateThrown(dt); updateCabinets(dt);
+}
+function playWhenReady(key, o, wait) {
+  let tries = 0;
+  const go = () => { if (state !== 'playing') return; if (AU.has(key)) AU.play(key, o); else if (tries++ < 20) setTimeout(go, 400); };
+  setTimeout(go, wait * 1000);
+}
+
 /* ================= PLAYER ================= */
 function findInteract() {
   const P = player;
@@ -2037,7 +2455,18 @@ function findInteract() {
     const d = Math.hypot(f.fx - P.x, f.fz - P.z); if (d > 1.5) continue;
     const tx = f.x - P.x, tz = f.z - P.z, td = Math.hypot(tx, tz), dot = (tx * fx + tz * fz) / (td || 1);
     if (dot < 0.3) continue;
-    if (d < bestD) { bestD = d; best = { kind: 'fridge', f, label: (f.open ? 'Close the refrigerator' : 'Open the refrigerator') + (f.powered ? '' : ' (no power)') }; }
+    if (d < bestD) {
+      bestD = d;
+      best = f.open && f.muffin ? { kind: 'muffin', f, label: 'Take the blueberry muffin' }
+        : { kind: 'fridge', f, label: (f.open ? 'Close the refrigerator' : 'Open the refrigerator') + (f.powered ? '' : ' (no power)') };
+    }
+  }
+  for (const c of W.cabinets) {
+    if (c.searched) continue;
+    const d = Math.hypot(c.fx - P.x, c.fz - P.z); if (d > 1.4) continue;
+    const tx = c.x - P.x, tz = c.z - P.z, td = Math.hypot(tx, tz), dot = (tx * fx + tz * fz) / (td || 1);
+    if (dot < 0.3) continue;
+    if (d < bestD) { bestD = d; best = { kind: 'cabinet', c, label: 'Search the cabinet' }; }
   }
   for (const s of W.spots) {
     const d = Math.hypot(s.ex - P.x, s.ez - P.z); if (d > 1.45) continue;
@@ -2071,11 +2500,13 @@ function updatePlayer(dt) {
       if (mag < 0.15) { ix = iz = 0; mag = 0; } else analog = Math.max(0.4, Math.min(1, mag));
     }
     if (mag > 0) { ix /= mag; iz /= mag; }
+    if (P.searching && mag > 0) cancelSearch();
+    if (P.searching) { ix = iz = 0; mag = 0; }
     const moving = mag > 0, shift = keys.ShiftLeft || keys.ShiftRight || touch.run;
     const canRun = !P.exhausted && P.stamina > 0 && !HE.noRun;
     if (shift && moving && P.crouch && canRun) P.crouch = false;
     P.sprinting = shift && moving && canRun && !P.crouch;
-    const speed = (P.sprinting ? CFG.SPRINT : (P.crouch ? CFG.CROUCH : CFG.WALK)) * analog * HE.speed;
+    const speed = (P.sprinting ? CFG.SPRINT : (P.crouch ? CFG.CROUCH : CFG.WALK)) * analog * HE.speed * (P.propelT > 0 ? 1.1 : 1);
     const fx = -Math.sin(P.yaw), fz = -Math.cos(P.yaw), rx = Math.cos(P.yaw), rz = -Math.sin(P.yaw);
     const tvx = (fx * iz + rx * ix) * speed, tvz = (fz * iz + rz * ix) * speed;
     const a = 1 - Math.exp(-dt * 12);
@@ -2092,6 +2523,7 @@ function updatePlayer(dt) {
       P.bob += moved * (P.sprinting ? 3.2 : P.crouch ? 4.6 : 4.2);
     }
   }
+  updateItems(dt);
   updateBreathHold();
   updateStamina(dt, HE);
   updateBreathing(dt);
@@ -2105,25 +2537,40 @@ function updatePlayer(dt) {
   const frac = P.battery / CFG.BATTERY_MAX;
   P.flickT -= dt;
   if (P.flickT <= 0) { P.flickT = rr(0.04, 0.16); P.flick = frac < 0.15 && Math.random() < 0.35 ? rr(0.15, 0.6) : 1; }
-  flash.intensity = P.flashOn ? 2.7 * (0.1 + 0.9 * frac) * P.flick : 0;
-  flash.distance = 12 + 22 * frac; flash.angle = 0.33 + 0.1 * frac;
+  flash.intensity = P.flashOn ? 3.9 * (0.12 + 0.88 * frac) * P.flick : 0;
+  flash.distance = 16 + 24 * frac; flash.angle = 0.36 + 0.1 * frac;
   renderer.shadowMap.autoUpdate = P.flashOn && flash.castShadow;
   // linger / scent
-  if (Math.hypot(P.x - P.ax, P.z - P.az) > CFG.LINGER_RADIUS) { P.ax = P.x; P.az = P.z; P.linger = 0; } else P.linger += dt;
-  // eye height + camera
+  if (P.undiesT > 0 || Math.hypot(P.x - P.ax, P.z - P.az) > CFG.LINGER_RADIUS) { P.ax = P.x; P.az = P.z; P.linger = 0; } else P.linger += dt;
+  // eye height (used for sight lines and hiding), then the camera
   const targetEye = P.hidden ? P.hidden.eye : (P.crouch ? CFG.CROUCH_EYE : CFG.STAND_EYE);
   P.eye += (targetEye - P.eye) * (1 - Math.exp(-dt * 10));
-  const bobAmt = P.hidden ? 0 : (P.sprinting ? 0.075 : P.crouch ? 0.025 : 0.045) * Math.min(1, P.speedNow / 2);
-  const bobY = Math.sin(P.bob) * bobAmt, bobX = Math.cos(P.bob * 0.5) * bobAmt * 0.6;
-  const breathe = Math.sin(P.breathPh) * lerp(0.003, 0.014, P.breathB) * (P.holding ? 0.15 : 1);
-  const rx = Math.cos(P.yaw), rz = -Math.sin(P.yaw);
   shakeAmt = Math.max(0, shakeAmt - dt * 0.08);
   const sh = shakeAmt, dis = FX.distort;
-  camera.position.set(P.x + rx * bobX, P.eye + bobY + breathe + rr(-sh, sh), P.z + rz * bobX);
-  camera.rotation.set(P.pitch + rr(-sh, sh) * 0.5 + dis * 0.02 * Math.sin(gameTime * 0.9), P.yaw + rr(-sh, sh) * 0.5, -bobX * 0.15 + dis * 0.06 * Math.sin(gameTime * 0.73));
-  const wantFov = (P.sprinting && P.speedNow > 2 ? 79 : 72) + dis * 3.5 * Math.sin(gameTime * 1.13);
+  updateFacing(dt);
+  if (P.hidden) {   // first person from inside the locker or under the bed
+    const breathe = Math.sin(P.breathPh) * lerp(0.003, 0.014, P.breathB) * (P.holding ? 0.15 : 1);
+    camera.position.set(P.x, P.eye + breathe + rr(-sh, sh), P.z);
+    camera.rotation.set(P.pitch + rr(-sh, sh) * 0.5 + dis * 0.02 * Math.sin(gameTime * 0.9), P.yaw + rr(-sh, sh) * 0.5, dis * 0.06 * Math.sin(gameTime * 0.73));
+    EAR.copy(camera.position);
+  } else {
+    P.pitch = clamp(P.pitch, -1.0, 0.75);
+    updateCamera3P(dt, sh, dis);
+    EAR.set(P.x, P.eye, P.z);
+  }
+  aura.position.set(EAR.x, EAR.y + 0.25, EAR.z);
+  const wantFov = ((P.hidden ? 72 : 74) + (P.sprinting && P.speedNow > 2 ? 5 : 0)) * (P.propelT > 0 ? 1.25 : 1) + dis * 3.5 * Math.sin(gameTime * 1.13);
   P.fov += (wantFov - P.fov) * (1 - Math.exp(-dt * 6));
   if (Math.abs(camera.fov - P.fov) > 0.01) { camera.fov = P.fov; camera.updateProjectionMatrix(); }
+  DUSTY.root.visible = !P.hidden && CAM.cur > 0.6;
+  DUSTY.root.position.set(P.x, 0, P.z); DUSTY.root.rotation.set(0, P.face, 0);
+  animateCharacter(DUSTY, dt, {
+    phase: P.bob * 0.5, speed: P.speedNow, run: P.sprinting && P.speedNow > 2, crouch: P.crouch, aimPitch: FL.pitch, flash: P.flashOn,
+    holding: P.holding, exhausted: P.stamina / CFG.STAMINA_MAX <= CFG.LOW_STAMINA, searching: !!P.searching, breathPh: P.breathPh, breathB: P.breathB, turnRate: P.turnRate, t: gameTime,
+  });
+  DUSTY.undies.visible = P.undiesT > 0; DUSTY.glasses.visible = P.glassesT > 0;
+  DUSTY.lens.material.color.setHex(P.flashOn ? 0xfff3d6 : 0x55524a);
+  updateAim();
   updateFlashRig(dt);
   // locker doors
   for (const s of W.spots) if (s.door) {
@@ -2135,12 +2582,60 @@ function updatePlayer(dt) {
   P.target = findInteract();
 }
 
+/* ---------- third-person camera: orbits behind the player, pulls in before it hits a wall ---------- */
+const CAM = { dist: 2.8, cur: 2.8, h: 1.55, side: 0.42, sideCur: 0.42 };
+const AIM = new V3();
+function camBlocked(x, y, z) {
+  if (y < 0.25 || y > H - 0.2) return true;
+  for (const [ox, oz] of [[0.18, 0.18], [-0.18, 0.18], [0.18, -0.18], [-0.18, -0.18]]) if (isWallAt(x + ox, z + oz)) return true;
+  return false;
+}
+function updateCamera3P(dt, sh, dis) {
+  const P = player, k = 1 - Math.exp(-dt * 8);
+  CAM.h += ((P.crouch ? 1.12 : 1.55) - CAM.h) * k;
+  const cy = P.yaw, cp = P.pitch;
+  const fx = -Math.sin(cy) * Math.cos(cp), fy = Math.sin(cp), fz = -Math.cos(cy) * Math.cos(cp), rx = Math.cos(cy), rz = -Math.sin(cy);
+  const side = isWallAt(P.x + rx * (CAM.side + 0.2), P.z + rz * (CAM.side + 0.2)) ? 0 : CAM.side;
+  CAM.sideCur = side < CAM.sideCur ? side : CAM.sideCur + (side - CAM.sideCur) * k;   // pull in at once, ease back out
+  let bx = P.x + rx * CAM.sideCur, by = CAM.h, bz = P.z + rz * CAM.sideCur;
+  if (camBlocked(bx, by, bz)) { bx = P.x; bz = P.z; }
+  let free = CAM.dist;
+  for (let d = 0.1; d <= CAM.dist; d += 0.08) if (camBlocked(bx - fx * d, by - fy * d, bz - fz * d)) { free = Math.max(0.25, d - 0.1); break; }
+  CAM.cur = free < CAM.cur ? free : CAM.cur + (free - CAM.cur) * (1 - Math.exp(-dt * 3));
+  camera.position.set(bx - fx * CAM.cur + rr(-sh, sh), by - fy * CAM.cur + rr(-sh, sh), bz - fz * CAM.cur);
+  camera.rotation.set(cp + dis * 0.02 * Math.sin(gameTime * 0.9), cy, dis * 0.06 * Math.sin(gameTime * 0.73));
+}
+// where the crosshair points in the world
+function updateAim() {
+  const o = camera.position, d = camera.getWorldDirection(tmpV);
+  let t = 30;
+  for (let s2 = 0.3; s2 < 30; s2 += 0.2) { const x = o.x + d.x * s2, y = o.y + d.y * s2, z = o.z + d.z * s2; if (y <= 0.02 || y >= H - 0.02 || isWallAt(x, z)) { t = s2; break; } }
+  AIM.set(o.x + d.x * t, o.y + d.y * t, o.z + d.z * t);
+}
+// the character turns quickly toward where it is moving; with the flashlight on it faces where you aim
+function updateFacing(dt) {
+  const P = player;
+  let want = null;
+  if (P.searching) want = Math.atan2(P.searching.x - P.x, P.searching.z - P.z);
+  else if (P.flashOn && !P.hidden) want = P.yaw + Math.PI;
+  else if (P.speedNow > 0.3) want = Math.atan2(P.vx, P.vz);
+  const before = P.face;
+  if (want !== null) P.face += clamp(angDiff(P.face, want), -dt * 14, dt * 14);
+  P.turnRate = angDiff(before, P.face) / Math.max(dt, 1e-4);
+}
+
 /* ---------- flashlight rig: lags behind the camera like something with weight, and sways ---------- */
 const FL = { init: false, yaw: 0, pitch: 0, vy: 0, vp: 0, cy: 0, cp: 0, spd: 0, n: [0, 0, 0, 0, 0], m: [0, 0, 0, 0, 0],
   dir: new V3(0, 0, -1), q: new THREE.Quaternion(), e: new THREE.Euler(0, 0, 0, 'YXZ'), off: new V3() };
 const HAND = new V3(0.22, -0.17, 0.02);
 function updateFlashRig(dt) {
-  const P = player, cy = camera.rotation.y, cp = camera.rotation.x;
+  const P = player;
+  let cy = camera.rotation.y, cp = camera.rotation.x;
+  if (!P.hidden) {   // third person: from the hand toward the crosshair point
+    DUSTY.root.updateMatrixWorld(true); DUSTY.tip.getWorldPosition(tmpH);
+    const ax = AIM.x - tmpH.x, ay = AIM.y - tmpH.y, az = AIM.z - tmpH.z, al = Math.hypot(ax, ay, az) || 1;
+    cy = Math.atan2(-ax / al, -az / al); cp = Math.asin(clamp(ay / al, -1, 1));
+  }
   if (!FL.init) { FL.yaw = FL.cy = cy; FL.pitch = FL.cp = cp; FL.vy = FL.vp = 0; FL.init = true; }
   // how fast the camera is turning (smoothed). Slow turns get a softer spring: heavier, slower to settle.
   const inst = Math.hypot(angDiff(FL.cy, cy), cp - FL.cp) / Math.max(dt, 1e-4); FL.cy = cy; FL.cp = cp;
@@ -2164,8 +2659,9 @@ function updateFlashRig(dt) {
   FL.e.set(FL.pitch + swayP, FL.yaw + swayY, roll, 'YXZ'); FL.q.setFromEuler(FL.e);
   FL.off.set(HAND.x + (0.01 * FL.m[3] + 0.006 * Math.sin(t * 0.8)) * steady + 0.01 * move * step,
     HAND.y + (0.01 * FL.m[4] + 0.007 * br) * steady - 0.012 * move * Math.abs(Math.cos(P.bob * 0.5)), HAND.z).applyQuaternion(FL.q);
-  flash.position.copy(camera.position).add(FL.off);
   FL.dir.set(0, 0, -1).applyQuaternion(FL.q);
+  if (P.hidden) flash.position.copy(camera.position).add(FL.off);
+  else flash.position.copy(tmpH).addScaledVector(FL.dir, 0.06);
   flash.target.position.copy(flash.position).addScaledVector(FL.dir, 6);
 }
 
@@ -2178,6 +2674,7 @@ function heatEffects() {
 const tempQ = () => Math.round(player.temp * 10) / 10;
 function updateStamina(dt, HE) {
   const P = player, MAX = CFG.STAMINA_MAX;
+  if (P.propelT > 0) { P.stamina = MAX; P.exhausted = false; P.consuming = false; P.sinceUse = 99; return; }   // Blueberry Propel: endless stamina
   const running = P.sprinting && P.speedNow > 0.5;
   let drain = 0;
   if (running) drain += CFG.RUN_DRAIN * (P.holding ? 2 : 1);   // running costs double while holding your breath
@@ -2257,8 +2754,8 @@ function updateTemperature(dt) {
   const P = player;
   if (P.tempPauseT > 0) P.tempPauseT -= dt;
   else if (!P.cooling) {
-    P.tempRiseT -= dt;
-    if (P.tempRiseT <= 0) { P.tempRiseT = rr(2, 3); P.temp = Math.min(CFG.TEMP_MAX, Math.round((P.temp + 0.1) * 10) / 10); }
+    P.tempRiseT -= dt * (P.hidden ? 1.5 : 1);   // stuffy hiding spots heat you up 50% faster
+    if (P.tempRiseT <= 0) { P.tempRiseT = rr(3, 5); P.temp = Math.min(CFG.TEMP_MAX, Math.round((P.temp + 0.1) * 10) / 10); }
   }
   const tq = tempQ();
   const lvl = tq >= 104 ? 4 : tq >= 102.6 ? 3 : tq >= 101.3 ? 2 : tq >= 100.5 ? 1 : 0;
@@ -2282,8 +2779,8 @@ function heatstroke() {
 }
 function updateCollapse(dt) {
   collapseT += dt; const k = Math.min(1, collapseT / 2.2), e = k * k;
-  camera.rotation.z = lerp(camera.rotation.z, 0.95, e * 0.2); camera.rotation.x = lerp(camera.rotation.x, -0.35, e * 0.15);
-  camera.position.y = lerp(camera.position.y, 0.35, e * 0.12);
+  if (player.hidden || !DUSTY.root.visible) { camera.rotation.z = lerp(camera.rotation.z, 0.95, e * 0.2); camera.position.y = lerp(camera.position.y, 0.35, e * 0.12); }
+  else { DUSTY.root.rotation.x = 1.45 * e; DUSTY.root.position.y = 0.12 * e; camera.rotation.x = lerp(camera.rotation.x, -0.5, e * 0.08); }
   els.fade.style.opacity = k.toFixed(3);
   if (collapseT > 2.7) showDead('heat');
 }
@@ -2322,14 +2819,14 @@ function updateFridges(dt) {
     P.cooling = true;
     P.temp = Math.max(CFG.TEMP_FLOOR, P.temp - CFG.COOL_RATE * dt);
     best.used += dt;   // cumulative cooling time: survives closing, reopening and walking away
-    if (P.temp <= CFG.TEMP_FLOOR + 1e-6) { P.temp = CFG.TEMP_FLOOR; P.tempPauseT = CFG.COOL_PAUSE; P.tempRiseT = rr(2, 3); toast('You feel cool again.', false, 2.5); }
+    if (P.temp <= CFG.TEMP_FLOOR + 1e-6) { P.temp = CFG.TEMP_FLOOR; P.tempPauseT = CFG.COOL_PAUSE; P.tempRiseT = rr(3, 5); toast('You feel cool again.', false, 2.5); }
     if (best.used >= CFG.FRIDGE_POWER) setFridgePower(best, false);
   }
   updateSmoke(dt);
   humT -= dt;
   if (humT <= 0) {
     humT = 0.15;
-    const cp = camera.position;
+    const cp = EAR;
     for (const f of W.fridges) {
       const d = Math.hypot(cp.x - f.x, cp.z - f.z), att = Math.max(0, 1 - d / 13);
       AU.setHum(f.hum, f.powered && att > 0 ? 0.09 * att * att * (wallsBetween(f.x, f.z, cp.x, cp.z) ? 0.45 : 1) : 0);
@@ -2389,6 +2886,7 @@ function gooseNoticesLight(G) {
 // o.exact: no position error. o.reveal: close and clear enough, it tells the goose exactly where the player is.
 function gooseHear(x, z, r, o = {}) {
   const G = W && W.goose; if (!G || state !== 'playing') return false;
+  if (G.state === 'bait' || G.state === 'blind' || (o.player && player.undiesT > 0)) return false;
   const d = Math.hypot(x - G.x, z - G.z);
   if (wallsBetween(G.x, G.z, x, z)) r *= 0.65;
   if (d > r) return false;
@@ -2458,33 +2956,80 @@ function voice(G, o) { if (G.dist < CFG.MERP_RANGE + 8) merp(G, true, o.loud); e
 function merp(G, urgent, loud) {
   AU.merp(G.x, G.z, { urgent, loud: loud || 1 });
   G.beakT = Math.max(G.beakT, 0.4);
-  showMerp(G, urgent);
+  caption(G, urgent ? 'MERP!' : 'MERP', urgent);
 }
-function showMerp(G, urgent) {
+// on-screen caption placed toward where the goose is, sized by distance
+function caption(G, text, urgent, range = CFG.MERP_RANGE + 8) {
   const P = player, dx = G.x - P.x, dz = G.z - P.z, d = Math.hypot(dx, dz) || 1;
+  if (d > range * 1.6) return;
   const fx = -Math.sin(P.yaw), fz = -Math.cos(P.yaw), rx = Math.cos(P.yaw), rz = -Math.sin(P.yaw);
   const fwd = (dx * fx + dz * fz) / d, lat = (dx * rx + dz * rz) / d;
   const xPct = fwd > 0.25 ? 50 + clamp(lat / fwd / 1.2, -1, 1) * 42 : (lat >= 0 ? 90 : 10);
-  const close = clamp(1 - d / (CFG.MERP_RANGE + 8), 0, 1);
+  const close = clamp(1 - d / range, 0, 1);
   const el = document.createElement('div');
   el.className = 'merp' + (G.occluded ? ' muffled' : '');
-  el.textContent = urgent ? 'MERP!' : G.occluded ? '(merp)' : 'MERP';
+  el.textContent = G.occluded && !urgent ? '(' + text.toLowerCase() + ')' : text;
   el.style.left = xPct.toFixed(1) + '%'; el.style.top = (27 + rr(-5, 5)).toFixed(1) + '%';
   el.style.fontSize = Math.round(lerp(16, 76, close * close) * (urgent ? 1.15 : 1)) + 'px';
   els.hud.appendChild(el);
   setTimeout(() => el.remove(), 1200);
+}
+function gooseVoice(G, key, text, o = {}) {
+  if (!AU.play(key, { pos: [G.x, 2.7, G.z], maxD: o.maxD || 60, gain: o.gain || 1, delay: o.delay || 0 })) return false;
+  G.beakT = Math.max(G.beakT, o.beak || 0.5);
+  caption(G, text, !!o.urgent, o.range);
+  return true;
+}
+// called when the goose swings around a corner while walking
+function gooseCorner(G) {
+  const P = player, tx = P.hidden ? P.hidden.x : P.x, tz = P.hidden ? P.hidden.z : P.z;
+  const tracking = G.state === 'chase' || G.state === 'hunt' || G.state === 'investigate';
+  // the corner is the last one if the player is in view from here or from where it is heading next
+  let ax = G.x, az = G.z;
+  if (G.path && G.path.length) { const w = G.path[Math.min(G.pathI, G.path.length - 1)]; ax = center(w.x); az = center(w.z); }
+  const inView = !wallsBetween(G.x, G.z, tx, tz) || !wallsBetween(ax, az, tx, tz);
+  const finalCorner = tracking && !G.sees && P.undiesT <= 0 && G.swerveCD <= 0 && Math.hypot(tx - G.x, tz - G.z) < 20 && inView;
+  if (finalCorner && gooseVoice(G, 'swerve', 'NEREW SWERVE', { maxD: 75, gain: 1.25, urgent: true, beak: 0.8 })) {
+    G.swerveCD = 8; G.rearCD = 2.4; G.voiceBusyUntil = gameTime + (AU.samples.swerve ? AU.samples.swerve.duration : 0); return;
+  }
+  if (G.rearCD <= 0 && gooseVoice(G, 'rear', 'REAR', { maxD: 55, gain: 1.0 })) G.rearCD = 2.4;
+}
+function blindGoose(G) {
+  G.blindCharge = 0; G.blindImm = CFG.BLIND_IMMUNE; G.blindT = CFG.BLIND_DUR; G.flapT = CFG.BLIND_DUR;
+  G.lastSeen = { x: player.x, z: player.z };
+  gooseSet(G, 'blind');
+  AU.honk(G.x, G.z, { alert: true, pitch: 1.35, loud: 1.5 }); AU.flap(G.x, G.z); G.beakT = 1.2;
+  toast('You blinded it! Go!', false, 2.5);
+}
+function updateBlind(G, dt) {
+  const P = player;
+  G.blindImm = Math.max(0, G.blindImm - dt);
+  let on = false;
+  if (P.flashOn && G.state !== 'blind' && G.state !== 'bait' && G.blindImm <= 0) {
+    GOOSE_RIG.headPivot.getWorldPosition(tmpH);
+    const o = flash.position, vx = tmpH.x - o.x, vy = tmpH.y - o.y, vz = tmpH.z - o.z, d = Math.hypot(vx, vy, vz) || 1;
+    const reach = 4 + 8 * (P.battery / CFG.BATTERY_MAX);
+    if (d < reach && (vx * FL.dir.x + vy * FL.dir.y + vz * FL.dir.z) / d > Math.cos(0.2)) {
+      const hy = G.yaw + G.headYaw, facing = (-vx * Math.sin(hy) - vz * Math.cos(hy)) / (Math.hypot(vx, vz) || 1);
+      if (facing > 0.35 && los3(o.x, o.y, o.z, tmpH.x, tmpH.y, tmpH.z)) on = true;   // light has to hit its eyes
+    }
+  }
+  G.blindCharge = on ? G.blindCharge + dt : Math.max(0, G.blindCharge - dt * 1.5);
+  if (G.blindCharge >= CFG.BLIND_TIME) blindGoose(G);
 }
 function updateGoose(dt) {
   const G = W.goose, P = player;
   G.stateT += dt; G.msgCD -= dt; G.forcePathT = (G.forcePathT || 0) - dt;
   const dx = P.x - G.x, dz = P.z - G.z; G.dist = Math.hypot(dx, dz);
   G.senseT -= dt;
+  const numb = G.state === 'blind' || G.state === 'bait' || P.undiesT > 0;   // blind, busy with a muffin, or you are undetectable
   if (G.senseT <= 0) {
     G.senseT = 0.08;
-    G.sees = gooseSees(G);
-    G.light = !G.sees && P.flashOn && gooseNoticesLight(G);
+    G.sees = !numb && gooseSees(G);
+    G.light = !numb && !G.sees && P.flashOn && gooseNoticesLight(G);
     G.occluded = wallsBetween(G.x, G.z, P.x, P.z);
   }
+  if (numb) { G.sees = false; G.light = false; }
   if (G.knowT > 0) G.knowT -= dt;
 
   if (G.sees) {
@@ -2492,7 +3037,16 @@ function updateGoose(dt) {
     if (G.state !== 'chase' && G.state !== 'alert') {
       const quick = G.state === 'hunt';
       gooseSet(G, 'alert'); G.alertT = quick ? 0.15 : 0.55;
-      voice(G, { alert: true, pitch: 1.1, loud: 1.4 }); AU.sting(); G.beakT = 0.6; G.flapT = 0.7; G.merpT = 1.3;
+      // spotted you while coming round a corner (just turned, or you are off to its side while it walks): the final corner
+      const offAxis = Math.abs(angDiff(G.yaw, Math.atan2(P.x - G.x, P.z - G.z)));
+      const rounding = gameTime - (G.lastTurnT ?? -9) < 1.0 || (G.curSpeed > 1 && offAxis > 0.9);
+      if (rounding && G.swerveCD <= 0 && gooseVoice(G, 'swerve', 'NEREW SWERVE', { maxD: 75, gain: 1.25, urgent: true, beak: 0.8 })) {
+        G.swerveCD = 8; G.voiceBusyUntil = gameTime + (AU.samples.swerve ? AU.samples.swerve.duration : 0);
+      }
+      if (G.eydamCD <= 0 && gooseVoice(G, 'eydam', 'EYDAM!', { maxD: 80, gain: 1.35, urgent: true, beak: 0.8, delay: Math.max(0, (G.voiceBusyUntil || 0) - gameTime) })) G.eydamCD = 5;
+      else if (G.eydamCD > 0) G.beakT = 0.4;
+      else { voice(G, { alert: true, pitch: 1.1, loud: 1.4 }); AU.sting(); }
+      G.beakT = Math.max(G.beakT, 0.6); G.flapT = 0.7; G.merpT = 1.6;
       toast('It sees you. RUN.', true, 2.5);
     }
   } else if (G.light) {
@@ -2502,7 +3056,7 @@ function updateGoose(dt) {
       toast('It noticed your light.', true);
     }
   }
-  const scentReady = P.linger >= CFG.LINGER_TIME;
+  const scentReady = P.linger >= CFG.LINGER_TIME && G.state !== 'bait' && G.state !== 'blind';
   if (scentReady && G.state !== 'chase' && G.state !== 'alert' && !G.scent) {
     G.scent = true; if (G.state !== 'hunt') gooseSet(G, 'hunt');
     AU.sniff(G.x, G.z, true); AU.sniff(G.x, G.z, false);
@@ -2510,8 +3064,29 @@ function updateGoose(dt) {
   }
   if (!scentReady && G.scent) G.scent = false;
 
+  G.eydamCD -= dt; G.swerveCD -= dt; G.rearCD -= dt; G.cornerCD -= dt;
+  updateBlind(G, dt);
   let moving = false;
   switch (G.state) {
+    case 'blind':
+      G.curSpeed = Math.max(0, G.curSpeed - dt * 14); G.blindT -= dt;
+      if (G.blindT <= 0) gooseInvestigate(G, G.lastSeen.x, G.lastSeen.z, CFG.INVESTIGATE);
+      break;
+    case 'bait': {
+      const m = G.bait;
+      if (!m || m.gone) { gooseAfterMuffin(G); break; }
+      if (G.baitPhase === 'go') {
+        const rem = moveGoose(G, m.x, m.z, CFG.CHASE, dt); moving = true;
+        if (rem < 1.25) { G.baitPhase = 'eat'; G.eatT = rr(CFG.EAT_MIN, CFG.EAT_MAX); G.eatTotal = G.eatT; G.munchT = 0; }
+      } else {
+        G.curSpeed = Math.max(0, G.curSpeed - dt * 12); faceToward(G, m.x - G.x, m.z - G.z, dt, 6);
+        G.eatT -= dt; G.munchT -= dt;
+        if (G.munchT <= 0) { G.munchT = rr(0.28, 0.45); AU.munch(G.x, G.z); G.beakT = 0.18; }
+        const left = clamp(G.eatT / G.eatTotal, 0, 1); m.mesh.scale.setScalar(0.35 + 0.65 * left);
+        if (G.eatT <= 0) { m.gone = true; m.mesh.visible = false; gooseAfterMuffin(G); }
+      }
+      break;
+    }
     case 'alert':
       G.alertT -= dt; G.curSpeed = Math.max(0, G.curSpeed - dt * 12); faceToward(G, dx, dz, dt, 10);
       if (G.alertT <= 0) gooseSet(G, 'chase');
@@ -2558,6 +3133,19 @@ function updateGoose(dt) {
       }
   }
 
+  // corners: a sharp change of heading while walking
+  if (moving && G.curSpeed > 1) {
+    G.hHist.push([gameTime, G.yaw]); while (G.hHist.length > 1 && gameTime - G.hHist[0][0] > 0.7) G.hHist.shift();
+    const turned = Math.abs(angDiff(G.hHist[0][1], G.yaw));
+    if (turned > 0.6) G.lastTurnT = gameTime;
+    if (G.cornerCD <= 0 && turned > 1.1) { G.cornerCD = 1.2; G.hHist.length = 0; gooseCorner(G); }
+  } else G.hHist.length = 0;
+  // DaNaNaNaNa: it is about to get you
+  const closing = (G.state === 'chase' || G.state === 'alert' || (G.state === 'hunt' && (G.knowT > 0 || G.scent))) && P.undiesT <= 0;
+  if (closing && G.dist < 6.5 && G.dananaArmed) {
+    if (AU.play('danana', { gain: 1.1 })) { caption(G, 'DaNaNaNaNa', true); G.merpT = Math.max(G.merpT, 2.2); }
+    G.dananaArmed = false;
+  } else if (!closing || G.dist > 12) G.dananaArmed = true;
   // steps: very loud, shake the camera when close
   if (G.stepAcc >= 1.75) {
     G.stepAcc = 0; AU.gooseStep(G.x, G.z);
@@ -2571,7 +3159,9 @@ function updateGoose(dt) {
       case 'chase': farHonk(G, { pitch: rr(1.02, 1.18), loud: 1.2 }); G.beakT = 0.35; G.honkT = rr(1.8, 3.4); break;
       case 'hunt': if (r < 0.6) AU.sniff(G.x, G.z); else { farHonk(G, { pitch: 1.0 }); G.beakT = 0.35; } G.honkT = rr(1.8, 3.5); break;
       case 'search': if (r < 0.3) AU.hiss(G.x, G.z); else if (r < 0.6) AU.sniff(G.x, G.z); else if (r < 0.85) { farHonk(G, { pitch: rr(0.9, 1.05) }); G.beakT = 0.35; } else AU.grunt(G.x, G.z); G.honkT = rr(3.5, 7); break;
-      default:
+      case 'blind': case 'bait': G.honkT = rr(2, 4); break;
+      default:   // idle: Peww, placed in the world so you can tell where it is
+        if (r < 0.72 && gooseVoice(G, 'peww', 'peww', { maxD: 65, gain: 1.05, range: 60 })) { G.honkT = rr(6, 11); break; }
         if (r < 0.5) { farHonk(G, { pitch: rr(0.88, 1.05) }); G.beakT = 0.35; }
         else if (r < 0.72) AU.grunt(G.x, G.z);
         else if (r < 0.85) AU.hiss(G.x, G.z);
@@ -2581,7 +3171,7 @@ function updateGoose(dt) {
   }
   // MERP: it talks more the closer it gets
   G.merpT -= dt;
-  if (G.dist < CFG.MERP_RANGE && G.merpT <= 0 && G.state !== 'alert') {
+  if (G.dist < CFG.MERP_RANGE && G.merpT <= 0 && G.state !== 'alert' && G.state !== 'bait' && G.state !== 'blind') {
     const urgent = G.state === 'chase';
     merp(G, urgent);
     G.merpT = lerp(0.9, 5.5, G.dist / CFG.MERP_RANGE) * rr(0.8, 1.25) * (urgent ? 0.75 : 1);
@@ -2589,7 +3179,8 @@ function updateGoose(dt) {
   animateGoose(G, dt, moving);
 
   // catching
-  if (!P.hidden) {
+  if (G.state === 'blind' || G.state === 'bait' || P.undiesT > 0) { /* preoccupied, blind, or can't sense you */ }
+  else if (!P.hidden) {
     if (G.dist < CFG.CATCH && (G.sees || G.state === 'chase' || G.state === 'alert' || G.state === 'hunt')) caught();
   } else if (G.state === 'hunt' && (G.knowT > 0 || G.scent)) {
     const s = P.hidden;
@@ -2610,11 +3201,14 @@ function animateGoose(G, dt, moving) {
   const sniffing = G.state === 'hunt' || (G.state === 'search' && G.searchPhase === 'look' && Math.sin(G.stateT * 0.6) > 0.5);
   let neckWant = chase ? 0.55 : sniffing ? 0.75 + Math.sin(gameTime * 9) * 0.06 : 0.18;
   if (G.state === 'alert') neckWant = -0.25;
+  if (G.state === 'blind') neckWant = -0.35 + Math.sin(gameTime * 13) * 0.25;
+  if (G.state === 'bait' && G.baitPhase === 'eat') neckWant = 1.05 + Math.abs(Math.sin(gameTime * 9)) * 0.25;
   G.neckX += (neckWant - G.neckX) * k; R.neck.rotation.x = G.neckX;
   let headWant = 0;
   if (G.state === 'search' && G.searchPhase === 'look') headWant = Math.sin(G.stateT * 1.7) * 0.85;
   else if (G.state === 'patrol' && !G.target) headWant = Math.sin(gameTime * 0.9) * 0.6;
   else if (G.state === 'chase' || G.state === 'alert') headWant = clamp(angDiff(G.yaw, Math.atan2(player.x - G.x, player.z - G.z)), -0.6, 0.6);
+  else if (G.state === 'blind') headWant = Math.sin(gameTime * 7.3) * 0.9;
   G.headYaw += (headWant - G.headYaw) * k; R.headPivot.rotation.y = G.headYaw;
   if (G.beakT > 0) G.beakT -= dt;
   R.jaw.rotation.x += ((G.beakT > 0 ? 0.5 : 0.02) - R.jaw.rotation.x) * (1 - Math.exp(-dt * 20));
@@ -2696,8 +3290,22 @@ function updateFx(dt) {
     L.light.intensity = L.cur * 1.4; L.mat.emissiveIntensity = L.cur;
   }
   for (const g of W.glows) g.s.material.opacity = g.base * (0.7 + 0.3 * Math.sin(gameTime * 2.2 + g.ph));
+  // tapes: brighter, lifted and spinning as you approach; visible through walls with the glasses
+  const xr = player.glassesT > 0;
+  for (const p of W.pickups) {
+    if (p.type !== 'piece' || p.taken) continue;
+    const d = Math.hypot(p.x - player.x, p.z - player.z), want = clamp(1 - d / 14, 0, 1);
+    p.hl += (want - p.hl) * (1 - Math.exp(-dt * 4));
+    const h = p.hl, pulse = 0.75 + 0.25 * Math.sin(gameTime * 3 + p.ph);
+    p.mesh.position.y = 0.02 + h * (0.35 + Math.sin(gameTime * 2 + p.ph) * 0.05);
+    p.mesh.rotation.y += dt * h * 1.6;
+    p.labelMat.emissiveIntensity = 0.4 + 2.0 * h * pulse;
+    p.glow.position.y = p.mesh.position.y + 0.08; p.glow.scale.setScalar(1.3 + 1.8 * h);
+    p.glow.material.opacity = (0.35 + 0.6 * h) * pulse; p.glow.material.depthTest = !xr;
+  }
   updateAmbient(dt);
   updateScreenFx(dt);
+  document.body.classList.toggle('lit', player.flashOn);
   const G = W.goose, P = player;
   const chase = G.state === 'chase' || G.state === 'alert';
   const danger = chase ? 1 : G.state === 'hunt' ? 0.7 : clamp(1 - G.dist / 18, 0, 1) * 0.75;
@@ -2711,6 +3319,26 @@ function setClass(key, el, cls, on) { const k = key + cls; if (hudCache[k] !== o
 function updateHUD(dt) {
   const P = player;
   setText('pc', els.pc, `${P.pieces} / ${CFG.PIECES}`);
+  // items you are carrying (click or tap to use) and what is active
+  const invKey = Object.keys(ITEMS).map(k => INV[k]).join(',');
+  if (hudCache.inv !== invKey) {
+    hudCache.inv = invKey;
+    els.inv.innerHTML = Object.keys(ITEMS).filter(k => INV[k] > 0).map(k => `<button class="slot" type="button" data-item="${k}"><b>${ITEMS[k].name}</b><span class="n">x${INV[k]}</span><kbd>${ITEMS[k].key}</kbd></button>`).join('');
+  }
+  const act = [['propelT', 'Propel', CFG.PROPEL_TIME], ['undiesT', 'Undetectable', CFG.UNDIES_TIME], ['glassesT', 'X-ray', CFG.GLASSES_TIME]].filter(([k]) => P[k] > 0);
+  const fxKey = act.map(([k]) => k + Math.ceil(P[k])).join('|');
+  if (hudCache.fx !== fxKey) {
+    hudCache.fx = fxKey;
+    els.fxl.innerHTML = act.map(([k, n, max]) => `<div class="fxrow"><span>${n} ${Math.ceil(P[k])}s</span><div class="bar"><span style="transform:scaleX(${(P[k] / max).toFixed(3)})"></span></div></div>`).join('');
+  }
+  setClass('xr', els.xrayFx, 'on', P.glassesT > 0);
+  if (TAPEUI.dur > 0) {
+    TAPEUI.t += dt; els.tapeP.style.transform = `scaleX(${Math.min(1, TAPEUI.t / TAPEUI.dur).toFixed(3)})`;
+    if (TAPEUI.t > TAPEUI.dur + 1.2) { TAPEUI.dur = 0; els.tape.hidden = true; }
+  }
+  const bc = W.goose ? clamp(W.goose.blindCharge / CFG.BLIND_TIME, 0, 1) : 0;
+  els.blind.hidden = bc < 0.02;
+  if (bc >= 0.02) els.blindArc.style.strokeDashoffset = (100.5 * (1 - bc)).toFixed(1);
   // stamina bar: hidden until stamina is spent, stays 3 s after, then fades; flashes red while holding your breath at 16% or less
   const sf = clamp(P.stamina / CFG.STAMINA_MAX, 0, 1), crit = P.holding && sf <= CFG.HOLD_CRIT + 1e-9;
   const sfs = sf.toFixed(3); if (hudCache.sf !== sfs) { hudCache.sf = sfs; els.sfill.style.transform = `scaleX(${sfs})`; }
@@ -2742,7 +3370,7 @@ function updateHUD(dt) {
     setClass('tbc', TB.crouch, 'on', P.crouch);
     setClass('tbl', TB.light, 'on', P.flashOn);
     setClass('tbu', TB.use, 'ready', !!P.target);
-    setText('tbut', TB.use, !P.target ? 'Use' : P.target.kind === 'leave' ? 'Leave' : P.target.kind === 'spot' ? 'Hide' : P.target.kind === 'fridge' ? (P.target.f.open ? 'Close' : 'Open') : 'Take');
+    setText('tbut', TB.use, !P.target ? 'Use' : P.target.kind === 'leave' ? 'Leave' : P.target.kind === 'spot' ? 'Hide' : P.target.kind === 'fridge' ? (P.target.f.open ? 'Close' : 'Open') : P.target.kind === 'cabinet' ? 'Search' : 'Take');
   }
   const lf = P.linger / CFG.LINGER_TIME;
   const scent = lf >= 1 ? 'It smells you. Move.' : lf > 0.55 ? 'Your scent is building up' : '';
@@ -2779,6 +3407,11 @@ function updateMenu(dt) {
   menu.cam.position.set(-0.9 + Math.sin(t * 0.2) * 0.15, 1.2 + Math.sin(t * 0.27) * 0.05, 6.4);
   menu.cam.lookAt(wide ? -0.45 : 0.2, 1.95, -0.6);
   mouthParts(R);
+  const D = menu.dusty;
+  animateCharacter(D, dt, { phase: 0, speed: 0, run: false, crouch: false, aimPitch: 0.15, flash: true, holding: false, exhausted: false, searching: false, breathPh: t * 1.7, breathB: 0.3, turnRate: 0, t });
+  D.root.updateMatrixWorld(true); D.tip.getWorldPosition(menu.torch.position);
+  R.headPivot.getWorldPosition(menu.torch.target.position);
+  menu.torch.intensity = 2.2 * fl;
 }
 
 /* ================= LOOP ================= */
@@ -2812,6 +3445,7 @@ addEventListener('resize', () => {
 // test hooks
 window.__gooseflesh = {
   get state() { return state; }, get W() { return W; }, player, AU, DBG, settings, touch, applySettings, AMB, AC, FX, FL, keys, heatEffects, updateAmbient,
+  camera, GOOSE_RIG, DUSTY, CAM, INV, useItem, giveItem, finishSearch, TAPEUI, CFG,
   start: beginNewRun, caught: () => caught(), win: () => { player.pieces = CFG.PIECES; win(); },
   goose: () => W && W.goose, step: (n = 60, dt = 1 / 60) => { for (let i = 0; i < n; i++) { if (state !== 'playing') break; gameTime += dt; updatePlayer(dt); if (!DBG.freeze) updateGoose(dt); if (state === 'playing') { updateFx(dt); updateHUD(dt); } } },
 };
