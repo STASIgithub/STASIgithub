@@ -38,6 +38,8 @@ body{font-family:var(--f-type);-webkit-font-smoothing:antialiased;user-select:no
 body.lit #grain{opacity:.04}
 #xray-fx{z-index:3;opacity:0;transition:opacity .5s;background:radial-gradient(ellipse at center,transparent 55%,rgba(60,200,255,.18) 85%,rgba(40,160,230,.38) 100%)}
 #xray-fx.on{opacity:1}
+#frost-fx{z-index:3;opacity:0;transition:opacity .6s;background:radial-gradient(ellipse at center,transparent 50%,rgba(200,235,255,.16) 80%,rgba(220,245,255,.36) 100%)}
+#frost-fx.on{opacity:1}
 #flash{z-index:30;opacity:0;background:#fff}
 /* body-heat and exhaustion layers: opacity only, driven from JS */
 #heat-a{z-index:3;opacity:0;background:radial-gradient(ellipse at center,transparent 40%,rgba(205,45,32,.32) 72%,rgba(175,18,16,.72) 100%)}
@@ -58,7 +60,7 @@ body.lit #grain{opacity:.04}
 /* HUD */
 #hud{position:fixed;inset:0;pointer-events:none;z-index:13;color:var(--ink);text-transform:uppercase;letter-spacing:.14em;font-size:12px}
 #hud .lbl{color:var(--dim)}
-#hud-pieces{position:absolute;top:calc(18px + env(safe-area-inset-top,0px));left:max(20px,env(safe-area-inset-left,0px));display:flex;align-items:center;gap:12px}
+#hud-tapes{position:absolute;top:calc(18px + env(safe-area-inset-top,0px));left:max(20px,env(safe-area-inset-left,0px));display:flex;align-items:center;gap:12px}
 .frags{display:flex;gap:5px}
 .frags i{display:block;width:18px;height:12px;border-radius:2px;background:rgba(216,205,176,.13)}
 .frags i.on{background:var(--paper);box-shadow:0 0 12px var(--ember)}
@@ -77,11 +79,6 @@ body.lit #grain{opacity:.04}
 .bar{height:6px;background:rgba(221,214,198,.13);position:relative;overflow:hidden}
 #sfill{position:absolute;inset:0;background:var(--ink);transform-origin:left}
 #hud-stam.out #sfill{background:var(--blood)}
-#hud-stam.flash .bar{animation:stamflash .5s steps(1) 1}
-#hud-stam.crit #sfill{background:var(--blood);animation:stamcrit .4s steps(1) infinite}
-#hud-stam.crit .bar{box-shadow:0 0 12px rgba(179,25,30,.6)}
-@keyframes stamflash{0%,50%{opacity:1}25%,75%{opacity:.1}}
-@keyframes stamcrit{0%{opacity:1}50%{opacity:.2}}
 #hud-temp{position:absolute;bottom:calc(86px + env(safe-area-inset-bottom,0px));left:max(20px,env(safe-area-inset-left,0px));display:flex;align-items:baseline;gap:12px}
 #tval{font-size:20px;letter-spacing:.03em;font-variant-numeric:tabular-nums;color:var(--ink);padding:1px 6px;margin-left:-6px;border-radius:3px;text-shadow:0 0 6px rgba(0,0,0,.9)}
 #tval.hot{background:rgba(0,0,0,.45);text-shadow:0 0 1px rgba(255,236,228,.55),0 0 6px rgba(0,0,0,.9)}
@@ -93,12 +90,6 @@ body.lit #grain{opacity:.04}
 #prompt{position:absolute;left:50%;top:57%;transform:translateX(-50%);padding:7px 14px;background:rgba(0,0,0,.6);font-size:13px;white-space:nowrap;color:var(--ink)}
 #toast{position:absolute;left:50%;top:calc(15% + env(safe-area-inset-top,0px));transform:translateX(-50%);text-align:center;font-size:15px;letter-spacing:.2em;max-width:80vw;transition:opacity .6s;text-shadow:0 0 8px #000}
 #toast.bad{color:#e04a3f}
-#note{position:absolute;right:max(28px,env(safe-area-inset-right,0px));top:30%;width:min(300px,38vw);padding:22px 22px 26px;background:var(--paper);color:var(--paper-ink);
-  font-family:var(--f-hand);font-size:21px;line-height:1.18;text-transform:none;letter-spacing:0;transform:rotate(-2deg);transition:opacity .8s,transform .8s;
-  box-shadow:0 10px 40px rgba(0,0,0,.8);clip-path:polygon(0 3%,9% 0,22% 2%,38% 0,51% 3%,67% 0,82% 2%,100% 0,98% 30%,100% 58%,97% 100%,80% 97%,61% 100%,44% 96%,27% 100%,10% 97%,0 100%,2% 52%)}
-#note.gone{opacity:0;transform:rotate(-2deg) translateY(12px)}
-#note b{display:block;font-family:var(--f-type);font-weight:400;font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:#6d5d47;margin-bottom:8px}
-
 /* screens */
 .screen{position:fixed;inset:0;z-index:20;display:flex;flex-direction:column;justify-content:flex-start;overflow-y:auto;box-sizing:border-box;-webkit-overflow-scrolling:touch;
   padding-block:max(28px,env(safe-area-inset-top,0px)) max(28px,env(safe-area-inset-bottom,0px));
@@ -131,19 +122,19 @@ button.ghost:hover{background:rgba(221,214,198,.2)}
 #scr-dead h2{color:#e8dccb;text-shadow:0 0 30px rgba(179,25,30,.8)}
 #dead-stats{margin:0;color:var(--dim);font-size:14px;letter-spacing:.08em}
 
-/* letter reveal */
+/* tape transcript reveal */
 #scr-win{background:rgba(3,3,4,.95);align-items:center;justify-content:flex-start}
 .win-wrap{width:100%;max-width:620px;display:flex;flex-direction:column;gap:26px;align-items:stretch;margin-block:auto}
 .win-head{display:flex;flex-direction:column;gap:6px;text-align:center}
-#letter{display:flex;flex-direction:column;gap:2px;position:relative}
+#transcript{display:flex;flex-direction:column;gap:2px;position:relative}
 .strip{position:relative;background:var(--paper);color:var(--paper-ink);font-family:var(--f-hand);font-size:clamp(17px,min(2.6vw,3.3vh),24px);line-height:1.2;padding:12px clamp(18px,4vw,34px) 14px;
   background-image:radial-gradient(ellipse at 20% 30%,rgba(120,90,40,.16),transparent 55%),radial-gradient(ellipse at 85% 80%,rgba(90,60,20,.14),transparent 50%);
   transform:translate(var(--dx),var(--dy)) rotate(var(--rot));opacity:0;transition:transform 1.1s cubic-bezier(.2,.8,.2,1),opacity .6s;transition-delay:calc(var(--i) * .28s)}
-#letter.on .strip{transform:none;opacity:1}
+#transcript.on .strip{transform:none;opacity:1}
 .strip .key{position:relative;white-space:nowrap;padding:0 4px}
 .strip .key::after{content:"";position:absolute;left:-7px;right:-7px;top:-3px;bottom:-4px;border:2.5px solid var(--blood);border-radius:50% 46% 52% 44%;transform:rotate(-3deg) scale(.4);opacity:0;transition:transform .5s,opacity .5s}
-#letter.circled .key{color:var(--blood)}
-#letter.circled .key::after{opacity:1;transform:rotate(-3deg) scale(1)}
+#transcript.circled .key{color:var(--blood)}
+#transcript.circled .key::after{opacity:1;transform:rotate(-3deg) scale(1)}
 .strip .sig{display:block;text-align:right;margin-top:6px;font-size:1.05em}
 #secret{text-align:center;display:flex;flex-direction:column;gap:10px;min-height:120px}
 #secret .words{font-family:var(--f-display);font-size:clamp(30px,5.6vw,56px);line-height:1;color:var(--ink);text-wrap:balance}
@@ -203,7 +194,6 @@ body.m #tape{right:auto;left:max(16px,env(safe-area-inset-left,0px));top:calc(44
 #tb-run{width:72px;height:72px;right:calc(122px + env(safe-area-inset-right,0px));bottom:calc(22px + env(safe-area-inset-bottom,0px))}
 #tb-crouch{width:62px;height:62px;right:calc(118px + env(safe-area-inset-right,0px));bottom:calc(112px + env(safe-area-inset-bottom,0px));font-size:10px}
 #tb-light{width:64px;height:64px;right:calc(32px + env(safe-area-inset-right,0px));bottom:calc(136px + env(safe-area-inset-bottom,0px))}
-#tb-breath{width:62px;height:62px;right:calc(208px + env(safe-area-inset-right,0px));bottom:calc(56px + env(safe-area-inset-bottom,0px));font-size:10px}
 #touch .tb.off{opacity:.35}
 #tb-pause{width:46px;height:46px;top:calc(12px + env(safe-area-inset-top,0px));right:calc(14px + env(safe-area-inset-right,0px));font-size:14px;letter-spacing:0}
 
@@ -217,7 +207,6 @@ body.m #hud-temp{bottom:calc(10px + env(safe-area-inset-bottom,0px));left:calc(m
 body.m #hud-temp .lbl{display:none}
 body.m #tval{font-size:16px}
 body.m #hud-status{bottom:auto;top:calc(68px + env(safe-area-inset-top,0px));right:max(16px,env(safe-area-inset-right,0px))}
-body.m #note{right:auto;left:max(16px,env(safe-area-inset-left,0px));top:calc(44px + env(safe-area-inset-top,0px));width:min(42vw,320px);font-size:15px;padding:12px 16px 16px}
 body.m #prompt{top:60%;font-size:12px}
 
 /* settings */
@@ -245,7 +234,6 @@ input[type=range]{width:100%;accent-color:var(--ember);height:28px}
 }
 @media (max-width:640px){
   #scr-start{background:rgba(5,5,6,.82)}
-  #note{width:52vw;font-size:17px}
   .keys{font-size:12px}
 }
 @media (prefers-reduced-motion:reduce){
@@ -264,19 +252,19 @@ input[type=range]{width:100%;accent-color:var(--ember);height:28px}
 <div class="fx" id="tired"></div>
 <div class="fx" id="hide" hidden><div class="slits"></div></div>
 <div class="fx" id="xray-fx"></div>
+<div class="fx" id="frost-fx"></div>
 <div class="fx" id="fade"></div>
 <div class="fx" id="grain"></div>
 <div class="fx" id="flash"></div>
 
 <div id="hud" hidden>
-  <div id="hud-pieces"><span class="lbl">Tapes</span><span class="frags" id="frags"><i></i><i></i><i></i><i></i><i></i></span><span id="pc">0 / 5</span></div>
+  <div id="hud-tapes"><span class="lbl">Tapes</span><span class="frags" id="frags"><i></i><i></i><i></i><i></i><i></i></span><span id="pc">0 / 5</span></div>
   <div id="cross"></div>
   <div id="blind" hidden><svg viewBox="0 0 40 40"><circle class="trk" cx="20" cy="20" r="16"/><circle class="arc" id="blind-arc" cx="20" cy="20" r="16"/></svg></div>
   <div id="hud-tr"><div id="hud-inv"></div><div id="hud-fx"></div></div>
   <div id="tape" hidden><div class="reels"><i></i><i></i></div><div><b id="tape-h">Tape 1 of 5</b><span id="tape-s">Playing</span><div class="tbar"><span id="tape-p"></span></div></div></div>
   <div id="prompt" hidden></div>
   <div id="toast"></div>
-  <div id="note" class="gone"><b id="note-h">Piece 1 of 5</b><span id="note-t"></span></div>
   <div id="hud-batt"><span class="bicon"><span id="bfill"></span></span><span id="bpct">100%</span><span class="lbl">Flashlight <kbd>F</kbd></span></div>
   <div id="hud-temp"><span class="lbl">Body</span><span id="tval">98.0°F</span></div>
   <div id="hud-stam"><div class="bar"><span id="sfill"></span></div></div>
@@ -294,11 +282,10 @@ input[type=range]{width:100%;accent-color:var(--ember);height:28px}
       <dt><kbd>W</kbd> <kbd>A</kbd> <kbd>S</kbd> <kbd>D</kbd></dt><dd>Move. Mouse to look.</dd>
       <dt><kbd>Shift</kbd> hold</dt><dd>Sprint. 10 seconds of stamina, and very loud.</dd>
       <dt><kbd>Ctrl</kbd> or <kbd>C</kbd></dt><dd>Crouch (toggle). Slow and nearly silent.</dd>
-      <dt><kbd>R</kbd> hold</dt><dd>Hold your breath. Costs stamina, needs at least 22%.</dd>
-      <dt><kbd>F</kbd></dt><dd>Flashlight. 80 seconds of battery. Hold it on his face to blind him.</dd>
-      <dt><kbd>E</kbd></dt><dd>Pick up, hide, open refrigerators, search cabinets.</dd>
+      <dt><kbd>F</kbd></dt><dd>Flashlight. 110 seconds of battery. Hold it on his face to blind him.</dd>
+      <dt><kbd>E</kbd></dt><dd>Pick up, hide, open and search refrigerators, search cabinets.</dd>
       <dt><kbd>Q</kbd></dt><dd>Throw a blueberry muffin. He can't resist them.</dd>
-      <dt><kbd>1</kbd> <kbd>2</kbd> <kbd>3</kbd></dt><dd>Propel, Adam's Underwear, HardLife's Glasses.</dd>
+      <dt><kbd>1</kbd> <kbd>2</kbd> <kbd>3</kbd> <kbd>4</kbd></dt><dd>Propel, Adam's Underwear, HardLife's Glasses, Ice pack.</dd>
       <dt><kbd>Esc</kbd></dt><dd>Pause.</dd>
     </dl>
     <dl class="keys" id="keys-mobile" hidden>
@@ -306,9 +293,8 @@ input[type=range]{width:100%;accent-color:var(--ember);height:28px}
       <dt><span class="chip">Drag</span></dt><dd>Right side of the screen. Look around.</dd>
       <dt><span class="chip">Run</span></dt><dd>Tap to sprint, tap again to stop. 10 seconds of stamina, and very loud.</dd>
       <dt><span class="chip">Crouch</span></dt><dd>Slow and nearly silent.</dd>
-      <dt><span class="chip">Breath</span></dt><dd>Hold to hold your breath. Costs stamina, needs at least 22%.</dd>
-      <dt><span class="chip">Light</span></dt><dd>Flashlight. 80 seconds of battery.</dd>
-      <dt><span class="chip">Use</span></dt><dd>Pick up, hide, open refrigerators, search cabinets.</dd>
+      <dt><span class="chip">Light</span></dt><dd>Flashlight. 110 seconds of battery.</dd>
+      <dt><span class="chip">Use</span></dt><dd>Pick up, hide, open and search refrigerators, search cabinets.</dd>
       <dt><span class="chip">Items</span></dt><dd>Tap an item at the top right to use it. Shine the light in his face to blind him.</dd>
     </dl>
     <div class="actions"><button id="btn-start" type="button">Enter the maze</button><button id="btn-settings" class="ghost" type="button">Settings</button></div>
@@ -338,6 +324,16 @@ input[type=range]{width:100%;accent-color:var(--ember);height:28px}
       <div class="seg"><button type="button" data-set="quality" data-val="high">High</button><button type="button" data-set="quality" data-val="low">Low</button></div>
       <p class="fine" id="gfx-desc"></p>
     </fieldset>
+    <fieldset class="setting">
+      <legend>Camera</legend>
+      <div class="seg"><button type="button" data-set="view" data-val="third">Third person</button><button type="button" data-set="view" data-val="first">First person</button></div>
+      <p class="fine" id="view-desc"></p>
+    </fieldset>
+    <fieldset class="setting">
+      <legend>Flavor text</legend>
+      <div class="seg"><button type="button" data-set="flavor" data-val="on">On</button><button type="button" data-set="flavor" data-val="off">Off</button></div>
+      <p class="fine" id="flavor-desc"></p>
+    </fieldset>
     <div class="setting">
       <div class="row"><label class="lbl" for="set-sens">Look sensitivity</label><output id="out-sens" for="set-sens"></output></div>
       <input type="range" id="set-sens" min="0.3" max="2.5" step="0.05">
@@ -361,8 +357,8 @@ input[type=range]{width:100%;accent-color:var(--ember);height:28px}
 
 <section class="screen" id="scr-win" hidden>
   <div class="win-wrap">
-    <div class="win-head"><p class="eyebrow">All five tapes</p></div>
-    <div id="letter"></div>
+    <div class="win-head"><p class="eyebrow">All five tapes, transcribed</p></div>
+    <div id="transcript"></div>
     <div id="secret"><p class="eyebrow" id="secret-lbl" style="opacity:0;transition:opacity .6s">The secret message</p><div class="words" id="secret-words"></div></div>
     <div class="win-actions" id="win-actions"><button id="btn-again" type="button">Play again</button></div>
   </div>
@@ -373,7 +369,6 @@ input[type=range]{width:100%;accent-color:var(--ember);height:28px}
   <button class="tb" id="tb-light" type="button" aria-label="Flashlight">Light</button>
   <button class="tb" id="tb-crouch" type="button" aria-label="Crouch">Crouch</button>
   <button class="tb" id="tb-run" type="button" aria-label="Run">Run</button>
-  <button class="tb" id="tb-breath" type="button" aria-label="Hold breath">Breath</button>
   <button class="tb" id="tb-use" type="button" aria-label="Use">Use</button>
   <button class="tb" id="tb-pause" type="button" aria-label="Pause">II</button>
 </div>
@@ -397,8 +392,8 @@ const CFG = {
   STAND_EYE: 1.6, CROUCH_EYE: 0.85, BED_EYE: 0.3,
   PLAYER_R: 0.3,
   STAMINA_MAX: 10, STAMINA_DELAY: 5, STAMINA_REGEN: 1.25,
-  BATTERY_MAX: 80, BATTERY_PICKUP: 10, MAX_BATTERIES: 5,
-  PIECES: 5,
+  BATTERY_MAX: 110, BATTERY_PICKUP: 10, MAX_BATTERIES: 5,
+  TAPES: 5,
   GOOSE_R: 0.65, GOOSE_EYE: 2.8, MERP_RANGE: 24,
   PATROL: 2.3, SEARCH: 2.6, INVESTIGATE: 3.7, ALERTED: 4.8, HUNT: 5.0, CHASE: 6.6,
   CATCH: 1.45,
@@ -406,24 +401,30 @@ const CFG = {
   NOISE_WALK: 8, NOISE_SPRINT: 24, NOISE_CROUCH: 1.2,
   LINGER_RADIUS: 2.5, LINGER_TIME: 20,
   // stamina drains, in stamina units per second (STAMINA_MAX = 10 units = 100%)
-  RUN_DRAIN: 1, HOLD_DRAIN: 0.5, HOLD_MIN: 0.22, HOLD_CRIT: 0.16, LOW_STAMINA: 0.22,
+  RUN_DRAIN: 1, LOW_STAMINA: 0.22, CROUCH_REGEN: 1.15,
   // body temperature (degrees F)
   TEMP_START: 98.0, TEMP_MAX: 104.0, TEMP_FLOOR: 97.8, HEATSTROKE_TIME: 20, COOL_RATE: 0.1, COOL_PAUSE: 30,
   // refrigerators
-  FRIDGES: 4, FRIDGE_POWER: 40, FRIDGE_OFF: 365, FRIDGE_RANGE: 2.1, FRIDGE_NOISE: 14,
+  FRIDGES: 4, FRIDGE_POWER: 25, FRIDGE_OFF: 200, FRIDGE_RANGE: 2.1, FRIDGE_NOISE: 14, FRIDGE_SEARCH_TIME: 1.2,
+  ICE_TIME: 20, ICE_RATE: 0.1,
+  // surveillance geese: two ordinary-sized geese that honk for the big one
+  SG_COUNT: 2, SG_SCALE: 0.34, SG_SPEED: 0.85, SG_R: 0.3, SG_SEPARATION: 18, SG_EYE: 0.92,
+  SG_SIGHT: 6, SG_SIGHT_RUN: 8.5, SG_SMELL: 2.6, SG_HEAR_RUN: 7, SG_TOUCH: 0.95,
+  SG_HONK_EVERY: 0.9, SG_BLIND_TIME: 1.65, SG_DISABLED: 45, SG_ALERT_SPEED: 5.4,
   // how far the goose can hear breathing
-  BREATH_R_MIN: 2.4, BREATH_R_MAX: 11, GASP_R: 22,
+  BREATH_R_MIN: 2.4, BREATH_R_MAX: 11,
   // defenses and items
   BLIND_TIME: 0.6, BLIND_DUR: 3.5, BLIND_IMMUNE: 12, CABINETS: 10, SEARCH_TIME: 1.6,
   PROPEL_TIME: 15, UNDIES_TIME: 30, GLASSES_TIME: 15, EAT_MIN: 5, EAT_MAX: 10,
 };
 
-const LETTER = [
-  "To whoever finds this. I tore this letter up so {he} couldn't read it. Yes, he can read. Keep your light off when you can. He notices it from very far away.",
+// what the five tapes say, shown as a transcript on the ending screen; {word} marks the circled word of the secret message
+const TAPE_TRANSCRIPTS = [
+  "To whoever finds this. I hid these tapes so {he} couldn't hear them. Yes, he listens. Keep your light off when you can. He notices it from very far away.",
   "I was the caretaker here. I fed him every morning and he grew, and not {only} taller. His hair grew too. I never asked about the hair.",
   "Don't run. He hears it from across the maze. Crouch and he hears almost nothing. But never stay in one place for long. He has never, {ever} lost a scent.",
   "The lockers and the beds hide you from his eyes, not from his nose. I learned that the hard way. All these years I thought he {wanted} me dead.",
-  "I was wrong. I understood when I saw how he stares at the empty feed bucket. Put the pieces together and you'll see. I'm sorry I ate the last of the {bread}.",
+  "I was wrong. I understood when I saw how he stares at the empty feed bucket. Play all five tapes and you'll see. I'm sorry I ate the last of the {bread}.",
 ];
 const SIGNATURE = 'The Caretaker';
 // recorded clips in ./audio. Anything missing falls back to the synthesized sound.
@@ -434,7 +435,7 @@ const SAMPLE_FILES = {
 };
 // [from F, stamina drain x, move speed x, extra recovery delay s]; 104 also disables running
 const HEAT_STEPS = [[104.0, 2.0, 0.75, 12], [103.4, 2.0, 0.80, 12], [102.6, 1.4, 0.88, 6.5], [102.0, 1.25, 0.90, 4], [101.3, 1.18, 0.92, 1.5], [100.5, 1.10, 0.95, 0]];
-const GRAFFITI = ['STAY COOL', 'HOLD YOUR BREATH', 'HE HEARS YOU RUN', 'DON\'T STAY STILL', 'LIGHTS OFF', 'HONK', 'HONK HONK HONK', 'IT CAN SMELL YOU', 'FIVE PIECES', 'NO EXIT', 'CROUCH', 'WHO COMBS HIS HAIR?', 'BREAD?', 'HIDE'];
+const GRAFFITI = ['STAY COOL', 'KEEP MOVING', 'HE HEARS YOU RUN', 'DON\'T STAY STILL', 'LIGHTS OFF', 'HONK', 'HONK HONK HONK', 'IT CAN SMELL YOU', 'FIVE TAPES', 'NO EXIT', 'CROUCH', 'WHO COMBS HIS HAIR?', 'BREAD?', 'HIDE'];
 
 /* ================= UTIL ================= */
 const rr = (a, b) => a + Math.random() * (b - a);
@@ -453,18 +454,21 @@ const angDiff = (a, b) => { let d = (b - a) % (Math.PI * 2); if (d > Math.PI) d 
 /* ================= SETTINGS ================= */
 const TOUCH_DEVICE = matchMedia('(pointer: coarse)').matches && !matchMedia('(pointer: fine)').matches;
 const SETTINGS_KEY = 'gooseflesh.settings.v1';
-const settings = { controls: TOUCH_DEVICE ? 'mobile' : 'computer', quality: TOUCH_DEVICE ? 'low' : 'high', sens: 1, vol: 0.9 };
+const settings = { controls: TOUCH_DEVICE ? 'mobile' : 'computer', quality: TOUCH_DEVICE ? 'low' : 'high', sens: 1, vol: 0.9, view: 'third', flavor: 'on' };
 try {
   const saved = JSON.parse(localStorage.getItem(SETTINGS_KEY) || 'null');
   if (saved && typeof saved === 'object') {
     if (saved.controls === 'computer' || saved.controls === 'mobile') settings.controls = saved.controls;
     if (saved.quality === 'high' || saved.quality === 'low') settings.quality = saved.quality;
+    if (saved.view === 'third' || saved.view === 'first') settings.view = saved.view;
+    if (saved.flavor === 'on' || saved.flavor === 'off') settings.flavor = saved.flavor;
     if (isFinite(saved.sens)) settings.sens = clamp(+saved.sens, 0.3, 2.5);
     if (isFinite(saved.vol)) settings.vol = clamp(+saved.vol, 0, 1);
   }
 } catch (e) { /* storage unavailable: defaults are fine */ }
 function saveSettings() { try { localStorage.setItem(SETTINGS_KEY, JSON.stringify(settings)); } catch (e) { /* ignore */ } }
 const isMobile = () => settings.controls === 'mobile';
+const firstPerson = () => settings.view === 'first';
 
 /* ================= RENDERER ================= */
 const canvas = $('view');
@@ -691,7 +695,7 @@ const MAT = {
   batCap: new THREE.MeshStandardMaterial({ color: 0xb87333, roughness: 0.3, metalness: 0.9 }),
 };
 MAT.locker.shadowSide = THREE.FrontSide;
-MAT.fridge = new THREE.MeshStandardMaterial({ color: 0xc9c5b7, roughness: 0.42, metalness: 0.05, bumpMap: TEX.noise, bumpScale: 0.004 });
+MAT.fridge = new THREE.MeshStandardMaterial({ color: 0x4a4943, roughness: 0.62, metalness: 0.04, bumpMap: TEX.noise, bumpScale: 0.004 });
 MAT.shelf = new THREE.MeshStandardMaterial({ color: 0xcfd8dc, roughness: 0.2, metalness: 0.1, transparent: true, opacity: 0.55 });
 MAT.carton = new THREE.MeshStandardMaterial({ color: 0xe8e2d0, roughness: 0.8 });
 MAT.bottle = new THREE.MeshStandardMaterial({ color: 0x3d6b4a, roughness: 0.2, metalness: 0.1 });
@@ -773,7 +777,7 @@ function buildGooseHead() {
       inner.push(addMesh(group, tooth, GM.tooth, [w * s * 1.05, -0.03, 0.33 + k * 0.035], null, [Math.PI, 0, 0], false));
     }
   }
-  const afro = buildAfro(); afro.position.set(0, 0.085, 0.04); group.add(afro);
+  const afro = buildAfro(); afro.userData.afro = true; afro.position.set(0, 0.085, 0.04); group.add(afro);
   return { group, jaw, inner };
 }
 function buildGooseRig() {
@@ -907,7 +911,6 @@ function animateCharacter(C, dt, o) {
     spineX = 0.75; headX = -0.55; hipY = 0.88; thL = thR = -0.35; knL = knR = 0.4; shL = shR = -0.55; elL = elR = -0.25;
   }
   if (o.searching) { spineX = 0.5; hipY = 0.7; thL = thR = -0.8; knL = knR = 1.3; shL = -1.2 + Math.sin(o.t * 13) * 0.3; shR = -1.2 + Math.cos(o.t * 11) * 0.3; elL = elR = -0.4; }
-  if (o.holding) { shL = -2.2; elL = -1.9; rollL = 0.35; }   // hand over the mouth
   if (o.flash && !o.searching) { shR = -Math.PI / 2 - o.aimPitch - spineX; elR = -0.12; rollR = 0.12; }   // flashlight aimed where you look
   C.hips.position.y += ((hipY + bob * mv * (1 - Math.abs(sn))) - C.hips.position.y) * k;
   set('spX', C.spine, 'x', spineX + Math.sin(o.breathPh) * 0.02 * (1 + o.breathB * 2));
@@ -929,13 +932,13 @@ const camera = new THREE.PerspectiveCamera(72, innerWidth / innerHeight, 0.04, 1
 camera.rotation.order = 'YXZ';
 scene.add(camera);
 
-const ambient = new THREE.AmbientLight(0x1d2638, 0.7); scene.add(ambient);
-const aura = new THREE.PointLight(0x8a9ab4, 0.45, 5.5, 2); scene.add(aura);   // faint light around the player so they are not totally blind
-const fill = new THREE.PointLight(0x9aa8c0, 0.28, 4.2, 2); camera.add(fill);   // barely-there fill so you can make out Dusty from behind
-const flash = new THREE.SpotLight(0xfff0d4, 0, 40, 0.45, 0.45, 1.2);
+const ambient = new THREE.AmbientLight(0x1d2638, 0.42); scene.add(ambient);
+const aura = new THREE.PointLight(0x8a9ab4, 0.32, 5, 2); scene.add(aura);   // faint light around the player so they are not totally blind
+const fill = new THREE.PointLight(0x9aa8c0, 0.2, 4, 2); camera.add(fill);   // barely-there fill so you can make out Dusty from behind
+const flash = new THREE.SpotLight(0xfff0d4, 0, 46, 0.48, 0.45, 1.15);
 scene.add(flash); scene.add(flash.target);   // driven by updateFlashRig(): lags behind the camera and sways
 flash.castShadow = true; flash.shadow.mapSize.set(1024, 1024);
-flash.shadow.camera.near = 0.2; flash.shadow.camera.far = 40; flash.shadow.bias = -0.0006;
+flash.shadow.camera.near = 0.2; flash.shadow.camera.far = 46; flash.shadow.bias = -0.0006;
 
 const EMERG = [];
 for (let i = 0; i < 5; i++) {
@@ -1041,6 +1044,8 @@ function bfs(sx, sz) {
 }
 function findPath(sx, sz, tx, tz) {
   const N = W.N, S = sz * N + sx, G = tz * N + tx;
+  const ok = (x, z) => Number.isInteger(x) && Number.isInteger(z) && x >= 0 && z >= 0 && x < N && z < N;
+  if (!ok(sx, sz) || !ok(tx, tz)) return null;
   if (S === G) return [];
   if (isWallTile(tx, tz)) return null;
   const prev = new Int32Array(N * N).fill(-1), q = new Int32Array(N * N);
@@ -1261,9 +1266,8 @@ function makeFridge(i, k) {
   addObstacle(p.x, p.z, p.dx, Wd, D, Hh);
   const gm = new THREE.SpriteMaterial({ map: TEX.glow, color: 0xbcd6ff, transparent: true, opacity: 0, depthWrite: false, blending: THREE.AdditiveBlending, fog: true }); gm.userData.own = true;
   const glow = new THREE.Sprite(gm); glow.position.set(p.x - p.dx * 0.5, 1.0, p.z - p.dz * 0.5); glow.scale.set(1.6, 2.2, 1); W.group.add(glow);
-  const muffin = makeMuffinMesh(); muffin.position.set(-0.05, 1.01, 0.02); grp.add(muffin);   // one blueberry muffin per fridge
   const f = {
-    muffin: true, muffinMesh: muffin,
+    isFridge: true, searched: false, warned: false, flickerT: 0,
     x: p.x, z: p.z, dx: p.dx, dz: p.dz, fx: p.x - p.dx * (D / 2 + 0.6), fz: p.z - p.dz * (D / 2 + 0.6),
     door, open: false, anim: 0, used: 0, powered: true, offUntil: 0, ledMat, innerMat, glow, smokeAcc: 0, hum: AU.makeHum(p.x, p.z),
   };
@@ -1339,7 +1343,7 @@ function makeTape(idx, x, z) {
   W.group.add(grp);
   const xr = []; addXray(grp, XRAY_TAPE, xr); W.xray.push(...xr);
   const glow = makeSprite(x, 0.25, z, 0xffd9a0, 1.4, 0.5, false);
-  W.pickups.push({ type: 'piece', idx, x, z, mesh: grp, glow, labelMat, hl: 0, ph: rr(0, 6), taken: false });
+  W.pickups.push({ type: 'tape', idx, x, z, mesh: grp, glow, labelMat, hl: 0, ph: rr(0, 6), taken: false });
 }
 const MUFFIN_MAT = {
   cup: new THREE.MeshStandardMaterial({ color: 0x8fb3e0, roughness: 0.7 }),
@@ -1399,24 +1403,24 @@ function populate() {
   const canPlace = i => { if (W.used[i]) return false; const x = i % N, z = (i / N) | 0; return !DIRS.some(([dx, dz]) => { const nx = x + dx, nz = z + dz; return nx >= 0 && nz >= 0 && nx < N && nz < N && obj[nz * N + nx]; }); };
   const placed = (i, k) => { W.used[i] = 1; obj[i] = 1; if (k != null) W.sideUsed.add(i * 4 + k); };
 
-  // ---- letter pieces: spread out with farthest-point sampling on path distance
+  // ---- tapes: spread out with farthest-point sampling on path distance
   const roomCenters = W.rooms.map(r => (r.y0 + 1) * N + r.x0 + 1);
   let cand = deadEnds.filter(i => sd[i] >= 6).concat(roomCenters.filter(i => sd[i] >= 6));
   if (cand.length < 8) cand = cand.concat(W.floors.filter(i => sd[i] >= 8));
   const minD = new Float32Array(N * N).fill(1e9);
   for (const i of W.floors) minD[i] = sd[i] * 0.9;
-  const letters = [];
-  for (let k = 0; k < CFG.PIECES; k++) {
+  const tapeTiles = [];
+  for (let k = 0; k < CFG.TAPES; k++) {
     let best = -1, bv = -1;
-    for (const c of cand) { if (letters.includes(c)) continue; const v = minD[c] * rr(0.85, 1.15); if (v > bv) { bv = v; best = c; } }
-    if (best < 0) best = pick(W.floors.filter(i => !letters.includes(i) && sd[i] > 3));
-    letters.push(best);
+    for (const c of cand) { if (tapeTiles.includes(c)) continue; const v = minD[c] * rr(0.85, 1.15); if (v > bv) { bv = v; best = c; } }
+    if (best < 0) best = pick(W.floors.filter(i => !tapeTiles.includes(i) && sd[i] > 3));
+    tapeTiles.push(best);
     const d = bfs(best % N, (best / N) | 0);
     for (const i of W.floors) if (d[i] >= 0) minD[i] = Math.min(minD[i], d[i]);
   }
-  shuffle(letters);
-  const letterSet = new Set(letters);
-  letters.forEach((i, idx) => {
+  shuffle(tapeTiles);
+  const tapeSet = new Set(tapeTiles);
+  tapeTiles.forEach((i, idx) => {
     const x = i % N, z = (i / N) | 0; let px = center(x), pz = center(z);
     const od = openDirs(i);
     if (od.length === 1) { const [dx, dz] = DIRS[od[0]]; px -= dx * 0.7; pz -= dz * 0.7; }
@@ -1437,7 +1441,7 @@ function populate() {
   });
   let deBeds = 0;
   for (const i of shuffle(deadEnds.slice())) {
-    if (deBeds >= 2) break; if (!canPlace(i) || letterSet.has(i) || sd[i] < 5) continue;
+    if (deBeds >= 2) break; if (!canPlace(i) || tapeSet.has(i) || sd[i] < 5) continue;
     const back = DIRS.findIndex(([dx, dz]) => { const o = openDirs(i)[0]; return dx === -DIRS[o][0] && dz === -DIRS[o][1]; });
     makeBed(i, back); placed(i, back); deBeds++;
   }
@@ -1445,7 +1449,7 @@ function populate() {
   // ---- refrigerators: exactly CFG.FRIDGES, spread one per quadrant where possible, never in the start area
   const tdist = (a, b) => Math.abs(a % N - b % N) + Math.abs(((a / N) | 0) - ((b / N) | 0));
   const fslots = [];
-  for (const i of W.floors) { if (sd[i] < 4 || letterSet.has(i)) continue; for (const k of wallDirs(i)) fslots.push([i, k]); }
+  for (const i of W.floors) { if (sd[i] < 4 || tapeSet.has(i)) continue; for (const k of wallDirs(i)) fslots.push([i, k]); }
   const fr = [], half = N / 2;
   for (const [qx, qz] of shuffle([[0, 0], [1, 0], [0, 1], [1, 1]])) {
     const c = shuffle(fslots.filter(([i]) => canPlace(i) && (i % N >= half) === !!qx && (((i / N) | 0) >= half) === !!qz && fr.every(j => tdist(i, j) >= 7)));
@@ -1491,7 +1495,7 @@ function populate() {
   const batPos = [];
   const farEnough = (x, z) => batPos.every(([bx, bz]) => Math.hypot(bx - x, bz - z) > T * 3);
   for (const i of shuffle(deadEnds.slice())) {
-    if (batPos.length >= 2) break; if (W.used[i] || letterSet.has(i) || sd[i] < 4) continue;
+    if (batPos.length >= 2) break; if (W.used[i] || tapeSet.has(i) || sd[i] < 4) continue;
     const o = openDirs(i)[0], [ox, oz] = DIRS[o], side = Math.random() < 0.5 ? 1 : -1;
     const x = center(i % N) - ox * (T / 2 - 0.35) + (-oz) * side * (T / 2 - 0.35);
     const z = center((i / N) | 0) - oz * (T / 2 - 0.35) + (ox) * side * (T / 2 - 0.35);
@@ -1506,7 +1510,7 @@ function populate() {
   }
   for (const i of shuffle(W.floors.slice())) {
     if (batPos.length >= CFG.MAX_BATTERIES) break;
-    if (letterSet.has(i) || sd[i] < 4 || W.avoid[i]) continue;
+    if (tapeSet.has(i) || sd[i] < 4 || W.avoid[i]) continue;
     const x = center(i % N) + rr(-0.9, 0.9), z = center((i / N) | 0) + rr(-0.9, 0.9);
     if (!farEnough(x, z)) continue;
     if (W.obstacles.some(o => x > o.x0 - 0.2 && x < o.x1 + 0.2 && z > o.z0 - 0.2 && z < o.z1 + 0.2)) continue;
@@ -1554,7 +1558,7 @@ function populate() {
 
   // ---- goose start: far from the player
   let maxd = 0; for (const i of W.floors) maxd = Math.max(maxd, sd[i]);
-  const gc = W.floors.filter(i => sd[i] >= maxd * 0.65 && !W.avoid[i] && !letterSet.has(i));
+  const gc = W.floors.filter(i => sd[i] >= maxd * 0.65 && !W.avoid[i] && !tapeSet.has(i));
   W.gooseStart = pick(gc.length ? gc : W.floors);
 }
 
@@ -1776,6 +1780,21 @@ const AU = {
     const tb = tClose + 0.035, bg = this.gain(); this.env(bg, tb, 0.002, 0.012, 0.05, 0.45);   // the "p" pop
     this.chain(this.noise(tb, 0.08), this.filt('bandpass', 1500, 0.9), bg, out);
   },
+  // high, shrill string screech for the moment a chase starts (original synthesis)
+  chaseSting() {
+    const out = this.direct(0.55); if (!out) return; const t = this.t;
+    for (const [f, d] of [[1760, 0], [1868, 0.012], [2349, 0.024], [3136, 0.036]]) {
+      const o = this.osc('sawtooth', f * 0.78, t + d, 1.4);
+      o.frequency.exponentialRampToValueAtTime(f * 1.06, t + d + 0.1); o.frequency.linearRampToValueAtTime(f, t + d + 1.3);
+      const v = this.osc('sine', rr(8, 10), t + d, 1.4), vg = this.gain(f * 0.015); v.connect(vg); vg.connect(o.frequency);
+      const g = this.gain(); this.env(g, t + d, 0.008, 0.32, 0.9, 0.11);
+      this.chain(o, this.filt('bandpass', 2600, 1.1), g, out);
+    }
+    const p = this.osc('sine', 4300, t, 0.9); p.frequency.exponentialRampToValueAtTime(3700, t + 0.8);
+    const pg = this.gain(); this.env(pg, t, 0.002, 0.05, 0.7, 0.13); this.chain(p, pg, out);
+    const b = this.osc('sine', 72, t, 0.5); b.frequency.exponentialRampToValueAtTime(34, t + 0.4);
+    const bg = this.gain(); this.env(bg, t, 0.003, 0.04, 0.35, 0.55); this.chain(b, bg, out);
+  },
   sting() {
     const out = this.direct(0.28); if (!out) return; const t = this.t;
     const lp = this.filt('lowpass', 300, 1.5); lp.frequency.exponentialRampToValueAtTime(2600, t + 0.35);
@@ -1826,15 +1845,6 @@ const AU = {
       const f = out ? lerp(115, 150, b) : lerp(165, 205, b), o = this.osc('sawtooth', f, t, dur); o.frequency.linearRampToValueAtTime(f * 0.88, t + dur);
       this.chain(o, this.filt('bandpass', out ? 700 : 1150, 2.5), vg, this.sfx);
     }
-  },
-  gasp() {
-    const out = this.direct(1); if (!out) return; const t = this.t;
-    const bp = this.filt('bandpass', 700, 1.4); bp.frequency.exponentialRampToValueAtTime(2600, t + 0.4);
-    const g = this.gain(); this.env(g, t, 0.02, 0.25, 0.2, 0.5); this.chain(this.noise(t, 0.6), bp, g, out);
-    const o = this.osc('sawtooth', 170, t, 0.5); o.frequency.exponentialRampToValueAtTime(240, t + 0.35);
-    const vg = this.gain(); this.env(vg, t, 0.03, 0.22, 0.2, 0.17); this.chain(o, this.filt('bandpass', 950, 3), vg, out);
-    const t2 = t + 0.6, g2 = this.gain(); this.env(g2, t2, 0.01, 0.1, 0.3, 0.32); this.chain(this.noise(t2, 0.5), this.filt('bandpass', 800, 0.8), g2, out);
-    const o2 = this.osc('sawtooth', 130, t2, 0.4), vg2 = this.gain(); this.env(vg2, t2, 0.01, 0.08, 0.25, 0.1); this.chain(o2, this.filt('bandpass', 650, 3), vg2, out);
   },
   collapse() {
     const out = this.direct(0.8); if (!out) return; const t = this.t;
@@ -1967,28 +1977,24 @@ const EAR = new V3(), tmpH = new V3();   // where the player hears from: their h
 const els = {
   hud: $('hud'), frags: [...$('frags').children], pc: $('pc'), bpct: $('bpct'), bfill: $('bfill'), batt: $('hud-batt'),
   stam: $('hud-stam'), sfill: $('sfill'), tval: $('tval'), prompt: $('prompt'), toast: $('toast'),
-  note: $('note'), noteH: $('note-h'), noteT: $('note-t'), scent: $('scent'), stance: $('stance'),
+  scent: $('scent'), stance: $('stance'),
   hide: $('hide'), danger: $('danger'), flashFx: $('flash'),
-  heatA: $('heat-a'), heatB: $('heat-b'), tunnel: $('tunnel'), tired: $('tired'), fade: $('fade'), xrayFx: $('xray-fx'),
+  heatA: $('heat-a'), heatB: $('heat-b'), tunnel: $('tunnel'), tired: $('tired'), fade: $('fade'), xrayFx: $('xray-fx'), frostFx: $('frost-fx'),
   inv: $('hud-inv'), fxl: $('hud-fx'), tape: $('tape'), tapeH: $('tape-h'), tapeS: $('tape-s'), tapeP: $('tape-p'), blind: $('blind'), blindArc: $('blind-arc'),
 };
 const hudCache = {};
-let toastTimer = 0, noteTimer = 0;
-function toast(msg, bad = false, dur = 3.2) { els.toast.textContent = msg; els.toast.classList.toggle('bad', bad); els.toast.style.opacity = 1; toastTimer = dur; }
-function showNote(idx, count) {
-  els.noteH.textContent = `Letter piece ${count} of ${CFG.PIECES}`;
-  els.noteT.textContent = LETTER[idx].replace(/[{}]/g, '');
-  els.note.classList.remove('gone'); noteTimer = 9;
-}
-
+let toastTimer = 0;
+function toast(msg, bad = false, dur = 3.2, flavor = false) {
+  if (flavor && settings.flavor === 'off') return;
+  els.toast.textContent = msg; els.toast.classList.toggle('bad', bad); els.toast.style.opacity = 1; toastTimer = dur; }
 function resetPlayer() {
   Object.assign(player, {
     x: center(1), z: center(1), yaw: 0, pitch: 0, vx: 0, vz: 0, eye: CFG.STAND_EYE, crouch: false, hidden: null,
     stamina: CFG.STAMINA_MAX, exhausted: false, sinceUse: 99, sprinting: false, speedNow: 0, consuming: false, stamShowT: 0,
-    holding: false, holdLatch: false, gaspT: 0, breathB: 0.1, breathT: 1.2, breathOut: false, breathPh: 0,
+    breathB: 0.1, breathT: 1.2, breathOut: false, breathPh: 0,
     temp: CFG.TEMP_START, tempRiseT: rr(3, 5), tempPauseT: 0, heatT: 0, cooling: false, heatMsg: 0,
-    face: 0, turnRate: 0, searching: null, searchT: 0, propelT: 0, undiesT: 0, glassesT: 0,
-    battery: CFG.BATTERY_MAX, flashOn: false, flick: 1, flickT: 0, pieces: 0,
+    face: 0, turnRate: 0, searching: null, searchT: 0, searchDur: 0, propelT: 0, undiesT: 0, glassesT: 0, iceLeft: 0, iceOn: false, iceCooling: false,
+    battery: CFG.BATTERY_MAX, flashOn: false, flick: 1, flickT: 0, expo: 1, tapes: 0,
     ax: center(1), az: center(1), linger: 0, stepAcc: 0, bob: 0, target: null, hbT: 0, fov: 72,
   });
   // face down an open corridor
@@ -2003,7 +2009,7 @@ function resetGoose() {
     x: center(i % N), z: center((i / N) | 0), yaw: rr(0, 6.28), state: 'patrol', target: null, path: null, pathI: 0, repathT: 0, pathGoal: -1,
     speed: 0, curSpeed: 0, stateT: 0, waitT: 3, lastSeen: null, lostT: 0, alertT: 0, knowT: 0, scent: false,
     honkT: rr(3, 6), stepAcc: 0, phase: 0, searchPts: [], searchPhase: 'look', lookT: 0, headYaw: 0, beakT: 0, flapT: 0,
-    sees: false, light: false, senseT: 0, msgCD: 0, forcePathT: 0, merpT: 3, eydamCD: 0, swerveCD: 0, rearCD: 0, cornerCD: 0, hHist: [], dananaArmed: true,
+    sees: false, light: false, senseT: 0, msgCD: 0, forcePathT: 0, merpT: 3, stingCD: 0, eydamCD: 0, swerveCD: 0, rearCD: 0, cornerCD: 0, hHist: [], dananaArmed: true,
     blindCharge: 0, blindImm: 0, blindT: 0, bait: null, baitPhase: 'go', eatT: 0, eatTotal: 1, munchT: 0, bestRem: 1e9, progT: 0, dist: 99, neckX: 0.2, occluded: true,
   };
   GOOSE_RIG.root.visible = true;
@@ -2014,11 +2020,11 @@ function newGame() {
   if (W && W.group) { scene.remove(W.group); disposeGroup(W.group); }
   buildWorld();
   scene.add(W.group);
-  resetPlayer(); resetGoose();
+  resetPlayer(); resetGoose(); spawnSurveillance();
   gameTime = 0; shakeAmt = 0;
   JS.group.visible = false; jsLight.intensity = 0; jsLight2.intensity = 0;
   els.flashFx.style.opacity = 0; els.danger.style.opacity = 0;
-  els.hide.hidden = true; els.note.classList.add('gone'); els.toast.style.opacity = 0;
+  els.hide.hidden = true; els.toast.style.opacity = 0;
   for (const k in hudCache) delete hudCache[k];
   els.frags.forEach(f => f.classList.remove('on'));
   FL.init = false; clearSmoke(); resetAmbient(); resetScreenFx();
@@ -2076,7 +2082,6 @@ function pauseGame(hint) {
   if (state !== 'playing') return;
   state = 'paused';
   $('scr-pause').hidden = false; $('pause-hint').textContent = hint || '';
-  if (player.holding) player.holding = false;
   $('touch').hidden = true; releaseTouches();
   AU.setAmbient(false); AU.setChase(0);
   for (const k in keys) keys[k] = false;
@@ -2105,7 +2110,7 @@ function showDead(reason) {
   JS.group.visible = false; jsLight.intensity = 0; jsLight2.intensity = 0;
   if (document.pointerLockElement) document.exitPointerLock();
   const m = Math.floor(gameTime / 60), s = Math.floor(gameTime % 60);
-  $('dead-stats').textContent = `Letter pieces found: ${player.pieces} of ${CFG.PIECES}. Survived ${m}:${String(s).padStart(2, '0')}. Body temperature ${tempQ().toFixed(1)}°F.`;
+  $('dead-stats').textContent = `Tapes found: ${player.tapes} of ${CFG.TAPES}. Survived ${m}:${String(s).padStart(2, '0')}. Body temperature ${tempQ().toFixed(1)}°F.`;
   $('scr-dead').hidden = false;
   els.danger.style.opacity = 0;
 }
@@ -2121,17 +2126,17 @@ function win() {
   state = 'won';
   if (document.pointerLockElement) document.exitPointerLock();
   els.hud.hidden = true; els.hide.hidden = true; $('touch').hidden = true; AU.setChase(0); AU.setAmbient(false);
-  const L = $('letter'); L.innerHTML = ''; L.className = '';
-  LETTER.forEach((txt, i) => {
+  const L = $('transcript'); L.innerHTML = ''; L.className = '';
+  TAPE_TRANSCRIPTS.forEach((txt, i) => {
     const s = document.createElement('div'); s.className = 'strip';
     s.style.setProperty('--i', i); s.style.setProperty('--rot', `${rr(-14, 14).toFixed(1)}deg`);
     s.style.setProperty('--dx', `${rr(-160, 160).toFixed(0)}px`); s.style.setProperty('--dy', `${rr(-60, 60).toFixed(0)}px`);
     s.style.clipPath = jaggedClip();
     s.innerHTML = txt.replace(/\{(\w+)\}/g, '<span class="key">$1</span>');
-    if (i === LETTER.length - 1) s.innerHTML += `<span class="sig">${SIGNATURE}</span>`;
+    if (i === TAPE_TRANSCRIPTS.length - 1) s.innerHTML += `<span class="sig">${SIGNATURE}</span>`;
     L.appendChild(s);
   });
-  const words = LETTER.map(t => (t.match(/\{(\w+)\}/) || [])[1]).filter(Boolean);
+  const words = TAPE_TRANSCRIPTS.map(t => (t.match(/\{(\w+)\}/) || [])[1]).filter(Boolean);
   const sw = $('secret-words'); sw.innerHTML = words.map(w => `<span>${w.toUpperCase()}</span>`).join(' ');
   $('secret-lbl').style.opacity = 0; $('win-actions').classList.remove('on');
   $('scr-win').hidden = false; $('scr-win').scrollTop = 0;
@@ -2145,7 +2150,7 @@ function win() {
 }
 
 /* ================= INPUT ================= */
-const GAME_CODES = new Set(['KeyQ', 'Digit1', 'Digit2', 'Digit3', 'KeyR', 'KeyW', 'KeyA', 'KeyS', 'KeyD', 'KeyF', 'KeyE', 'KeyC', 'Space', 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'ShiftLeft', 'ShiftRight', 'ControlLeft', 'ControlRight']);
+const GAME_CODES = new Set(['KeyQ', 'Digit1', 'Digit2', 'Digit3', 'Digit4', 'KeyW', 'KeyA', 'KeyS', 'KeyD', 'KeyF', 'KeyE', 'KeyC', 'Space', 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'ShiftLeft', 'ShiftRight', 'ControlLeft', 'ControlRight']);
 addEventListener('keydown', e => {
   if (state === 'playing') {
     if (GAME_CODES.has(e.code) || e.ctrlKey) e.preventDefault();
@@ -2157,6 +2162,7 @@ addEventListener('keydown', e => {
     else if (e.code === 'Digit1') useItem('propel');
     else if (e.code === 'Digit2') useItem('undies');
     else if (e.code === 'Digit3') useItem('glasses');
+    else if (e.code === 'Digit4') useItem('ice');
     else if (e.code === 'ControlLeft' || e.code === 'ControlRight' || e.code === 'KeyC') toggleCrouch();
     else if (e.code === 'Escape' && (fallbackLook || isMobile())) pauseGame();
   } else if ((state === 'dead' || state === 'won') && (e.code === 'KeyR' || e.code === 'Enter') && !e.repeat) {
@@ -2187,14 +2193,14 @@ $('btn-again').addEventListener('click', beginNewRun);
 document.addEventListener('visibilitychange', () => { if (document.hidden) pauseGame(); });
 
 /* ---------- touch controls ---------- */
-const touch = { joyId: null, lookId: null, jx: 0, jy: 0, bx: 0, by: 0, lx: 0, ly: 0, run: false, breath: false };
+const touch = { joyId: null, lookId: null, jx: 0, jy: 0, bx: 0, by: 0, lx: 0, ly: 0, run: false };
 const TOUCH_SENS = 0.005, JOY_R = 56;
 const touchEl = $('touch'), joyBase = $('joy-base'), joyKnob = $('joy-knob');
-const TB = { light: $('tb-light'), crouch: $('tb-crouch'), run: $('tb-run'), use: $('tb-use'), breath: $('tb-breath') };
+const TB = { light: $('tb-light'), crouch: $('tb-crouch'), run: $('tb-run'), use: $('tb-use') };
 function joyHome() { return [Math.max(96, Math.min(150, innerWidth * 0.12)), innerHeight - Math.max(112, Math.min(170, innerHeight * 0.3))]; }
 function placeJoy(x, y, on) { joyBase.style.left = x + 'px'; joyBase.style.top = y + 'px'; joyBase.classList.toggle('on', on); }
 function resetJoy() { touch.joyId = null; touch.jx = touch.jy = 0; joyKnob.style.transform = ''; const [x, y] = joyHome(); placeJoy(x, y, false); }
-function releaseTouches() { resetJoy(); touch.lookId = null; touch.breath = false; }
+function releaseTouches() { resetJoy(); touch.lookId = null; }
 touchEl.addEventListener('pointerdown', e => {
   if (e.target.closest('.tb')) return;
   e.preventDefault();
@@ -2225,9 +2231,6 @@ onTap(TB.crouch, toggleCrouch);
 onTap(TB.use, () => interact());
 onTap(TB.run, () => { touch.run = !touch.run; if (touch.run) player.crouch = false; });
 onTap($('tb-pause'), () => pauseGame());
-// Breath is a hold button: held = holding your breath
-TB.breath.addEventListener('pointerdown', e => { e.preventDefault(); e.stopPropagation(); touch.breath = true; try { TB.breath.setPointerCapture(e.pointerId); } catch (err) { /* ignore */ } });
-['pointerup', 'pointercancel', 'lostpointercapture'].forEach(ev => TB.breath.addEventListener(ev, () => { touch.breath = false; }));
 ['contextmenu', 'gesturestart', 'dblclick'].forEach(ev => touchEl.addEventListener(ev, e => e.preventDefault()));
 function tryFullscreen() {
   const el = document.documentElement;
@@ -2251,6 +2254,8 @@ function syncSettingsUI() {
     ? 'On-screen joystick and buttons. Drag the right side of the screen to look.'
     : 'Keyboard and mouse. WASD to move, Shift to run, Ctrl or C to crouch, F for the flashlight, E to use.';
   $('gfx-desc').textContent = settings.quality === 'high' ? 'Sharper image and flashlight shadows.' : 'Faster on phones and older computers. No flashlight shadows.';
+  $('view-desc').textContent = firstPerson() ? 'You see through Dusty\'s eyes.' : 'The camera follows behind Dusty.';
+  $('flavor-desc').textContent = settings.flavor === 'on' ? 'Story and status messages such as "You\'ve caught a fever." are shown.' : 'Story and status messages are hidden. Everything they describe still happens.';
   $('keys-pc').hidden = isMobile(); $('keys-mobile').hidden = !isMobile();
   $('mode-note').textContent = isMobile()
     ? 'Mobile controls. Play with your phone sideways. On iPhone, turn off silent mode to hear him.'
@@ -2293,16 +2298,16 @@ function interact() {
       P.battery = Math.min(CFG.BATTERY_MAX, P.battery + CFG.BATTERY_PICKUP);
       AU.battery(); toast('+10 seconds of flashlight.');
     } else {
-      // tapes always play in order: the first one you find is LETTER 1, the second LETTER 2, and so on
-      P.pieces++; AU.click();
-      els.frags[P.pieces - 1].classList.add('on');
-      playTape(P.pieces);
-      if (P.pieces >= CFG.PIECES) { p.taken = true; p.mesh.visible = false; p.glow.visible = false; toast('That was the last tape.', false, 2); setTimeout(win, 900); return; }
+      // tapes always play in order: the first one you find plays recording 1, the second recording 2, and so on
+      P.tapes++; AU.click();
+      els.frags[P.tapes - 1].classList.add('on');
+      playTape(P.tapes);
+      if (P.tapes >= CFG.TAPES) { p.taken = true; p.mesh.visible = false; p.glow.visible = false; toast('That was the last tape.', false, 2); setTimeout(win, 900); return; }
     }
     p.taken = true; p.mesh.visible = false; p.glow.visible = false;
   } else if (tgt.kind === 'spot') enterSpot(tgt.s);
   else if (tgt.kind === 'fridge') toggleFridge(tgt.f);
-  else if (tgt.kind === 'muffin') { tgt.f.muffin = false; tgt.f.muffinMesh.visible = false; giveItem('muffin'); }
+  else if (tgt.kind === 'fsearch') startSearch(tgt.f);
   else if (tgt.kind === 'cabinet') startSearch(tgt.c);
 }
 function enterSpot(s) {
@@ -2327,12 +2332,13 @@ function exitSpot() {
 }
 
 /* ================= ITEMS ================= */
-const INV = { muffin: 0, propel: 0, undies: 0, glasses: 0 };
+const INV = { muffin: 0, propel: 0, undies: 0, glasses: 0, ice: 0 };
 const ITEMS = {
   muffin: { name: 'Blueberry muffin', key: 'Q', found: 'A blueberry muffin. Throw it and he will go for it.' },
   propel: { name: 'Blueberry Propel', key: '1', found: 'Blueberry Propel! Drink it for 15 seconds of endless stamina.' },
   undies: { name: "Adam's Underwear", key: '2', found: "Adam's Underwear! Put it on your head to become undetectable for 30 seconds." },
   glasses: { name: "HardLife's Glasses", key: '3', found: "HardLife's Glasses! See him and the tapes through walls for 15 seconds." },
+  ice: { name: 'Ice pack', key: '4', found: 'An ice pack. Use it anywhere to cool down by up to 2 degrees.' },
 };
 function giveItem(kind) {
   INV[kind]++; AU.battery();
@@ -2341,17 +2347,26 @@ function giveItem(kind) {
 }
 function useItem(kind) {
   const P = player;
-  if (state !== 'playing' || !INV[kind]) return;
+  if (state !== 'playing') return;
+  if (kind === 'ice') {   // starts a new pack, or pauses and resumes the one in use
+    if (P.iceLeft > 0) { P.iceOn = !P.iceOn; toast(P.iceOn ? 'Ice pack back on.' : 'Ice pack paused.', false, 1.6); return; }
+    if (!INV.ice) return;
+    INV.ice--; P.iceLeft = CFG.ICE_TIME; P.iceOn = true; AU.paper();
+    toast('Ice pack on. 0.1 degrees cooler every second, for 20 seconds.', false, 3);
+    return;
+  }
+  if (!INV[kind]) return;
   if (kind === 'muffin') { if (P.hidden) { toast("You can't throw from in here."); return; } throwMuffin(); return; }
   INV[kind]--;
-  if (kind === 'propel') { P.propelT = CFG.PROPEL_TIME; P.stamina = CFG.STAMINA_MAX; P.exhausted = false; AU.drink(); toast('Endless stamina, a little faster, wider view. 15 seconds.', false, 3); }
+  if (kind === 'propel') { P.propelT = CFG.PROPEL_TIME; if (P.stamina < CFG.STAMINA_MAX) P.stamShowT = 3; P.stamina = CFG.STAMINA_MAX; P.exhausted = false; AU.drink(); toast('Endless stamina, a little faster, wider view. 15 seconds.', false, 3); }
   if (kind === 'undies') { P.undiesT = CFG.UNDIES_TIME; P.linger = 0; if (!AU.play('supadam', { gain: 1.2 })) AU.paper(); toast("Adam's Underwear is on your head. He can't detect you for 30 seconds.", false, 3.5); }
   if (kind === 'glasses') { P.glassesT = CFG.GLASSES_TIME; AU.click(); toast("HardLife's Glasses on. You can see him and the tapes through walls.", false, 3); }
 }
 function throwMuffin() {
   const P = player; INV.muffin--;
   const d = camera.getWorldDirection(tmpV), mesh = makeMuffinMesh();
-  DUSTY.arms[1].hand.getWorldPosition(tmpH);
+  if (firstPerson()) tmpH.set(camera.position.x + d.x * 0.3, camera.position.y - 0.25, camera.position.z + d.z * 0.3);
+  else DUSTY.arms[1].hand.getWorldPosition(tmpH);
   const m = { x: tmpH.x, y: Math.max(1.0, tmpH.y), z: tmpH.z, vx: d.x * 9, vy: d.y * 9 + 3.2, vz: d.z * 9, mesh, landed: false, gone: false, spin: rr(5, 9) };
   if (isWallAt(m.x, m.z)) { m.x = P.x; m.z = P.z; }
   mesh.position.set(m.x, m.y, m.z); W.group.add(mesh); W.thrown.push(m);
@@ -2380,7 +2395,7 @@ function muffinLanded(m) {
   // it forgets your trail
   P.linger = 0; P.ax = P.x; P.az = P.z; G.scent = false; G.knowT = 0; G.lastSeen = { x: m.x, z: m.z };
   if (!gooseVoice(G, 'muffins', 'BLUEBERRY MUFFINS', { maxD: 95, gain: 1.35, urgent: true, beak: 1.2, range: 60 })) AU.honk(G.x, G.z, { pitch: 1.2, loud: 1.3 });
-  toast('He smells the muffin. He forgot about you.', false, 3);
+  toast('He smells the muffin. He forgot about you.', false, 3, true);
 }
 function gooseAfterMuffin(G) {
   const next = W.thrown.find(m => m.landed && !m.gone);
@@ -2390,13 +2405,21 @@ function gooseAfterMuffin(G) {
 // cabinets: a short search that locks you in place, like a chest in Dead by Daylight
 function startSearch(c) {
   const P = player; P.searching = c; P.searchT = 0; P.vx = P.vz = 0;
-  AU.rummage(c.x, c.z, CFG.SEARCH_TIME);
+  P.searchDur = c.isFridge ? CFG.FRIDGE_SEARCH_TIME : CFG.SEARCH_TIME;
+  AU.rummage(c.x, c.z, P.searchDur);
   gooseHear(c.x, c.z, 7, { kind: 'search', pri: 1.5, player: true });
 }
 function cancelSearch() { player.searching = null; toast('You stopped searching.', false, 1.2); }
 function finishSearch(c) {
   c.searched = true; player.searching = null;
-  const r = Math.random() * 100;   // 1% glasses, 5% underwear, 15% Propel, 79% nothing
+  const r = Math.random() * 100;
+  if (c.isFridge) {   // refrigerator: 30% muffin, 15% ice pack, 55% nothing
+    if (r < 30) giveItem('muffin');
+    else if (r < 45) giveItem('ice');
+    else toast('Nothing in here.', false, 1.8);
+    return;
+  }
+  // cabinet: 1% glasses, 5% underwear, 15% Propel, 79% nothing
   if (r < 1) giveItem('glasses');
   else if (r < 6) giveItem('undies');
   else if (r < 21) giveItem('propel');
@@ -2404,14 +2427,14 @@ function finishSearch(c) {
 }
 function updateCabinets(dt) {
   const P = player;
-  if (P.searching) { P.searchT += dt; if (P.searchT >= CFG.SEARCH_TIME) finishSearch(P.searching); }
+  if (P.searching) { P.searchT += dt; if (P.searchT >= (P.searchDur || CFG.SEARCH_TIME)) finishSearch(P.searching); }
   for (const c of W.cabinets) {
     const want = c.searched ? 1 : P.searching === c ? 0.4 + 0.3 * Math.abs(Math.sin(gameTime * 9)) : 0;
     c.open += (want - c.open) * (1 - Math.exp(-dt * 8));
     for (const d of c.doors) d.piv.rotation.y = d.sx * 1.9 * c.open;
   }
 }
-// cassette playback (always LETTER_1 .. LETTER_5 in the order you find them)
+// cassette playback: recordings 1..5 in the order you find the tapes (the audio files keep the names LETTER_1..5.wav they were given)
 let tapeSrc = null; const TAPEUI = { n: 0, t: 0, dur: 0 };
 function stopTape() { if (tapeSrc) { try { tapeSrc.stop(); } catch (e) { /* already done */ } } tapeSrc = null; TAPEUI.dur = 0; }
 function playTape(n) {
@@ -2419,14 +2442,14 @@ function playTape(n) {
   tapeSrc = AU.play('tape' + n, { gain: 1.1 });
   const buf = AU.samples['tape' + n];
   TAPEUI.n = n; TAPEUI.t = 0; TAPEUI.dur = buf ? buf.duration : 3;
-  els.tapeH.textContent = `Tape ${n} of ${CFG.PIECES}`;
+  els.tapeH.textContent = `Tape ${n} of ${CFG.TAPES}`;
   els.tapeS.textContent = tapeSrc ? 'Playing' : 'This tape will not play here.';
   els.tape.hidden = false;
 }
 function updateItems(dt) {
   const P = player;
   for (const [k, msg] of [['propelT', 'The Propel wore off.'], ['undiesT', "Adam's Underwear fell off. He can sense you again."], ['glassesT', "HardLife's Glasses stopped working."]]) {
-    if (P[k] > 0) { P[k] -= dt; if (P[k] <= 0) { P[k] = 0; toast(msg, k === 'undiesT', 2.5); } }
+    if (P[k] > 0) { P[k] -= dt; if (P[k] <= 0) { P[k] = 0; toast(msg, k === 'undiesT', 2.5, true); } }
   }
   const xr = P.glassesT > 0;
   if (FX.xray !== xr) { FX.xray = xr; for (const x of GOOSE_XRAY) x.visible = xr; for (const x of W.xray) x.visible = xr; }
@@ -2448,7 +2471,7 @@ function findInteract() {
     if (p.taken) continue;
     const dx = p.x - P.x, dz = p.z - P.z, d = Math.hypot(dx, dz); if (d > 1.9) continue;
     const dot = (dx * fx + dz * fz) / (d || 1); if (d > 0.8 && dot < 0.35) continue;
-    if (d < bestD) { bestD = d; best = { kind: 'pickup', p, label: p.type === 'piece' ? 'Pick up the torn letter piece' : 'Take the battery' }; }
+    if (d < bestD) { bestD = d; best = { kind: 'pickup', p, label: p.type === 'tape' ? 'Pick up the tape' : 'Take the battery' }; }
   }
   if (best) return best;
   for (const f of W.fridges) {
@@ -2457,8 +2480,9 @@ function findInteract() {
     if (dot < 0.3) continue;
     if (d < bestD) {
       bestD = d;
-      best = f.open && f.muffin ? { kind: 'muffin', f, label: 'Take the blueberry muffin' }
-        : { kind: 'fridge', f, label: (f.open ? 'Close the refrigerator' : 'Open the refrigerator') + (f.powered ? '' : ' (no power)') };
+      const left = 1 - f.used / CFG.FRIDGE_POWER;
+      best = f.open && !f.searched ? { kind: 'fsearch', f, label: 'Search the refrigerator' }
+        : { kind: 'fridge', f, label: (f.open ? 'Close the refrigerator' : 'Open the refrigerator') + (!f.powered ? ' (no power)' : left < 0.3 ? ' (low power)' : '') };
     }
   }
   for (const c of W.cabinets) {
@@ -2479,7 +2503,6 @@ function findInteract() {
 function footstep() {
   const P = player, kind = P.sprinting ? 'run' : (P.crouch ? 'crouch' : 'walk');
   AU.playerStep(kind);
-  if (kind === 'crouch' && P.holding) return;   // crouched and holding your breath: nothing for the goose to hear
   if (kind === 'run') gooseHear(P.x, P.z, CFG.NOISE_SPRINT, { kind: 'run', pri: 3, player: true, exact: true });
   else gooseHear(P.x, P.z, kind === 'crouch' ? CFG.NOISE_CROUCH : CFG.NOISE_WALK, { kind: 'step', pri: 1, player: true });
 }
@@ -2524,7 +2547,6 @@ function updatePlayer(dt) {
     }
   }
   updateItems(dt);
-  updateBreathHold();
   updateStamina(dt, HE);
   updateBreathing(dt);
   updateFridges(dt);
@@ -2532,13 +2554,15 @@ function updatePlayer(dt) {
   // flashlight battery
   if (P.flashOn) {
     P.battery -= dt;
-    if (P.battery <= 0) { P.battery = 0; P.flashOn = false; AU.click(); toast('The flashlight died.', true); }
+    if (P.battery <= 0) { P.battery = 0; P.flashOn = false; AU.click(); toast('The flashlight died.', true, 3.2, true); }
   }
   const frac = P.battery / CFG.BATTERY_MAX;
   P.flickT -= dt;
   if (P.flickT <= 0) { P.flickT = rr(0.04, 0.16); P.flick = frac < 0.15 && Math.random() < 0.35 ? rr(0.15, 0.6) : 1; }
-  flash.intensity = P.flashOn ? 3.9 * (0.12 + 0.88 * frac) * P.flick : 0;
-  flash.distance = 16 + 24 * frac; flash.angle = 0.36 + 0.1 * frac;
+  // eye adaptation: when the beam lands on something close, it is turned down so near surfaces don't burn out to white
+  if (P.flashOn) { const k = clamp(Math.pow(beamHitDist() / 4.2, 0.9), 0.4, 1); P.expo += (k - P.expo) * (1 - Math.exp(-dt * 8)); } else P.expo = 1;
+  flash.intensity = P.flashOn ? 5.4 * (0.12 + 0.88 * frac) * P.flick * P.expo : 0;
+  flash.distance = 20 + 26 * frac; flash.angle = 0.38 + 0.1 * frac;
   renderer.shadowMap.autoUpdate = P.flashOn && flash.castShadow;
   // linger / scent
   if (P.undiesT > 0 || Math.hypot(P.x - P.ax, P.z - P.az) > CFG.LINGER_RADIUS) { P.ax = P.x; P.az = P.z; P.linger = 0; } else P.linger += dt;
@@ -2548,10 +2572,17 @@ function updatePlayer(dt) {
   shakeAmt = Math.max(0, shakeAmt - dt * 0.08);
   const sh = shakeAmt, dis = FX.distort;
   updateFacing(dt);
-  if (P.hidden) {   // first person from inside the locker or under the bed
-    const breathe = Math.sin(P.breathPh) * lerp(0.003, 0.014, P.breathB) * (P.holding ? 0.15 : 1);
-    camera.position.set(P.x, P.eye + breathe + rr(-sh, sh), P.z);
-    camera.rotation.set(P.pitch + rr(-sh, sh) * 0.5 + dis * 0.02 * Math.sin(gameTime * 0.9), P.yaw + rr(-sh, sh) * 0.5, dis * 0.06 * Math.sin(gameTime * 0.73));
+  const fp = P.hidden || firstPerson();
+  if (fp) {   // first person: the setting, or always while inside a locker or under a bed
+    let bx = 0, by = 0;
+    if (!P.hidden) {
+      const bobAmt = (P.sprinting ? 0.075 : P.crouch ? 0.025 : 0.045) * Math.min(1, P.speedNow / 2);
+      by = Math.sin(P.bob) * bobAmt; bx = Math.cos(P.bob * 0.5) * bobAmt * 0.6;
+    }
+    const breathe = Math.sin(P.breathPh) * lerp(0.003, 0.014, P.breathB);
+    const rx = Math.cos(P.yaw), rz = -Math.sin(P.yaw);
+    camera.position.set(P.x + rx * bx, P.eye + by + breathe + rr(-sh, sh), P.z + rz * bx);
+    camera.rotation.set(P.pitch + rr(-sh, sh) * 0.5 + dis * 0.02 * Math.sin(gameTime * 0.9), P.yaw + rr(-sh, sh) * 0.5, -bx * 0.15 + dis * 0.06 * Math.sin(gameTime * 0.73));
     EAR.copy(camera.position);
   } else {
     P.pitch = clamp(P.pitch, -1.0, 0.75);
@@ -2559,14 +2590,14 @@ function updatePlayer(dt) {
     EAR.set(P.x, P.eye, P.z);
   }
   aura.position.set(EAR.x, EAR.y + 0.25, EAR.z);
-  const wantFov = ((P.hidden ? 72 : 74) + (P.sprinting && P.speedNow > 2 ? 5 : 0)) * (P.propelT > 0 ? 1.25 : 1) + dis * 3.5 * Math.sin(gameTime * 1.13);
+  const wantFov = ((fp ? 72 : 74) + (P.sprinting && P.speedNow > 2 ? 5 : 0)) * (P.propelT > 0 ? 1.25 : 1) + dis * 3.5 * Math.sin(gameTime * 1.13);
   P.fov += (wantFov - P.fov) * (1 - Math.exp(-dt * 6));
   if (Math.abs(camera.fov - P.fov) > 0.01) { camera.fov = P.fov; camera.updateProjectionMatrix(); }
-  DUSTY.root.visible = !P.hidden && CAM.cur > 0.6;
+  DUSTY.root.visible = !fp && CAM.cur > 0.6;
   DUSTY.root.position.set(P.x, 0, P.z); DUSTY.root.rotation.set(0, P.face, 0);
   animateCharacter(DUSTY, dt, {
     phase: P.bob * 0.5, speed: P.speedNow, run: P.sprinting && P.speedNow > 2, crouch: P.crouch, aimPitch: FL.pitch, flash: P.flashOn,
-    holding: P.holding, exhausted: P.stamina / CFG.STAMINA_MAX <= CFG.LOW_STAMINA, searching: !!P.searching, breathPh: P.breathPh, breathB: P.breathB, turnRate: P.turnRate, t: gameTime,
+    exhausted: P.stamina / CFG.STAMINA_MAX <= CFG.LOW_STAMINA, searching: !!P.searching, breathPh: P.breathPh, breathB: P.breathB, turnRate: P.turnRate, t: gameTime,
   });
   DUSTY.undies.visible = P.undiesT > 0; DUSTY.glasses.visible = P.glassesT > 0;
   DUSTY.lens.material.color.setHex(P.flashOn ? 0xfff3d6 : 0x55524a);
@@ -2617,7 +2648,7 @@ function updateFacing(dt) {
   const P = player;
   let want = null;
   if (P.searching) want = Math.atan2(P.searching.x - P.x, P.searching.z - P.z);
-  else if (P.flashOn && !P.hidden) want = P.yaw + Math.PI;
+  else if (firstPerson() || (P.flashOn && !P.hidden)) want = P.yaw + Math.PI;
   else if (P.speedNow > 0.3) want = Math.atan2(P.vx, P.vz);
   const before = P.face;
   if (want !== null) P.face += clamp(angDiff(P.face, want), -dt * 14, dt * 14);
@@ -2628,10 +2659,20 @@ function updateFacing(dt) {
 const FL = { init: false, yaw: 0, pitch: 0, vy: 0, vp: 0, cy: 0, cp: 0, spd: 0, n: [0, 0, 0, 0, 0], m: [0, 0, 0, 0, 0],
   dir: new V3(0, 0, -1), q: new THREE.Quaternion(), e: new THREE.Euler(0, 0, 0, 'YXZ'), off: new V3() };
 const HAND = new V3(0.22, -0.17, 0.02);
+// how far the centre of the beam travels before it hits a wall, floor, ceiling or piece of furniture (capped at 9)
+function beamHitDist() {
+  const o = flash.position, d = FL.dir, near = W.obstacles.filter(b => b.x1 > o.x - 9.5 && b.x0 < o.x + 9.5 && b.z1 > o.z - 9.5 && b.z0 < o.z + 9.5);
+  for (let t = 0.2; t < 9; t += 0.2) {
+    const x = o.x + d.x * t, y = o.y + d.y * t, z = o.z + d.z * t;
+    if (y <= 0.02 || y >= H || isWallTile(Math.floor(x / T), Math.floor(z / T))) return t;
+    for (const b of near) if (x > b.x0 && x < b.x1 && z > b.z0 && z < b.z1 && y < b.h) return t;
+  }
+  return 9;
+}
 function updateFlashRig(dt) {
   const P = player;
   let cy = camera.rotation.y, cp = camera.rotation.x;
-  if (!P.hidden) {   // third person: from the hand toward the crosshair point
+  if (!P.hidden && !firstPerson()) {   // third person: from the hand toward the crosshair point
     DUSTY.root.updateMatrixWorld(true); DUSTY.tip.getWorldPosition(tmpH);
     const ax = AIM.x - tmpH.x, ay = AIM.y - tmpH.y, az = AIM.z - tmpH.z, al = Math.hypot(ax, ay, az) || 1;
     cy = Math.atan2(-ax / al, -az / al); cp = Math.asin(clamp(ay / al, -1, 1));
@@ -2651,7 +2692,7 @@ function updateFlashRig(dt) {
   const sq = Math.sqrt(dt), lp = 1 - Math.exp(-dt * 2.5);
   for (let k = 0; k < 5; k++) { FL.n[k] += -FL.n[k] * 0.9 * dt + (Math.random() * 2 - 1) * 1.4 * sq; FL.m[k] += (FL.n[k] - FL.m[k]) * lp; }
   const t = gameTime, move = clamp(P.speedNow / CFG.WALK, 0, 1.8), br = Math.sin(P.breathPh);
-  const steady = P.holding ? 0.35 : 1 + P.breathB * 1.3;   // holding your breath steadies the light, panting shakes it
+  const steady = 1 + P.breathB * 1.3;   // panting shakes the light
   const idle = 0.0055 * steady, step = Math.sin(P.bob * 0.5);
   const swayY = idle * (Math.sin(t * 0.71) * 0.55 + Math.sin(t * 1.63 + 1.1) * 0.25 + FL.m[0]) + 0.011 * move * step;
   const swayP = idle * (Math.sin(t * 0.93 + 0.4) * 0.45 + Math.sin(t * 2.07) * 0.18 + FL.m[1] + br * 0.8) - 0.008 * move * Math.abs(step);
@@ -2660,7 +2701,7 @@ function updateFlashRig(dt) {
   FL.off.set(HAND.x + (0.01 * FL.m[3] + 0.006 * Math.sin(t * 0.8)) * steady + 0.01 * move * step,
     HAND.y + (0.01 * FL.m[4] + 0.007 * br) * steady - 0.012 * move * Math.abs(Math.cos(P.bob * 0.5)), HAND.z).applyQuaternion(FL.q);
   FL.dir.set(0, 0, -1).applyQuaternion(FL.q);
-  if (P.hidden) flash.position.copy(camera.position).add(FL.off);
+  if (P.hidden || firstPerson()) flash.position.copy(camera.position).add(FL.off);
   else flash.position.copy(tmpH).addScaledVector(FL.dir, 0.06);
   flash.target.position.copy(flash.position).addScaledVector(FL.dir, 6);
 }
@@ -2674,68 +2715,40 @@ function heatEffects() {
 const tempQ = () => Math.round(player.temp * 10) / 10;
 function updateStamina(dt, HE) {
   const P = player, MAX = CFG.STAMINA_MAX;
-  if (P.propelT > 0) { P.stamina = MAX; P.exhausted = false; P.consuming = false; P.sinceUse = 99; return; }   // Blueberry Propel: endless stamina
+  if (P.propelT > 0) {   // Blueberry Propel: endless stamina
+    if (P.stamina < MAX) P.stamShowT = 3; else if (P.stamShowT > 0) P.stamShowT -= dt;
+    P.stamina = MAX; P.exhausted = false; P.consuming = false; P.sinceUse = 99; return;
+  }
   const running = P.sprinting && P.speedNow > 0.5;
   let drain = 0;
-  if (running) drain += CFG.RUN_DRAIN * (P.holding ? 2 : 1);   // running costs double while holding your breath
-  if (P.holding) drain += CFG.HOLD_DRAIN;                      // plus the cost of holding it
-  drain *= HE.drain;                                           // a fever makes everything cost more
+  if (running) drain += CFG.RUN_DRAIN;
+  drain *= HE.drain;   // a fever makes running cost more
   P.consuming = drain > 0;
   if (P.consuming) {
-    P.stamina = Math.max(0, P.stamina - drain * dt); P.sinceUse = 0; P.stamShowT = 3;
+    P.stamina = Math.max(0, P.stamina - drain * dt); P.sinceUse = 0; P.stamShowT = 0;
     if (P.stamina <= 0) {
-      if (!P.exhausted) { P.exhausted = true; P.sprinting = false; touch.run = false; if (!P.holding) toast('Out of breath.', true, 2.2); }
-      if (P.holding) stopHold(true);
+      if (!P.exhausted) { P.exhausted = true; P.sprinting = false; touch.run = false; toast('Out of breath.', true, 2.2, true); }
     }
   } else {
     P.sinceUse += dt;
-    if (P.sinceUse >= CFG.STAMINA_DELAY + HE.delay && P.stamina < MAX) P.stamina = Math.min(MAX, P.stamina + CFG.STAMINA_REGEN * dt);
+    if (P.sinceUse >= CFG.STAMINA_DELAY + HE.delay && P.stamina < MAX) {
+      P.stamina = Math.min(MAX, P.stamina + CFG.STAMINA_REGEN * (P.crouch ? CFG.CROUCH_REGEN : 1) * dt);
+      if (P.stamina >= MAX) P.stamShowT = 3;   // fully recovered: keep the bar up 3 more seconds
+    } else if (P.stamShowT > 0) P.stamShowT -= dt;
     if (P.exhausted && P.stamina >= MAX) P.exhausted = false;
-    if (P.stamShowT > 0) P.stamShowT -= dt;
   }
-}
-
-/* ---------- breath holding (R / Breath button) ---------- */
-function updateBreathHold() {
-  const P = player, want = !!(keys.KeyR || touch.breath);
-  if (want && !P.holding && !P.holdLatch) {
-    P.holdLatch = true;   // one attempt per press
-    if (P.gaspT <= 0 && P.stamina / CFG.STAMINA_MAX >= CFG.HOLD_MIN - 1e-9) P.holding = true;
-    else { P.stamShowT = 3; stamFlash(); }
-  }
-  if (!want) { P.holdLatch = false; if (P.holding) stopHold(false); }
-}
-function stopHold(gasp) {
-  const P = player; if (!P.holding) return;
-  P.holding = false;
-  if (gasp) {
-    P.gaspT = 2.5; P.breathB = 1; P.breathOut = true; P.breathT = 0.9;
-    AU.gasp(); toast('You gasp for air.', true, 2.2);
-    gooseHear(P.x, P.z, CFG.GASP_R * (P.hidden ? 0.75 : 1), { kind: 'gasp', pri: 4, player: true, exact: true, reveal: true });
-  } else {
-    const b = Math.max(P.breathB, 0.3);
-    AU.breathe(true, b, 1.2); P.breathOut = true; P.breathT = lerp(1.6, 0.5, b) * 0.6;
-    breathEvent(b);
-  }
-}
-function stamFlash() {
-  const el = els.stam; el.classList.remove('flash'); void el.offsetWidth; el.classList.add('flash');
-  clearTimeout(stamFlash.t); stamFlash.t = setTimeout(() => el.classList.remove('flash'), 520);
 }
 
 /* ---------- breathing: audible to the player and to the goose ---------- */
 function updateBreathing(dt) {
   const P = player, f = P.stamina / CFG.STAMINA_MAX;
-  if (P.gaspT > 0) P.gaspT -= dt;
   let bt = P.crouch || P.hidden ? 0.07 : 0.1;
   if (P.speedNow > 0.5) bt = Math.max(bt, P.crouch ? 0.09 : 0.17);
   if (P.sprinting && P.speedNow > 0.5) bt = Math.max(bt, 0.4 + 0.45 * (1 - f));
   if (f <= CFG.LOW_STAMINA) bt = Math.max(bt, 0.82 + 0.18 * (1 - f / CFG.LOW_STAMINA));
-  if (P.gaspT > 0) bt = 1;
   P.breathB += (bt - P.breathB) * (1 - Math.exp(-dt * (bt > P.breathB ? 1.8 : 0.3)));
   const cycle = lerp(3.8, 0.8, P.breathB);
   P.breathPh += dt * 2 * Math.PI / cycle;
-  if (P.holding) return;   // holding your breath: silent
   P.breathT -= dt;
   if (P.breathT <= 0) {
     P.breathOut = !P.breathOut;
@@ -2754,14 +2767,15 @@ function updateTemperature(dt) {
   const P = player;
   if (P.tempPauseT > 0) P.tempPauseT -= dt;
   else if (!P.cooling) {
-    P.tempRiseT -= dt * (P.hidden ? 1.5 : 1);   // stuffy hiding spots heat you up 50% faster
+    const runningHot = P.sprinting && P.speedNow > 2;
+    P.tempRiseT -= dt * (P.hidden || runningHot ? 1.5 : 1);   // hiding spots and running heat you up 50% faster
     if (P.tempRiseT <= 0) { P.tempRiseT = rr(3, 5); P.temp = Math.min(CFG.TEMP_MAX, Math.round((P.temp + 0.1) * 10) / 10); }
   }
   const tq = tempQ();
   const lvl = tq >= 104 ? 4 : tq >= 102.6 ? 3 : tq >= 101.3 ? 2 : tq >= 100.5 ? 1 : 0;
   if (lvl > P.heatMsg) {
-    const m = ['', "You're running a fever. Find a refrigerator.", 'The heat is wearing you down.', 'Your vision is closing in.', "You're about to pass out. Cool down now."][lvl];
-    toast(m, lvl >= 3, 4);
+    const m = ['', "You've caught a fever. Find a refrigerator.", 'The heat is wearing you down.', 'Your vision is closing in.', "You're about to pass out. Cool down now."][lvl];
+    toast(m, lvl >= 3, 4, true);
   }
   P.heatMsg = lvl;
   if (tq >= CFG.TEMP_MAX - 1e-6) {   // invisible 20 s countdown; cancelled the moment you cool below 104
@@ -2788,11 +2802,10 @@ function updateCollapse(dt) {
 /* ---------- refrigerators ---------- */
 function setFridgePower(f, on) {
   f.powered = on;
-  f.ledMat.emissiveIntensity = on ? 1.4 : 0; f.innerMat.emissiveIntensity = on ? 0.9 : 0;
-  if (on) { f.used = 0; AU.fridgeOn(f.x, f.z); }
+  if (on) { f.used = 0; f.warned = false; AU.fridgeOn(f.x, f.z); }
   else {
-    f.offUntil = gameTime + CFG.FRIDGE_OFF; AU.fridgeOff(f.x, f.z);
-    if (Math.hypot(player.x - f.fx, player.z - f.fz) < 4) toast('The refrigerator shut off. It needs time to come back on.', false, 3.5);
+    f.offUntil = gameTime + CFG.FRIDGE_OFF; f.flickerT = 0.7; AU.fridgeOff(f.x, f.z);
+    if (Math.hypot(player.x - f.fx, player.z - f.fz) < 4) toast('The refrigerator is out of power. It needs time to come back on.', false, 3.5, true);
   }
 }
 function toggleFridge(f) {
@@ -2809,8 +2822,15 @@ function updateFridges(dt) {
     if (!f.powered && gameTime >= f.offUntil) setFridgePower(f, true);   // cooldown runs whether or not you are nearby
     f.anim += ((f.open ? 1 : 0) - f.anim) * (1 - Math.exp(-dt * 7));
     f.door.rotation.y = -1.75 * f.anim * f.anim * (3 - 2 * f.anim);
-    const cold = f.open && f.powered;
-    f.glow.material.opacity = cold ? 0.22 * f.anim : 0;
+    const cold = f.open && f.powered, left = f.powered ? clamp(1 - f.used / CFG.FRIDGE_POWER, 0, 1) : 0;
+    let light = f.powered ? 0.12 + 0.78 * left : 0;
+    if (f.flickerT > 0) { f.flickerT -= dt; light = Math.random() < 0.5 ? 0.9 : 0.05; }   // sputters as it dies
+    f.innerMat.emissiveIntensity = light;
+    if (!f.powered) { f.ledMat.emissive.setHex(0xff2414); f.ledMat.emissiveIntensity = 1.2; }
+    else if (left > 0.4) { f.ledMat.emissive.setHex(0x3cff74); f.ledMat.emissiveIntensity = 1.4; }
+    else if (left > 0.15) { f.ledMat.emissive.setHex(0xffaa22); f.ledMat.emissiveIntensity = 1.4; }
+    else { f.ledMat.emissive.setHex(0xff2414); f.ledMat.emissiveIntensity = Math.sin(gameTime * 10) > 0 ? 1.6 : 0.15; }
+    f.glow.material.opacity = cold ? 0.22 * f.anim * (0.25 + 0.75 * left) : 0;
     if (cold) { f.smokeAcc += dt * 6; while (f.smokeAcc >= 1) { f.smokeAcc -= 1; emitSmoke(f, false); } }
     if (cold && !P.hidden) { const d = Math.hypot(P.x - f.fx, P.z - f.fz); if (d < CFG.FRIDGE_RANGE && d < bd) { bd = d; best = f; } }
   }
@@ -2819,8 +2839,17 @@ function updateFridges(dt) {
     P.cooling = true;
     P.temp = Math.max(CFG.TEMP_FLOOR, P.temp - CFG.COOL_RATE * dt);
     best.used += dt;   // cumulative cooling time: survives closing, reopening and walking away
-    if (P.temp <= CFG.TEMP_FLOOR + 1e-6) { P.temp = CFG.TEMP_FLOOR; P.tempPauseT = CFG.COOL_PAUSE; P.tempRiseT = rr(3, 5); toast('You feel cool again.', false, 2.5); }
+    if (!best.warned && best.used >= CFG.FRIDGE_POWER * 0.8) { best.warned = true; toast('This refrigerator is almost out of power.', false, 2.5, true); }
+    if (P.temp <= CFG.TEMP_FLOOR + 1e-6) { P.temp = CFG.TEMP_FLOOR; P.tempPauseT = CFG.COOL_PAUSE; P.tempRiseT = rr(3, 5); toast('You feel cool again.', false, 2.5, true); }
     if (best.used >= CFG.FRIDGE_POWER) setFridgePower(best, false);
+  }
+  P.iceCooling = false;
+  if (!P.cooling && P.iceOn && P.iceLeft > 0 && P.temp > CFG.TEMP_FLOOR + 1e-6) {
+    const use = Math.min(dt, P.iceLeft);
+    P.temp = Math.max(CFG.TEMP_FLOOR, P.temp - CFG.ICE_RATE * use); P.iceLeft -= use;
+    P.cooling = true; P.iceCooling = true;
+    if (P.temp <= CFG.TEMP_FLOOR + 1e-6) { P.temp = CFG.TEMP_FLOOR; P.tempPauseT = CFG.COOL_PAUSE; P.tempRiseT = rr(3, 5); toast('You feel cool again.', false, 2.5, true); }
+    if (P.iceLeft <= 1e-9) { P.iceLeft = 0; P.iceOn = false; toast('The ice pack has melted.', false, 2.5); }
   }
   updateSmoke(dt);
   humT -= dt;
@@ -2882,7 +2911,7 @@ function gooseNoticesLight(G) {
   return los3(G.x, CFG.GOOSE_EYE, G.z, sx, sy, sz);
 }
 // One entry point for everything the goose can hear.
-// o.kind: run, step, breath, gasp, fridge, hide. o.pri: importance. o.player: the sound is the player's own body.
+// o.kind: run, step, breath, fridge, hide, search. o.pri: importance. o.player: the sound is the player's own body.
 // o.exact: no position error. o.reveal: close and clear enough, it tells the goose exactly where the player is.
 function gooseHear(x, z, r, o = {}) {
   const G = W && W.goose; if (!G || state !== 'playing') return false;
@@ -2907,26 +2936,27 @@ function gooseHear(x, z, r, o = {}) {
 }
 function hearMsg(G, kind, located) {
   if (G.msgCD > 0) return;
-  const m = located ? { breath: 'It heard you breathing. It knows where you are.', gasp: 'It heard you gasp. It knows where you are.' }[kind]
-    : { run: 'It heard you running.', breath: 'It heard you breathing.', gasp: 'It heard you gasp.', fridge: 'It heard the refrigerator.' }[kind];
+  const m = located ? { breath: 'It heard you breathing. It knows where you are.' }[kind]
+    : { run: 'It heard you running.', breath: 'It heard you breathing.', fridge: 'It heard the refrigerator.' }[kind];
   if (!m) return;
   G.msgCD = 8;
-  if (!located && (kind === 'run' || kind === 'gasp')) { voice(G, { pitch: 1.08, loud: 1.2 }); G.beakT = 0.4; }
-  toast(m, true);
+  if (!located && kind === 'run') { voice(G, { pitch: 1.08, loud: 1.2 }); G.beakT = 0.4; }
+  toast(m, true, 3.2, true);
 }
 function moveGoose(G, tx, tz, speed, dt) {
+  const GR = G.r || CFG.GOOSE_R;
   const N = W.N, gtx = tileOf(G.x), gtz = tileOf(G.z), ttx = tileOf(tx), ttz = tileOf(tz);
   let wx = tx, wz = tz;
-  const direct = (gtx === ttx && gtz === ttz) || (G.forcePathT <= 0 && clearPath(G.x, G.z, tx, tz, CFG.GOOSE_R * 0.85));
+  const direct = (gtx === ttx && gtz === ttz) || (G.forcePathT <= 0 && clearPath(G.x, G.z, tx, tz, GR * 0.85));
   if (!direct) {
     G.repathT -= dt;
     const goal = ttz * N + ttx;
     if (!G.path || G.repathT <= 0 || G.pathGoal !== goal) { G.path = findPath(gtx, gtz, ttx, ttz); G.pathGoal = goal; G.repathT = 0.45; G.pathI = 0; }
     if (G.path && G.path.length) {
       while (G.pathI < G.path.length - 1) { const w = G.path[G.pathI]; if (Math.hypot(center(w.x) - G.x, center(w.z) - G.z) < 0.6) G.pathI++; else break; }
-      if (G.pathI < G.path.length - 1) { const n = G.path[G.pathI + 1]; if (clearPath(G.x, G.z, center(n.x), center(n.z), CFG.GOOSE_R * 0.85)) G.pathI++; }
+      if (G.pathI < G.path.length - 1) { const n = G.path[G.pathI + 1]; if (clearPath(G.x, G.z, center(n.x), center(n.z), GR * 0.85)) G.pathI++; }
       const w = G.path[G.pathI];
-      if (G.pathI === G.path.length - 1 && w.x === ttx && w.z === ttz && clearPath(G.x, G.z, tx, tz, CFG.GOOSE_R * 0.5)) { wx = tx; wz = tz; }
+      if (G.pathI === G.path.length - 1 && w.x === ttx && w.z === ttz && clearPath(G.x, G.z, tx, tz, GR * 0.5)) { wx = tx; wz = tz; }
       else { wx = center(w.x); wz = center(w.z); }
     }
   } else G.path = null;
@@ -2939,7 +2969,7 @@ function moveGoose(G, tx, tz, speed, dt) {
     const want = Math.atan2(dx, dz);
     G.yaw += clamp(angDiff(G.yaw, want), -dt * 7, dt * 7);
   }
-  collide(G, CFG.GOOSE_R);
+  collide(G, GR);
   const moved = Math.hypot(G.x - ox, G.z - oz);
   G.stepAcc += moved;
   const rem = Math.hypot(tx - G.x, tz - G.z);
@@ -2999,7 +3029,7 @@ function blindGoose(G) {
   G.lastSeen = { x: player.x, z: player.z };
   gooseSet(G, 'blind');
   AU.honk(G.x, G.z, { alert: true, pitch: 1.35, loud: 1.5 }); AU.flap(G.x, G.z); G.beakT = 1.2;
-  toast('You blinded it! Go!', false, 2.5);
+  toast('You blinded it! Go!', false, 2.5, true);
 }
 function updateBlind(G, dt) {
   const P = player;
@@ -3045,26 +3075,27 @@ function updateGoose(dt) {
       }
       if (G.eydamCD <= 0 && gooseVoice(G, 'eydam', 'EYDAM!', { maxD: 80, gain: 1.35, urgent: true, beak: 0.8, delay: Math.max(0, (G.voiceBusyUntil || 0) - gameTime) })) G.eydamCD = 5;
       else if (G.eydamCD > 0) G.beakT = 0.4;
-      else { voice(G, { alert: true, pitch: 1.1, loud: 1.4 }); AU.sting(); }
+      else voice(G, { alert: true, pitch: 1.1, loud: 1.4 });
+      if (G.stingCD <= 0) { AU.chaseSting(); G.stingCD = 4; }   // a new chase begins
       G.beakT = Math.max(G.beakT, 0.6); G.flapT = 0.7; G.merpT = 1.6;
-      toast('It sees you. RUN.', true, 2.5);
+      toast('It sees you. RUN.', true, 2.5, true);
     }
   } else if (G.light) {
     G.knowT = 2.5; G.lastSeen = { x: P.x, z: P.z };
     if (G.state !== 'chase' && G.state !== 'alert' && G.state !== 'hunt') {
       gooseSet(G, 'hunt'); voice(G, { pitch: 1.05, loud: 1.2 }); G.beakT = 0.4;
-      toast('It noticed your light.', true);
+      toast('It noticed your light.', true, 3.2, true);
     }
   }
   const scentReady = P.linger >= CFG.LINGER_TIME && G.state !== 'bait' && G.state !== 'blind';
   if (scentReady && G.state !== 'chase' && G.state !== 'alert' && !G.scent) {
     G.scent = true; if (G.state !== 'hunt') gooseSet(G, 'hunt');
     AU.sniff(G.x, G.z, true); AU.sniff(G.x, G.z, false);
-    toast('It caught your scent.', true);
+    toast('It caught your scent.', true, 3.2, true);
   }
   if (!scentReady && G.scent) G.scent = false;
 
-  G.eydamCD -= dt; G.swerveCD -= dt; G.rearCD -= dt; G.cornerCD -= dt;
+  G.eydamCD -= dt; G.swerveCD -= dt; G.rearCD -= dt; G.cornerCD -= dt; G.stingCD -= dt;
   updateBlind(G, dt);
   let moving = false;
   switch (G.state) {
@@ -3188,14 +3219,14 @@ function updateGoose(dt) {
   }
 }
 function mouthParts(R) { const open = R.jaw.rotation.x > 0.12; if (R.innerOpen !== open) { R.innerOpen = open; R.inner.forEach(m => { m.visible = open; }); } }
-function animateGoose(G, dt, moving) {
-  const R = GOOSE_RIG, k = 1 - Math.exp(-dt * 6);
+function animateGoose(G, dt, moving, R = GOOSE_RIG) {
+  const k = 1 - Math.exp(-dt * 6), sitting = G.state === 'disabled';
   R.root.position.set(G.x, 0, G.z); R.root.rotation.y = G.yaw;
   const spd = moving ? G.curSpeed : 0;
   G.phase += dt * spd * 2.1;
   const s = Math.sin(G.phase), amp = Math.min(1, spd / 2.5);
   R.legs[0].rotation.x = s * 0.65 * amp; R.legs[1].rotation.x = -s * 0.65 * amp;
-  R.body.position.y = 1.25 + Math.abs(Math.cos(G.phase)) * 0.07 * amp + Math.sin(gameTime * 2) * 0.012;
+  R.body.position.y = (sitting ? 0.85 : 1.25) + Math.abs(Math.cos(G.phase)) * 0.07 * amp + Math.sin(gameTime * 2) * 0.012;
   R.body.rotation.z = s * 0.08 * amp;
   const chase = G.state === 'chase' || G.state === 'alert';
   const sniffing = G.state === 'hunt' || (G.state === 'search' && G.searchPhase === 'look' && Math.sin(G.stateT * 0.6) > 0.5);
@@ -3203,11 +3234,13 @@ function animateGoose(G, dt, moving) {
   if (G.state === 'alert') neckWant = -0.25;
   if (G.state === 'blind') neckWant = -0.35 + Math.sin(gameTime * 13) * 0.25;
   if (G.state === 'bait' && G.baitPhase === 'eat') neckWant = 1.05 + Math.abs(Math.sin(gameTime * 9)) * 0.25;
+  if (sitting) neckWant = 1.25;
+  if (G.state === 'alarm') neckWant = -0.3;
   G.neckX += (neckWant - G.neckX) * k; R.neck.rotation.x = G.neckX;
   let headWant = 0;
   if (G.state === 'search' && G.searchPhase === 'look') headWant = Math.sin(G.stateT * 1.7) * 0.85;
   else if (G.state === 'patrol' && !G.target) headWant = Math.sin(gameTime * 0.9) * 0.6;
-  else if (G.state === 'chase' || G.state === 'alert') headWant = clamp(angDiff(G.yaw, Math.atan2(player.x - G.x, player.z - G.z)), -0.6, 0.6);
+  else if (G.state === 'chase' || G.state === 'alert' || G.state === 'alarm') headWant = clamp(angDiff(G.yaw, Math.atan2(player.x - G.x, player.z - G.z)), -0.6, 0.6);
   else if (G.state === 'blind') headWant = Math.sin(gameTime * 7.3) * 0.9;
   G.headYaw += (headWant - G.headYaw) * k; R.headPivot.rotation.y = G.headYaw;
   if (G.beakT > 0) G.beakT -= dt;
@@ -3216,6 +3249,126 @@ function animateGoose(G, dt, moving) {
   const flap = G.flapT > 0 ? 0.35 + Math.abs(Math.sin(gameTime * 17)) * 0.9 : (chase ? 0.15 + Math.abs(Math.sin(gameTime * 6)) * 0.1 : 0);
   R.wings[0].rotation.z = -flap; R.wings[1].rotation.z = flap;
   mouthParts(R);
+}
+
+/* ================= SURVEILLANCE GEESE ================= */
+// Two ordinary-sized geese that walk the halls very slowly, keep apart, and honk for the big goose when they
+// notice you. They never chase. 1.65 s of flashlight in their eyes switches one off for 45 s.
+const SG_RIGS = [];
+function surveillanceRig(k) {
+  if (SG_RIGS[k]) return SG_RIGS[k];
+  const R = buildGooseRig();
+  R.root.scale.setScalar(CFG.SG_SCALE);
+  R.root.traverse(o => { if (o.userData.afro) o.visible = false; });   // plain geese, no afro
+  R.ledMat = new THREE.MeshBasicMaterial({ color: 0xff2a1a });   // a little red recording light
+  addMesh(R.headPivot, geo('sgled', () => new THREE.SphereGeometry(0.075, 8, 6)), R.ledMat, [0, 0.2, 0], null, null, false);
+  scene.add(R.root); SG_RIGS[k] = R; return R;
+}
+function spawnSurveillance() {
+  const N = W.N, sd = W.startDist, out = [];
+  const far = W.floors.filter(i => sd[i] >= 9 && !W.avoid[i] && i !== W.gooseStart);
+  for (let k = 0; k < CFG.SG_COUNT; k++) {
+    let c = far.filter(i => out.every(o => Math.hypot(center(i % N) - o.x, center((i / N) | 0) - o.z) > CFG.SG_SEPARATION * 1.3));
+    if (!c.length) c = far;
+    const i = pick(c), R = surveillanceRig(k); R.root.visible = true;
+    out.push({ id: k, rig: R, x: center(i % N), z: center((i / N) | 0), r: CFG.SG_R, yaw: rr(0, 6.28), state: 'patrol', target: null,
+      path: null, pathI: 0, repathT: 0, pathGoal: -1, curSpeed: 0, stepAcc: 0, bestRem: 1e9, progT: 0, forcePathT: 0, waitT: rr(1, 4), stateT: 0,
+      honkT: 0, lostT: 0, blindCharge: 0, disabledT: 0, sepCD: 0, phase: 0, headYaw: 0, beakT: 0, flapT: 0, neckX: 0.2, occluded: true });
+  }
+  for (let k = CFG.SG_COUNT; k < SG_RIGS.length; k++) SG_RIGS[k].root.visible = false;
+  W.sgeese = out;
+}
+function sgPatrolTarget(S) {
+  const N = W.N, d = bfs(tileOf(S.x), tileOf(S.z)), others = W.sgeese.filter(o => o !== S);
+  const apart = i => { const x = center(i % N), z = center((i / N) | 0);
+    return others.every(o => Math.hypot(x - o.x, z - o.z) > CFG.SG_SEPARATION && (!o.target || Math.hypot(x - o.target.x, z - o.target.z) > CFG.SG_SEPARATION)); };
+  let c = W.floors.filter(i => !W.avoid[i] && d[i] >= 3 && d[i] <= 12 && apart(i));
+  if (!c.length) c = W.floors.filter(i => !W.avoid[i] && d[i] >= 3 && d[i] <= 16);
+  if (!c.length) return null;
+  const i = pick(c); return { x: center(i % N), z: center((i / N) | 0) };
+}
+// what a surveillance goose notices. Crouching: only when you are practically touching it, and it can't smell you.
+function sgDetects(S) {
+  const P = player;
+  if (P.hidden || P.undiesT > 0) return false;
+  const dx = P.x - S.x, dz = P.z - S.z, d = Math.hypot(dx, dz);
+  if (P.crouch) return d < CFG.SG_TOUCH;
+  const clear = !wallsBetween(S.x, S.z, P.x, P.z), running = P.sprinting && P.speedNow > 2;
+  if (!clear) return false;
+  if (d < CFG.SG_SMELL) return true;                       // smell
+  if (running && d < CFG.SG_HEAR_RUN) return true;          // hears you running
+  if (d > (running ? CFG.SG_SIGHT_RUN : CFG.SG_SIGHT)) return false;
+  const hy = S.yaw + S.headYaw;
+  if ((dx * Math.sin(hy) + dz * Math.cos(hy)) / d < 0.25) return false;   // has to be looking your way
+  return los3(S.x, CFG.SG_EYE, S.z, P.x, P.eye - 0.15, P.z);
+}
+// the big goose hears the honking and heads for where it came from, fast
+function alertMainGoose(x, z) {
+  const G = W.goose; if (!G) return false;
+  if (G.state === 'chase' || G.state === 'alert' || G.state === 'bait' || G.state === 'blind') return false;
+  if (G.state === 'hunt' && (G.knowT > 0 || G.scent)) return false;
+  gooseInvestigate(G, x + rr(-1, 1), z + rr(-1, 1), CFG.SG_ALERT_SPEED); G.invPri = 3.5;
+  return true;
+}
+function sgHonk(S) {
+  AU.honk(S.x, S.z, { pitch: 1.55, loud: 1.25 });
+  S.beakT = 0.35; S.flapT = 0.4;
+  caption(S, 'HONK!', true, 30);
+  alertMainGoose(S.x, S.z);
+}
+function updateSgBlind(S, dt) {
+  const P = player; let on = false;
+  if (P.flashOn) {
+    S.rig.headPivot.getWorldPosition(tmpH);
+    const o = flash.position, vx = tmpH.x - o.x, vy = tmpH.y - o.y, vz = tmpH.z - o.z, d = Math.hypot(vx, vy, vz) || 1;
+    if (d < 4 + 8 * (P.battery / CFG.BATTERY_MAX) && (vx * FL.dir.x + vy * FL.dir.y + vz * FL.dir.z) / d > Math.cos(0.13)) {
+      const hy = S.yaw + S.headYaw, facing = (-vx * Math.sin(hy) - vz * Math.cos(hy)) / (Math.hypot(vx, vz) || 1);
+      if (facing > 0.2 && los3(o.x, o.y, o.z, tmpH.x, tmpH.y, tmpH.z)) on = true;   // straight into its eyes
+    }
+  }
+  S.blindCharge = on ? S.blindCharge + dt : 0;   // looking away starts the count over
+  if (S.blindCharge >= CFG.SG_BLIND_TIME) {
+    S.blindCharge = 0; S.state = 'disabled'; S.disabledT = CFG.SG_DISABLED; S.stateT = 0; S.flapT = 0.8; S.target = null; S.path = null;
+    AU.honk(S.x, S.z, { pitch: 1.15, loud: 0.7 });
+    toast('Surveillance goose disabled for 45 seconds.', false, 2.5);
+  }
+}
+function updateSurveillance(dt) {
+  const P = player;
+  for (const S of W.sgeese) {
+    S.stateT += dt; S.sepCD -= dt; S.occluded = wallsBetween(S.x, S.z, P.x, P.z);
+    let moving = false;
+    if (S.state === 'disabled') {
+      S.curSpeed = 0; S.disabledT -= dt;
+      if (S.disabledT <= 0) { S.state = 'patrol'; S.target = null; S.waitT = 1; S.stateT = 0; }
+    } else {
+      updateSgBlind(S, dt);
+      if (S.state !== 'disabled') {
+        const sees = sgDetects(S);
+        if (sees && S.state !== 'alarm') { S.state = 'alarm'; S.stateT = 0; S.honkT = 0; S.lostT = 0; toast('A surveillance goose spotted you. He knows where you are.', true, 3, true); }
+        if (S.state === 'alarm') {
+          S.curSpeed = Math.max(0, S.curSpeed - dt * 6); faceToward(S, P.x - S.x, P.z - S.z, dt, 5);
+          if (sees) S.lostT = 0; else S.lostT += dt;
+          S.honkT -= dt;
+          if (S.honkT <= 0 && S.lostT < 1) { S.honkT = CFG.SG_HONK_EVERY; sgHonk(S); }
+          if (S.lostT > 2.5) { S.state = 'patrol'; S.target = null; S.waitT = rr(1, 2); S.stateT = 0; }
+        } else {
+          const near = W.sgeese.some(o => o !== S && Math.hypot(o.x - S.x, o.z - S.z) < CFG.SG_SEPARATION * 0.6);
+          if (near && S.sepCD <= 0) { S.target = sgPatrolTarget(S); S.sepCD = 4; S.bestRem = 1e9; S.progT = 0; }   // drift apart
+          if (!S.target) {
+            S.curSpeed = Math.max(0, S.curSpeed - dt * 4); S.waitT -= dt;
+            if (S.waitT <= 0) { S.target = sgPatrolTarget(S); S.waitT = 2; S.bestRem = 1e9; S.progT = 0; S.stateT = 0; }
+          } else {
+            const rem = moveGoose(S, S.target.x, S.target.z, CFG.SG_SPEED, dt); moving = true;
+            if (rem < 0.7 || S.stateT > 70) { S.target = null; S.waitT = rr(2, 4.5); }
+          }
+        }
+      }
+    }
+    animateGoose(S, dt, moving, S.rig);
+    const blink = S.state === 'disabled' ? false : S.state === 'alarm' ? Math.sin(gameTime * 14) > 0 : Math.sin(gameTime * 3 + S.id) > 0.6;
+    S.rig.ledMat.color.setHex(blink ? 0xff2a1a : 0x2a0606);
+  }
 }
 
 /* ================= FX + HUD ================= */
@@ -3287,13 +3440,13 @@ function updateFx(dt) {
     L.t -= dt;
     if (L.t <= 0) { L.t = Math.random() < 0.08 ? rr(0.3, 0.9) : rr(0.04, 0.18); L.target = Math.random() < 0.14 ? 0.04 : rr(0.65, 1.15); }
     L.cur += (L.target - L.cur) * Math.min(1, dt * 25);
-    L.light.intensity = L.cur * 1.4; L.mat.emissiveIntensity = L.cur;
+    L.light.intensity = L.cur * 1.1; L.mat.emissiveIntensity = L.cur;
   }
   for (const g of W.glows) g.s.material.opacity = g.base * (0.7 + 0.3 * Math.sin(gameTime * 2.2 + g.ph));
   // tapes: brighter, lifted and spinning as you approach; visible through walls with the glasses
   const xr = player.glassesT > 0;
   for (const p of W.pickups) {
-    if (p.type !== 'piece' || p.taken) continue;
+    if (p.type !== 'tape' || p.taken) continue;
     const d = Math.hypot(p.x - player.x, p.z - player.z), want = clamp(1 - d / 14, 0, 1);
     p.hl += (want - p.hl) * (1 - Math.exp(-dt * 4));
     const h = p.hl, pulse = 0.75 + 0.25 * Math.sin(gameTime * 3 + p.ph);
@@ -3311,40 +3464,41 @@ function updateFx(dt) {
   const danger = chase ? 1 : G.state === 'hunt' ? 0.7 : clamp(1 - G.dist / 18, 0, 1) * 0.75;
   AU.setChase(chase ? 1 : G.state === 'hunt' ? 0.5 : 0);
   els.danger.style.opacity = (chase ? 0.85 : danger * 0.5).toFixed(2);
-  P.hbT -= dt;
-  if (danger > 0.12 && P.hbT <= 0) { AU.heart(0.15 + danger * 0.55); P.hbT = lerp(1.15, 0.4, danger); }
+  // rapid heartbeat for exactly as long as the chase lasts (one scheduler, so beats never stack)
+  if (chase) { P.hbT -= dt; if (P.hbT <= 0) { AU.heart(0.6); P.hbT = 0.36; } } else P.hbT = 0;
 }
 function setText(key, el, v) { if (hudCache[key] !== v) { hudCache[key] = v; el.textContent = v; } }
 function setClass(key, el, cls, on) { const k = key + cls; if (hudCache[k] !== on) { hudCache[k] = on; el.classList.toggle(cls, on); } }
 function updateHUD(dt) {
   const P = player;
-  setText('pc', els.pc, `${P.pieces} / ${CFG.PIECES}`);
+  setText('pc', els.pc, `${P.tapes} / ${CFG.TAPES}`);
   // items you are carrying (click or tap to use) and what is active
-  const invKey = Object.keys(ITEMS).map(k => INV[k]).join(',');
+  const invKey = Object.keys(ITEMS).map(k => INV[k]).join(',') + (P.iceLeft > 0 ? 'i' : '');
   if (hudCache.inv !== invKey) {
     hudCache.inv = invKey;
-    els.inv.innerHTML = Object.keys(ITEMS).filter(k => INV[k] > 0).map(k => `<button class="slot" type="button" data-item="${k}"><b>${ITEMS[k].name}</b><span class="n">x${INV[k]}</span><kbd>${ITEMS[k].key}</kbd></button>`).join('');
+    els.inv.innerHTML = Object.keys(ITEMS).filter(k => INV[k] > 0 || (k === 'ice' && P.iceLeft > 0)).map(k => `<button class="slot" type="button" data-item="${k}"><b>${ITEMS[k].name}</b><span class="n">x${INV[k]}</span><kbd>${ITEMS[k].key}</kbd></button>`).join('');
   }
-  const act = [['propelT', 'Propel', CFG.PROPEL_TIME], ['undiesT', 'Undetectable', CFG.UNDIES_TIME], ['glassesT', 'X-ray', CFG.GLASSES_TIME]].filter(([k]) => P[k] > 0);
-  const fxKey = act.map(([k]) => k + Math.ceil(P[k])).join('|');
+  const act = [['propelT', 'Propel', CFG.PROPEL_TIME], ['undiesT', 'Undetectable', CFG.UNDIES_TIME], ['glassesT', 'X-ray', CFG.GLASSES_TIME], ['iceLeft', 'Ice pack', CFG.ICE_TIME]].filter(([k]) => P[k] > 0);
+  const fxKey = act.map(([k]) => k + Math.ceil(P[k])).join('|') + (P.iceOn ? '' : 'p');
   if (hudCache.fx !== fxKey) {
     hudCache.fx = fxKey;
-    els.fxl.innerHTML = act.map(([k, n, max]) => `<div class="fxrow"><span>${n} ${Math.ceil(P[k])}s</span><div class="bar"><span style="transform:scaleX(${(P[k] / max).toFixed(3)})"></span></div></div>`).join('');
+    els.fxl.innerHTML = act.map(([k, n, max]) => `<div class="fxrow"><span>${n} ${Math.ceil(P[k])}s${k === 'iceLeft' && !P.iceOn ? ' (paused)' : ''}</span><div class="bar"><span style="transform:scaleX(${(P[k] / max).toFixed(3)})"></span></div></div>`).join('');
   }
   setClass('xr', els.xrayFx, 'on', P.glassesT > 0);
+  setClass('fr', els.frostFx, 'on', !!P.iceCooling);
   if (TAPEUI.dur > 0) {
     TAPEUI.t += dt; els.tapeP.style.transform = `scaleX(${Math.min(1, TAPEUI.t / TAPEUI.dur).toFixed(3)})`;
     if (TAPEUI.t > TAPEUI.dur + 1.2) { TAPEUI.dur = 0; els.tape.hidden = true; }
   }
-  const bc = W.goose ? clamp(W.goose.blindCharge / CFG.BLIND_TIME, 0, 1) : 0;
+  let bc = W.goose ? clamp(W.goose.blindCharge / CFG.BLIND_TIME, 0, 1) : 0;
+  for (const S of W.sgeese || []) bc = Math.max(bc, clamp(S.blindCharge / CFG.SG_BLIND_TIME, 0, 1));
   els.blind.hidden = bc < 0.02;
   if (bc >= 0.02) els.blindArc.style.strokeDashoffset = (100.5 * (1 - bc)).toFixed(1);
-  // stamina bar: hidden until stamina is spent, stays 3 s after, then fades; flashes red while holding your breath at 16% or less
-  const sf = clamp(P.stamina / CFG.STAMINA_MAX, 0, 1), crit = P.holding && sf <= CFG.HOLD_CRIT + 1e-9;
+  // stamina bar: shows as soon as stamina is spent, stays up while it refills, then 3 more seconds once full
+  const sf = clamp(P.stamina / CFG.STAMINA_MAX, 0, 1);
   const sfs = sf.toFixed(3); if (hudCache.sf !== sfs) { hudCache.sf = sfs; els.sfill.style.transform = `scaleX(${sfs})`; }
-  setClass('st', els.stam, 'out', P.exhausted || crit);
-  setClass('st', els.stam, 'crit', crit);
-  setClass('st', els.stam, 'show', P.consuming || P.stamShowT > 0 || crit);
+  setClass('st', els.stam, 'out', P.exhausted);
+  setClass('st', els.stam, 'show', P.consuming || sf < 1 || P.stamShowT > 0);
   // body temperature: light red from 99.8 F, deepening toward 104
   const tq = tempQ(), ts = tq.toFixed(1) + '°F';
   if (hudCache.temp !== ts) {
@@ -3362,21 +3516,19 @@ function updateHUD(dt) {
   setClass('b', els.batt, 'low', pct <= 20);
   const label = P.target ? (isMobile() ? P.target.label : '[E] ' + P.target.label) : '';
   if (hudCache.prompt !== label) { hudCache.prompt = label; els.prompt.textContent = label; els.prompt.hidden = !label; }
-  setText('stance', els.stance, [P.hidden ? 'Hidden' : P.crouch ? 'Crouched' : '', P.holding ? 'Holding breath' : ''].filter(Boolean).join(' · '));
+  setText('stance', els.stance, P.hidden ? 'Hidden' : P.crouch ? 'Crouched' : '');
   if (isMobile()) {
     setClass('tbr', TB.run, 'on', touch.run);
     setClass('tbr', TB.run, 'off', P.exhausted || tq >= CFG.TEMP_MAX - 1e-6);
-    setClass('tbb', TB.breath, 'on', P.holding);
     setClass('tbc', TB.crouch, 'on', P.crouch);
     setClass('tbl', TB.light, 'on', P.flashOn);
     setClass('tbu', TB.use, 'ready', !!P.target);
-    setText('tbut', TB.use, !P.target ? 'Use' : P.target.kind === 'leave' ? 'Leave' : P.target.kind === 'spot' ? 'Hide' : P.target.kind === 'fridge' ? (P.target.f.open ? 'Close' : 'Open') : P.target.kind === 'cabinet' ? 'Search' : 'Take');
+    setText('tbut', TB.use, !P.target ? 'Use' : P.target.kind === 'leave' ? 'Leave' : P.target.kind === 'spot' ? 'Hide' : P.target.kind === 'fridge' ? (P.target.f.open ? 'Close' : 'Open') : P.target.kind === 'cabinet' || P.target.kind === 'fsearch' ? 'Search' : 'Take');
   }
   const lf = P.linger / CFG.LINGER_TIME;
   const scent = lf >= 1 ? 'It smells you. Move.' : lf > 0.55 ? 'Your scent is building up' : '';
-  setText('scent', els.scent, scent); els.scent.hidden = !scent; setClass('sc', els.scent, 'hot', lf >= 1);
+  setText('scent', els.scent, scent); els.scent.hidden = !scent || settings.flavor === 'off'; setClass('sc', els.scent, 'hot', lf >= 1);
   if (toastTimer > 0) { toastTimer -= dt; if (toastTimer <= 0) els.toast.style.opacity = 0; }
-  if (noteTimer > 0) { noteTimer -= dt; if (noteTimer <= 0) els.note.classList.add('gone'); }
 }
 
 function updateJumpscare(dt) {
@@ -3408,7 +3560,7 @@ function updateMenu(dt) {
   menu.cam.lookAt(wide ? -0.45 : 0.2, 1.95, -0.6);
   mouthParts(R);
   const D = menu.dusty;
-  animateCharacter(D, dt, { phase: 0, speed: 0, run: false, crouch: false, aimPitch: 0.15, flash: true, holding: false, exhausted: false, searching: false, breathPh: t * 1.7, breathB: 0.3, turnRate: 0, t });
+  animateCharacter(D, dt, { phase: 0, speed: 0, run: false, crouch: false, aimPitch: 0.15, flash: true, exhausted: false, searching: false, breathPh: t * 1.7, breathB: 0.3, turnRate: 0, t });
   D.root.updateMatrixWorld(true); D.tip.getWorldPosition(menu.torch.position);
   R.headPivot.getWorldPosition(menu.torch.target.position);
   menu.torch.intensity = 2.2 * fl;
@@ -3424,7 +3576,8 @@ function frame(now) {
   if (state === 'playing') {
     gameTime += dt;
     updatePlayer(dt);
-    if (!DBG.freeze) updateGoose(dt); else animateGoose(W.goose, dt, false);
+    if (!DBG.freeze) { updateGoose(dt); if (state === 'playing') updateSurveillance(dt); }
+    else { animateGoose(W.goose, dt, false); for (const S of W.sgeese) animateGoose(S, dt, false, S.rig); }
     if (state === 'playing') { updateFx(dt); updateHUD(dt); }
   } else if (state === 'caught') updateJumpscare(dt);
   else if (state === 'collapse') updateCollapse(dt);
@@ -3446,8 +3599,8 @@ addEventListener('resize', () => {
 window.__gooseflesh = {
   get state() { return state; }, get W() { return W; }, player, AU, DBG, settings, touch, applySettings, AMB, AC, FX, FL, keys, heatEffects, updateAmbient,
   camera, GOOSE_RIG, DUSTY, CAM, INV, useItem, giveItem, finishSearch, TAPEUI, CFG,
-  start: beginNewRun, caught: () => caught(), win: () => { player.pieces = CFG.PIECES; win(); },
-  goose: () => W && W.goose, step: (n = 60, dt = 1 / 60) => { for (let i = 0; i < n; i++) { if (state !== 'playing') break; gameTime += dt; updatePlayer(dt); if (!DBG.freeze) updateGoose(dt); if (state === 'playing') { updateFx(dt); updateHUD(dt); } } },
+  start: beginNewRun, caught: () => caught(), win: () => { player.tapes = CFG.TAPES; win(); },
+  goose: () => W && W.goose, step: (n = 60, dt = 1 / 60) => { for (let i = 0; i < n; i++) { if (state !== 'playing') break; gameTime += dt; updatePlayer(dt); if (!DBG.freeze) { updateGoose(dt); if (state === 'playing') updateSurveillance(dt); } if (state === 'playing') { updateFx(dt); updateHUD(dt); } } },
 };
 })();
 </script>
