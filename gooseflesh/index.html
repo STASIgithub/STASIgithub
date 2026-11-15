@@ -5,6 +5,15 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Gooseflesh</title>
 <meta name="claude:viewport-fit-sides" content="cover">
+<link rel="icon" href="icons/favicon.ico" sizes="any">
+<link rel="icon" type="image/png" sizes="32x32" href="icons/icon-32.png">
+<link rel="apple-touch-icon" href="icons/icon-180.png">
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#050506">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Gooseflesh">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;700&family=IM+Fell+English+SC&family=Special+Elite&display=swap">
@@ -74,6 +83,7 @@ body.lit #grain{opacity:.04}
 #bfill{display:block;height:100%;width:100%;background:currentColor;transform-origin:left}
 #bpct{font-size:24px;letter-spacing:.03em;font-variant-numeric:tabular-nums;min-width:4.2ch}
 #hud-batt.on #bpct{color:var(--ember);text-shadow:0 0 14px rgba(227,166,78,.45)}
+#hud-batt.over .bicon{color:#ffd23a;box-shadow:0 0 10px rgba(255,210,58,.35)}
 #hud-batt.low{color:var(--blood)}
 #hud-batt.low #bpct{color:var(--blood);text-shadow:none}
 #hud-stam{position:absolute;bottom:calc(30px + env(safe-area-inset-bottom,0px));left:50%;transform:translateX(-50%);width:min(44vw,340px);opacity:0;transition:opacity .35s ease-in}
@@ -618,8 +628,9 @@ const CFG = {
   PROPEL_TIME: 10, PROPEL_SPEED: 1.11, UNDIES_TIME: 30, GLASSES_TIME: 15, EAT_MIN: 5, EAT_MAX: 10,
   VOICE_FLICKER: 5,   // the flashlight sputters this long after you blind The Voice
   // perks
-  LIGHTBRINGER: 1.7, LIGHTBRINGER_SG: 20, ENDURANCE_WALK: 1.3, ENDURANCE_REGEN: 1.12, HYPO_COOL: 1.1, ASE_TIME: 10,
-  EVADE_SPEED_T: 3, EVADE_HIDE_T: 8, EVADE_LOCK: 4, SCAVENGER_PICKUP: 40, HEAD_REVEAL: 6, HEAD_STAMINA: 8,
+  LIGHTBRINGER_START: 1.5, LIGHTBRINGER_SG: 45, ENDURANCE_WALK: 1.35, ENDURANCE_EFF: 0.035, ENDURANCE_EFF_MAX: 0.18,
+  HYPO_COOL: 1.12, ASE_TIME: 13.5, EVADE_SPEED_T: 3, EVADE_HIDE_T: 8, EVADE_LOCK: 4, SCAVENGER_AT: 0.5, SCAVENGER_GAIN: 0.6,
+  HEAD_REVEAL: 10, HEAD_SPEED: 1.07, CRESCENDO: 0.03, CRIT_TEMP: 102, CRIT_COOL: 2,
 };
 
 // difficulty grows with the number of players in a room (1 = single player, the base values)
@@ -715,19 +726,23 @@ const ICON = {
   evasive: '<path d="M2.5 18.5l5-5.2 4 4 8-9.6"/><path d="M14.4 7.5h5.4v5.4"/><path d="M3 9.5h4M4.5 6h3.5"/>',
   scavenger: '<rect x="2.5" y="4" width="11" height="6.5" rx="1"/><path d="M13.5 6.2h1.6v2.1h-1.6M5.5 7.2h4"/><circle cx="15.5" cy="15.5" r="3.6"/><path d="M18.1 18.1L21.5 21.5"/>',
   headstart: '<path d="M3 5.5l7.5 6.5L3 18.5z"/><path d="M11.5 5.5l7.5 6.5-7.5 6.5z"/><path d="M21.5 4.5v15"/>',
+  crescendo: '<path d="M21 3.5L3.5 7.5 21 11.5"/><path d="M5 20.5v-3M10 20.5v-5M15 20.5v-7M20 20.5v-9"/>',
+  critical: '<path d="M7 4.5a2 2 0 0 1 4 0v9.3a4 4 0 1 1-4 0z"/><path d="M9 15V8.5"/><circle cx="9" cy="16.9" r="1.6" fill="currentColor"/><path d="M17.5 4v8.5M17.5 16v.6"/>',
   muffin: '<path d="M6 13h12l-1.6 7.5H7.6z"/><path d="M4.8 13c0-4.2 3.2-7.4 7.2-7.4s7.2 3.2 7.2 7.4"/><path d="M9 15.5l.5 3M12 15.5v3M15 15.5l-.5 3"/><circle cx="9.4" cy="10.2" r="1" fill="currentColor"/><circle cx="13.2" cy="8.8" r="1" fill="currentColor"/><circle cx="15.2" cy="11.4" r="1" fill="currentColor"/>',
   ice: '<path d="M10 2.5h4v3.2h-4z"/><path d="M9.2 5.7h5.6c3 2 4.2 5.2 4.2 8.3 0 4.2-3.1 7.5-7 7.5S5 18.2 5 14c0-3.1 1.2-6.3 4.2-8.3z"/><path d="M9.4 12.6L12 11l2.6 1.6v3.2L12 17.4l-2.6-1.6zM9.4 12.6L12 14.2l2.6-1.6M12 14.2v3.2"/>',
   propel: '<path d="M10 2h4v3h-4z"/><path d="M9.5 5h5l1.2 3.2v11.6a2.2 2.2 0 0 1-2.2 2.2h-3a2.2 2.2 0 0 1-2.2-2.2V8.2z"/><path d="M13 9.6l-2.4 4.2h3l-2.4 4.2"/>',
 };
 const icon = id => `<svg class="ico" viewBox="0 0 24 24" aria-hidden="true">${ICON[id]}</svg>`;
 const PERKS = {
-  lightbringer: { name: 'LightBringer', desc: 'Your flashlight is far brighter. A blinded surveillance goose stays down 20 seconds longer.' },
-  endurance: { name: 'Endurance', desc: "Once you're completely out of stamina, you walk 30% faster and recover stamina 12% faster until you're rested." },
-  hypothermia: { name: 'Hypothermia', desc: 'The first refrigerator you open always has an ice pack. Refrigerators cool you 10% faster.' },
-  ase: { name: 'All Seeing Eye', desc: 'For 10 seconds after you pick up a tape, see The Voice, every surveillance goose and the nearest refrigerator through walls.' },
+  lightbringer: { name: 'LightBringer', desc: 'Your flashlight starts at 150% battery. A surveillance goose you blind stays down 45 seconds longer.' },
+  endurance: { name: 'Endurance', desc: "Every time you run out of stamina, you walk 35% faster until it's full again, and your stamina lasts 3.5% longer for the rest of the run (up to 18%)." },
+  hypothermia: { name: 'Hypothermia', desc: 'The first refrigerator you open always has an ice pack. Refrigerators cool you 12% faster.' },
+  ase: { name: 'All Seeing Eye', desc: 'For 13.5 seconds after you pick up a tape, see The Voice, every surveillance goose and the nearest refrigerator through walls.' },
   evasive: { name: 'Evasive Maneuvers', desc: "The first time The Voice chases you, you move twice as fast for 3 seconds and it can't detect you for 8. Then your stamina's empty for 4 seconds." },
-  scavenger: { name: 'Scavenger', desc: "When your flashlight dies, see the nearest battery through walls. That battery gives 40 seconds. Works once per run." },
-  headstart: { name: 'Headstart', desc: "The nearest tape is revealed for 6 seconds when you start. Every tape you pick up gives 8 seconds of endless stamina." },
+  scavenger: { name: 'Scavenger', desc: "When your flashlight is at 50% or lower, see the nearest battery through walls. That battery adds 60%, even past 100%. Works once per run." },
+  headstart: { name: 'Headstart', desc: "For the first 10 seconds, see the nearest tape, refrigerator and cabinet through walls, move 7% faster and use no stamina." },
+  crescendo: { name: 'Crescendo', desc: "Every tape your team finds: 3% more speed, stamina recovery and stamina efficiency, refrigerators cool you 3% faster, you blind geese 3% faster and heat up 3% slower." },
+  critical: { name: 'Critical Condition', desc: "At 102°F or hotter, refrigerators cool you twice as fast, and while you're cooling down you see The Voice through walls." },
 };
 const LOADOUT_ITEMS = {
   muffin: { name: 'Blueberry Muffin', desc: 'Throw it and The Voice goes straight for it.' },
@@ -1632,7 +1647,7 @@ function addXray(root, mat, list) {
 const OL_MASK = new THREE.MeshBasicMaterial({ colorWrite: false, depthTest: false, depthWrite: false, transparent: true,
   stencilWrite: true, stencilRef: 1, stencilFunc: THREE.AlwaysStencilFunc, stencilFail: THREE.ReplaceStencilOp, stencilZFail: THREE.ReplaceStencilOp, stencilZPass: THREE.ReplaceStencilOp });
 const OL_HULL = new THREE.ShaderMaterial({
-  uniforms: { color: { value: new THREE.Color(0xffd23a) }, width: { value: 0.006 } },
+  uniforms: { color: { value: new THREE.Color(0xffd23a) }, width: { value: 0.006 }, alpha: { value: 1 } },
   vertexShader: `uniform float width;
 void main() {
   vec3 p = position; vec3 n = normal;
@@ -1643,11 +1658,11 @@ void main() {
   mv.xyz += normalize(normalMatrix * n) * width * max(0.6, -mv.z);
   gl_Position = projectionMatrix * mv;
 }`,
-  fragmentShader: 'uniform vec3 color; void main() { gl_FragColor = vec4(color, 0.95); }',
+  fragmentShader: 'uniform vec3 color; uniform float alpha; void main() { gl_FragColor = vec4(color, 0.95 * alpha); }',
   transparent: true, depthTest: false, depthWrite: false,
   stencilWrite: true, stencilRef: 1, stencilFunc: THREE.NotEqualStencilFunc, stencilFail: THREE.KeepStencilOp, stencilZFail: THREE.KeepStencilOp, stencilZPass: THREE.KeepStencilOp,
 });
-function olCopy(o, list, hull = OL_HULL) {
+function olCopy(o, list, hull) {
   for (const [mat, order] of [[OL_MASK, 40], [hull, 41]]) {
     let x;
     if (o.isInstancedMesh) { x = new THREE.InstancedMesh(o.geometry, mat, o.count); x.instanceMatrix = o.instanceMatrix; }
@@ -1655,18 +1670,31 @@ function olCopy(o, list, hull = OL_HULL) {
     x.userData.xr = true; x.renderOrder = order; x.visible = false; o.add(x); list.push(x);
   }
 }
-function addOutline(root, list, hull) { const found = []; root.traverse(o => { if (o.isMesh && !o.userData.xr) found.push(o); }); for (const o of found) olCopy(o, list, hull); return list; }
+// every outline list owns its hull material, so it can fade in and out by itself
+function olList(list, hull) { if (!list.hull) Object.assign(list, { hull: hull || OL_HULL.clone(), a: 0, want: false, vis: false }); return list.hull; }
+function addOutline(root, list, hull) { const h = olList(list, hull), found = []; root.traverse(o => { if (o.isMesh && !o.userData.xr) found.push(o); }); for (const o of found) olCopy(o, list, h); return list; }
 function hullMaterial(color) { const m = OL_HULL.clone(); m.uniforms.color.value = new THREE.Color(color); return m; }
 // a box with corner-pointing normals: inflates evenly, so a box outline has no gaps at the corners
 function outlineBox(parent, sx, sy, sz, y) {
   const g = geo('olbox', () => { const b = new THREE.BoxGeometry(1, 1, 1), ps = b.attributes.position, ns = b.attributes.normal, v = new V3(); for (let i = 0; i < ps.count; i++) { v.set(ps.getX(i), ps.getY(i), ps.getZ(i)).normalize(); ns.setXYZ(i, v.x, v.y, v.z); } return b; });
   const holder = new THREE.Mesh(g, OL_MASK); holder.visible = false; holder.userData.xr = true;
   const box = new THREE.Object3D(); box.position.y = y; box.scale.set(sx, sy, sz); parent.add(box);
-  const list = []; olCopy(holder, list); for (const m of list) { holder.remove(m); box.add(m); }
+  const list = []; olCopy(holder, list, olList(list)); for (const m of list) { holder.remove(m); box.add(m); }
   list.box = box; list.base = [sx, sy, sz];
   return list;
 }
-function setOutline(list, on) { if (!list || list.on === on) return; list.on = on; for (const m of list) m.visible = on; }
+// outlines fade in quickly and fade out slowly instead of popping
+const OL_FADING = new Set(), OL_IN = 0.25, OL_OUT = 0.7;
+function setOutline(list, on) { if (!list || list.want === on) return; list.want = on; OL_FADING.add(list); }
+function hideOutline(list) { if (!list) return; list.want = false; list.a = 0; list.vis = false; for (const m of list) m.visible = false; OL_FADING.delete(list); }
+function updateOutlineFades(dt) {
+  for (const L of OL_FADING) {
+    L.a = L.want ? Math.min(1, L.a + dt / OL_IN) : Math.max(0, L.a - dt / OL_OUT);
+    L.hull.uniforms.alpha.value = L.a * L.a * (3 - 2 * L.a);
+    const vis = L.a > 0; if (L.vis !== vis) { L.vis = vis; for (const m of L) m.visible = vis; }
+    if (L.a === (L.want ? 1 : 0)) OL_FADING.delete(L);
+  }
+}
 function makeSprite(x, y, z, color, scale, opacity, fog = true) {
   const m = new THREE.SpriteMaterial({ map: TEX.glow, color, transparent: true, opacity, depthWrite: false, blending: THREE.AdditiveBlending, fog });
   m.userData.own = true;
@@ -1722,7 +1750,8 @@ function makeCabinet(i, k) {
   }
   W.group.add(grp);
   addObstacle(p.x, p.z, p.dx, Wd, D, Hh);
-  W.cabinets.push({ x: p.x, z: p.z, fx: p.x - p.dx * (D / 2 + 0.6), fz: p.z - p.dz * (D / 2 + 0.6), doors, open: 0, searched: false });
+  const ol = outlineBox(grp, Wd, Hh, D, Hh / 2);
+  W.cabinets.push({ x: p.x, z: p.z, fx: p.x - p.dx * (D / 2 + 0.6), fz: p.z - p.dz * (D / 2 + 0.6), doors, open: 0, searched: false, ol });
 }
 // a battery: barely glowing from afar; up close it lights up, lifts and turns, like the tapes
 function makeBattery(x, z) {
@@ -2348,7 +2377,8 @@ function resetPlayer() {
     battery: CFG.BATTERY_MAX, flashOn: false, flick: 1, flickT: 0, expo: 1, tapes: 0, lightDead: false, flickerT: 0, blinkT: 0,
     ax: center(1), az: center(1), linger: 0, stepAcc: 0, bob: 0, target: null, hbT: 0, fov: 72, stamGhost: 1, ghostHold: 0,
     // perks chosen in the loadout, and their timers
-    perks: new Set(loadout.perks), infStamT: 0, aseT: 0, aseFridge: null, headT: 0, headTape: null, scavUsed: false, scavBat: null,
+    perks: new Set(loadout.perks), aseT: 0, aseFridge: null, headT: 0, headTape: null, headFridge: null, headCab: null,
+    scavUsed: false, scavBat: null, scavClaim: null, scavNoted: false, endEff: 0, critOn: false,
     evadeUsed: false, evadeSpeedT: 0, evadeHideT: 0, evadePending: false, stamLockT: 0, firstFridge: false,
   });
   // face down an open corridor
@@ -2358,6 +2388,11 @@ function resetPlayer() {
   CAM.cur = CAM.dist; CAM.sideCur = CAM.side;
 }
 const hasPerk = id => !!(player.perks && player.perks.has(id));
+// Crescendo: 3% per tape the team has found
+const cresc = () => hasPerk('crescendo') ? CFG.CRESCENDO * player.tapes : 0;
+// Critical Condition: at 102 or hotter
+const critical = () => hasPerk('critical') && tempQ() >= CFG.CRIT_TEMP - 1e-6;
+const batFrac = P => Math.min(1, P.battery / CFG.BATTERY_MAX);   // past 100% (LightBringer, Scavenger) the beam is just full
 // The Voice can't sense you: Adam's Underwear, or Evasive Maneuvers
 const unseen = () => player.undiesT > 0 || player.evadeHideT > 0;
 function resetGoose() {
@@ -2380,10 +2415,19 @@ function newGame(seed) {
   for (const f of W.fridges) f.hum = AU.makeHum(f.x, f.z);
   scene.add(W.group);
   resetMap();
+  for (const L of [...OL_FADING]) hideOutline(L);
+  hideOutline(GOOSE_OL); for (const R of SG_RIGS) hideOutline(R.ol);
   resetPlayer(); resetGoose(); spawnSurveillance();
-  if (hasPerk('headstart')) {   // the nearest tape (by walking distance) is outlined for the first seconds
-    const d = bfs(1, 1); let bd = 1e9;
-    for (const p of W.pickups) { if (p.type !== 'tape') continue; const v = d[tileOf(p.z) * W.N + tileOf(p.x)]; if (v >= 0 && v < bd) { bd = v; player.headTape = p; } }
+  if (hasPerk('lightbringer')) player.battery = CFG.BATTERY_MAX * CFG.LIGHTBRINGER_START;
+  if (hasPerk('headstart')) {   // the nearest tape, refrigerator and cabinet (by walking distance) are outlined for the first seconds
+    const d = bfs(1, 1), near = (list, fx, fz) => {
+      let best = null, bd = 1e9;
+      for (const o of list) { const v = d[tileOf(fz(o)) * W.N + tileOf(fx(o))]; if (v >= 0 && v < bd) { bd = v; best = o; } }
+      return best;
+    };
+    player.headTape = near(W.pickups.filter(p => p.type === 'tape'), p => p.x, p => p.z);
+    player.headFridge = near(W.fridges, f => f.fx, f => f.fz);
+    player.headCab = near(W.cabinets, c => c.fx, c => c.fz);
     player.headT = CFG.HEAD_REVEAL;
   }
   gameTime = 0; shakeAmt = 0;
@@ -2443,7 +2487,7 @@ function beginNewRun() {
   startPlaying();
   touch.run = false;
   if (isMobile()) tryFullscreen(); else requestLock();
-  toast('Find the 5 tapes.' + (hasPerk('headstart') ? ' Headstart: the nearest tape is outlined.' : '') + (isMobile() && innerHeight > innerWidth ? ' Turn your phone sideways for a wider view.' : ''), false, 5);
+  toast('Find the 5 tapes.' + (hasPerk('headstart') ? ' Headstart: the nearest tape, refrigerator and cabinet are outlined.' : '') + (isMobile() && innerHeight > innerWidth ? ' Turn your phone sideways for a wider view.' : ''), false, 5);
   if (Math.random() < 0.001) playWhenReady('jafggm', { gain: 1.1 }, 1.2);   // 1 in 1000
   setTimeout(() => { if (state === 'playing' && W.goose) AU.honk(W.goose.x, W.goose.z, { pitch: 0.95, loud: 1.4 }); }, 3500);
 }
@@ -2708,7 +2752,6 @@ function flashDied(wasOn = true) {
   const P = player;
   P.battery = 0; P.flashOn = false; P.lightDead = true;
   if (wasOn) { AU.click(); toast('The flashlight died.', true, 3.2, true); }
-  if (hasPerk('scavenger') && !P.scavUsed) toast('Scavenger: the nearest battery is outlined.', false, 3.5);
 }
 function toggleCrouch() {
   if (player.hidden) return;
@@ -2723,6 +2766,7 @@ function interact() {
   if (tgt.kind === 'pickup') {
     const p = tgt.p;
     if (p.type === 'battery' && p !== P.scavBat && P.battery >= CFG.BATTERY_MAX - 0.05) { toast("Your flashlight's already full."); return; }
+    if (p === P.scavBat) P.scavClaim = p;   // in a room the host answers later: remember it was the Scavenger battery
     if (MP.inGame && !MP.host) {   // the host decides who got it first
       if (gameTime - (p.claimT || -9) > 1) { p.claimT = gameTime; netClient({ t: 'take', i: W.pickups.indexOf(p) }); }
       return;
@@ -2740,17 +2784,17 @@ function hidePickup(p) { p.taken = true; p.mesh.visible = false; p.glow.visible 
 function gainPickup(p, n) {
   const P = player;
   if (p.type === 'battery') {
-    const scav = p === P.scavBat;   // Scavenger's outlined battery
-    P.battery = Math.min(CFG.BATTERY_MAX, P.battery + (scav ? CFG.SCAVENGER_PICKUP : CFG.BATTERY_PICKUP)); P.lightDead = false;
-    if (scav) { P.scavUsed = true; P.scavBat = null; }
-    AU.battery(); toast(scav ? `Scavenger: +${CFG.SCAVENGER_PICKUP} seconds of flashlight.` : `+${CFG.BATTERY_PICKUP} seconds of flashlight.`);
+    const scav = hasPerk('scavenger') && !P.scavUsed && (p === P.scavBat || p === P.scavClaim);   // Scavenger's outlined battery
+    if (scav) { P.battery += CFG.SCAVENGER_GAIN * CFG.BATTERY_MAX; P.scavUsed = true; P.scavBat = P.scavClaim = null; }   // no cap
+    else P.battery = Math.max(P.battery, Math.min(CFG.BATTERY_MAX, P.battery + CFG.BATTERY_PICKUP));
+    P.lightDead = false;
+    AU.battery(); toast(scav ? `Scavenger: +60% flashlight. You're at ${Math.round(P.battery / CFG.BATTERY_MAX * 100)}%.` : `+${CFG.BATTERY_PICKUP} seconds of flashlight.`);
     return;
   }
   // tapes always play in order: the first one found plays recording 1, the second recording 2, and so on
   P.tapes = n; AU.click();
   els.tapes.classList.remove('got'); void els.tapes.offsetWidth; els.tapes.classList.add('got');
   playTape(n);
-  if (hasPerk('headstart')) P.infStamT = CFG.HEAD_STAMINA;
   if (hasPerk('ase')) {   // All Seeing Eye: The Voice, the surveillance geese and the nearest fridge, through walls
     P.aseT = CFG.ASE_TIME; let bd = 1e9;
     for (const f of W.fridges) { const d = Math.hypot(f.x - P.x, f.z - P.z); if (d < bd) { bd = d; P.aseFridge = f; } }
@@ -2921,16 +2965,20 @@ function updateItems(dt) {
 // perk timers, and what each perk is pointing at right now
 function updatePerks(dt) {
   const P = player;
-  for (const k of ['infStamT', 'aseT', 'headT', 'evadeSpeedT', 'evadeHideT', 'flickerT', 'blinkT']) if (P[k] > 0) P[k] = Math.max(0, P[k] - dt);
+  for (const k of ['aseT', 'headT', 'evadeSpeedT', 'evadeHideT', 'flickerT', 'blinkT']) if (P[k] > 0) P[k] = Math.max(0, P[k] - dt);
   if (P.evadePending && P.evadeSpeedT <= 0 && P.evadeHideT <= 0) {   // Evasive Maneuvers is over: stamina empties and stays empty
     P.evadePending = false; P.stamina = 0; P.exhausted = true; P.stamLockT = CFG.EVADE_LOCK; P.sprinting = false; touch.run = false;
     toast("Evasive Maneuvers wore off. You're out of breath.", true, 2.6);
   }
   P.scavBat = null;
-  if (hasPerk('scavenger') && !P.scavUsed && P.lightDead) {
+  if (hasPerk('scavenger') && !P.scavUsed && P.alive !== false && P.battery <= CFG.BATTERY_MAX * CFG.SCAVENGER_AT + 1e-6) {
     let bd = 1e9;
     for (const p of W.pickups) { if (p.type !== 'battery' || p.taken) continue; const d = Math.hypot(p.x - P.x, p.z - P.z); if (d < bd) { bd = d; P.scavBat = p; } }
+    if (P.scavBat && !P.scavNoted) { P.scavNoted = true; toast('Scavenger: the nearest battery is outlined.', false, 3.5); }
   }
+  const crit = critical() && P.alive !== false;
+  if (crit && !P.critOn) toast("Critical Condition: refrigerators cool you twice as fast. Cooling down shows The Voice.", false, 3.5);
+  P.critOn = crit;
 }
 function startEvasive() {
   const P = player; P.evadeUsed = true; P.evadePending = true;
@@ -3015,6 +3063,8 @@ function updatePlayer(dt) {
     if (P.propelT > 0) mult *= CFG.PROPEL_SPEED;
     if (P.evadeSpeedT > 0) mult *= 2;
     if (P.exhausted && !P.sprinting && !P.crouch && hasPerk('endurance')) mult *= CFG.ENDURANCE_WALK;
+    if (P.headT > 0) mult *= CFG.HEAD_SPEED;
+    mult *= 1 + cresc();
     const speed = (P.sprinting ? CFG.SPRINT : (P.crouch ? CFG.CROUCH : CFG.WALK)) * analog * mult;
     const fx = -Math.sin(P.yaw), fz = -Math.cos(P.yaw), rx = Math.cos(P.yaw), rz = -Math.sin(P.yaw);
     const tvx = (fx * iz + rx * ix) * speed, tvz = (fz * iz + rz * ix) * speed;
@@ -3042,7 +3092,7 @@ function updatePlayer(dt) {
     P.battery -= dt;
     if (P.battery <= 0) flashDied();
   } else if (P.battery < CFG.BATTERY_MAX) P.battery = Math.min(CFG.BATTERY_MAX, P.battery + CFG.BATTERY_REGEN * dt);
-  const frac = P.battery / CFG.BATTERY_MAX;
+  const frac = batFrac(P);
   P.flickT -= dt;
   if (P.flickT <= 0) {   // a weak battery sputters; so does the light for 5 s after you blind The Voice
     P.flickT = rr(0.04, 0.16);
@@ -3052,7 +3102,7 @@ function updatePlayer(dt) {
   // eye adaptation: when the beam lands on something close, it is turned down so near surfaces don't burn out to white
   if (P.flashOn) { const k = clamp(Math.pow(beamHitDist() / 4.2, 0.9), 0.4, 1); P.expo += (k - P.expo) * (1 - Math.exp(-dt * 8)); } else P.expo = 1;
   const dip = P.blinkT > 0 ? 0.04 : 1;   // one quick flicker: a surveillance goose just went down
-  flash.intensity = P.flashOn ? 5.4 * (hasPerk('lightbringer') ? CFG.LIGHTBRINGER : 1) * (0.12 + 0.88 * frac) * P.flick * dip * P.expo : 0;
+  flash.intensity = P.flashOn ? 5.4 * (0.12 + 0.88 * frac) * P.flick * dip * P.expo : 0;
   flash.distance = 20 + 26 * frac; flash.angle = 0.38 + 0.1 * frac;
   renderer.shadowMap.autoUpdate = P.flashOn && flash.castShadow;
   // linger / scent
@@ -3206,7 +3256,7 @@ function heatEffects() {
 const tempQ = () => Math.round(player.temp * 10) / 10;
 function updateStamina(dt, HE) {
   const P = player, MAX = CFG.STAMINA_MAX;
-  if (P.propelT > 0 || P.infStamT > 0) {   // Blueberry Propel or Headstart: endless stamina
+  if (P.propelT > 0 || P.headT > 0) {   // Blueberry Propel or Headstart: endless stamina
     if (P.stamLockT > 0) P.stamLockT = Math.max(0, P.stamLockT - dt);
     if (P.stamina < MAX) P.stamShowT = 3; else if (P.stamShowT > 0) P.stamShowT -= dt;
     P.stamina = MAX; P.exhausted = false; P.consuming = false; P.sinceUse = 99; return;
@@ -3219,17 +3269,23 @@ function updateStamina(dt, HE) {
   const running = P.sprinting && P.speedNow > 0.5;
   let drain = 0;
   if (running) drain += CFG.RUN_DRAIN;
-  drain *= HE.drain;   // a fever makes running cost more
+  drain *= HE.drain / (1 + P.endEff + cresc());   // a fever makes running cost more; Endurance and Crescendo make it cost less
   P.consuming = drain > 0;
   if (P.consuming) {
     P.stamina = Math.max(0, P.stamina - drain * dt); P.sinceUse = 0; P.stamShowT = 0;
     if (P.stamina <= 0) {
-      if (!P.exhausted) { P.exhausted = true; P.sprinting = false; touch.run = false; toast('Out of breath.', true, 2.2, true); }
+      if (!P.exhausted) {
+        P.exhausted = true; P.sprinting = false; touch.run = false;
+        if (hasPerk('endurance')) {
+          P.endEff = Math.min(CFG.ENDURANCE_EFF_MAX, P.endEff + CFG.ENDURANCE_EFF);
+          toast(`Endurance: you walk 35% faster until you're rested. Stamina now lasts ${+(P.endEff * 100).toFixed(1)}% longer.`, false, 3);
+        } else toast('Out of breath.', true, 2.2, true);
+      }
     }
   } else {
     P.sinceUse += dt;
     if (P.sinceUse >= CFG.STAMINA_DELAY + HE.delay && P.stamina < MAX) {
-      P.stamina = Math.min(MAX, P.stamina + CFG.STAMINA_REGEN * (P.crouch ? CFG.CROUCH_REGEN : 1) * (P.exhausted && hasPerk('endurance') ? CFG.ENDURANCE_REGEN : 1) * dt);
+      P.stamina = Math.min(MAX, P.stamina + CFG.STAMINA_REGEN * (P.crouch ? CFG.CROUCH_REGEN : 1) * (1 + cresc()) * dt);
       if (P.stamina >= MAX) P.stamShowT = 3;   // fully recovered: keep the bar up 3 more seconds
     } else if (P.stamShowT > 0) P.stamShowT -= dt;
     if (P.exhausted && P.stamina >= MAX) P.exhausted = false;
@@ -3265,7 +3321,7 @@ function updateTemperature(dt) {
   if (P.tempPauseT > 0) P.tempPauseT -= dt;
   else if (!P.cooling) {
     const runningHot = P.sprinting && P.speedNow > 2;
-    P.tempRiseT -= dt * (P.hidden || runningHot ? 1.5 : 1);   // hiding spots and running heat you up 50% faster
+    P.tempRiseT -= dt * (P.hidden || runningHot ? 1.5 : 1) * (1 - cresc());   // hiding spots and running heat you up 50% faster
     if (P.tempRiseT <= 0) { P.tempRiseT = rr(3, 5); P.temp = Math.min(CFG.TEMP_MAX, Math.round((P.temp + 0.1) * 10) / 10); }
   }
   const tq = tempQ();
@@ -3339,7 +3395,8 @@ function updateFridges(dt) {
   P.cooling = false;
   if (best && P.temp > CFG.TEMP_FLOOR + 1e-6) {
     P.cooling = true;
-    P.temp = Math.max(CFG.TEMP_FLOOR, P.temp - CFG.COOL_RATE * (hasPerk('hypothermia') ? CFG.HYPO_COOL : 1) * dt);
+    const rate = CFG.COOL_RATE * (hasPerk('hypothermia') ? CFG.HYPO_COOL : 1) * (1 + cresc()) * (critical() ? CFG.CRIT_COOL : 1);
+    P.temp = Math.max(CFG.TEMP_FLOOR, P.temp - rate * dt);
     best.used += dt;   // cumulative cooling time: survives closing, reopening and walking away
     if (!auth) { const i = W.fridges.indexOf(best); MP.fuse[i] = (MP.fuse[i] || 0) + dt; }
     if (!best.warned && best.used >= CFG.FRIDGE_POWER * (1 - CFG.FRIDGE_LOW)) { best.warned = true; toast("This refrigerator's power is low. It can't cool you anymore.", false, 3); }
@@ -3424,7 +3481,7 @@ function beamSpot() {
 function gooseNoticesLight(G) {
   const P = TP, spot = P === player ? beamSpot() : P.beam; if (!spot) return false;
   const [sx, sy, sz] = spot, dx = sx - G.x, dz = sz - G.z, d = Math.hypot(dx, dz);
-  const frac = P === player ? P.battery / CFG.BATTERY_MAX : (P.bf || 0);
+  const frac = P === player ? batFrac(P) : (P.bf || 0);
   if (d > 28 * (0.4 + 0.6 * frac)) return false;
   if (d > 9) { const dot = (dx * Math.sin(G.yaw) + dz * Math.cos(G.yaw)) / d; if (dot < -0.25) return false; }
   return los3(G.x, CFG.GOOSE_EYE, G.z, sx, sy, sz);
@@ -3596,13 +3653,13 @@ function updateBlind(G, dt) {
   if (P.flashOn && P.alive !== false && G.state !== 'blind' && G.state !== 'bait' && G.blindImm <= 0) {
     GOOSE_RIG.headPivot.getWorldPosition(tmpH);
     const o = flash.position, vx = tmpH.x - o.x, vy = tmpH.y - o.y, vz = tmpH.z - o.z, d = Math.hypot(vx, vy, vz) || 1;
-    const reach = 4 + 8 * (P.battery / CFG.BATTERY_MAX);
+    const reach = 4 + 8 * batFrac(P);
     if (d < reach && (vx * FL.dir.x + vy * FL.dir.y + vz * FL.dir.z) / d > Math.cos(0.2)) {
       const hy = G.yaw + G.headYaw, facing = (-vx * Math.sin(hy) - vz * Math.cos(hy)) / (Math.hypot(vx, vz) || 1);
       if (facing > 0.35 && los3(o.x, o.y, o.z, tmpH.x, tmpH.y, tmpH.z)) on = true;   // light has to hit its eyes
     }
   }
-  G.blindCharge = on ? G.blindCharge + dt : Math.max(0, G.blindCharge - dt * 1.5);
+  G.blindCharge = on ? G.blindCharge + dt * (1 + cresc()) : Math.max(0, G.blindCharge - dt * 1.5);
   if (G.blindCharge >= CFG.BLIND_TIME) {
     if (MP.inGame && !MP.host) {
       G.blindCharge = 0; G.blindImm = CFG.BLIND_IMMUNE; P.flickerT = CFG.VOICE_FLICKER;
@@ -3922,7 +3979,7 @@ function disableSG(S, secs) {
 // your own flashlight in its eyes. In someone else's room you report it and the host switches it off.
 // Any part of a surveillance goose inside your flashlight's beam counts, from any side: head, body or feet.
 function sgInBeam(S) {
-  const o = flash.position, reach = 6 + 10 * (player.battery / CFG.BATTERY_MAX);
+  const o = flash.position, reach = 6 + 10 * batFrac(player);
   S.rig.headPivot.getWorldPosition(tmpH);
   for (const [x, y, z] of [[tmpH.x, tmpH.y, tmpH.z], [S.x, 0.42, S.z], [S.x, 0.15, S.z]]) {
     const vx = x - o.x, vy = y - o.y, vz = z - o.z, d = Math.hypot(vx, vy, vz) || 1;
@@ -3935,7 +3992,7 @@ function sgInBeam(S) {
 function updateSgBlind(S, dt) {
   const P = player;
   const on = P.flashOn && P.alive !== false && S.state !== 'disabled' && !(S.localOffT > gameTime) && sgInBeam(S);
-  S.blindCharge = on ? S.blindCharge + dt : 0;   // looking away starts the count over
+  S.blindCharge = on ? S.blindCharge + dt * (1 + cresc()) : 0;   // looking away starts the count over
   if (S.blindCharge >= CFG.SG_BLIND_TIME) {
     const secs = CFG.SG_DISABLED + (hasPerk('lightbringer') ? CFG.LIGHTBRINGER_SG : 0);
     P.blinkT = 0.14;   // the flashlight flickers once: it worked
@@ -4105,7 +4162,8 @@ function updateFx(dt) {
     p.glow.position.y = p.mesh.position.y + 0.04; p.glow.scale.setScalar(0.45 + 1.1 * h);
     p.glow.material.opacity = 0.12 + 0.7 * h * pulse;
   }
-  updateOutlines();
+  updateOutlines(dt);
+  updateOutlineFades(dt);
   updateSpeedLines(dt);
   updateAmbient(dt);
   updateScreenFx(dt);
@@ -4120,15 +4178,16 @@ function updateFx(dt) {
   if (chase) { P.hbT -= dt; if (P.hbT <= 0) { AU.heart(0.6); P.hbT = 0.36; } } else P.hbT = 0;
 }
 // perk outlines through walls: All Seeing Eye, Headstart, Scavenger
-function updateOutlines() {
-  const P = player, ase = P.aseT > 0;
-  setOutline(GOOSE_OL, ase);
+function updateOutlines(dt) {
+  const P = player, ase = P.aseT > 0, head = P.headT > 0;
+  setOutline(GOOSE_OL, ase || (P.cooling && P.critOn));   // Critical Condition: The Voice while you cool down
   for (const S of W.sgeese) setOutline(S.rig.ol, ase);
-  for (const f of W.fridges) setOutline(f.ol, ase && f === P.aseFridge);
+  for (const f of W.fridges) setOutline(f.ol, (ase && f === P.aseFridge) || (head && f === P.headFridge));
+  for (const c of W.cabinets) setOutline(c.ol, head && c === P.headCab);
   for (const p of W.pickups) {
-    const on = !p.taken && ((P.headT > 0 && p === P.headTape) || p === P.scavBat);
+    const on = !p.taken && ((head && p === P.headTape) || p === P.scavBat);
     setOutline(p.ol, on);
-    if (on) {   // tapes and batteries are tiny: grow the outline with distance so it stays readable from far away
+    if (p.ol.vis) {   // tapes and batteries are tiny: grow the outline with distance so it stays readable from far away
       const k = Math.max(1, Math.hypot(p.x - camera.position.x, p.z - camera.position.z) / 6), [a, b, c] = p.ol.base;
       p.ol.box.scale.set(a * k, b * k, c * k);
     }
@@ -4226,9 +4285,9 @@ function updateHUD(dt) {
     hudCache.inv = invKey;
     els.inv.innerHTML = Object.keys(ITEMS).filter(k => INV[k] > 0 || (k === 'ice' && P.iceLeft > 0)).map(k => `<button class="slot" type="button" data-item="${k}"><b>${ITEMS[k].name}</b><span class="n">x${INV[k]}</span><kbd>${ITEMS[k].key}</kbd></button>`).join('');
   }
-  const act = [['propelT', 'Propel', CFG.PROPEL_TIME], ['infStamT', 'Endless stamina', CFG.HEAD_STAMINA], ['evadeSpeedT', 'Evasive speed', CFG.EVADE_SPEED_T],
+  const act = [['propelT', 'Propel', CFG.PROPEL_TIME], ['headT', 'Headstart', CFG.HEAD_REVEAL], ['evadeSpeedT', 'Evasive speed', CFG.EVADE_SPEED_T],
     ['evadeHideT', 'Unseen by The Voice', CFG.EVADE_HIDE_T], ['stamLockT', 'Winded', CFG.EVADE_LOCK], ['undiesT', 'Undetectable', CFG.UNDIES_TIME],
-    ['glassesT', 'X-ray', CFG.GLASSES_TIME], ['aseT', 'All Seeing Eye', CFG.ASE_TIME], ['headT', 'Tape revealed', CFG.HEAD_REVEAL], ['iceLeft', 'Ice pack', CFG.ICE_TIME]].filter(([k]) => P[k] > 0);
+    ['glassesT', 'X-ray', CFG.GLASSES_TIME], ['aseT', 'All Seeing Eye', CFG.ASE_TIME], ['iceLeft', 'Ice pack', CFG.ICE_TIME]].filter(([k]) => P[k] > 0);
   const fxKey = act.map(([k]) => k + Math.ceil(P[k])).join('|') + (P.iceOn ? '' : 'p');
   if (hudCache.fx !== fxKey) {
     hudCache.fx = fxKey;
@@ -4251,8 +4310,8 @@ function updateHUD(dt) {
   if (sf >= P.stamGhost) { P.stamGhost = sf; P.ghostHold = 0.45; } else if (P.ghostHold > 0) P.ghostHold -= dt; else P.stamGhost = Math.max(sf, P.stamGhost - dt * 0.6);
   const sgs = P.stamGhost.toFixed(3); if (hudCache.sg !== sgs) { hudCache.sg = sgs; els.sghost.style.transform = `scaleX(${sgs})`; }
   setClass('st', els.stam, 'out', P.exhausted);
-  setClass('st', els.stam, 'inf', P.propelT > 0 || P.infStamT > 0);
-  setClass('st', els.stam, 'show', P.consuming || sf < 1 || P.stamShowT > 0 || P.propelT > 0 || P.infStamT > 0);
+  setClass('st', els.stam, 'inf', P.propelT > 0 || P.headT > 0);
+  setClass('st', els.stam, 'show', P.consuming || sf < 1 || P.stamShowT > 0 || P.propelT > 0 || P.headT > 0);
   // body temperature: light red from 99.8 F, deepening toward 104
   const tq = tempQ(), ts = tq.toFixed(1) + '°F';
   if (hudCache.temp !== ts) {
@@ -4265,7 +4324,7 @@ function updateHUD(dt) {
     }
   }
   const pct = Math.ceil(P.battery / CFG.BATTERY_MAX * 100 - 1e-6);
-  if (hudCache.pct !== pct) { hudCache.pct = pct; els.bpct.textContent = pct + '%'; els.bfill.style.transform = `scaleX(${pct / 100})`; }
+  if (hudCache.pct !== pct) { hudCache.pct = pct; els.bpct.textContent = pct + '%'; els.bfill.style.transform = `scaleX(${Math.min(1, pct / 100)})`; els.batt.classList.toggle('over', pct > 100); }
   setClass('b', els.batt, 'on', P.flashOn);
   setClass('b', els.batt, 'low', pct <= 20);
   const label = P.target ? (isMobile() ? P.target.label : '[E] ' + P.target.label) : '';
@@ -4673,7 +4732,7 @@ function addRemote(p) {
     linger: 0, undiesT: 0, evadeHideT: 0, exhausted: false, searching: false, bob: 0, C, light, tag, tagDist, hull, ol, tagKey: '' };
   MP.remotes.set(p.id, R); return R;
 }
-function removeRemote(R) { scene.remove(R.C.root); scene.remove(R.light); scene.remove(R.light.target); R.tag.remove(); R.hull.dispose(); MP.remotes.delete(R.id); }
+function removeRemote(R) { hideOutline(R.ol); scene.remove(R.C.root); scene.remove(R.light); scene.remove(R.light.target); R.tag.remove(); R.hull.dispose(); MP.remotes.delete(R.id); }
 function clearRemotes() { for (const R of [...MP.remotes.values()]) removeRemote(R); }
 function onPeerState(id, m) {
   if (!id || id === MP.id) return;
@@ -4752,7 +4811,7 @@ function netTick(dt) {
 function publishMyState() {
   const P = player, on = P.flashOn && P.alive && state !== 'spectate';
   const m = { x: r2(P.x), z: r2(P.z), e: r2(P.eye), y: r3(P.yaw), p: r3(P.pitch), f: r3(P.face), ap: r3(FL.pitch), v: r2(P.speedNow), c: P.crouch ? 1 : 0,
-    r: P.sprinting && P.speedNow > 2 ? 1 : 0, l: on ? 1 : 0, b: r3(P.battery / CFG.BATTERY_MAX), h: P.hidden ? W.spots.indexOf(P.hidden) : -1, a: P.alive ? 1 : 0,
+    r: P.sprinting && P.speedNow > 2 ? 1 : 0, l: on ? 1 : 0, b: r3(batFrac(P)), h: P.hidden ? W.spots.indexOf(P.hidden) : -1, a: P.alive ? 1 : 0,
     lg: r2(P.linger), u: P.undiesT > 0 ? 1 : 0, ev: P.evadeHideT > 0 ? 1 : 0, x2: P.exhausted ? 1 : 0, sr: P.searching ? 1 : 0 };
   if (on) { m.bo = [r2(flash.position.x), r2(flash.position.y), r2(flash.position.z)]; m.bd = [r3(FL.dir.x), r3(FL.dir.y), r3(FL.dir.z)]; m.bs = beamSpot().map(r2); }
   pub(TOPIC.s(MP.code, MP.id), m);
@@ -4857,7 +4916,7 @@ function onHostMsg(m) {
     }
     case 'spotbat': {
       const s = W.spots[i]; if (!s) break; s.battery = false;
-      if (m.by === MP.id && !m.quiet) { const P = player; P.battery = Math.min(CFG.BATTERY_MAX, P.battery + CFG.BATTERY_PICKUP); P.lightDead = false; AU.battery(); toast(`Found a battery ${s.type === 'bed' ? 'under the bed' : 'in the locker'}. +${CFG.BATTERY_PICKUP} seconds.`); }
+      if (m.by === MP.id && !m.quiet) { const P = player; P.battery = Math.max(P.battery, Math.min(CFG.BATTERY_MAX, P.battery + CFG.BATTERY_PICKUP)); P.lightDead = false; AU.battery(); toast(`Found a battery ${s.type === 'bed' ? 'under the bed' : 'in the locker'}. +${CFG.BATTERY_PICKUP} seconds.`); }
       break;
     }
     case 'srch': { const c = (m.k === 'f' ? W.fridges : W.cabinets)[i]; if (c) c.searched = true; break; }
