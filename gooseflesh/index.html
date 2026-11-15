@@ -827,6 +827,8 @@ renderer.setSize(innerWidth, innerHeight);
 renderer.setClearColor(0x000000);
 renderer.shadowMap.enabled = true;
 renderer.shadowMap.type = THREE.PCFShadowMap;   // cheaper than PCFSoft; the flashlight is the only shadow caster
+// don't read shader logs after every compile (a stall per shader); ?debug turns the checks back on
+if (renderer.debug) renderer.debug.checkShaderErrors = /[?&]debug\b/.test(location.search);
 const MAX_ANISO = renderer.capabilities.getMaxAnisotropy();
 
 /* ================= TEXTURES ================= */
@@ -1517,7 +1519,7 @@ function buildWorld(seed) {
 }
 function buildWorldNow() {
   const { g, N, rooms } = generateMaze(CELLS);
-  W = { g, N, rooms, group: new THREE.Group(), obstacles: [], spots: [], pickups: [], fridges: [], cabinets: [], showers: [], thrown: [], xray: [], avoid: new Uint8Array(N * N), used: new Uint8Array(N * N), sideUsed: new Set(), floors: [], glows: [] };
+  W = { g, N, rooms, group: new THREE.Group(), obstacles: [], spots: [], pickups: [], fridges: [], cabinets: [], showers: [], thrown: [], xray: [], avoid: new Uint8Array(N * N), used: new Uint8Array(N * N), sideUsed: new Set(), floors: [] };
   // geometry: floor, ceiling, walls
   const size = N * T;
   const floorTex = TEX.floor; floorTex.repeat.set(N, N);
@@ -1539,7 +1541,70 @@ function buildWorldNow() {
   walls.castShadow = true; walls.receiveShadow = true; W.group.add(walls);
 
   populate();
+  mergeStatic();
   return W;
+}
+// Furniture that never moves is merged into one mesh per material per 5 x 5 tile area of the maze: hundreds of small
+// boxes become a few dozen draw calls, and each area is still skipped when it's off screen. Things that move (doors,
+// knobs, pickups) are merged only within themselves, so each still moves as one piece. X-ray copies, outlines and
+// anything see-through stay as they are.
+const MERGE_CHUNK = 5;
+function mergeStatic() {
+  const root = W.group, xray = new Set(W.xray), movers = [];
+  for (const p of W.pickups) movers.push(p.mesh);
+  for (const sp of W.spots) if (sp.door) movers.push(sp.door);
+  for (const c of W.cabinets) for (const d of c.doors) movers.push(d.piv);
+  for (const f of W.fridges) movers.push(f.door);
+  for (const sh of W.showers) for (const k in sh.knobs) movers.push(sh.knobs[k]);
+  const moverSet = new Set(movers), uses = new Map();
+  root.updateMatrixWorld(true);
+  root.traverse(o => { if (o.geometry) uses.set(o.geometry, (uses.get(o.geometry) || 0) + 1); });
+  // meshes under `top` that belong to it (not to a mover inside it), grouped into buckets
+  const collect = (top, keyOf) => {
+    const buckets = new Map();
+    top.traverse(o => {
+      if (!o.isMesh || o.isInstancedMesh || o.userData.xr || !o.visible || Array.isArray(o.material) || o.material.transparent || o.parent === root) return;
+      for (let q = o; q && q !== top; q = q.parent) if (xray.has(q) || (q !== top && moverSet.has(q)) || !q.visible) return;
+      const g = o.geometry; if (!g.attributes.position || !g.attributes.normal) return;
+      const key = `${o.material.uuid}|${+o.castShadow}${+o.receiveShadow}|${keyOf(o)}`;
+      let b = buckets.get(key); if (!b) buckets.set(key, b = { mat: o.material, cast: o.castShadow, recv: o.receiveShadow, list: [] });
+      b.list.push(o);
+    });
+    return buckets;
+  };
+  const v = new V3(), nm = new THREE.Matrix3(), rel = new THREE.Matrix4(), inv = new THREE.Matrix4();
+  const merge = (top, buckets) => {
+    inv.copy(top.matrixWorld).invert();
+    for (const b of buckets.values()) {
+      if (b.list.length < 2) continue;
+      let nv = 0, ni = 0;
+      for (const o of b.list) { const g = o.geometry; nv += g.attributes.position.count; ni += g.index ? g.index.count : g.attributes.position.count; }
+      const pos = new Float32Array(nv * 3), nor = new Float32Array(nv * 3), uv = new Float32Array(nv * 2), idx = nv > 65535 ? new Uint32Array(ni) : new Uint16Array(ni);
+      let vo = 0, io = 0;
+      for (const o of b.list) {
+        const g = o.geometry, P = g.attributes.position, Nn = g.attributes.normal, U = g.attributes.uv;
+        rel.multiplyMatrices(inv, o.matrixWorld); nm.getNormalMatrix(rel);
+        for (let i = 0; i < P.count; i++) {
+          const a = (vo + i) * 3;
+          v.fromBufferAttribute(P, i).applyMatrix4(rel); pos[a] = v.x; pos[a + 1] = v.y; pos[a + 2] = v.z;
+          v.fromBufferAttribute(Nn, i).applyMatrix3(nm).normalize(); nor[a] = v.x; nor[a + 1] = v.y; nor[a + 2] = v.z;
+          if (U) { uv[(vo + i) * 2] = U.getX(i); uv[(vo + i) * 2 + 1] = U.getY(i); }
+        }
+        if (g.index) for (let i = 0; i < g.index.count; i++) idx[io + i] = g.index.getX(i) + vo;
+        else for (let i = 0; i < P.count; i++) idx[io + i] = vo + i;
+        io += g.index ? g.index.count : P.count; vo += P.count;
+        o.parent.remove(o);
+        uses.set(g, uses.get(g) - 1); if (!g.userData.keep && uses.get(g) <= 0) g.dispose();   // a one-off shape nothing else uses
+      }
+      const mg = new THREE.BufferGeometry();
+      mg.setAttribute('position', new THREE.BufferAttribute(pos, 3)); mg.setAttribute('normal', new THREE.BufferAttribute(nor, 3)); mg.setAttribute('uv', new THREE.BufferAttribute(uv, 2));
+      mg.setIndex(new THREE.BufferAttribute(idx, 1)); mg.computeBoundingSphere();
+      const mesh = new THREE.Mesh(mg, b.mat); mesh.castShadow = b.cast; mesh.receiveShadow = b.recv;
+      top.add(mesh); if (top === root) { mesh.matrixAutoUpdate = false; mesh.updateMatrix(); }
+    }
+  };
+  for (const m of movers) merge(m, collect(m, () => ''));
+  merge(root, collect(root, o => { const e = o.matrixWorld.elements; return Math.floor(e[12] / (T * MERGE_CHUNK)) + ',' + Math.floor(e[14] / (T * MERGE_CHUNK)); }));
 }
 
 function wallDirs(i) {
@@ -1763,13 +1828,6 @@ function updateSmoke(dt) {
   }
 }
 function clearSmoke() { for (const q of SMOKE) { q.life = 0; q.s.visible = false; q.s.material.opacity = 0; } }
-function makeGlow(x, y, z, color, scale, opacity) {
-  const m = new THREE.SpriteMaterial({ map: TEX.glow, color, transparent: true, opacity, depthWrite: false, blending: THREE.AdditiveBlending, fog: true });
-  m.userData.own = true;
-  const s = new THREE.Sprite(m); s.position.set(x, y, z); s.scale.set(scale, scale, scale); W.group.add(s);
-  W.glows.push({ s, base: opacity, ph: Math.random() * 6 });
-  return s;
-}
 // x-ray copies drawn through walls while HardLife's Glasses are on
 const XRAY_GOOSE = new THREE.MeshBasicMaterial({ color: 0xff4a3a, transparent: true, opacity: 0.42, depthTest: false, depthWrite: false, fog: false });
 const XRAY_TAPE = new THREE.MeshBasicMaterial({ color: 0x6fe7ff, transparent: true, opacity: 0.85, depthTest: false, depthWrite: false, fog: false });
@@ -1811,7 +1869,10 @@ function olCopy(o, list, hull) {
   }
 }
 // every outline list owns its hull material, so it can fade in and out by itself
-function olList(list, hull) { if (!list.hull) Object.assign(list, { hull: hull || OL_HULL.clone(), a: 0, want: false, vis: false }); return list.hull; }
+function olList(list, hull) {
+  if (!list.hull) { if (!hull) { hull = OL_HULL.clone(); hull.userData.own = true; } Object.assign(list, { hull, a: 0, want: false, vis: false }); }
+  return list.hull;
+}
 function addOutline(root, list, hull) { const h = olList(list, hull), found = []; root.traverse(o => { if (o.isMesh && !o.userData.xr) found.push(o); }); for (const o of found) olCopy(o, list, h); return list; }
 function hullMaterial(color) { const m = OL_HULL.clone(); m.uniforms.color.value = new THREE.Color(color); return m; }
 // a box with corner-pointing normals: inflates evenly, so a box outline has no gaps at the corners
@@ -2121,10 +2182,12 @@ const AU = {
   samples: {},
   loadSamples() {
     if (this.loading || !this.ctx) return; this.loading = true;
+    // compressed MP3 first (about a tenth of the size), the original WAV if that fails to load or decode
+    const get = file => fetch('audio/' + encodeURIComponent(file))
+      .then(r => { if (!r.ok) throw new Error(String(r.status)); return r.arrayBuffer(); })
+      .then(b => new Promise((res, rej) => this.ctx.decodeAudioData(b, res, rej)));
     for (const [key, file] of Object.entries(SAMPLE_FILES)) {
-      fetch('audio/' + encodeURIComponent(file))
-        .then(r => { if (!r.ok) throw new Error(String(r.status)); return r.arrayBuffer(); })
-        .then(b => new Promise((res, rej) => this.ctx.decodeAudioData(b, res, rej)))
+      get(file.replace(/\.wav$/, '.mp3')).catch(() => get(file))
         .then(buf => { this.samples[key] = buf; })
         .catch(() => { /* not available here: the synthesized fallback is used */ });
     }
@@ -4436,7 +4499,6 @@ function updateFx(dt) {
   // the two lit fixtures nearest you get the two real lights
   const lit = EMERG.filter(L => L.on).sort((a, b) => a.pos.distanceToSquared(EAR) - b.pos.distanceToSquared(EAR));
   EMERG_LIGHTS.forEach((l, k) => { const L = lit[k]; if (L) { l.position.copy(L.pos); l.intensity = L.cur * 1.1; } else l.intensity = 0; });
-  for (const g of W.glows) g.s.material.opacity = g.base * (0.7 + 0.3 * Math.sin(gameTime * 2.2 + g.ph));
   // tapes: brighter, lifted and spinning as you approach; visible through walls with the glasses
   const xr = player.glassesT > 0;
   for (const p of W.pickups) {
@@ -5541,7 +5603,7 @@ window.__gooseflesh = {
   interact: () => interact(), blindVoice: () => blindGoose(W.goose), sgDetects: S => sgDetects(S),
   start: beginNewRun, caught: () => caught(), win: () => { player.tapes = CFG.TAPES; win(); },
   goose: () => W && W.goose, step: (n = 60, dt = 1 / 60) => { for (let i = 0; i < n; i++) { if (state === 'caught' && JS.strike && !MP.inGame) { updateJumpscare(dt); continue; } if (!(state === 'playing' || mpSimulating())) break; simStep(dt); if (state === 'caught') updateJumpscare(dt); else if (state === 'collapse') updateCollapse(dt); } },
-  mp: MP, MLOOK, DIFF, strike: () => strike(), JS, FIST, showerUse, aimedKnob, exitSpot: () => exitSpot(), enterSpot: s => enterSpot(s), mpLeave: () => mpLeave(), hostStart: () => hostStart(), specCycle: d => specCycle(d), applyDifficulty, difficultyText,
+  mp: MP, MLOOK, DIFF, strike: () => strike(), JS, FIST, renderer, scene, showerUse, aimedKnob, exitSpot: () => exitSpot(), enterSpot: s => enterSpot(s), mpLeave: () => mpLeave(), hostStart: () => hostStart(), specCycle: d => specCycle(d), applyDifficulty, difficultyText,
 };
 })();
 </script>
