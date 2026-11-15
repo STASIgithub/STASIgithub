@@ -3850,7 +3850,7 @@ function animateGoose(G, dt, moving, R = GOOSE_RIG) {
 /* ================= SURVEILLANCE GEESE ================= */
 // Three ordinary-sized geese that walk the halls very slowly and keep apart. Once one notices you it follows you,
 // honking so The Voice comes to it, until you outrun it or blind it. They never attack.
-// 0.8 s of flashlight in their eyes switches one off for 45 s (65 s with LightBringer).
+// 0.8 s of flashlight on any part of one (any side) switches it off for 45 s (65 s with LightBringer).
 const SG_RIGS = [];
 function surveillanceRig(k) {
   if (SG_RIGS[k]) return SG_RIGS[k];
@@ -3920,16 +3920,21 @@ function disableSG(S, secs) {
   vfx('honk', { g: gid(S), x: S.x, z: S.z, o: { pitch: 1.15, loud: 0.7 } });
 }
 // your own flashlight in its eyes. In someone else's room you report it and the host switches it off.
-function updateSgBlind(S, dt) {
-  const P = player; let on = false;
-  if (P.flashOn && P.alive !== false && S.state !== 'disabled' && !(S.localOffT > gameTime)) {
-    S.rig.headPivot.getWorldPosition(tmpH);
-    const o = flash.position, vx = tmpH.x - o.x, vy = tmpH.y - o.y, vz = tmpH.z - o.z, d = Math.hypot(vx, vy, vz) || 1;
-    if (d < 4 + 8 * (P.battery / CFG.BATTERY_MAX) && (vx * FL.dir.x + vy * FL.dir.y + vz * FL.dir.z) / d > Math.cos(0.13)) {
-      const hy = S.yaw + S.headYaw, facing = (-vx * Math.sin(hy) - vz * Math.cos(hy)) / (Math.hypot(vx, vz) || 1);
-      if (facing > 0.2 && los3(o.x, o.y, o.z, tmpH.x, tmpH.y, tmpH.z)) on = true;   // straight into its eyes
-    }
+// Any part of a surveillance goose inside your flashlight's beam counts, from any side: head, body or feet.
+function sgInBeam(S) {
+  const o = flash.position, reach = 6 + 10 * (player.battery / CFG.BATTERY_MAX);
+  S.rig.headPivot.getWorldPosition(tmpH);
+  for (const [x, y, z] of [[tmpH.x, tmpH.y, tmpH.z], [S.x, 0.42, S.z], [S.x, 0.15, S.z]]) {
+    const vx = x - o.x, vy = y - o.y, vz = z - o.z, d = Math.hypot(vx, vy, vz) || 1;
+    if (d > reach) continue;
+    const cone = flash.angle + Math.atan(0.35 / d);   // the visible beam, widened by the goose's own size
+    if ((vx * FL.dir.x + vy * FL.dir.y + vz * FL.dir.z) / d > Math.cos(cone) && los3(o.x, o.y, o.z, x, y, z)) return true;
   }
+  return false;
+}
+function updateSgBlind(S, dt) {
+  const P = player;
+  const on = P.flashOn && P.alive !== false && S.state !== 'disabled' && !(S.localOffT > gameTime) && sgInBeam(S);
   S.blindCharge = on ? S.blindCharge + dt : 0;   // looking away starts the count over
   if (S.blindCharge >= CFG.SG_BLIND_TIME) {
     const secs = CFG.SG_DISABLED + (hasPerk('lightbringer') ? CFG.LIGHTBRINGER_SG : 0);
