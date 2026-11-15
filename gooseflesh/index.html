@@ -656,9 +656,10 @@ const CFG = {
   // from the second tape on it gets 2.25% faster per tape (half that in a room)
   VOICE_EARLY: 0.94, VOICE_EARLY_SMELL: 1.75, VOICE_TAPE_SPEED: 0.0225,
   // perks
-  LIGHTBRINGER_START: 1.5, LIGHTBRINGER_SG: 45, ENDURANCE_WALK: 1.35, ENDURANCE_EFF: 0.035, ENDURANCE_EFF_MAX: 0.18,
-  HYPO_COOL: 1.12, ASE_TIME: 13.5, EVADE_SPEED_T: 3, EVADE_HIDE_T: 8, EVADE_LOCK: 4, SCAVENGER_AT: 0.5, SCAVENGER_GAIN: 0.6,
-  HEAD_REVEAL: 10, HEAD_SPEED: 1.07, CRESCENDO: 0.03, CRIT_TEMP: 102, CRIT_COOL: 2, FRIGID_TIME: 45, FRIGID_SLOW: 0.3,
+  LB_TEAM: 0.1, LB_REVEAL: 4, ENDURANCE_WALK: 1.3, ENDURANCE_EFF: 0.2, ENDURANCE_EFF_MAX: 0.6, ENDURANCE_CD: 40,
+  HYPO_COOL: 1.3, ASE_TIME: 13.5, EVADE_SPEED_T: 3, EVADE_HIDE_T: 8, EVADE_LOCK: 4, SCAVENGER_AT: 0.5, SCAVENGER_GAIN: 0.6,
+  HEAD_REVEAL: 12, HEAD_SPEED: 1.12, CRESCENDO_BASE: 0.02, CRESCENDO: 0.04, CRIT_TEMP: 102, CRIT_COOL: 2, FRIGID_TIME: 45, FRIGID_SLOW: 0.2,
+  EVADE_RECHARGE_TAPE: 3,
   CLEANSE_EXTRA: 30, CLEANSE_LINGER: 8,   // Deep Cleanse
   IRON_SPEED: 0.92, IRON_DRAIN: 1.12, STRIKE_WINDOW: 0.6, STRIKE_STUN: 4, STRIKE_STAMINA: 0.3,   // Iron Nerve: one Strike per game
 };
@@ -701,6 +702,8 @@ const SAMPLE_FILES = {
   kill: 'Pusssyyyyyyyyy.wav', jafggm: 'ja_fggm.wav', muffins: 'BLUEBERRY_MUFFINS.wav', supadam: 'Sup_Adam.wav',
   tape1: 'LETTER_1.wav', tape2: 'LETTER_2.wav', tape3: 'LETTER_3.wav', tape4: 'LETTER_4.wav', tape5: 'LETTER_5.wav',
 };
+// The Voice's lines: only one plays at a time
+const VOICE_LINES = new Set(['merp', 'rear', 'eydam', 'danana', 'peww', 'swerve', 'kill', 'jafggm', 'muffins']);
 // [from F, stamina drain x, move speed x, extra recovery delay s]; 104 also disables running
 const HEAT_STEPS = [[104.0, 2.0, 0.75, 12], [103.4, 2.0, 0.80, 12], [102.6, 1.4, 0.88, 6.5], [102.0, 1.25, 0.90, 4], [101.3, 1.18, 0.92, 1.5], [100.5, 1.10, 0.95, 0]];
 const GRAFFITI = ['STAY COOL', 'KEEP MOVING', 'THE VOICE HEARS YOU', 'DON\'T STAY STILL', 'LIGHTS OFF', 'HONK', 'HONK HONK HONK', 'IT CAN SMELL YOU', 'FIVE TAPES', 'NO EXIT', 'CROUCH', 'WHO COMBS HIS HAIR?', 'BREAD?', 'HIDE'];
@@ -774,17 +777,17 @@ const ICON = {
 };
 const icon = id => `<svg class="ico" viewBox="0 0 24 24" aria-hidden="true">${ICON[id]}</svg>`;
 const PERKS = {
-  lightbringer: { name: 'LightBringer', desc: 'Your flashlight starts at 150% battery. A surveillance goose you blind stays down 45 seconds longer.' },
-  endurance: { name: 'Endurance', desc: "Every time you run out of stamina, you walk 35% faster until it's full again, and your stamina lasts 3.5% longer for the rest of the run (up to 18%)." },
-  hypothermia: { name: 'Hypothermia', desc: 'The first refrigerator you open always has an ice pack. Refrigerators cool you 12% faster.' },
+  lightbringer: { name: 'LightBringer', desc: 'Your flashlight never runs out. Every battery you pick up gives your whole team 10% flashlight and shows you The Voice through walls for 4 seconds.' },
+  endurance: { name: 'Endurance', desc: "While you're out of stamina, you walk 30% faster. Each time you run out, your stamina lasts 20% longer, up to 60%. That can grow at most once every 40 seconds." },
+  hypothermia: { name: 'Hypothermia', desc: 'You cool down 30% faster, from refrigerators, ice packs and cold showers. The nearest refrigerator is always outlined.' },
   ase: { name: 'All Seeing Eye', desc: 'For 13.5 seconds after you pick up a tape, see The Voice, every surveillance goose and the nearest refrigerator through walls.' },
-  evasive: { name: 'Evasive Maneuvers', desc: "The first time The Voice chases you, you move twice as fast for 3 seconds and it can't detect you for 8. Then your stamina's empty for 4 seconds." },
+  evasive: { name: 'Evasive Maneuvers', desc: "The first time The Voice chases you, you move twice as fast for 3 seconds and it can't detect you for 8. Then your stamina's empty for 4 seconds. It recharges when your team picks up the 3rd tape." },
   scavenger: { name: 'Scavenger', desc: "When your flashlight is at 50% or lower, see the nearest battery through walls. That battery adds 60%, even past 100%. Works once per run." },
-  headstart: { name: 'Headstart', desc: "For the first 10 seconds, see the nearest tape, refrigerator and cabinet through walls, move 7% faster and use no stamina." },
-  crescendo: { name: 'Crescendo', desc: "Every tape your team finds: 3% more speed, stamina recovery and stamina efficiency, refrigerators cool you 3% faster, you blind geese 3% faster and heat up 3% slower." },
+  headstart: { name: 'Headstart', desc: "For the first 12 seconds, see the nearest tape through walls, move 12% faster and use no stamina." },
+  crescendo: { name: 'Crescendo', desc: "Start with a 2% bonus, plus 4% for every tape your team finds, to: speed, stamina recovery, stamina efficiency, refrigerator cooling, how fast you blind geese, and how slowly you heat up." },
   cleanse: { name: 'Deep Cleanse', desc: "Shower effects last 30 seconds longer. While you're showering, and for 8 seconds after you get out, your whole team sees The Voice through walls." },
   ironnerve: { name: 'Iron Nerve', desc: "You move 8% slower, use 12% more stamina, and can't hide or crouch. Crouch becomes Strike, once per game: if The Voice catches you within 0.6 s of pressing it, you punch it in the face and stun it for 4 s, for 30% of your stamina. A miss still uses it up." },
-  frigid: { name: 'Frigid', desc: "For the first 45 seconds, your body temperature can't rise. After that, it rises 30% slower." },
+  frigid: { name: 'Frigid', desc: "For the first 45 seconds, your body temperature can't rise. After that, it rises 20% slower." },
   critical: { name: 'Critical Condition', desc: "At 102°F or hotter, refrigerators cool you twice as fast, and while you're cooling down you see The Voice through walls." },
 };
 const LOADOUT_ITEMS = {
@@ -1784,7 +1787,7 @@ function makeFridge(i, k) {
   const glow = new THREE.Sprite(gm); glow.position.set(p.x - p.dx * 0.5, 1.0, p.z - p.dz * 0.5); glow.scale.set(1.6, 2.2, 1); W.group.add(glow);
   const ol = outlineBox(grp, Wd, Hh, D, Hh / 2);
   const f = {
-    isFridge: true, searched: false, warned: false, flickerT: 0, ol, iceGuaranteed: false,
+    isFridge: true, searched: false, warned: false, flickerT: 0, ol,
     x: p.x, z: p.z, dx: p.dx, dz: p.dz, fx: p.x - p.dx * (D / 2 + 0.6), fz: p.z - p.dz * (D / 2 + 0.6),
     door, open: false, anim: 0, used: 0, powered: true, offUntil: 0, ledMat, innerMat, glow, smokeAcc: 0, hum: null,
   };
@@ -1951,8 +1954,7 @@ function makeCabinet(i, k) {
   }
   W.group.add(grp);
   addObstacle(p.x, p.z, p.dx, Wd, D, Hh);
-  const ol = outlineBox(grp, Wd, Hh, D, Hh / 2);
-  W.cabinets.push({ x: p.x, z: p.z, fx: p.x - p.dx * (D / 2 + 0.6), fz: p.z - p.dz * (D / 2 + 0.6), doors, open: 0, searched: false, ol });
+  W.cabinets.push({ x: p.x, z: p.z, fx: p.x - p.dx * (D / 2 + 0.6), fz: p.z - p.dz * (D / 2 + 0.6), doors, open: 0, searched: false });
 }
 // a battery: barely glowing from afar; up close it lights up, lifts and turns, like the tapes
 function makeBattery(x, z) {
@@ -2199,7 +2201,13 @@ const AU = {
     const out = o.pos ? this.at(o.pos[0], o.pos[1], o.pos[2], o.maxD || 60, o.gain ?? 1) : this.direct(o.gain ?? 1);
     if (!out) return null;
     const src = this.ctx.createBufferSource(); src.buffer = buf; src.playbackRate.value = o.rate || 1;
-    src.connect(out); src.start(this.t + (o.delay || 0));
+    const at = this.t + (o.delay || 0);
+    if (VOICE_LINES.has(key)) {   // The Voice says one thing at a time: the line still going is faded out as this one starts
+      const v = this.voice; if (v) { try { v.g.gain.setTargetAtTime(0, at, 0.025); v.src.stop(at + 0.15); } catch (e) { /* already over */ } }
+      const g = this.gain(1); src.connect(g); g.connect(out); this.voice = { src, g };
+      src.onended = () => { if (this.voice && this.voice.src === src) this.voice = null; };
+    } else src.connect(out);
+    src.start(at);
     return src;
   },
   makeCurve(k) { const n = 1024, cv = new Float32Array(n); for (let i = 0; i < n; i++) { const x = i * 2 / n - 1; cv[i] = (1 + k) * x / (1 + k * Math.abs(x)); } return cv; },
@@ -2617,10 +2625,10 @@ function resetPlayer() {
     battery: CFG.BATTERY_MAX, flashOn: false, flick: 1, flickT: 0, expo: 1, tapes: 0, lightDead: false, flickerT: 0, blinkT: 0,
     ax: center(1), az: center(1), linger: 0, stepAcc: 0, bob: 0, target: null, hbT: 0, fov: 72, stamGhost: 1, ghostHold: 0,
     // perks chosen in the loadout, and their timers
-    perks: new Set(loadout.perks), aseT: 0, aseFridge: null, headT: 0, headTape: null, headFridge: null, headCab: null,
+    perks: new Set(loadout.perks), aseT: 0, aseFridge: null, headT: 0, headTape: null, hypoFridge: null, hypoT: 0, lbRevealT: 0,
     frigidT: loadout.perks.includes('frigid') ? CFG.FRIGID_TIME : 0, cleanseT: 0, strikeT: 0, strikeUsed: false, showerHot: false, showerCold: 0, showerCooling: false, scentHideT: 0, coldBoost: 0, coldBoostT: 0,
-    scavUsed: false, scavBat: null, scavClaim: null, scavGotT: 0, endEff: 0, endTokens: 0, critOn: false, lbT: 0,
-    evadeUsed: false, evadeSpeedT: 0, evadeHideT: 0, evadePending: false, stamLockT: 0, firstFridge: false,
+    scavUsed: false, scavBat: null, scavClaim: null, scavGotT: 0, endEff: 0, endTokens: 0, endCD: 0, critOn: false, evadeRearmed: false,
+    evadeUsed: false, evadeSpeedT: 0, evadeHideT: 0, evadePending: false, stamLockT: 0,
   });
   // face down an open corridor
   const od = openDirs(1 * W.N + 1);
@@ -2630,7 +2638,8 @@ function resetPlayer() {
 }
 const hasPerk = id => !!(player.perks && player.perks.has(id));
 // Crescendo: 3% per tape the team has found
-const cresc = () => hasPerk('crescendo') ? CFG.CRESCENDO * player.tapes : 0;
+const cresc = () => hasPerk('crescendo') ? CFG.CRESCENDO_BASE + CFG.CRESCENDO * player.tapes : 0;
+const hypo = () => hasPerk('hypothermia') ? CFG.HYPO_COOL : 1;   // Hypothermia: all cooling, 30% faster
 // Critical Condition: at 102 or hotter
 const critical = () => hasPerk('critical') && tempQ() >= CFG.CRIT_TEMP - 1e-6;
 // Frigid: no heating for the first 45 s, then 30% less
@@ -2663,16 +2672,13 @@ function newGame(seed) {
   for (const L of [...OL_FADING]) hideOutline(L);
   hideOutline(GOOSE_OL); for (const R of SG_RIGS) hideOutline(R.ol);
   resetPlayer(); resetGoose(); spawnSurveillance();
-  if (hasPerk('lightbringer')) player.battery = CFG.BATTERY_MAX * CFG.LIGHTBRINGER_START;
-  if (hasPerk('headstart')) {   // the nearest tape, refrigerator and cabinet (by walking distance) are outlined for the first seconds
+  if (hasPerk('headstart')) {   // the nearest tape (by walking distance) is outlined for the first seconds
     const d = bfs(1, 1), near = (list, fx, fz) => {
       let best = null, bd = 1e9;
       for (const o of list) { const v = d[tileOf(fz(o)) * W.N + tileOf(fx(o))]; if (v >= 0 && v < bd) { bd = v; best = o; } }
       return best;
     };
     player.headTape = near(W.pickups.filter(p => p.type === 'tape'), p => p.x, p => p.z);
-    player.headFridge = near(W.fridges, f => f.fx, f => f.fz);
-    player.headCab = near(W.cabinets, c => c.fx, c => c.fz);
     player.headT = CFG.HEAD_REVEAL;
   }
   gameTime = 0; shakeAmt = 0;
@@ -2997,11 +3003,22 @@ $('settings-done').addEventListener('click', closeSettings);
 // every switch, on or off, costs 0.6 s of battery
 function toggleFlash() {
   const P = player;
+  if (hasPerk('lightbringer')) { P.flashOn = !P.flashOn; AU.click(); return; }   // never runs out, costs nothing
   if (!P.flashOn && P.battery <= 0) { AU.click(); toast("The battery's dead. Find another one.", true); return; }
   if (!P.flashOn && P.battery <= CFG.FLASH_TOGGLE_COST) { AU.click(); toast("There isn't enough charge to turn it on.", true, 2.4); return; }
   P.flashOn = !P.flashOn; AU.click();
   P.battery = Math.max(0, P.battery - CFG.FLASH_TOGGLE_COST);
   if (P.battery <= 0) flashDied(false);
+}
+// LightBringer takes every battery it finds: each one tops the whole team up by 10% and shows The Voice for 4 s
+const wantsBattery = () => hasPerk('lightbringer') || player.battery < CFG.BATTERY_MAX - 0.05;
+function lbPickup() {
+  player.lbRevealT = CFG.LB_REVEAL;
+  if (MP.inGame) { if (MP.host) { lbBoost(); netHost({ t: 'lbbat' }); } else netClient({ t: 'lbbat' }); }
+}
+function lbBoost() {
+  const P = player; if (P.alive === false || hasPerk('lightbringer')) return;
+  P.battery = Math.max(P.battery, Math.min(CFG.BATTERY_MAX, P.battery + CFG.LB_TEAM * CFG.BATTERY_MAX)); P.lightDead = false; AU.battery();
 }
 function flashDied(wasOn = true) {
   const P = player;
@@ -3055,7 +3072,7 @@ function interact() {
   if (!tgt) return;
   if (tgt.kind === 'pickup') {
     const p = tgt.p;
-    if (p.type === 'battery' && p !== P.scavBat && P.battery >= CFG.BATTERY_MAX - 0.05) { toast("Your flashlight's already full."); return; }
+    if (p.type === 'battery' && p !== P.scavBat && !wantsBattery()) { toast("Your flashlight's already full."); return; }
     if (p === P.scavBat) P.scavClaim = p;   // in a room the host answers later: remember it was the Scavenger battery
     if (MP.inGame && !MP.host) {   // the host decides who got it first
       if (gameTime - (p.claimT || -9) > 1) { p.claimT = gameTime; netClient({ t: 'take', i: W.pickups.indexOf(p) }); }
@@ -3078,13 +3095,13 @@ function gainPickup(p, n) {
     if (scav) { P.battery += CFG.SCAVENGER_GAIN * CFG.BATTERY_MAX; P.scavUsed = true; P.scavBat = P.scavClaim = null; P.scavGotT = 2; }   // no cap
     else P.battery = Math.max(P.battery, Math.min(CFG.BATTERY_MAX, P.battery + CFG.BATTERY_PICKUP));
     P.lightDead = false;
-    AU.battery(); if (!scav) toast(`+${CFG.BATTERY_PICKUP} seconds of flashlight.`);
+    AU.battery();
+    if (hasPerk('lightbringer')) lbPickup(); else if (!scav) toast(`+${CFG.BATTERY_PICKUP} seconds of flashlight.`);
     return;
   }
   // tapes always play in order: the first one found plays recording 1, the second recording 2, and so on
-  P.tapes = n; AU.click();
-  els.tapes.classList.remove('got'); void els.tapes.offsetWidth; els.tapes.classList.add('got');
-  playTape(n);
+  P.tapes = n;
+  showTape(n);
   if (hasPerk('ase')) {   // All Seeing Eye: The Voice, the surveillance geese and the nearest fridge, through walls
     P.aseT = CFG.ASE_TIME; let bd = 1e9;
     for (const f of W.fridges) { const d = Math.hypot(f.x - P.x, f.z - P.z); if (d < bd) { bd = d; P.aseFridge = f; } }
@@ -3099,12 +3116,13 @@ function enterSpot(s) {
   if (s.type === 'locker') { s.openT = 0.45; AU.creak(); } else AU.paper();
   gooseHear(s.x, s.z, 3.5, { kind: 'hide', pri: 1.5, player: true });
   if (s.battery && MP.inGame && !MP.host) {   // ask the host, so two people can't both take it
-    if (P.battery < CFG.BATTERY_MAX - 0.05) netClient({ t: 'spotbat', i: W.spots.indexOf(s) });
+    if (wantsBattery()) netClient({ t: 'spotbat', i: W.spots.indexOf(s) });
     else toast("There's a battery in here, but your flashlight's full.");
   } else if (s.battery) {
     s.battery = false;
     if (MP.inGame) netHost({ t: 'spotbat', i: W.spots.indexOf(s), by: MP.id, quiet: 1 });
-    if (P.battery < CFG.BATTERY_MAX - 0.05) { P.battery = Math.min(CFG.BATTERY_MAX, P.battery + CFG.BATTERY_PICKUP); P.lightDead = false; AU.battery(); toast(`Found a battery ${s.type === 'bed' ? 'under the bed' : 'in the locker'}. +${CFG.BATTERY_PICKUP} seconds.`); }
+    if (hasPerk('lightbringer')) { AU.battery(); lbPickup(); }
+    else if (P.battery < CFG.BATTERY_MAX - 0.05) { P.battery = Math.min(CFG.BATTERY_MAX, P.battery + CFG.BATTERY_PICKUP); P.lightDead = false; AU.battery(); toast(`Found a battery ${s.type === 'bed' ? 'under the bed' : 'in the locker'}. +${CFG.BATTERY_PICKUP} seconds.`); }
     else { s.battery = true; toast("There's a battery in here, but your flashlight's full."); }
   }
 }
@@ -3214,7 +3232,6 @@ function finishSearch(c) {
   }
   const r = Math.random() * 100;
   if (c.isFridge) {   // refrigerator: 30% muffin, 15% ice pack, 55% nothing (Hypothermia: the first one you open has an ice pack)
-    if (c.iceGuaranteed) { c.iceGuaranteed = false; giveItem('ice'); return; }
     if (r < 30) giveItem('muffin');
     else if (r < 45) giveItem('ice');
     else toast('Nothing in here.', false, 1.8);
@@ -3238,6 +3255,12 @@ function updateCabinets(dt) {
 // cassette playback: recordings 1..5 in the order you find the tapes (the audio files keep the names LETTER_1..5.wav they were given)
 let tapeSrc = null; const TAPEUI = { n: 0, t: 0, dur: 0 };
 function stopTape() { if (tapeSrc) { try { tapeSrc.stop(); } catch (e) { /* already done */ } } tapeSrc = null; TAPEUI.dur = 0; }
+// a tape was found (by you or, in a room, a teammate): everyone gets the counter flash, the tape card and the recording
+function showTape(n) {
+  AU.click();
+  els.tapes.classList.remove('got'); void els.tapes.offsetWidth; els.tapes.classList.add('got');
+  playTape(n);
+}
 function playTape(n) {
   stopTape();
   tapeSrc = AU.play('tape' + n, { gain: 1.1 });
@@ -3258,7 +3281,7 @@ function updateItems(dt) {
 // perk timers, and what each perk is pointing at right now
 function updatePerks(dt) {
   const P = player;
-  for (const k of ['aseT', 'headT', 'evadeSpeedT', 'evadeHideT', 'flickerT', 'blinkT', 'lbT', 'scavGotT', 'scentHideT', 'coldBoostT', 'frigidT', 'cleanseT', 'strikeT']) if (P[k] > 0) P[k] = Math.max(0, P[k] - dt);
+  for (const k of ['aseT', 'headT', 'evadeSpeedT', 'evadeHideT', 'flickerT', 'blinkT', 'lbRevealT', 'endCD', 'scavGotT', 'scentHideT', 'coldBoostT', 'frigidT', 'cleanseT', 'strikeT']) if (P[k] > 0) P[k] = Math.max(0, P[k] - dt);
   if (P.evadePending && P.evadeSpeedT <= 0 && P.evadeHideT <= 0) {   // Evasive Maneuvers is over: stamina empties and stays empty
     P.evadePending = false; P.stamina = 0; P.exhausted = true; P.stamLockT = CFG.EVADE_LOCK; P.sprinting = false; touch.run = false;
   }
@@ -3268,6 +3291,14 @@ function updatePerks(dt) {
     for (const p of W.pickups) { if (p.type !== 'battery' || p.taken) continue; const d = Math.hypot(p.x - P.x, p.z - P.z); if (d < bd) { bd = d; P.scavBat = p; } }
   }
   P.critOn = critical() && P.alive !== false;
+  if (hasPerk('hypothermia') && (P.hypoT -= dt) <= 0) {   // the nearest refrigerator by walking distance, rechecked twice a second
+    P.hypoT = 0.5; const d = bfs(clamp(tileOf(P.x), 0, W.N - 1), clamp(tileOf(P.z), 0, W.N - 1)); let bd = 1e9; P.hypoFridge = null;
+    for (const f of W.fridges) { const v = d[tileOf(f.fz) * W.N + tileOf(f.fx)]; if (v >= 0 && v < bd) { bd = v; P.hypoFridge = f; } }
+  }
+  // Evasive Maneuvers recharges once the team has the 3rd tape (after any run of it that's still going)
+  if (hasPerk('evasive') && !P.evadeRearmed && P.tapes >= CFG.EVADE_RECHARGE_TAPE && !P.evadePending && P.evadeSpeedT <= 0 && P.evadeHideT <= 0 && P.stamLockT <= 0) {
+    P.evadeRearmed = true; P.evadeUsed = false;
+  }
 }
 function startEvasive() {
   const P = player; P.evadeUsed = true; P.evadePending = true;
@@ -3397,7 +3428,8 @@ function updatePlayer(dt) {
   updateShowerPlayer(dt);
   updateTemperature(dt);
   // flashlight battery: drains while on, trickles back while off (1 second of light per 10 seconds)
-  if (P.flashOn) {
+  if (hasPerk('lightbringer')) { P.battery = Math.max(P.battery, CFG.BATTERY_MAX); P.lightDead = false; }   // never runs out
+  else if (P.flashOn) {
     P.battery -= dt;
     if (P.battery <= 0) flashDied();
   } else if (P.battery < CFG.BATTERY_MAX) P.battery = Math.min(CFG.BATTERY_MAX, P.battery + CFG.BATTERY_REGEN * dt);
@@ -3587,7 +3619,9 @@ function updateStamina(dt, HE) {
     if (P.stamina <= 0) {
       if (!P.exhausted) {
         P.exhausted = true; P.sprinting = false; touch.run = false;
-        if (hasPerk('endurance')) { P.endEff = Math.min(CFG.ENDURANCE_EFF_MAX, P.endEff + CFG.ENDURANCE_EFF); P.endTokens = Math.min(6, P.endTokens + 1); }
+        if (hasPerk('endurance') && P.endCD <= 0 && P.endEff < CFG.ENDURANCE_EFF_MAX - 1e-6) {   // at most once every 40 s
+          P.endEff = Math.min(CFG.ENDURANCE_EFF_MAX, P.endEff + CFG.ENDURANCE_EFF); P.endTokens++; P.endCD = CFG.ENDURANCE_CD;
+        }
         toast('Out of breath.', true, 2.2, true);
       }
     }
@@ -3674,7 +3708,6 @@ function setFridgePower(f, on) {
 function toggleFridge(f, byPlayer) {
   f.open = !f.open;
   if (MP.inGame && !MP.host && byPlayer) { f.localT = gameTime; netClient({ t: 'fr', i: W.fridges.indexOf(f), o: f.open ? 1 : 0 }); }
-  if (byPlayer && f.open && hasPerk('hypothermia') && !player.firstFridge) { player.firstFridge = true; if (!f.searched) f.iceGuaranteed = true; }
   AU.fridgeDoor(f.x, f.z, f.open);
   gooseHear(f.x, f.z, CFG.FRIDGE_NOISE, { kind: 'fridge', pri: 2, player: false, exact: true });
   if (f.open && f.powered && f.used < CFG.FRIDGE_POWER * (1 - CFG.FRIDGE_LOW)) for (let k = 0; k < 10; k++) emitSmoke(f, true);
@@ -3729,7 +3762,7 @@ function updateShowerPlayer(dt) {
   if (!sh || !sh.run) return;
   if (hasPerk('cleanse')) P.cleanseT = CFG.CLEANSE_LINGER;   // refreshed while the water runs on you; counts down after
   if (sh.run === 'hot') { P.temp = Math.min(CFG.TEMP_MAX, P.temp + CFG.SHOWER_HOT * heatMult() * dt); P.showerHot = true; }
-  else { P.temp = Math.max(CFG.TEMP_FLOOR, P.temp - CFG.SHOWER_COLD * dt); P.cooling = true; P.showerCooling = true; P.showerCold += dt; }
+  else { P.temp = Math.max(CFG.TEMP_FLOOR, P.temp - CFG.SHOWER_COLD * hypo() * dt); P.cooling = true; P.showerCooling = true; P.showerCold += dt; }
 }
 let humT = 0;
 function updateFridges(dt) {
@@ -3756,7 +3789,7 @@ function updateFridges(dt) {
   P.cooling = false;
   if (best && P.temp > CFG.TEMP_FLOOR + 1e-6) {
     P.cooling = true;
-    const rate = CFG.COOL_RATE * (hasPerk('hypothermia') ? CFG.HYPO_COOL : 1) * (1 + cresc()) * (critical() ? CFG.CRIT_COOL : 1);
+    const rate = CFG.COOL_RATE * hypo() * (1 + cresc()) * (critical() ? CFG.CRIT_COOL : 1);
     P.temp = Math.max(CFG.TEMP_FLOOR, P.temp - rate * dt);
     best.used += dt;   // cumulative cooling time: survives closing, reopening and walking away
     if (!auth) { const i = W.fridges.indexOf(best); MP.fuse[i] = (MP.fuse[i] || 0) + dt; }
@@ -3766,7 +3799,7 @@ function updateFridges(dt) {
   P.iceCooling = false;
   if (!P.cooling && P.iceOn && P.iceLeft > 0 && P.temp > CFG.TEMP_FLOOR + 1e-6) {
     const use = Math.min(dt, P.iceLeft);
-    P.temp = Math.max(CFG.TEMP_FLOOR, P.temp - CFG.ICE_RATE * use); P.iceLeft -= use;
+    P.temp = Math.max(CFG.TEMP_FLOOR, P.temp - CFG.ICE_RATE * hypo() * use); P.iceLeft -= use;
     P.cooling = true; P.iceCooling = true;
     if (P.temp <= CFG.TEMP_FLOOR + 1e-6) { P.temp = CFG.TEMP_FLOOR; P.tempPauseT = CFG.COOL_PAUSE; P.tempRiseT = rr(3, 5); toast('You feel cool again.', false, 2.5, true); }
     if (P.iceLeft <= 1e-9) { P.iceLeft = 0; P.iceOn = false; }
@@ -4356,9 +4389,8 @@ function updateSgBlind(S, dt) {
   const on = P.flashOn && P.alive !== false && S.state !== 'disabled' && !(S.localOffT > gameTime) && sgInBeam(S);
   S.blindCharge = on ? S.blindCharge + dt * (1 + cresc()) : 0;   // looking away starts the count over
   if (S.blindCharge >= CFG.SG_BLIND_TIME) {
-    const secs = CFG.SG_DISABLED + (hasPerk('lightbringer') ? CFG.LIGHTBRINGER_SG : 0);
+    const secs = CFG.SG_DISABLED;
     P.blinkT = 0.14;   // the flashlight flickers once: it worked
-    if (hasPerk('lightbringer')) P.lbT = 2;
     toast(`Surveillance goose disabled for ${secs} seconds.`, false, 2.5);
     if (MP.inGame && !MP.host) { S.blindCharge = 0; S.state = 'disabled'; S.localOffT = gameTime + 2; netClient({ t: 'sgoff', i: S.id, s: secs }); }
     else disableSG(S, secs);
@@ -4542,10 +4574,9 @@ function updateFx(dt) {
 // perk outlines through walls: All Seeing Eye, Headstart, Scavenger
 function updateOutlines(dt) {
   const P = player, ase = P.aseT > 0, head = P.headT > 0;
-  setOutline(GOOSE_OL, ase || (P.cooling && P.critOn) || cleanseReveal());   // Critical Condition: while you cool down; Deep Cleanse
+  setOutline(GOOSE_OL, ase || (P.cooling && P.critOn) || cleanseReveal() || P.lbRevealT > 0);   // Critical Condition: while you cool down; Deep Cleanse
   for (const S of W.sgeese) setOutline(S.rig.ol, ase);
-  for (const f of W.fridges) setOutline(f.ol, (ase && f === P.aseFridge) || (head && f === P.headFridge));
-  for (const c of W.cabinets) setOutline(c.ol, head && c === P.headCab);
+  for (const f of W.fridges) setOutline(f.ol, (ase && f === P.aseFridge) || (f === P.hypoFridge && hasPerk('hypothermia') && P.alive !== false));
   for (const p of W.pickups) {
     const on = !p.taken && ((head && p === P.headTape) || p === P.scavBat);
     setOutline(p.ol, on);
@@ -4577,9 +4608,9 @@ function updateSpeedLines(dt) {
 function perkState(id) {
   const P = player;
   switch (id) {
-    case 'lightbringer': return [P.battery > CFG.BATTERY_MAX + 0.05 || P.lbT > 0, -1, '', false, false];
-    case 'endurance': return [P.exhausted && P.stamLockT <= 0, -1, P.endTokens ? String(P.endTokens) : '', false, false];
-    case 'hypothermia': return [P.cooling && !P.iceCooling && !P.showerCooling, -1, '', false, false];
+    case 'lightbringer': return [P.lbRevealT > 0, P.lbRevealT > 0 ? P.lbRevealT / CFG.LB_REVEAL : -1, '', false, false];
+    case 'endurance': return [P.exhausted && P.stamLockT <= 0, P.endCD > 0 ? 1 - P.endCD / CFG.ENDURANCE_CD : -1, P.endTokens ? String(P.endTokens) : '', false, false];
+    case 'hypothermia': return [!!P.cooling, -1, '', false, false];
     case 'ase': return [P.aseT > 0, P.aseT > 0 ? P.aseT / CFG.ASE_TIME : -1, '', false, false];
     case 'evasive': {
       const on = P.evadeSpeedT > 0 || P.evadeHideT > 0;
@@ -4587,7 +4618,7 @@ function perkState(id) {
     }
     case 'scavenger': return [!!P.scavBat || P.scavGotT > 0, -1, '', P.scavUsed && P.scavGotT <= 0, false];
     case 'headstart': return [P.headT > 0, P.headT > 0 ? P.headT / CFG.HEAD_REVEAL : -1, '', P.headT <= 0, false];
-    case 'crescendo': return [P.tapes > 0, -1, P.tapes ? String(P.tapes) : '', false, false];
+    case 'crescendo': return [true, -1, P.tapes ? String(P.tapes) : '', false, false];
     case 'critical': return [!!P.critOn, -1, '', false, false];
     case 'cleanse': { const after = P.scentHideT > CFG.SHOWER_AFTER || P.coldBoostT > CFG.SHOWER_AFTER; return [P.cleanseT > 0 || after, P.cleanseT > 0 ? P.cleanseT / CFG.CLEANSE_LINGER : -1, '', false, false]; }
     case 'ironnerve': return [P.strikeT > 0, P.strikeT > 0 ? P.strikeT / CFG.STRIKE_WINDOW : -1, '', P.strikeUsed && P.strikeT <= 0, false];
@@ -4726,8 +4757,8 @@ function updateHUD(dt) {
       els.tval.classList.toggle('hot', k > 0.35);
     }
   }
-  const pct = Math.ceil(P.battery / CFG.BATTERY_MAX * 100 - 1e-6);
-  if (hudCache.pct !== pct) { hudCache.pct = pct; els.bpct.textContent = pct + '%'; els.bfill.style.transform = `scaleX(${Math.min(1, pct / 100)})`; els.batt.classList.toggle('over', pct > 100); }
+  const pct = hasPerk('lightbringer') ? Infinity : Math.ceil(P.battery / CFG.BATTERY_MAX * 100 - 1e-6);
+  if (hudCache.pct !== pct) { hudCache.pct = pct; els.bpct.textContent = pct === Infinity ? '\u221e' : pct + '%'; els.bfill.style.transform = `scaleX(${Math.min(1, pct / 100)})`; els.batt.classList.toggle('over', pct > 100); }
   setClass('b', els.batt, 'on', P.flashOn);
   setClass('b', els.batt, 'low', pct <= 20);
   const label = P.target ? (isMobile() ? P.target.label : '[E] ' + P.target.label) : '';
@@ -5347,6 +5378,7 @@ function onClientMsg(m) {
     case 'hear': if (R.alive) gooseHear(num(m.x, R.x), num(m.z, R.z), clamp(num(m.r), 0, 40), { kind: cleanText(m.k, 12), pri: clamp(num(m.p, 1), 0, 4), player: !!m.pl, exact: !!m.ex, reveal: !!m.rv, p: R }); break;
     case 'take': { const pk = W.pickups[i]; if (pk && R.alive) hostTake(pk, R); break; }
     case 'spotbat': { const s = W.spots[i]; if (s && s.battery && R.alive) { s.battery = false; netHost({ t: 'spotbat', i, by: id }); } break; }
+    case 'lbbat': if (R.alive) { lbBoost(); netHost({ t: 'lbbat' }); } break;
     case 'shw': { const o = W.showers[i]; if (o && R.alive && (m.k === 'hot' || m.k === 'cold')) showerApply(o, m.k); break; }
     case 'fr': { const f = W.fridges[i]; if (f && f.open !== !!m.o) { f.open = !!m.o; AU.fridgeDoor(f.x, f.z, f.open); if (f.open && f.powered) for (let k = 0; k < 10; k++) emitSmoke(f, true); } break; }
     case 'fuse': if (Array.isArray(m.u)) for (const u of m.u.slice(0, 8)) { const f = Array.isArray(u) && W.fridges[num(u[0], -1) | 0]; if (f && f.powered) f.used += clamp(num(u[1]), 0, 1); } break;
@@ -5379,12 +5411,13 @@ function onHostMsg(m) {
       hidePickup(p); const n = num(m.n) | 0;
       if (p.type === 'tape') player.tapes = Math.max(player.tapes, n);
       if (m.by === MP.id) gainPickup(p, n);
-      else if (p.type === 'tape') { const R = MP.remotes.get(m.by); toast(`${R ? R.name : 'Someone'} found tape ${n} of ${CFG.TAPES}.`, false, 3); }
+      else if (p.type === 'tape') { const R = MP.remotes.get(m.by); showTape(n); toast(`${R ? R.name : 'Someone'} found tape ${n} of ${CFG.TAPES}.`, false, 3); }
       break;
     }
     case 'spotbat': {
       const s = W.spots[i]; if (!s) break; s.battery = false;
-      if (m.by === MP.id && !m.quiet) { const P = player; P.battery = Math.max(P.battery, Math.min(CFG.BATTERY_MAX, P.battery + CFG.BATTERY_PICKUP)); P.lightDead = false; AU.battery(); toast(`Found a battery ${s.type === 'bed' ? 'under the bed' : 'in the locker'}. +${CFG.BATTERY_PICKUP} seconds.`); }
+      if (m.by === MP.id && !m.quiet && hasPerk('lightbringer')) { AU.battery(); lbPickup(); }
+      else if (m.by === MP.id && !m.quiet) { const P = player; P.battery = Math.max(P.battery, Math.min(CFG.BATTERY_MAX, P.battery + CFG.BATTERY_PICKUP)); P.lightDead = false; AU.battery(); toast(`Found a battery ${s.type === 'bed' ? 'under the bed' : 'in the locker'}. +${CFG.BATTERY_PICKUP} seconds.`); }
       break;
     }
     case 'srch': { const c = (m.k === 'f' ? W.fridges : W.cabinets)[i]; if (c) c.searched = true; break; }
@@ -5396,6 +5429,7 @@ function onHostMsg(m) {
       break;
     case 'mgone': { const t = W.thrown.find(q => q.id === m.id); if (t) { t.gone = true; t.mesh.visible = false; } break; }
     case 'struck': strikeScare(); break;
+    case 'lbbat': lbBoost(); break;
     case 'caught':
       if (m.id === MP.id) { if (state === 'playing' || state === 'paused') caught(); }
       else { const R = MP.remotes.get(m.id); if (R) R.alive = false; }
@@ -5416,7 +5450,7 @@ function hostTake(p, who) {
   netHost({ t: 'take', i: W.pickups.indexOf(p), by: who.id, n });
   if (p.type === 'tape') player.tapes = n;
   if (who === player) gainPickup(p, n);
-  else if (p.type === 'tape') toast(`${who.name} found tape ${n} of ${CFG.TAPES}.`, false, 3);
+  else if (p.type === 'tape') { showTape(n); toast(`${who.name} found tape ${n} of ${CFG.TAPES}.`, false, 3); }
   if (p.type === 'tape' && n >= CFG.TAPES) setTimeout(() => { if (MP.inGame) { netHost({ t: 'win' }); endMp('win'); } }, 900);
 }
 function hostMuffin(x, z) {
