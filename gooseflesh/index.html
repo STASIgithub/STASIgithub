@@ -217,7 +217,7 @@ body.m .pk svg{width:16px;height:16px}
 body.m #hud-tr{right:calc(72px + env(safe-area-inset-right,0px));max-width:52vw}
 body.m #hud-inv kbd{display:none}
 body.m #hud-inv .slot{padding:10px 12px}
-body.m #tape{right:auto;left:max(16px,env(safe-area-inset-left,0px));top:calc(44px + env(safe-area-inset-top,0px));padding:10px 14px}
+body.m #tape{right:auto;left:50%;transform:translateX(-50%);top:calc(12px + env(safe-area-inset-top,0px));padding:10px 14px}
 
 .chip{display:inline-block;font-size:11px;letter-spacing:.14em;text-transform:uppercase;padding:3px 9px;border-radius:999px;border:1px solid rgba(221,214,198,.35);background:rgba(255,255,255,.04)}
 
@@ -247,11 +247,11 @@ body.m #tape{right:auto;left:max(16px,env(safe-area-inset-left,0px));top:calc(44
 
 /* HUD layout in mobile mode */
 body.m #hud{font-size:11px}
-body.m #hud-batt{bottom:calc(10px + env(safe-area-inset-bottom,0px));left:max(14px,env(safe-area-inset-left,0px))}
+body.m #hud-batt{bottom:auto;top:calc(16px + env(safe-area-inset-top,0px));left:calc(max(14px,env(safe-area-inset-left,0px)) + 92px)}
 body.m #hud-batt .lbl{display:none}
 body.m #bpct{font-size:18px}
 body.m #hud-stam{bottom:calc(16px + env(safe-area-inset-bottom,0px));width:min(28vw,230px)}
-body.m #hud-temp{bottom:calc(10px + env(safe-area-inset-bottom,0px));left:calc(max(14px,env(safe-area-inset-left,0px)) + 104px)}
+body.m #hud-temp{bottom:auto;top:calc(16px + env(safe-area-inset-top,0px));left:calc(max(14px,env(safe-area-inset-left,0px)) + 196px)}
 body.m #hud-temp .lbl{display:none}
 body.m #tval{font-size:16px}
 body.m #hud-status{bottom:auto;top:calc(68px + env(safe-area-inset-top,0px));right:max(16px,env(safe-area-inset-right,0px))}
@@ -5797,12 +5797,19 @@ renderLoadoutSummary();
 resetJoy();
 requestAnimationFrame(frame);
 
-addEventListener('resize', () => {
+let fitW = 0, fitH = 0;
+function fitScreen() {
+  fitW = innerWidth; fitH = innerHeight;
   renderer.setPixelRatio(renderRatio()); renderer.setSize(innerWidth, innerHeight);
   if (touch.joyId === null) resetJoy();
   camera.aspect = innerWidth / innerHeight; camera.updateProjectionMatrix();
   menu.cam.aspect = innerWidth / innerHeight; menu.cam.updateProjectionMatrix();
-});
+}
+addEventListener('resize', fitScreen);
+addEventListener('orientationchange', () => { for (const ms of [100, 350, 800]) setTimeout(fitScreen, ms); });
+if (window.visualViewport) visualViewport.addEventListener('resize', fitScreen);
+setInterval(() => { if (innerWidth !== fitW || innerHeight !== fitH) fitScreen(); }, 500);   // whatever got missed
+fitW = innerWidth; fitH = innerHeight;
 
 // test hooks
 window.__gooseflesh = {
