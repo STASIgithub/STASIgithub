@@ -262,6 +262,41 @@ button.card[aria-pressed="true"]{border-color:var(--ember);background:rgba(227,1
 button.card[aria-pressed="true"] svg{color:var(--ember)}
 button:disabled{opacity:.4;cursor:not-allowed}
 #perks-done{align-self:center}
+/* multiplayer: rooms, lobby, spectating */
+input.txt{width:100%;box-sizing:border-box;font-family:var(--f-type);font-size:16px;letter-spacing:.06em;padding:12px 14px;color:var(--ink);background:rgba(221,214,198,.07);border:1px solid rgba(221,214,198,.3);border-radius:3px;outline:none;-webkit-user-select:text;user-select:text}
+input.txt:focus{border-color:var(--ember)}
+input.code{font-size:22px;letter-spacing:.35em;text-transform:uppercase;text-align:center}
+output.code{font-size:22px;letter-spacing:.3em;color:#fff;padding:6px 6px 6px 14px;background:rgba(0,0,0,.45);border:1px dashed rgba(221,214,198,.4);border-radius:3px;font-variant-numeric:tabular-nums}
+button.mini{clip-path:none;padding:10px 14px;font-size:12px}
+.code-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.code-row .lbl{font-size:12px;letter-spacing:.2em;text-transform:uppercase;color:var(--dim)}
+.code-entry{display:flex;gap:8px}
+.code-entry input{flex:1;min-width:0}
+.mp-big{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.mp-big button{padding:22px 10px}
+.seg.n5{grid-template-columns:repeat(5,1fr)}
+.seg.n5 button{padding:12px 2px}
+.rooms{display:flex;flex-direction:column;gap:8px;min-height:90px}
+.rooms .empty{padding:18px 4px}
+button.room{clip-path:none;display:grid;grid-template-columns:1fr auto;gap:3px 12px;text-align:left;text-transform:none;letter-spacing:.04em;padding:12px 14px;background:rgba(221,214,198,.06);color:var(--ink);border:1px solid rgba(221,214,198,.22);border-radius:4px}
+button.room:hover{background:rgba(221,214,198,.13)}
+button.room b{font-weight:400;font-size:15px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+button.room small{color:var(--dim);font-size:12px}
+button.room .n{grid-row:1 / span 2;grid-column:2;align-self:center;font-size:15px;color:var(--ember);font-variant-numeric:tabular-nums}
+.plist{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px}
+.plist li{display:flex;align-items:center;gap:10px;padding:9px 12px;background:rgba(221,214,198,.06);border:1px solid rgba(221,214,198,.16);border-radius:3px}
+.plist .tag2{margin-left:auto;color:var(--dim);font-size:11px;letter-spacing:.14em;text-transform:uppercase}
+.dot{width:12px;height:12px;border-radius:50%;flex:none;box-shadow:0 0 0 2px rgba(0,0,0,.5)}
+#tags{position:fixed;inset:0;pointer-events:none;z-index:12;overflow:hidden}
+.ntag{position:absolute;left:0;top:0;font-size:12px;letter-spacing:.12em;text-transform:uppercase;text-shadow:0 0 6px #000,0 0 2px #000;white-space:nowrap;will-change:transform}
+#spec{position:fixed;left:50%;bottom:calc(26px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);z-index:14;display:flex;align-items:center;gap:12px;padding:10px 12px;background:rgba(8,8,10,.74);border:1px solid rgba(221,214,198,.25);border-radius:4px;max-width:calc(100vw - 32px);box-sizing:border-box}
+#spec .who{display:flex;flex-direction:column;align-items:center;min-width:140px}
+#spec .lbl{font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--dim)}
+#spec b{font-weight:400;font-size:17px;letter-spacing:.1em}
+#spec button svg{width:16px;height:16px;display:block}
+#hud-team{position:absolute;top:calc(50px + env(safe-area-inset-top,0px));left:max(20px,env(safe-area-inset-left,0px));display:flex;flex-direction:column;gap:5px;font-size:11px}
+#hud-team span{display:flex;align-items:center;gap:7px}
+#hud-team span.dead{opacity:.45;text-decoration:line-through}
 .skins-empty{width:100%;min-height:200px;border:1px dashed rgba(221,214,198,.25);border-radius:4px;display:grid;place-items:center;color:var(--dim);font-size:13px;letter-spacing:.16em;text-transform:uppercase}
 
 @media (max-height:540px){
@@ -301,6 +336,7 @@ button:disabled{opacity:.4;cursor:not-allowed}
 
 <div id="hud" hidden>
   <div id="hud-tapes" aria-label="Tapes found"><svg class="vhs" viewBox="0 0 30 20" aria-hidden="true"><path fill="#fff" fill-rule="evenodd" d="M2.5 1h25A1.5 1.5 0 0 1 29 2.5v15a1.5 1.5 0 0 1-1.5 1.5h-25A1.5 1.5 0 0 1 1 17.5v-15A1.5 1.5 0 0 1 2.5 1zM5 3.2v2.2h20V3.2zM7.5 7.5v6.5h15V7.5zM6 16.2v1.3h2.5v-1.3zM21.5 16.2v1.3H24v-1.3z"/><path fill="#fff" fill-rule="evenodd" d="M11.3 8.4a2.35 2.35 0 1 1 0 4.7 2.35 2.35 0 1 1 0-4.7zm0 1.5a.85.85 0 1 0 0 1.7.85.85 0 1 0 0-1.7zM18.7 8.4a2.35 2.35 0 1 1 0 4.7 2.35 2.35 0 1 1 0-4.7zm0 1.5a.85.85 0 1 0 0 1.7.85.85 0 1 0 0-1.7z"/></svg><span id="pc">0/5</span></div>
+  <div id="hud-team" hidden></div>
   <div id="cross" hidden></div>
   <div id="blind" hidden><svg viewBox="0 0 40 40"><circle class="trk" cx="20" cy="20" r="16"/><circle class="arc" id="blind-arc" cx="20" cy="20" r="16"/></svg></div>
   <div id="hud-tr"><div id="hud-inv"></div><div id="hud-fx"></div></div>
@@ -319,6 +355,7 @@ button:disabled{opacity:.4;cursor:not-allowed}
     <h1>Goose&shy;flesh</h1>
     <nav class="menu-list" aria-label="Main menu">
       <button id="btn-start" type="button">Play</button>
+      <button id="btn-mp" class="ghost" type="button" hidden>Multiplayer</button>
       <button id="btn-settings" class="ghost" type="button">Settings</button>
       <button id="btn-skins" class="ghost" type="button">Skins</button>
       <button id="btn-perks" class="ghost" type="button">Perks</button>
@@ -354,7 +391,7 @@ button:disabled{opacity:.4;cursor:not-allowed}
   <div class="inner">
     <h2>Paused</h2>
     <p class="fine">The Voice is still out there.</p>
-    <div class="actions"><button id="btn-resume" type="button">Resume</button><button id="btn-settings-p" class="ghost" type="button">Settings</button><button id="btn-restart" class="ghost" type="button">Restart</button></div>
+    <div class="actions"><button id="btn-resume" type="button">Resume</button><button id="btn-settings-p" class="ghost" type="button">Settings</button><button id="btn-restart" class="ghost" type="button">Restart</button><button id="btn-leave-p" class="ghost" type="button" hidden>Leave room</button></div>
     <p class="fine" id="pause-hint"></p>
   </div>
 </section>
@@ -406,6 +443,68 @@ button:disabled{opacity:.4;cursor:not-allowed}
   </div>
 </section>
 
+<section class="screen center" id="scr-mp" hidden>
+  <div class="inner settings">
+    <h2>Multiplayer</h2>
+    <div class="setting"><label class="lbl" for="mp-name">Your name</label><input id="mp-name" class="txt" maxlength="14" autocomplete="off" spellcheck="false"></div>
+    <div class="mp-big"><button id="mp-create" type="button">Create a Room</button><button id="mp-join" type="button">Join a Room</button></div>
+    <p class="fine">Play together online. The more people in a room, the harder The Voice gets. If you're caught, you spectate whoever's still alive.</p>
+    <div class="actions"><button id="mp-back" class="ghost" type="button">Back</button></div>
+  </div>
+</section>
+
+<section class="screen center" id="scr-create" hidden>
+  <div class="inner settings">
+    <h2>Create a Room</h2>
+    <div class="setting"><label class="lbl" for="cr-name">Room name</label><input id="cr-name" class="txt" maxlength="24" autocomplete="off" spellcheck="false"></div>
+    <fieldset class="setting">
+      <legend>Players</legend>
+      <div class="seg n5" id="cr-max"><button type="button" data-max="2">2</button><button type="button" data-max="3">3</button><button type="button" data-max="4">4</button><button type="button" data-max="5">5</button><button type="button" data-max="6">6</button></div>
+      <p class="fine" id="cr-diff"></p>
+    </fieldset>
+    <fieldset class="setting">
+      <legend>Visibility</legend>
+      <div class="seg" id="cr-vis"><button type="button" data-vis="public">Public</button><button type="button" data-vis="private">Private</button></div>
+      <p class="fine" id="cr-vis-desc"></p>
+      <div class="code-row" id="cr-code-row" hidden><span class="lbl">Password</span><output id="cr-code" class="code"></output><button id="cr-copy" class="mini" type="button">Copy</button><button id="cr-reroll" class="mini ghost" type="button">New code</button></div>
+    </fieldset>
+    <div class="actions"><button id="cr-go" type="button">Create</button><button id="cr-back" class="ghost" type="button">Back</button></div>
+    <p class="fine" id="cr-status" role="status"></p>
+  </div>
+</section>
+
+<section class="screen center" id="scr-join" hidden>
+  <div class="inner loadout">
+    <h2>Join a Room</h2>
+    <h3 class="sub">Enter room code</h3>
+    <div class="code-entry"><input id="jn-code" class="txt code" maxlength="4" placeholder="CODE" autocomplete="off" autocapitalize="characters" spellcheck="false" aria-label="Room code"><button id="jn-paste" class="mini ghost" type="button">Paste</button><button id="jn-go" class="mini" type="button">Join</button></div>
+    <p class="fine" id="jn-status" role="status"></p>
+    <h3 class="sub">Public rooms <span id="jn-count"></span></h3>
+    <div class="seg n5" id="jn-filter" aria-label="Players in the room"><button type="button" data-f="any">Any</button><button type="button" data-f="1">1</button><button type="button" data-f="2">2</button><button type="button" data-f="3">3</button><button type="button" data-f="4">4+</button></div>
+    <p class="fine">Filter by how many players are in the room.</p>
+    <div id="jn-list" class="rooms"></div>
+    <div class="actions"><button id="jn-back" class="ghost" type="button">Back</button></div>
+  </div>
+</section>
+
+<section class="screen center" id="scr-room" hidden>
+  <div class="inner settings">
+    <p class="eyebrow" id="rm-vis"></p>
+    <h2 id="rm-name"></h2>
+    <div class="code-row"><span class="lbl" id="rm-code-lbl">Room code</span><output id="rm-code" class="code"></output><button id="rm-copy" class="mini" type="button">Copy</button></div>
+    <h3 class="sub">Players <span id="rm-count"></span></h3>
+    <ul id="rm-players" class="plist"></ul>
+    <p class="fine" id="rm-diff"></p>
+    <div id="rm-lo" class="code-row"></div>
+    <div class="actions"><button id="rm-start" type="button">Start</button><button id="rm-perks" class="ghost" type="button">Perks</button><button id="rm-leave" class="ghost" type="button">Leave</button></div>
+    <p class="fine" id="rm-status" role="status"></p>
+  </div>
+</section>
+
+<section class="screen center" id="scr-msg" hidden>
+  <div class="inner"><h2 id="msg-title"></h2><p class="lede" id="msg-text"></p><div class="actions"><button id="msg-ok" type="button">OK</button></div></div>
+</section>
+
 <section class="screen center" id="scr-skins" hidden>
   <div class="inner settings">
     <h2>Skins</h2>
@@ -419,7 +518,7 @@ button:disabled{opacity:.4;cursor:not-allowed}
     <h2 id="dead-title">The Voice found you.</h2>
     <p id="dead-stats"></p>
     <div class="actions"><button id="btn-retry" type="button">Try again</button></div>
-    <p class="fine">or press R</p>
+    <p class="fine" id="dead-hint">or press R</p>
   </div>
 </section>
 
@@ -431,6 +530,14 @@ button:disabled{opacity:.4;cursor:not-allowed}
     <div class="win-actions" id="win-actions"><button id="btn-again" type="button">Play again</button></div>
   </div>
 </section>
+
+<div id="tags" hidden></div>
+<div id="spec" hidden>
+  <button id="spec-prev" class="mini ghost" type="button" aria-label="Previous player"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M10 3L5 8l5 5" fill="none" stroke="currentColor" stroke-width="2"/></svg></button>
+  <div class="who"><span class="lbl">Spectating</span><b id="spec-name">Nobody</b></div>
+  <button id="spec-next" class="mini ghost" type="button" aria-label="Next player"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M6 3l5 5-5 5" fill="none" stroke="currentColor" stroke-width="2"/></svg></button>
+  <button id="spec-leave" class="mini ghost" type="button">Leave</button>
+</div>
 
 <div id="touch" hidden>
   <div id="joy-base"><div id="joy-knob"></div></div>
@@ -492,6 +599,22 @@ const CFG = {
   EVADE_SPEED_T: 3, EVADE_HIDE_T: 8, EVADE_LOCK: 4, SCAVENGER_PICKUP: 40, HEAD_REVEAL: 6, HEAD_STAMINA: 8,
 };
 
+// difficulty grows with the number of players in a room (1 = single player, the base values)
+const BASE_CFG = { ...CFG };
+CFG.HEAR_MULT = 1;
+function applyDifficulty(n) {
+  const k = Math.max(0, Math.min(5, n - 1));
+  for (const key of ['PATROL', 'SEARCH', 'INVESTIGATE', 'ALERTED', 'HUNT', 'CHASE', 'SG_ALERT_SPEED', 'SG_FOLLOW_SPEED']) CFG[key] = BASE_CFG[key] * (1 + 0.04 * k);
+  for (const key of ['SIGHT_DARK', 'SIGHT_DARK_CROUCH', 'SIGHT_LIGHT', 'SG_SIGHT', 'SG_SIGHT_RUN']) CFG[key] = BASE_CFG[key] * (1 + 0.05 * k);
+  CFG.HEAR_MULT = 1 + 0.08 * k;
+  CFG.BLIND_TIME = BASE_CFG.BLIND_TIME + 0.08 * k;
+  CFG.SG_COUNT = Math.min(6, BASE_CFG.SG_COUNT + k);
+}
+function difficultyText(n) {
+  const k = Math.max(0, Math.min(5, n - 1));
+  if (!k) return 'Difficulty for 1 player: normal.';
+  return `Difficulty for ${n} players: The Voice is ${4 * k}% faster, hears ${8 * k}% farther and sees ${5 * k}% farther. Blinding it takes ${(BASE_CFG.BLIND_TIME + 0.08 * k).toFixed(2)} s. ${Math.min(6, BASE_CFG.SG_COUNT + k)} surveillance geese.`;
+}
 // what the five tapes say, shown as a transcript on the ending screen; {word} marks the circled word of the secret message
 const TAPE_TRANSCRIPTS = [
   "To whoever finds this. I hid these tapes so {he} couldn't hear them. Yes, he listens. Keep your light off when you can. He notices it from very far away.",
@@ -1120,6 +1243,7 @@ menu.scene.fog = new THREE.FogExp2(0x000000, 0.1);
 let W = null;
 const DBG = { freeze: false, holdJS: null, noLoop: false };
 const player = {};
+let TP = player;   // the player The Voice's senses are checking right now (you, or a teammate in a room)
 let state = 'menu';
 let gameTime = 0;
 let shakeAmt = 0;
@@ -1248,7 +1372,17 @@ function disposeGroup(g) {
   });
 }
 
-function buildWorld() {
+// a seeded random generator, so everyone in a room gets the same maze
+function seededRandom(seed) {
+  let a = seed >>> 0;
+  return () => { a = (a + 0x6D2B79F5) | 0; let t = Math.imul(a ^ (a >>> 15), 1 | a); t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t; return ((t ^ (t >>> 14)) >>> 0) / 4294967296; };
+}
+function buildWorld(seed) {
+  if (seed == null) return buildWorldNow();
+  const orig = Math.random; Math.random = seededRandom(seed);
+  try { return buildWorldNow(); } finally { Math.random = orig; }
+}
+function buildWorldNow() {
   const { g, N, rooms } = generateMaze(CELLS);
   W = { g, N, rooms, group: new THREE.Group(), obstacles: [], spots: [], pickups: [], fridges: [], cabinets: [], thrown: [], xray: [], avoid: new Uint8Array(N * N), used: new Uint8Array(N * N), sideUsed: new Set(), floors: [], glows: [] };
   // geometry: floor, ceiling, walls
@@ -1398,7 +1532,7 @@ function makeFridge(i, k) {
   const f = {
     isFridge: true, searched: false, warned: false, flickerT: 0, ol, iceGuaranteed: false,
     x: p.x, z: p.z, dx: p.dx, dz: p.dz, fx: p.x - p.dx * (D / 2 + 0.6), fz: p.z - p.dz * (D / 2 + 0.6),
-    door, open: false, anim: 0, used: 0, powered: true, offUntil: 0, ledMat, innerMat, glow, smokeAcc: 0, hum: AU.makeHum(p.x, p.z),
+    door, open: false, anim: 0, used: 0, powered: true, offUntil: 0, ledMat, innerMat, glow, smokeAcc: 0, hum: null,
   };
   W.fridges.push(f); return f;
 }
@@ -2161,6 +2295,7 @@ function toast(msg, bad = false, dur = 3.2, flavor = false) {
   els.toast.textContent = msg; els.toast.classList.toggle('bad', bad); els.toast.style.opacity = 1; toastTimer = dur; }
 function resetPlayer() {
   Object.assign(player, {
+    id: MP.inGame ? MP.id : undefined, name: MP.name, alive: true,
     x: center(1), z: center(1), yaw: 0, pitch: 0, vx: 0, vz: 0, eye: CFG.STAND_EYE, crouch: false, hidden: null,
     stamina: CFG.STAMINA_MAX, exhausted: false, sinceUse: 99, sprinting: false, speedNow: 0, consuming: false, stamShowT: 0,
     breathB: 0.1, breathT: 1.2, breathOut: false, breathPh: 0,
@@ -2190,13 +2325,15 @@ function resetGoose() {
     sees: false, light: false, senseT: 0, msgCD: 0, forcePathT: 0, merpT: 3, stingCD: 0, eydamCD: 0, swerveCD: 0, rearCD: 0, cornerCD: 0, hHist: [], dananaArmed: true,
     blindCharge: 0, blindImm: 0, blindT: 0, bait: null, baitPhase: 'go', eatT: 0, eatTotal: 1, munchT: 0, bestRem: 1e9, progT: 0, dist: 99, neckX: 0.2, occluded: true,
   };
+  W.goose.lastSeen = { x: W.goose.x, z: W.goose.z };   // never null, so a chase or hunt always has somewhere to go
   GOOSE_RIG.root.visible = true;
 }
 
-function newGame() {
+function newGame(seed) {
   if (W && W.fridges) W.fridges.forEach(f => AU.killHum(f.hum));
   if (W && W.group) { scene.remove(W.group); disposeGroup(W.group); }
-  buildWorld();
+  buildWorld(seed);
+  for (const f of W.fridges) f.hum = AU.makeHum(f.x, f.z);
   scene.add(W.group);
   resetPlayer(); resetGoose(); spawnSurveillance();
   if (hasPerk('headstart')) {   // the nearest tape (by walking distance) is outlined for the first seconds
@@ -2247,14 +2384,16 @@ document.addEventListener('pointerlockerror', () => lockFailed());
 
 function startPlaying() {
   state = 'playing';
-  ['scr-start', 'scr-pause', 'scr-dead', 'scr-win', 'scr-settings', 'scr-perks', 'scr-skins'].forEach(id => $(id).hidden = true);
-  els.hud.hidden = false;
+  ['scr-start', 'scr-pause', 'scr-dead', 'scr-win', 'scr-settings', 'scr-perks', 'scr-skins', 'scr-mp', 'scr-create', 'scr-join', 'scr-room', 'scr-msg'].forEach(id => $(id).hidden = true);
+  els.hud.hidden = false; $('tags').hidden = !MP.inGame; $('spec').hidden = true;
   $('touch').hidden = !isMobile(); releaseTouches();
   AU.setAmbient(true);
   if (!isMobile()) canvas.focus();
 }
 function beginNewRun() {
+  if (MP.active) { backToRoom(); return; }
   AU.init();
+  applyDifficulty(1); skinMats('dusty').jacket.color.setHex(SKINS.dusty.jacket);
   newGame();
   startPlaying();
   touch.run = false;
@@ -2265,10 +2404,11 @@ function beginNewRun() {
 }
 function pauseGame(hint) {
   if (state !== 'playing') return;
-  state = 'paused';
-  $('scr-pause').hidden = false; $('pause-hint').textContent = hint || '';
+  state = 'paused';   // in a room the game keeps going for everyone while your menu is open
+  $('scr-pause').hidden = false; $('pause-hint').textContent = hint || (MP.inGame ? "The game doesn't stop for the others." : '');
+  $('btn-restart').hidden = MP.active; $('btn-leave-p').hidden = !MP.active;
   $('touch').hidden = true; releaseTouches();
-  AU.setAmbient(false); AU.setChase(0);
+  if (!MP.inGame) { AU.setAmbient(false); AU.setChase(0); }
   for (const k in keys) keys[k] = false;
 }
 function resumeGame() {
@@ -2278,8 +2418,8 @@ function resumeGame() {
 }
 
 function caught() {
-  if (state !== 'playing') return;
-  state = 'caught';
+  if (state !== 'playing' && !(MP.inGame && state === 'paused')) return;
+  state = 'caught'; player.alive = false; $('scr-pause').hidden = true;
   if (player.hidden) { player.hidden = null; els.hide.hidden = true; }
   els.hud.hidden = true; $('touch').hidden = true; hideSpeedLines();
   GOOSE_RIG.root.visible = false;
@@ -2290,12 +2430,17 @@ function caught() {
   requestAnimationFrame(() => { els.flashFx.style.transition = 'opacity .35s'; els.flashFx.style.opacity = 0; });
 }
 function showDead(reason) {
+  if (MP.inGame) { localDied(reason); return; }   // in a room: spectate whoever's left
   state = 'dead';
   $('dead-title').textContent = reason === 'heat' ? 'The heat took you.' : 'The Voice found you.';
   JS.group.visible = false; jumpLights(false);
   if (document.pointerLockElement) document.exitPointerLock();
   const m = Math.floor(gameTime / 60), s = Math.floor(gameTime % 60);
-  $('dead-stats').textContent = `Tapes found: ${player.tapes} of ${CFG.TAPES}. Survived ${m}:${String(s).padStart(2, '0')}. Body temperature ${tempQ().toFixed(1)}°F.`;
+  $('dead-stats').textContent = MP.active ? `Your team found ${player.tapes} of ${CFG.TAPES} tapes in ${m}:${String(s).padStart(2, '0')}.`
+    : `Tapes found: ${player.tapes} of ${CFG.TAPES}. Survived ${m}:${String(s).padStart(2, '0')}. Body temperature ${tempQ().toFixed(1)}°F.`;
+  if (MP.active) $('dead-title').textContent = 'Everyone was caught.';
+  $('btn-retry').textContent = MP.active ? 'Back to the room' : 'Try again'; $('dead-hint').hidden = MP.active;
+  $('spec').hidden = true; $('tags').hidden = true;
   $('scr-dead').hidden = false;
   els.danger.style.opacity = 0;
 }
@@ -2306,9 +2451,11 @@ function jaggedClip() {
   for (let x = 100; x >= 0; x -= 5) bot.push(`${x}% calc(100% - ${rr(0, 7).toFixed(1)}px)`);
   return `polygon(${top.concat(bot).join(',')})`;
 }
-function win() {
-  if (state !== 'playing') return;
-  state = 'won';
+function win(force) {
+  if (state !== 'playing' && !force) return;
+  state = 'won'; $('spec').hidden = true; $('tags').hidden = true; $('scr-pause').hidden = true;
+  JS.group.visible = false; jumpLights(false); els.fade.style.opacity = 0;
+  $('btn-again').textContent = MP.active ? 'Back to the room' : 'Play again';
   if (document.pointerLockElement) document.exitPointerLock();
   els.hud.hidden = true; els.hide.hidden = true; $('touch').hidden = true; AU.setChase(0); AU.setAmbient(false); hideSpeedLines();
   const L = $('transcript'); L.innerHTML = ''; L.className = '';
@@ -2350,6 +2497,9 @@ addEventListener('keydown', e => {
     else if (e.code === 'Digit4') useItem('ice');
     else if (e.code === 'ControlLeft' || e.code === 'ControlRight' || e.code === 'KeyC') toggleCrouch();
     else if (e.code === 'Escape' && (fallbackLook || isMobile())) pauseGame();
+  } else if (state === 'spectate' && !e.repeat) {
+    if (e.code === 'ArrowLeft' || e.code === 'KeyA' || e.code === 'KeyQ') specCycle(-1);
+    else if (e.code === 'ArrowRight' || e.code === 'KeyD' || e.code === 'KeyE') specCycle(1);
   } else if ((state === 'dead' || state === 'won') && (e.code === 'KeyR' || e.code === 'Enter') && !e.repeat) {
     beginNewRun();
   }
@@ -2373,6 +2523,7 @@ $('btn-start').addEventListener('click', beginNewRun);
 els.inv.addEventListener('pointerdown', e => { const b = e.target.closest('.slot'); if (!b) return; e.preventDefault(); e.stopPropagation(); useItem(b.dataset.item); });
 $('btn-resume').addEventListener('click', resumeGame);
 $('btn-restart').addEventListener('click', beginNewRun);
+$('btn-leave-p').addEventListener('click', () => mpLeave());
 $('btn-retry').addEventListener('click', beginNewRun);
 $('btn-again').addEventListener('click', beginNewRun);
 document.addEventListener('visibilitychange', () => { if (document.hidden) pauseGame(); });
@@ -2467,7 +2618,7 @@ function renderLoadout() {
   renderLoadoutSummary();
 }
 function renderLoadoutSummary() {
-  $('loadout-sum').innerHTML = loadoutValid()
+  $('rm-lo').innerHTML = $('loadout-sum').innerHTML = loadoutValid()
     ? loadout.perks.map(id => `<span class="chip">${icon(id)}${PERKS[id].name}</span>`).join('') + `<span class="chip">${icon(loadout.item)}${LOADOUT_ITEMS[loadout.item].name}</span>`
     : '<span class="chip">Choose your perks</span>';
 }
@@ -2482,8 +2633,9 @@ $('item-cards').addEventListener('click', e => {
   const b = e.target.closest('[data-pick]'); if (!b) return;
   loadout.item = b.dataset.pick; saveLoadout(); renderLoadout(); const nb = $('item-cards').querySelector(`[data-pick="${loadout.item}"]`); if (nb) nb.focus();
 });
-$('btn-perks').addEventListener('click', () => { $('scr-start').hidden = true; $('scr-perks').hidden = false; renderLoadout(); });
-$('perks-done').addEventListener('click', () => { if (!loadoutValid()) return; saveLoadout(); $('scr-perks').hidden = true; $('scr-start').hidden = false; renderLoadoutSummary(); });
+$('btn-perks').addEventListener('click', () => { perksFrom = 'scr-start'; $('scr-start').hidden = true; $('scr-perks').hidden = false; renderLoadout(); });
+let perksFrom = 'scr-start';
+$('perks-done').addEventListener('click', () => { if (!loadoutValid()) return; saveLoadout(); $('scr-perks').hidden = true; $('scr-' + perksFrom.replace('scr-', '')).hidden = false; renderLoadoutSummary(); });
 $('btn-skins').addEventListener('click', () => { $('scr-start').hidden = true; $('scr-skins').hidden = false; });
 $('skins-back').addEventListener('click', () => { $('scr-skins').hidden = true; $('scr-start').hidden = false; });
 $('btn-settings-p').addEventListener('click', () => openSettings('scr-pause'));
@@ -2516,29 +2668,40 @@ function interact() {
   if (!tgt) return;
   if (tgt.kind === 'pickup') {
     const p = tgt.p;
-    if (p.type === 'battery') {
-      const scav = p === P.scavBat;   // Scavenger's outlined battery
-      if (!scav && P.battery >= CFG.BATTERY_MAX - 0.05) { toast("Your flashlight's already full."); return; }
-      P.battery = Math.min(CFG.BATTERY_MAX, P.battery + (scav ? CFG.SCAVENGER_PICKUP : CFG.BATTERY_PICKUP)); P.lightDead = false;
-      if (scav) { P.scavUsed = true; P.scavBat = null; }
-      AU.battery(); toast(scav ? `Scavenger: +${CFG.SCAVENGER_PICKUP} seconds of flashlight.` : `+${CFG.BATTERY_PICKUP} seconds of flashlight.`);
-    } else {
-      // tapes always play in order: the first one you find plays recording 1, the second recording 2, and so on
-      P.tapes++; AU.click();
-      els.tapes.classList.remove('got'); void els.tapes.offsetWidth; els.tapes.classList.add('got');
-      playTape(P.tapes);
-      if (hasPerk('headstart')) P.infStamT = CFG.HEAD_STAMINA;
-      if (hasPerk('ase')) {   // All Seeing Eye: The Voice, the surveillance geese and the nearest fridge, through walls
-        P.aseT = CFG.ASE_TIME; let bd = 1e9;
-        for (const f of W.fridges) { const d = Math.hypot(f.x - P.x, f.z - P.z); if (d < bd) { bd = d; P.aseFridge = f; } }
-      }
-      if (P.tapes >= CFG.TAPES) { p.taken = true; p.mesh.visible = false; p.glow.visible = false; toast('That was the last tape.', false, 2, true); setTimeout(win, 900); return; }
+    if (p.type === 'battery' && p !== P.scavBat && P.battery >= CFG.BATTERY_MAX - 0.05) { toast("Your flashlight's already full."); return; }
+    if (MP.inGame && !MP.host) {   // the host decides who got it first
+      if (gameTime - (p.claimT || -9) > 1) { p.claimT = gameTime; netClient({ t: 'take', i: W.pickups.indexOf(p) }); }
+      return;
     }
-    p.taken = true; p.mesh.visible = false; p.glow.visible = false;
+    if (MP.inGame) { hostTake(p, player); return; }
+    hidePickup(p);
+    gainPickup(p, p.type === 'tape' ? P.tapes + 1 : 0);
   } else if (tgt.kind === 'spot') enterSpot(tgt.s);
   else if (tgt.kind === 'fridge') toggleFridge(tgt.f, true);
   else if (tgt.kind === 'fsearch') startSearch(tgt.f);
   else if (tgt.kind === 'cabinet') startSearch(tgt.c);
+}
+function hidePickup(p) { p.taken = true; p.mesh.visible = false; p.glow.visible = false; }
+// what you get from a battery or a tape you picked up. n: the tape count afterwards (the team's, in a room).
+function gainPickup(p, n) {
+  const P = player;
+  if (p.type === 'battery') {
+    const scav = p === P.scavBat;   // Scavenger's outlined battery
+    P.battery = Math.min(CFG.BATTERY_MAX, P.battery + (scav ? CFG.SCAVENGER_PICKUP : CFG.BATTERY_PICKUP)); P.lightDead = false;
+    if (scav) { P.scavUsed = true; P.scavBat = null; }
+    AU.battery(); toast(scav ? `Scavenger: +${CFG.SCAVENGER_PICKUP} seconds of flashlight.` : `+${CFG.BATTERY_PICKUP} seconds of flashlight.`);
+    return;
+  }
+  // tapes always play in order: the first one found plays recording 1, the second recording 2, and so on
+  P.tapes = n; AU.click();
+  els.tapes.classList.remove('got'); void els.tapes.offsetWidth; els.tapes.classList.add('got');
+  playTape(n);
+  if (hasPerk('headstart')) P.infStamT = CFG.HEAD_STAMINA;
+  if (hasPerk('ase')) {   // All Seeing Eye: The Voice, the surveillance geese and the nearest fridge, through walls
+    P.aseT = CFG.ASE_TIME; let bd = 1e9;
+    for (const f of W.fridges) { const d = Math.hypot(f.x - P.x, f.z - P.z); if (d < bd) { bd = d; P.aseFridge = f; } }
+  }
+  if (n >= CFG.TAPES) { toast('That was the last tape.', false, 2, true); if (!MP.inGame) setTimeout(win, 900); }
 }
 function enterSpot(s) {
   const P = player;
@@ -2546,8 +2709,12 @@ function enterSpot(s) {
   els.hide.className = 'fx ' + s.type; els.hide.hidden = false;
   if (s.type === 'locker') { s.openT = 0.45; AU.creak(); } else AU.paper();
   gooseHear(s.x, s.z, 3.5, { kind: 'hide', pri: 1.5, player: true });
-  if (s.battery) {
+  if (s.battery && MP.inGame && !MP.host) {   // ask the host, so two people can't both take it
+    if (P.battery < CFG.BATTERY_MAX - 0.05) netClient({ t: 'spotbat', i: W.spots.indexOf(s) });
+    else toast("There's a battery in here, but your flashlight's full.");
+  } else if (s.battery) {
     s.battery = false;
+    if (MP.inGame) netHost({ t: 'spotbat', i: W.spots.indexOf(s), by: MP.id, quiet: 1 });
     if (P.battery < CFG.BATTERY_MAX - 0.05) { P.battery = Math.min(CFG.BATTERY_MAX, P.battery + CFG.BATTERY_PICKUP); P.lightDead = false; AU.battery(); toast(`Found a battery ${s.type === 'bed' ? 'under the bed' : 'in the locker'}. +${CFG.BATTERY_PICKUP} seconds.`); }
     else { s.battery = true; toast("There's a battery in here, but your flashlight's full."); }
   }
@@ -2620,11 +2787,17 @@ function updateThrown(dt) {
   }
 }
 function muffinLanded(m) {
-  const G = W.goose, P = player; if (!G || state !== 'playing') return;
+  const G = W.goose, P = player; if (!G) return;
+  if (MP.inGame && !MP.host) {   // the host puts the muffin in everyone's game and sends The Voice after it
+    netClient({ t: 'muf', x: +m.x.toFixed(2), z: +m.z.toFixed(2) }); m.gone = true; W.group.remove(m.mesh);
+    P.linger = 0; P.ax = P.x; P.az = P.z; return;
+  }
+  if (!(state === 'playing' || MP.inGame)) return;
+  if (MP.inGame) { m.id = ++MP.muffinId; netHost({ t: 'muf', id: m.id, x: +m.x.toFixed(2), z: +m.z.toFixed(2) }); }
   G.bait = m; G.baitPhase = 'go'; gooseSet(G, 'bait');
   // it forgets your trail
   P.linger = 0; P.ax = P.x; P.az = P.z; G.scent = false; G.knowT = 0; G.lastSeen = { x: m.x, z: m.z };
-  if (!gooseVoice(G, 'muffins', 'BLUEBERRY MUFFINS', { maxD: 95, gain: 1.35, urgent: true, beak: 1.2, range: 60 })) AU.honk(G.x, G.z, { pitch: 1.2, loud: 1.3 });
+  if (!gooseVoice(G, 'muffins', 'BLUEBERRY MUFFINS', { maxD: 95, gain: 1.35, urgent: true, beak: 1.2, range: 60 })) vfx('honk', { x: G.x, z: G.z, o: { pitch: 1.2, loud: 1.3 } });
   toast('The Voice smells the muffin. It forgot about you.', false, 3, true);
 }
 function gooseAfterMuffin(G) {
@@ -2642,6 +2815,10 @@ function startSearch(c) {
 function cancelSearch() { player.searching = null; toast('You stopped searching.', false, 1.2, true); }
 function finishSearch(c) {
   c.searched = true; player.searching = null;
+  if (MP.inGame) {   // everyone sees it opened; what's inside is yours alone
+    const m = { t: 'srch', k: c.isFridge ? 'f' : 'c', i: (c.isFridge ? W.fridges : W.cabinets).indexOf(c) };
+    if (MP.host) netHost(m); else netClient(m);
+  }
   const r = Math.random() * 100;
   if (c.isFridge) {   // refrigerator: 30% muffin, 15% ice pack, 55% nothing (Hypothermia: the first one you open has an ice pack)
     if (c.iceGuaranteed) { c.iceGuaranteed = false; giveItem('ice'); return; }
@@ -3051,7 +3228,8 @@ function updateTemperature(dt) {
 }
 let collapseT = 0;
 function heatstroke() {
-  if (state !== 'playing') return;
+  if (state !== 'playing' && !(MP.inGame && state === 'paused')) return;
+  $('scr-pause').hidden = true; player.alive = false;
   state = 'collapse'; collapseT = 0;
   if (player.hidden) { player.hidden = null; els.hide.hidden = true; }
   els.hud.hidden = true; $('touch').hidden = true;
@@ -3076,6 +3254,7 @@ function setFridgePower(f, on) {
 }
 function toggleFridge(f, byPlayer) {
   f.open = !f.open;
+  if (MP.inGame && !MP.host && byPlayer) { f.localT = gameTime; netClient({ t: 'fr', i: W.fridges.indexOf(f), o: f.open ? 1 : 0 }); }
   if (byPlayer && f.open && hasPerk('hypothermia') && !player.firstFridge) { player.firstFridge = true; if (!f.searched) f.iceGuaranteed = true; }
   AU.fridgeDoor(f.x, f.z, f.open);
   gooseHear(f.x, f.z, CFG.FRIDGE_NOISE, { kind: 'fridge', pri: 2, player: false, exact: true });
@@ -3083,15 +3262,15 @@ function toggleFridge(f, byPlayer) {
 }
 let humT = 0;
 function updateFridges(dt) {
-  const P = player;
+  const P = player, auth = !MP.inGame || MP.host;   // in someone else's room the host keeps the fridges' power
   let best = null, bd = 1e9;
   for (const f of W.fridges) {
-    if (!f.powered && gameTime >= f.offUntil) setFridgePower(f, true);   // cooldown runs whether or not you are nearby
+    if (auth && !f.powered && gameTime >= f.offUntil) setFridgePower(f, true);   // cooldown runs whether or not you are nearby
     f.anim += ((f.open ? 1 : 0) - f.anim) * (1 - Math.exp(-dt * 7));
     f.door.rotation.y = -1.75 * f.anim * f.anim * (3 - 2 * f.anim);
     const left = f.powered ? clamp(1 - f.used / CFG.FRIDGE_POWER, 0, 1) : 0, low = f.powered && left < CFG.FRIDGE_LOW;
     const cold = f.open && f.powered && !low;   // a fridge on low power can't cool you
-    if (low) { f.used += dt; if (f.used >= CFG.FRIDGE_POWER) { setFridgePower(f, false); continue; } }   // it runs itself down, then recharges
+    if (low && auth) { f.used += dt; if (f.used >= CFG.FRIDGE_POWER) { setFridgePower(f, false); continue; } }   // it runs itself down, then recharges
     let light = f.powered ? 0.12 + 0.78 * left : 0;
     if (f.flickerT > 0) { f.flickerT -= dt; light = Math.random() < 0.5 ? 0.9 : 0.05; }   // sputters as it dies
     f.innerMat.emissiveIntensity = light;
@@ -3108,6 +3287,7 @@ function updateFridges(dt) {
     P.cooling = true;
     P.temp = Math.max(CFG.TEMP_FLOOR, P.temp - CFG.COOL_RATE * (hasPerk('hypothermia') ? CFG.HYPO_COOL : 1) * dt);
     best.used += dt;   // cumulative cooling time: survives closing, reopening and walking away
+    if (!auth) { const i = W.fridges.indexOf(best); MP.fuse[i] = (MP.fuse[i] || 0) + dt; }
     if (!best.warned && best.used >= CFG.FRIDGE_POWER * (1 - CFG.FRIDGE_LOW)) { best.warned = true; toast("This refrigerator's power is low. It can't cool you anymore.", false, 3); }
     if (P.temp <= CFG.TEMP_FLOOR + 1e-6) { P.temp = CFG.TEMP_FLOOR; P.tempPauseT = CFG.COOL_PAUSE; P.tempRiseT = rr(3, 5); toast('You feel cool again.', false, 2.5, true); }
   }
@@ -3140,10 +3320,24 @@ function gooseSearch(G) {
   const near = W.floors.filter(i => d[i] >= 1 && d[i] <= 4 && !W.avoid[i]);
   G.searchPts = shuffle(near).slice(0, 2).map(i => ({ x: center(i % N) + rr(-0.6, 0.6), z: center((i / N) | 0) + rr(-0.6, 0.6) }));
 }
+// who The Voice and its geese can go after: you in single player, every living player in a room
+function voiceTargets() {
+  if (!MP.inGame) return [player];
+  const out = [];
+  if (player.alive) out.push(player);
+  for (const r of MP.remotes.values()) if (r.alive && r.ready) out.push(r);
+  return out;
+}
+const unseenP = p => p.undiesT > 0 || p.evadeHideT > 0;
+// a message for one player's screen. In a room the host sends it to whoever it's about.
+function tell(p, msg, bad, dur, flavor) {
+  if (!p || p === player) toast(msg, bad, dur, flavor);
+  else netHost({ t: 'tell', to: p.id, m: msg, b: bad ? 1 : 0, d: dur, f: flavor ? 1 : 0 });
+}
 function pickPatrolTarget(G) {
   const N = W.N, d = bfs(tileOf(G.x), tileOf(G.z));
-  const nearPlayer = Math.random() < 0.4;
-  const pd = nearPlayer ? bfs(tileOf(player.x), tileOf(player.z)) : null;
+  const nearPlayer = Math.random() < 0.4, near = pick(voiceTargets()) || player;
+  const pd = nearPlayer ? bfs(tileOf(near.x), tileOf(near.z)) : null;
   const c = [];
   for (const i of W.floors) {
     if (W.avoid[i] || d[i] < 4) continue;
@@ -3153,8 +3347,9 @@ function pickPatrolTarget(G) {
   return { x: center(i % N) + rr(-0.5, 0.5), z: center((i / N) | 0) + rr(-0.5, 0.5) };
 }
 function gooseEye(G) { const f = 1.1; return [G.x + Math.sin(G.yaw) * f, CFG.GOOSE_EYE, G.z + Math.cos(G.yaw) * f]; }
+// TP: the player being checked right now (you, or a teammate in a room)
 function gooseSees(G) {
-  const P = player; if (P.hidden) return false;
+  const P = TP; if (P.hidden) return false;
   const dist = G.dist, range = P.flashOn ? CFG.SIGHT_LIGHT : (P.crouch ? CFG.SIGHT_DARK_CROUCH : CFG.SIGHT_DARK);
   if (dist > range) return false;
   if (!P.flashOn && dist > CFG.SIGHT_CLOSE) {
@@ -3173,43 +3368,52 @@ function beamSpot() {
   return [o.x + dir.x * maxD, o.y + dir.y * maxD, o.z + dir.z * maxD];
 }
 function gooseNoticesLight(G) {
-  const [sx, sy, sz] = beamSpot(), dx = sx - G.x, dz = sz - G.z, d = Math.hypot(dx, dz);
-  if (d > 28 * (0.4 + 0.6 * player.battery / CFG.BATTERY_MAX)) return false;
+  const P = TP, spot = P === player ? beamSpot() : P.beam; if (!spot) return false;
+  const [sx, sy, sz] = spot, dx = sx - G.x, dz = sz - G.z, d = Math.hypot(dx, dz);
+  const frac = P === player ? P.battery / CFG.BATTERY_MAX : (P.bf || 0);
+  if (d > 28 * (0.4 + 0.6 * frac)) return false;
   if (d > 9) { const dot = (dx * Math.sin(G.yaw) + dz * Math.cos(G.yaw)) / d; if (dot < -0.25) return false; }
   return los3(G.x, CFG.GOOSE_EYE, G.z, sx, sy, sz);
 }
 // One entry point for everything the goose can hear.
-// o.kind: run, step, breath, fridge, hide, search. o.pri: importance. o.player: the sound is the player's own body.
-// o.exact: no position error. o.reveal: close and clear enough, it tells the goose exactly where the player is.
+// o.kind: run, step, breath, fridge, hide, search. o.pri: importance. o.player: the sound is a player's own body.
+// o.exact: no position error. o.reveal: close and clear enough, it tells the goose exactly where that player is.
+// o.p: which player made it (a teammate in a room; you by default).
 function gooseHear(x, z, r, o = {}) {
-  const G = W && W.goose; if (!G || state !== 'playing') return false;
-  if (G.state === 'bait' || G.state === 'blind' || (o.player && unseen())) return false;
+  if (MP.inGame && !MP.host) {   // in someone else's room The Voice lives on the host's computer: tell it what you did
+    if (player.alive) netClient({ t: 'hear', x: +x.toFixed(2), z: +z.toFixed(2), r: +r.toFixed(2), k: o.kind || '', p: o.pri || 1, pl: o.player ? 1 : 0, ex: o.exact ? 1 : 0, rv: o.reveal ? 1 : 0 });
+    return false;
+  }
+  const G = W && W.goose; if (!G || !(state === 'playing' || MP.inGame)) return false;
+  const P = o.p || player;
+  if (G.state === 'bait' || G.state === 'blind' || (o.player && unseenP(P))) return false;
+  r *= CFG.HEAR_MULT;   // it hears farther when there are more of you
   const d = Math.hypot(x - G.x, z - G.z);
   if (wallsBetween(G.x, G.z, x, z)) r *= 0.65;
   if (d > r) return false;
   if (G.state === 'chase' || G.state === 'alert') return true;
   const pri = o.pri || 1;
   if (o.reveal && o.player && d < r * 0.45) {
-    G.lastSeen = { x: player.x, z: player.z }; G.knowT = Math.max(G.knowT, 2.2);
-    if (G.state !== 'hunt') { gooseSet(G, 'hunt'); voice(G, { pitch: 1.05, loud: 1.1 }); G.beakT = 0.4; hearMsg(G, o.kind, true); }
+    G.lastSeen = { x: P.x, z: P.z }; G.knowT = Math.max(G.knowT, 2.2); G.tid = P.id;
+    if (G.state !== 'hunt') { gooseSet(G, 'hunt'); voice(G, { pitch: 1.05, loud: 1.1 }); G.beakT = 0.4; hearMsg(G, o.kind, true, P); }
     return true;
   }
-  if (G.state === 'hunt') { if (o.player) G.knowT = Math.max(G.knowT, 1.2); return true; }
+  if (G.state === 'hunt') { if (o.player && (!MP.inGame || G.tid === P.id)) G.knowT = Math.max(G.knowT, 1.2); return true; }
   if (G.state === 'investigate' && pri < (G.invPri || 0) && G.stateT < 3) return true;   // busy with a more important sound
   const j = o.exact ? 0 : lerp(0.4, 1.8, clamp(d / r, 0, 1));
   gooseInvestigate(G, x + rr(-j, j), z + rr(-j, j), pri >= 3 ? CFG.ALERTED : CFG.INVESTIGATE);
-  G.invPri = pri;
-  hearMsg(G, o.kind, false);
+  G.invPri = pri; if (o.player) G.tid = P.id;
+  hearMsg(G, o.kind, false, P);
   return true;
 }
-function hearMsg(G, kind, located) {
+function hearMsg(G, kind, located, P) {
   if (G.msgCD > 0) return;
   const m = located ? { breath: 'The Voice heard you breathing. It knows where you are.' }[kind]
     : { run: 'The Voice heard you running.', breath: 'The Voice heard you breathing.', fridge: 'The Voice heard the refrigerator.' }[kind];
   if (!m) return;
   G.msgCD = 8;
   if (!located && kind === 'run') { voice(G, { pitch: 1.08, loud: 1.2 }); G.beakT = 0.4; }
-  toast(m, true, 3.2, true);
+  tell(P, m, true, 3.2, true);
 }
 function moveGoose(G, tx, tz, speed, dt) {
   const GR = G.r || CFG.GOOSE_R;
@@ -3248,64 +3452,94 @@ function moveGoose(G, tx, tz, speed, dt) {
 }
 function faceToward(G, dx, dz, dt, rate) { G.yaw += clamp(angDiff(G.yaw, Math.atan2(dx, dz)), -dt * rate, dt * rate); }
 
-function farHonk(G, o) { if (G.dist >= CFG.MERP_RANGE) { AU.honk(G.x, G.z, o); G.beakT = 0.35; } }
-// close up it MERPs, far away it honks
-function voice(G, o) { if (G.dist < CFG.MERP_RANGE + 8) merp(G, true, o.loud); else AU.honk(G.x, G.z, o); }
-function merp(G, urgent, loud) {
-  AU.merp(G.x, G.z, { urgent, loud: loud || 1 });
-  G.beakT = Math.max(G.beakT, 0.4);
-  caption(G, urgent ? 'MERP!' : 'MERP', urgent);
+// Sounds from The Voice and its geese. The host's game decides them and plays them, and every other player in the
+// room plays the same sound at the same spot, with their own caption. `to`: only that player hears it.
+const gid = G => G === W.goose ? 'v' : 's' + G.id;
+function vfx(k, a, to) {
+  if (MP.inGame && MP.host && to !== player) netHost({ t: 'fx', k, a, to: to ? to.id : 0 });
+  if (!to || to === player) playVfx(k, a);
 }
-// on-screen caption placed toward where the goose is, sized by distance
+function playVfx(k, a) {
+  const x = +a.x || 0, z = +a.z || 0, d = Math.hypot(x - EAR.x, z - EAR.z), o = a.o && typeof a.o === 'object' ? a.o : {}, at = { x, z };
+  switch (k) {
+    case 'honk': AU.honk(x, z, o); if (a.cap) caption(at, a.cap, true, a.range || 30); break;
+    case 'farhonk': if (d >= CFG.MERP_RANGE) AU.honk(x, z, o); break;   // far away it honks; close up the MERPs do the talking
+    case 'voice': if (d < CFG.MERP_RANGE + 8) { AU.merp(x, z, { urgent: true, loud: o.loud || 1 }); caption(at, 'MERP!', true); } else AU.honk(x, z, o); break;
+    case 'merp': AU.merp(x, z, { urgent: !!a.u, loud: a.l || 1 }); caption(at, a.u ? 'MERP!' : 'MERP', !!a.u); break;
+    case 'sample':
+      if (!AU.play(String(a.key), { pos: [x, 2.7, z], maxD: a.maxD || 60, gain: a.gain || 1, delay: a.delay || 0 })) { AU.honk(x, z, {}); break; }
+      caption(at, String(a.text || ''), !!a.u, a.range); break;
+    case 'danana': if (AU.play('danana', { gain: 1.1 })) caption(at, 'DaNaNaNaNa', true); break;
+    case 'sniff': AU.sniff(x, z, !!a.glob); break;
+    case 'hiss': AU.hiss(x, z); break;
+    case 'grunt': AU.grunt(x, z); break;
+    case 'flap': AU.flap(x, z); break;
+    case 'munch': AU.munch(x, z); break;
+    case 'sting': AU.chaseSting(); break;
+  }
+}
+function farHonk(G, o) { vfx('farhonk', { g: gid(G), x: G.x, z: G.z, o }); G.beakT = Math.max(G.beakT, 0.35); }
+// close up it MERPs, far away it honks (each listener decides by their own distance)
+function voice(G, o) { vfx('voice', { g: gid(G), x: G.x, z: G.z, o }); G.beakT = Math.max(G.beakT, 0.4); }
+function merp(G, urgent, loud) {
+  vfx('merp', { g: gid(G), x: G.x, z: G.z, u: urgent ? 1 : 0, l: loud || 1 });
+  G.beakT = Math.max(G.beakT, 0.4);
+}
+// on-screen caption placed toward where the sound is, sized by distance, muffled behind walls
 function caption(G, text, urgent, range = CFG.MERP_RANGE + 8) {
   if (settings.flavor === 'off') return;   // MERP, peww, HONK and the rest are flavor text
-  const P = player, dx = G.x - P.x, dz = G.z - P.z, d = Math.hypot(dx, dz) || 1;
+  const cx = EAR.x, cz = EAR.z, yaw = camera.rotation.y, dx = G.x - cx, dz = G.z - cz, d = Math.hypot(dx, dz) || 1;
   if (d > range * 1.6) return;
-  const fx = -Math.sin(P.yaw), fz = -Math.cos(P.yaw), rx = Math.cos(P.yaw), rz = -Math.sin(P.yaw);
+  const occluded = wallsBetween(G.x, G.z, cx, cz);
+  const fx = -Math.sin(yaw), fz = -Math.cos(yaw), rx = Math.cos(yaw), rz = -Math.sin(yaw);
   const fwd = (dx * fx + dz * fz) / d, lat = (dx * rx + dz * rz) / d;
   const xPct = fwd > 0.25 ? 50 + clamp(lat / fwd / 1.2, -1, 1) * 42 : (lat >= 0 ? 90 : 10);
   const close = clamp(1 - d / range, 0, 1);
   const el = document.createElement('div');
-  el.className = 'merp' + (G.occluded ? ' muffled' : '');
-  el.textContent = G.occluded && !urgent ? '(' + text.toLowerCase() + ')' : text;
+  el.className = 'merp' + (occluded ? ' muffled' : '');
+  el.textContent = occluded && !urgent ? '(' + text.toLowerCase() + ')' : text;
   el.style.left = xPct.toFixed(1) + '%'; el.style.top = (27 + rr(-5, 5)).toFixed(1) + '%';
   el.style.fontSize = Math.round(lerp(16, 76, close * close) * (urgent ? 1.15 : 1)) + 'px';
-  els.hud.appendChild(el);
+  (els.hud.hidden ? $('tags') : els.hud).appendChild(el);
   setTimeout(() => el.remove(), 1200);
 }
-function gooseVoice(G, key, text, o = {}) {
-  if (!AU.play(key, { pos: [G.x, 2.7, G.z], maxD: o.maxD || 60, gain: o.gain || 1, delay: o.delay || 0 })) return false;
+function gooseVoice(G, key, text, o = {}, to) {
+  if (!AU.has(key)) return false;
+  vfx('sample', { g: gid(G), key, x: G.x, z: G.z, maxD: o.maxD || 60, gain: o.gain || 1, delay: o.delay || 0, text, u: o.urgent ? 1 : 0, range: o.range }, to);
   G.beakT = Math.max(G.beakT, o.beak || 0.5);
-  caption(G, text, !!o.urgent, o.range);
   return true;
 }
 // called when the goose swings around a corner while walking
 function gooseCorner(G) {
-  const P = player, tx = P.hidden ? P.hidden.x : P.x, tz = P.hidden ? P.hidden.z : P.z;
+  const P = TP, tx = P.hidden ? P.hidden.x : P.x, tz = P.hidden ? P.hidden.z : P.z;
   const tracking = G.state === 'chase' || G.state === 'hunt' || G.state === 'investigate';
   // the corner is the last one if the player is in view from here or from where it is heading next
   let ax = G.x, az = G.z;
   if (G.path && G.path.length) { const w = G.path[Math.min(G.pathI, G.path.length - 1)]; ax = center(w.x); az = center(w.z); }
   const inView = !wallsBetween(G.x, G.z, tx, tz) || !wallsBetween(ax, az, tx, tz);
-  const finalCorner = tracking && !G.sees && !unseen() && G.swerveCD <= 0 && Math.hypot(tx - G.x, tz - G.z) < 20 && inView;
+  const finalCorner = tracking && !G.sees && !unseenP(P) && G.swerveCD <= 0 && Math.hypot(tx - G.x, tz - G.z) < 20 && inView;
   if (finalCorner && gooseVoice(G, 'swerve', 'NEREW SWERVE', { maxD: 75, gain: 1.25, urgent: true, beak: 0.8 })) {
     G.swerveCD = 8; G.rearCD = 2.4; G.voiceBusyUntil = gameTime + (AU.samples.swerve ? AU.samples.swerve.duration : 0); return;
   }
   if (G.rearCD <= 0 && gooseVoice(G, 'rear', 'REAR', { maxD: 55, gain: 1.0 })) G.rearCD = 2.4;
 }
-function blindGoose(G) {
+// by: the player whose light did it (you, or a teammate whose game reported it)
+function blindGoose(G, by = player) {
   G.blindCharge = 0; G.blindImm = CFG.BLIND_IMMUNE; G.blindT = CFG.BLIND_DUR; G.flapT = CFG.BLIND_DUR;
-  G.lastSeen = { x: player.x, z: player.z };
+  G.lastSeen = { x: by.x, z: by.z };
   gooseSet(G, 'blind');
-  AU.honk(G.x, G.z, { alert: true, pitch: 1.35, loud: 1.5 }); AU.flap(G.x, G.z); G.beakT = 1.2;
-  player.flickerT = CFG.VOICE_FLICKER;   // the flashlight sputters for the next 5 seconds
-  toast('You blinded The Voice! Go!', false, 2.5, true);
+  vfx('honk', { g: 'v', x: G.x, z: G.z, o: { alert: true, pitch: 1.35, loud: 1.5 } }); vfx('flap', { g: 'v', x: G.x, z: G.z }); G.beakT = 1.2;
+  if (by === player) {
+    player.flickerT = CFG.VOICE_FLICKER;   // the flashlight sputters for the next 5 seconds
+    toast('You blinded The Voice! Go!', false, 2.5, true);
+  }
 }
+// your own flashlight in its eyes. In someone else's room you report it and the host blinds it.
 function updateBlind(G, dt) {
   const P = player;
   G.blindImm = Math.max(0, G.blindImm - dt);
   let on = false;
-  if (P.flashOn && G.state !== 'blind' && G.state !== 'bait' && G.blindImm <= 0) {
+  if (P.flashOn && P.alive !== false && G.state !== 'blind' && G.state !== 'bait' && G.blindImm <= 0) {
     GOOSE_RIG.headPivot.getWorldPosition(tmpH);
     const o = flash.position, vx = tmpH.x - o.x, vy = tmpH.y - o.y, vz = tmpH.z - o.z, d = Math.hypot(vx, vy, vz) || 1;
     const reach = 4 + 8 * (P.battery / CFG.BATTERY_MAX);
@@ -3315,21 +3549,52 @@ function updateBlind(G, dt) {
     }
   }
   G.blindCharge = on ? G.blindCharge + dt : Math.max(0, G.blindCharge - dt * 1.5);
-  if (G.blindCharge >= CFG.BLIND_TIME) blindGoose(G);
+  if (G.blindCharge >= CFG.BLIND_TIME) {
+    if (MP.inGame && !MP.host) {
+      G.blindCharge = 0; G.blindImm = CFG.BLIND_IMMUNE; P.flickerT = CFG.VOICE_FLICKER;
+      toast('You blinded The Voice! Go!', false, 2.5, true); netClient({ t: 'vblind' });
+    } else blindGoose(G);
+  }
+}
+// a chase begins: the sting for whoever it's after, and their Evasive Maneuvers
+function chaseStarts(G, P) {
+  if (G.stingCD <= 0) { vfx('sting', {}, P); G.stingCD = 4; }
+  if (P === player) { if (hasPerk('evasive') && !player.evadeUsed) startEvasive(); }
+  else netHost({ t: 'chase', to: P.id });
+}
+// caught: the end in single player; in a room that player starts spectating and The Voice moves on
+function catchPlayer(p) {
+  if (!MP.inGame) { caught(); return; }
+  if (p === player) caught();
+  else { p.alive = false; netHost({ t: 'caught', id: p.id }); }
+  gooseSearch(W.goose);
+  checkAllDead();
 }
 function updateGoose(dt) {
-  const G = W.goose, P = player;
+  const G = W.goose;
   G.stateT += dt; G.msgCD -= dt; G.forcePathT = (G.forcePathT || 0) - dt;
-  const dx = P.x - G.x, dz = P.z - G.z; G.dist = Math.hypot(dx, dz);
+  const cands = voiceTargets();
+  if (!cands.length) { G.sees = G.light = false; animateGoose(G, dt, false); return; }
+  const distTo = p => Math.hypot(p.x - G.x, p.z - G.z);
+  const busy = G.state === 'blind' || G.state === 'bait';   // blind, or busy with a muffin
+  // who it's dealing with: whoever it's after, else the nearest
+  let P = (G.state === 'chase' || G.state === 'alert' || G.state === 'hunt' || G.state === 'investigate') ? cands.find(p => p.id === G.tid) : null;
+  if (!P) P = cands.reduce((a, p) => distTo(p) < distTo(a) ? p : a);
   G.senseT -= dt;
-  const numb = G.state === 'blind' || G.state === 'bait' || unseen();   // blind, busy with a muffin, or you're undetectable
   if (G.senseT <= 0) {
     G.senseT = 0.08;
-    G.sees = !numb && gooseSees(G);
-    G.light = !numb && !G.sees && P.flashOn && gooseNoticesLight(G);
-    G.occluded = wallsBetween(G.x, G.z, P.x, P.z);
+    let seen = null, sd = 1e9, lit = null;
+    if (!busy) for (const p of cands) { if (unseenP(p)) continue; TP = p; G.dist = distTo(p); if (G.dist < sd && gooseSees(G)) { seen = p; sd = G.dist; } }
+    if (!busy && !seen) for (const p of cands) { if (unseenP(p) || !p.flashOn) continue; TP = p; G.dist = distTo(p); if (gooseNoticesLight(G)) { lit = p; break; } }
+    G.sees = !!seen; G.light = !!lit; G.seenP = seen; G.litP = lit;
   }
-  if (numb) { G.sees = false; G.light = false; }
+  if (busy) { G.sees = false; G.light = false; }
+  if (G.sees) { if (G.seenP && cands.includes(G.seenP)) P = G.seenP; else G.sees = false; }
+  if (!G.sees && G.light) { if (G.litP && cands.includes(G.litP)) { if (G.state !== 'chase' && G.state !== 'alert') P = G.litP; } else G.light = false; }
+  const scentP = busy ? null : cands.find(p => p.linger >= CFG.LINGER_TIME && !unseenP(p));
+  if (!G.sees && !G.light && scentP && G.state !== 'chase' && G.state !== 'alert' && !(G.state === 'hunt' && G.knowT > 0)) P = scentP;
+  TP = P; G.tid = P.id; G.lookX = P.x; G.lookZ = P.z;
+  const dx = P.x - G.x, dz = P.z - G.z; G.dist = Math.hypot(dx, dz);
   if (G.knowT > 0) G.knowT -= dt;
 
   if (G.sees) {
@@ -3337,7 +3602,7 @@ function updateGoose(dt) {
     if (G.state !== 'chase' && G.state !== 'alert') {
       const quick = G.state === 'hunt';
       gooseSet(G, 'alert'); G.alertT = quick ? 0.15 : 0.55;
-      // spotted you while coming round a corner (just turned, or you are off to its side while it walks): the final corner
+      // spotted you while coming round a corner (just turned, or you're off to its side while it walks): the final corner
       const offAxis = Math.abs(angDiff(G.yaw, Math.atan2(P.x - G.x, P.z - G.z)));
       const rounding = gameTime - (G.lastTurnT ?? -9) < 1.0 || (G.curSpeed > 1 && offAxis > 0.9);
       if (rounding && G.swerveCD <= 0 && gooseVoice(G, 'swerve', 'NEREW SWERVE', { maxD: 75, gain: 1.25, urgent: true, beak: 0.8 })) {
@@ -3346,23 +3611,22 @@ function updateGoose(dt) {
       if (G.eydamCD <= 0 && gooseVoice(G, 'eydam', 'EYDAM!', { maxD: 80, gain: 1.35, urgent: true, beak: 0.8, delay: Math.max(0, (G.voiceBusyUntil || 0) - gameTime) })) G.eydamCD = 5;
       else if (G.eydamCD > 0) G.beakT = 0.4;
       else voice(G, { alert: true, pitch: 1.1, loud: 1.4 });
-      if (G.stingCD <= 0) { AU.chaseSting(); G.stingCD = 4; }   // a new chase begins
+      chaseStarts(G, P);   // a new chase begins
       G.beakT = Math.max(G.beakT, 0.6); G.flapT = 0.7; G.merpT = 1.6;
-      toast('The Voice sees you. Run!', true, 2.5, true);
-      if (hasPerk('evasive') && !P.evadeUsed) startEvasive();   // the first chase of the run
+      tell(P, 'The Voice sees you. Run!', true, 2.5, true);
     }
   } else if (G.light) {
     G.knowT = 2.5; G.lastSeen = { x: P.x, z: P.z };
     if (G.state !== 'chase' && G.state !== 'alert' && G.state !== 'hunt') {
       gooseSet(G, 'hunt'); voice(G, { pitch: 1.05, loud: 1.2 }); G.beakT = 0.4;
-      toast('The Voice noticed your light.', true, 3.2, true);
+      tell(P, 'The Voice noticed your light.', true, 3.2, true);
     }
   }
-  const scentReady = P.linger >= CFG.LINGER_TIME && G.state !== 'bait' && G.state !== 'blind';
+  const scentReady = !busy && P.linger >= CFG.LINGER_TIME && !unseenP(P);
   if (scentReady && G.state !== 'chase' && G.state !== 'alert' && !G.scent) {
     G.scent = true; if (G.state !== 'hunt') gooseSet(G, 'hunt');
-    AU.sniff(G.x, G.z, true); AU.sniff(G.x, G.z, false);
-    toast('The Voice caught your scent.', true, 3.2, true);
+    vfx('sniff', { x: G.x, z: G.z, glob: 1 }, P); vfx('sniff', { x: G.x, z: G.z });
+    tell(P, 'The Voice caught your scent.', true, 3.2, true);
   }
   if (!scentReady && G.scent) G.scent = false;
 
@@ -3383,9 +3647,9 @@ function updateGoose(dt) {
       } else {
         G.curSpeed = Math.max(0, G.curSpeed - dt * 12); faceToward(G, m.x - G.x, m.z - G.z, dt, 6);
         G.eatT -= dt; G.munchT -= dt;
-        if (G.munchT <= 0) { G.munchT = rr(0.28, 0.45); AU.munch(G.x, G.z); G.beakT = 0.18; }
+        if (G.munchT <= 0) { G.munchT = rr(0.28, 0.45); vfx('munch', { x: G.x, z: G.z }); G.beakT = 0.18; }
         const left = clamp(G.eatT / G.eatTotal, 0, 1); m.mesh.scale.setScalar(0.35 + 0.65 * left);
-        if (G.eatT <= 0) { m.gone = true; m.mesh.visible = false; gooseAfterMuffin(G); }
+        if (G.eatT <= 0) { m.gone = true; m.mesh.visible = false; netHost({ t: 'mgone', id: m.id }); gooseAfterMuffin(G); }
       }
       break;
     }
@@ -3442,16 +3706,16 @@ function updateGoose(dt) {
     if (turned > 0.6) G.lastTurnT = gameTime;
     if (G.cornerCD <= 0 && turned > 1.1) { G.cornerCD = 1.2; G.hHist.length = 0; gooseCorner(G); }
   } else G.hHist.length = 0;
-  // DaNaNaNaNa: it is about to get you
-  const closing = (G.state === 'chase' || G.state === 'alert' || (G.state === 'hunt' && (G.knowT > 0 || G.scent))) && !unseen();
+  // DaNaNaNaNa: it's about to get whoever it's after
+  const closing = (G.state === 'chase' || G.state === 'alert' || (G.state === 'hunt' && (G.knowT > 0 || G.scent))) && !unseenP(P);
   if (closing && G.dist < 6.5 && G.dananaArmed) {
-    if (AU.play('danana', { gain: 1.1 })) { caption(G, 'DaNaNaNaNa', true); G.merpT = Math.max(G.merpT, 2.2); }
+    if (AU.has('danana')) { vfx('danana', { x: G.x, z: G.z }, P); G.merpT = Math.max(G.merpT, 2.2); }
     G.dananaArmed = false;
   } else if (!closing || G.dist > 12) G.dananaArmed = true;
-  // steps: very loud, shake the camera when close
+  // steps: very loud, shake your camera when it's close to you
   if (G.stepAcc >= 1.75) {
     G.stepAcc = 0; AU.gooseStep(G.x, G.z);
-    shakeAmt = Math.max(shakeAmt, Math.max(0, 1 - G.dist / 14) * 0.018);
+    shakeAmt = Math.max(shakeAmt, Math.max(0, 1 - Math.hypot(G.x - EAR.x, G.z - EAR.z) / 14) * 0.018);
   }
   // vocalizations
   G.honkT -= dt;
@@ -3459,15 +3723,15 @@ function updateGoose(dt) {
     const r = Math.random();
     switch (G.state) {
       case 'chase': farHonk(G, { pitch: rr(1.02, 1.18), loud: 1.2 }); G.beakT = 0.35; G.honkT = rr(1.8, 3.4); break;
-      case 'hunt': if (r < 0.6) AU.sniff(G.x, G.z); else { farHonk(G, { pitch: 1.0 }); G.beakT = 0.35; } G.honkT = rr(1.8, 3.5); break;
-      case 'search': if (r < 0.3) AU.hiss(G.x, G.z); else if (r < 0.6) AU.sniff(G.x, G.z); else if (r < 0.85) { farHonk(G, { pitch: rr(0.9, 1.05) }); G.beakT = 0.35; } else AU.grunt(G.x, G.z); G.honkT = rr(3.5, 7); break;
+      case 'hunt': if (r < 0.6) vfx('sniff', { x: G.x, z: G.z }); else { farHonk(G, { pitch: 1.0 }); G.beakT = 0.35; } G.honkT = rr(1.8, 3.5); break;
+      case 'search': if (r < 0.3) vfx('hiss', { x: G.x, z: G.z }); else if (r < 0.6) vfx('sniff', { x: G.x, z: G.z }); else if (r < 0.85) { farHonk(G, { pitch: rr(0.9, 1.05) }); G.beakT = 0.35; } else vfx('grunt', { x: G.x, z: G.z }); G.honkT = rr(3.5, 7); break;
       case 'blind': case 'bait': G.honkT = rr(2, 4); break;
       default:   // idle: Peww, placed in the world so you can tell where it is
         if (r < 0.72 && gooseVoice(G, 'peww', 'peww', { maxD: 65, gain: 1.05, range: 60 })) { G.honkT = rr(6, 11); break; }
         if (r < 0.5) { farHonk(G, { pitch: rr(0.88, 1.05) }); G.beakT = 0.35; }
-        else if (r < 0.72) AU.grunt(G.x, G.z);
-        else if (r < 0.85) AU.hiss(G.x, G.z);
-        else { AU.flap(G.x, G.z); G.flapT = 0.7; }
+        else if (r < 0.72) vfx('grunt', { x: G.x, z: G.z });
+        else if (r < 0.85) vfx('hiss', { x: G.x, z: G.z });
+        else { vfx('flap', { x: G.x, z: G.z }); G.flapT = 0.7; }
         G.honkT = rr(7, 15);
     }
   }
@@ -3480,13 +3744,17 @@ function updateGoose(dt) {
   }
   animateGoose(G, dt, moving);
 
-  // catching
-  if (G.state === 'blind' || G.state === 'bait' || unseen()) { /* preoccupied, blind, or can't sense you */ }
-  else if (!P.hidden) {
-    if (G.dist < CFG.CATCH && (G.sees || G.state === 'chase' || G.state === 'alert' || G.state === 'hunt')) caught();
-  } else if (G.state === 'hunt' && (G.knowT > 0 || G.scent)) {
-    const s = P.hidden;
-    if (Math.hypot(s.ex - G.x, s.ez - G.z) < 1.5 || G.dist < 2.0) caught();
+  // catching: anyone it can sense who's within reach
+  if (busy) return;
+  for (const p of cands) {
+    if (unseenP(p) || (state !== 'playing' && p === player && !MP.inGame)) continue;
+    const d = distTo(p);
+    if (!p.hidden) {
+      if (d < CFG.CATCH && ((G.sees && p === P) || G.state === 'chase' || G.state === 'alert' || G.state === 'hunt')) { catchPlayer(p); return; }
+    } else if (p === P && G.state === 'hunt' && (G.knowT > 0 || G.scent)) {
+      const s = p.hidden;
+      if (Math.hypot(s.ex - G.x, s.ez - G.z) < 1.5 || d < 2.0) { catchPlayer(p); return; }
+    }
   }
 }
 function mouthParts(R) { const open = R.jaw.rotation.x > 0.12; if (R.innerOpen !== open) { R.innerOpen = open; R.inner.forEach(m => { m.visible = open; }); } }
@@ -3511,7 +3779,7 @@ function animateGoose(G, dt, moving, R = GOOSE_RIG) {
   let headWant = 0;
   if (G.state === 'search' && G.searchPhase === 'look') headWant = Math.sin(G.stateT * 1.7) * 0.85;
   else if (G.state === 'patrol' && !G.target) headWant = Math.sin(gameTime * 0.9) * 0.6;
-  else if (G.state === 'chase' || G.state === 'alert' || G.state === 'follow') headWant = clamp(angDiff(G.yaw, Math.atan2(player.x - G.x, player.z - G.z)), -0.6, 0.6);
+  else if (G.state === 'chase' || G.state === 'alert' || G.state === 'follow') headWant = clamp(angDiff(G.yaw, Math.atan2((G.lookX ?? player.x) - G.x, (G.lookZ ?? player.z) - G.z)), -0.6, 0.6);
   else if (G.state === 'blind') headWant = Math.sin(gameTime * 7.3) * 0.9;
   G.headYaw += (headWant - G.headYaw) * k; R.headPivot.rotation.y = G.headYaw;
   if (G.beakT > 0) G.beakT -= dt;
@@ -3561,9 +3829,10 @@ function sgPatrolTarget(S) {
   if (!c.length) return null;
   const i = pick(c); return { x: center(i % N), z: center((i / N) | 0) };
 }
-// what a surveillance goose notices. Crouching: only when you're practically touching it, and it can't smell you.
+// what a surveillance goose notices about TP (the player being checked). Crouching: only when you're practically
+// touching it, and it can't smell you.
 function sgDetects(S) {
-  const P = player;
+  const P = TP;
   if (P.hidden || P.undiesT > 0) return false;
   const dx = P.x - S.x, dz = P.z - S.z, d = Math.hypot(dx, dz);
   if (P.crouch) return d < CFG.SG_TOUCH;
@@ -3585,14 +3854,18 @@ function alertMainGoose(x, z) {
   return true;
 }
 function sgHonk(S) {
-  AU.honk(S.x, S.z, { pitch: 1.55, loud: 1.25 });
+  vfx('honk', { g: gid(S), x: S.x, z: S.z, o: { pitch: 1.55, loud: 1.25 }, cap: 'HONK!', range: 30 });
   S.beakT = 0.35; S.flapT = 0.4;
-  caption(S, 'HONK!', true, 30);
   alertMainGoose(S.x, S.z);
 }
+function disableSG(S, secs) {
+  S.blindCharge = 0; S.state = 'disabled'; S.disabledT = secs; S.stateT = 0; S.flapT = 0.8; S.target = null; S.path = null; S.lostT = 0; S.tid = 0;
+  vfx('honk', { g: gid(S), x: S.x, z: S.z, o: { pitch: 1.15, loud: 0.7 } });
+}
+// your own flashlight in its eyes. In someone else's room you report it and the host switches it off.
 function updateSgBlind(S, dt) {
   const P = player; let on = false;
-  if (P.flashOn) {
+  if (P.flashOn && P.alive !== false && S.state !== 'disabled' && !(S.localOffT > gameTime)) {
     S.rig.headPivot.getWorldPosition(tmpH);
     const o = flash.position, vx = tmpH.x - o.x, vy = tmpH.y - o.y, vz = tmpH.z - o.z, d = Math.hypot(vx, vy, vz) || 1;
     if (d < 4 + 8 * (P.battery / CFG.BATTERY_MAX) && (vx * FL.dir.x + vy * FL.dir.y + vz * FL.dir.z) / d > Math.cos(0.13)) {
@@ -3603,40 +3876,54 @@ function updateSgBlind(S, dt) {
   S.blindCharge = on ? S.blindCharge + dt : 0;   // looking away starts the count over
   if (S.blindCharge >= CFG.SG_BLIND_TIME) {
     const secs = CFG.SG_DISABLED + (hasPerk('lightbringer') ? CFG.LIGHTBRINGER_SG : 0);
-    S.blindCharge = 0; S.state = 'disabled'; S.disabledT = secs; S.stateT = 0; S.flapT = 0.8; S.target = null; S.path = null; S.lostT = 0;
-    AU.honk(S.x, S.z, { pitch: 1.15, loud: 0.7 });
     P.blinkT = 0.14;   // the flashlight flickers once: it worked
     toast(`Surveillance goose disabled for ${secs} seconds.`, false, 2.5);
+    if (MP.inGame && !MP.host) { S.blindCharge = 0; S.state = 'disabled'; S.localOffT = gameTime + 2; netClient({ t: 'sgoff', i: S.id, s: secs }); }
+    else disableSG(S, secs);
   }
 }
-function sgGiveUp(S, wait) { S.state = 'patrol'; S.target = null; S.path = null; S.waitT = wait ?? rr(1.5, 3); S.stateT = 0; S.lostT = 0; S.bestRem = 1e9; S.progT = 0; }
+function sgGiveUp(S, wait) { S.state = 'patrol'; S.target = null; S.path = null; S.waitT = wait ?? rr(1.5, 3); S.stateT = 0; S.lostT = 0; S.bestRem = 1e9; S.progT = 0; S.tid = 0; }
+function sgLed(S) {
+  const blink = S.state === 'disabled' ? false : S.state === 'follow' ? Math.sin(gameTime * 14) > 0 : Math.sin(gameTime * 3 + S.id) > 0.6;
+  S.rig.ledMat.color.setHex(blink ? 0xff2a1a : 0x2a0606);
+}
 function updateSurveillance(dt) {
-  const P = player;
+  const cands = voiceTargets();
   for (const S of W.sgeese) {
-    S.stateT += dt; S.sepCD -= dt; S.forcePathT = (S.forcePathT || 0) - dt; S.occluded = wallsBetween(S.x, S.z, P.x, P.z);
+    S.stateT += dt; S.sepCD -= dt; S.forcePathT = (S.forcePathT || 0) - dt;
     let moving = false;
     if (S.state === 'disabled') {
       S.curSpeed = 0; S.disabledT -= dt;
       if (S.disabledT <= 0) sgGiveUp(S, 1);
     } else {
       updateSgBlind(S, dt);
-      if (S.state === 'patrol' && sgDetects(S)) {
-        S.state = 'follow'; S.stateT = 0; S.honkT = 0; S.lostT = 0; S.target = null; S.path = null; S.bestRem = 1e9; S.progT = 0;
-        toast("A surveillance goose spotted you. It's following you.", true, 3, true);
+      if (S.state === 'patrol') {
+        for (const p of cands) {
+          TP = p;
+          if (!sgDetects(S)) continue;
+          S.state = 'follow'; S.tid = p.id; S.stateT = 0; S.honkT = 0; S.lostT = 0; S.target = null; S.path = null; S.bestRem = 1e9; S.progT = 0;
+          tell(p, "A surveillance goose spotted you. It's following you.", true, 3, true);
+          break;
+        }
       }
       if (S.state === 'follow') {
-        // follows you until you outrun it or blind it; it waits outside if you hide. Adam's Underwear shakes it off.
-        const d = Math.hypot(P.x - S.x, P.z - S.z);
-        S.lostT = d > CFG.SG_OUTRUN ? S.lostT + dt : 0;
-        if (P.undiesT > 0 || S.lostT >= CFG.SG_OUTRUN_TIME) sgGiveUp(S);
+        // follows its player until they outrun it or blind it; it waits outside if they hide. Adam's Underwear shakes it off.
+        const P = cands.find(p => p.id === S.tid);
+        if (!P) sgGiveUp(S);
         else {
-          const tx = P.hidden ? P.hidden.ex : P.x, tz = P.hidden ? P.hidden.ez : P.z;
-          if (Math.hypot(tx - S.x, tz - S.z) > CFG.SG_KEEP) {
-            moveGoose(S, tx, tz, CFG.SG_FOLLOW_SPEED, dt); moving = true;
-            if (S.progT > 2.5) { S.bestRem = 1e9; S.progT = 0; }   // you keep moving, so "no progress" isn't stuck
-          } else { S.curSpeed = Math.max(0, S.curSpeed - dt * 8); faceToward(S, P.x - S.x, P.z - S.z, dt, 6); }
-          S.honkT -= dt;
-          if (S.honkT <= 0) { S.honkT = CFG.SG_HONK_EVERY; sgHonk(S); }
+          const d = Math.hypot(P.x - S.x, P.z - S.z);
+          S.lostT = d > CFG.SG_OUTRUN ? S.lostT + dt : 0;
+          S.lookX = P.x; S.lookZ = P.z;
+          if (P.undiesT > 0 || S.lostT >= CFG.SG_OUTRUN_TIME) sgGiveUp(S);
+          else {
+            const tx = P.hidden ? P.hidden.ex : P.x, tz = P.hidden ? P.hidden.ez : P.z;
+            if (Math.hypot(tx - S.x, tz - S.z) > CFG.SG_KEEP) {
+              moveGoose(S, tx, tz, CFG.SG_FOLLOW_SPEED, dt); moving = true;
+              if (S.progT > 2.5) { S.bestRem = 1e9; S.progT = 0; }   // you keep moving, so "no progress" isn't stuck
+            } else { S.curSpeed = Math.max(0, S.curSpeed - dt * 8); faceToward(S, P.x - S.x, P.z - S.z, dt, 6); }
+            S.honkT -= dt;
+            if (S.honkT <= 0) { S.honkT = CFG.SG_HONK_EVERY; sgHonk(S); }
+          }
         }
       }
       if (S.state === 'patrol') {
@@ -3652,8 +3939,7 @@ function updateSurveillance(dt) {
       }
     }
     animateGoose(S, dt, moving, S.rig);
-    const blink = S.state === 'disabled' ? false : S.state === 'follow' ? Math.sin(gameTime * 14) > 0 : Math.sin(gameTime * 3 + S.id) > 0.6;
-    S.rig.ledMat.color.setHex(blink ? 0xff2a1a : 0x2a0606);
+    sgLed(S);
   }
 }
 
@@ -3763,7 +4049,7 @@ function updateFx(dt) {
   updateScreenFx(dt);
   document.body.classList.toggle('lit', player.flashOn);
   const G = W.goose, P = player;
-  const chase = G.state === 'chase' || G.state === 'alert';
+  const chase = (G.state === 'chase' || G.state === 'alert') && (!MP.inGame || (G.tid === MP.id && player.alive));
   const danger = chase ? 1 : G.state === 'hunt' ? 0.7 : clamp(1 - G.dist / 18, 0, 1) * 0.75;
   AU.setChase(chase ? 1 : G.state === 'hunt' ? 0.5 : 0);
   els.danger.style.opacity = (chase ? 0.85 : danger * 0.5).toFixed(2);
@@ -3911,6 +4197,19 @@ function updateMenu(dt) {
   R.headPivot.getWorldPosition(menu.torch.target.position);
   menu.torch.intensity = 2.2 * fl;
 }
+
+/* ================= MULTIPLAYER (in progress) ================= */
+// Rooms aren't finished yet. Until they are, this keeps the shared code paths in single-player mode and the
+// Multiplayer button stays hidden.
+const MP = { active: false, host: false, inGame: false, id: '', name: '', remotes: new Map(), fuse: {}, muffinId: 0, tapes: 0 };
+function netHost() { /* no room yet */ }
+function netClient() { /* no room yet */ }
+function localDied(reason) { MP.inGame = false; showDead(reason); }
+function checkAllDead() { /* only one player */ }
+function backToRoom() { MP.active = false; beginNewRun(); }
+function mpLeave() { MP.active = MP.inGame = false; }
+function hostTake(p) { hidePickup(p); gainPickup(p, p.type === 'tape' ? player.tapes + 1 : 0); }
+function specCycle() { /* nobody to watch */ }
 
 /* ================= LOOP ================= */
 let last = performance.now();
