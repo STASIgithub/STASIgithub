@@ -96,7 +96,7 @@ body.lit #grain{opacity:.04}
 #hud-temp{position:absolute;bottom:calc(86px + env(safe-area-inset-bottom,0px));left:max(20px,env(safe-area-inset-left,0px));display:flex;align-items:baseline;gap:12px}
 #tval{font-size:20px;letter-spacing:.03em;font-variant-numeric:tabular-nums;color:var(--ink);padding:1px 6px;margin-left:-6px;border-radius:3px;text-shadow:0 0 6px rgba(0,0,0,.9)}
 #tval.hot{background:rgba(0,0,0,.45);text-shadow:0 0 1px rgba(255,236,228,.55),0 0 6px rgba(0,0,0,.9)}
-#hud-status{position:absolute;bottom:calc(22px + env(safe-area-inset-bottom,0px));right:max(20px,env(safe-area-inset-right,0px));display:flex;flex-direction:column;align-items:flex-end;gap:6px;text-align:right}
+#hud-status{position:absolute;bottom:calc(206px + env(safe-area-inset-bottom,0px));right:max(20px,env(safe-area-inset-right,0px));display:flex;flex-direction:column;align-items:flex-end;gap:6px;text-align:right}
 #scent{color:var(--ember)}
 #scent.hot{color:var(--blood);animation:pulse .7s ease-in-out infinite alternate}
 @keyframes pulse{from{opacity:1}to{opacity:.35}}
@@ -136,7 +136,7 @@ button.ghost:hover{background:rgba(221,214,198,.2)}
 .center .actions{justify-content:center}
 #scr-dead{background:radial-gradient(ellipse at center,rgba(60,0,0,.92),rgba(4,0,0,.98))}
 #scr-dead h2{color:#e8dccb;text-shadow:0 0 30px rgba(179,25,30,.8)}
-#dead-stats{margin:0;color:var(--dim);font-size:14px;letter-spacing:.08em}
+#dead-stats{margin:0;color:var(--dim);font-size:14px;letter-spacing:.08em;white-space:pre-line;line-height:1.6}
 
 /* tape transcript reveal */
 #scr-win{background:rgba(3,3,4,.95);align-items:center;justify-content:flex-start}
@@ -198,20 +198,21 @@ body.m #tape{right:auto;left:max(16px,env(safe-area-inset-left,0px));top:calc(44
 
 /* touch controls */
 #touch{position:fixed;inset:0;z-index:12;touch-action:none;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;-webkit-tap-highlight-color:transparent}
-#joy-base{position:absolute;left:110px;top:70%;width:124px;height:124px;margin:-62px 0 0 -62px;border-radius:50%;border:2px solid rgba(221,214,198,.3);background:radial-gradient(circle,rgba(221,214,198,.07),rgba(221,214,198,.02) 70%);opacity:.5;transition:opacity .25s;pointer-events:none}
+#joy-base{position:absolute;left:110px;top:70%;width:calc(124px * var(--tb,1));height:calc(124px * var(--tb,1));margin:calc(-62px * var(--tb,1)) 0 0 calc(-62px * var(--tb,1));border-radius:50%;border:2px solid rgba(221,214,198,.3);background:radial-gradient(circle,rgba(221,214,198,.07),rgba(221,214,198,.02) 70%);opacity:.5;transition:opacity .25s;pointer-events:none}
 #joy-base.on{opacity:1;transition:none}
-#joy-knob{position:absolute;left:50%;top:50%;width:54px;height:54px;margin:-27px 0 0 -27px;border-radius:50%;background:rgba(221,214,198,.25);border:2px solid rgba(221,214,198,.55)}
+#joy-knob{position:absolute;left:50%;top:50%;width:calc(54px * var(--tb,1));height:calc(54px * var(--tb,1));margin:calc(-27px * var(--tb,1)) 0 0 calc(-27px * var(--tb,1));border-radius:50%;background:rgba(221,214,198,.25);border:2px solid rgba(221,214,198,.55)}
 #touch .tb{position:absolute;display:grid;place-items:center;padding:0;border-radius:50%;clip-path:none;background:rgba(8,8,10,.5);color:var(--ink);border:2px solid rgba(221,214,198,.35);
-  font-size:11px;letter-spacing:.12em;touch-action:none;-webkit-tap-highlight-color:transparent;backdrop-filter:blur(2px)}
+  font-size:calc(11px * var(--tb,1));letter-spacing:.12em;touch-action:none;-webkit-tap-highlight-color:transparent;backdrop-filter:blur(2px)}
 #touch .tb:hover,#touch .tb:focus-visible{background:rgba(8,8,10,.5)}
 #touch .tb.on{background:rgba(227,166,78,.32);border-color:var(--ember);color:#fff}
 #touch .tb.ready{background:rgba(221,214,198,.24);border-color:var(--ink);color:#fff;box-shadow:0 0 18px rgba(221,214,198,.25)}
-#tb-use{width:86px;height:86px;right:calc(20px + env(safe-area-inset-right,0px));bottom:calc(34px + env(safe-area-inset-bottom,0px));font-size:12px}
-#tb-run{width:72px;height:72px;right:calc(122px + env(safe-area-inset-right,0px));bottom:calc(22px + env(safe-area-inset-bottom,0px))}
-#tb-crouch{width:62px;height:62px;right:calc(118px + env(safe-area-inset-right,0px));bottom:calc(112px + env(safe-area-inset-bottom,0px));font-size:10px}
-#tb-light{width:64px;height:64px;right:calc(32px + env(safe-area-inset-right,0px));bottom:calc(136px + env(safe-area-inset-bottom,0px))}
+/* every touch button and gap scales with the "Touch controls size" setting (--tb) */
+#tb-use{width:calc(86px * var(--tb,1));height:calc(86px * var(--tb,1));right:calc(20px * var(--tb,1) + env(safe-area-inset-right,0px));bottom:calc(34px * var(--tb,1) + env(safe-area-inset-bottom,0px));font-size:calc(12px * var(--tb,1))}
+#tb-run{width:calc(72px * var(--tb,1));height:calc(72px * var(--tb,1));right:calc(122px * var(--tb,1) + env(safe-area-inset-right,0px));bottom:calc(22px * var(--tb,1) + env(safe-area-inset-bottom,0px))}
+#tb-crouch{width:calc(62px * var(--tb,1));height:calc(62px * var(--tb,1));right:calc(118px * var(--tb,1) + env(safe-area-inset-right,0px));bottom:calc(112px * var(--tb,1) + env(safe-area-inset-bottom,0px));font-size:calc(10px * var(--tb,1))}
+#tb-light{width:calc(64px * var(--tb,1));height:calc(64px * var(--tb,1));right:calc(32px * var(--tb,1) + env(safe-area-inset-right,0px));bottom:calc(136px * var(--tb,1) + env(safe-area-inset-bottom,0px))}
 #touch .tb.off{opacity:.35}
-#tb-pause{width:46px;height:46px;top:calc(12px + env(safe-area-inset-top,0px));right:calc(14px + env(safe-area-inset-right,0px));font-size:14px;letter-spacing:0}
+#tb-pause{width:calc(46px * var(--tb,1));height:calc(46px * var(--tb,1));top:calc(12px + env(safe-area-inset-top,0px));right:calc(14px + env(safe-area-inset-right,0px));font-size:calc(14px * var(--tb,1));letter-spacing:0}
 
 /* HUD layout in mobile mode */
 body.m #hud{font-size:11px}
@@ -224,6 +225,7 @@ body.m #hud-temp .lbl{display:none}
 body.m #tval{font-size:16px}
 body.m #hud-status{bottom:auto;top:calc(68px + env(safe-area-inset-top,0px));right:max(16px,env(safe-area-inset-right,0px))}
 body.m #prompt{top:60%;font-size:12px}
+body.m #toast{top:calc(27% + env(safe-area-inset-top,0px));font-size:13px;max-width:56vw}
 
 /* settings */
 .settings{width:100%;max-width:440px;gap:22px}
@@ -294,6 +296,17 @@ button.room .n{grid-row:1 / span 2;grid-column:2;align-self:center;font-size:15p
 #spec .lbl{font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--dim)}
 #spec b{font-weight:400;font-size:17px;letter-spacing:.1em}
 #spec button svg{width:16px;height:16px;display:block}
+/* the map: fills in as you (and your team) see more of the maze. M or a tap makes it big. */
+#minimap{position:absolute;right:max(20px,env(safe-area-inset-right,0px));bottom:calc(22px + env(safe-area-inset-bottom,0px));width:170px;height:170px;box-sizing:border-box;
+  border:1px solid rgba(221,214,198,.32);border-radius:4px;background:rgba(6,6,8,.66);box-shadow:0 4px 18px rgba(0,0,0,.6);pointer-events:auto;cursor:pointer;transition:width .2s,height .2s}
+#minimap.big{right:50%;bottom:50%;transform:translate(50%,50%);width:min(72vmin,560px);height:min(72vmin,560px);z-index:2;background:rgba(6,6,8,.86)}
+#map-key{position:absolute;right:max(20px,env(safe-area-inset-right,0px));bottom:calc(196px + env(safe-area-inset-bottom,0px));font-size:10px;color:var(--dim);letter-spacing:.14em}
+body.m #map-key{display:none}
+body.m #minimap{left:max(14px,env(safe-area-inset-left,0px));right:auto;top:calc(44px + env(safe-area-inset-top,0px));bottom:auto;width:104px;height:104px}
+body.m #minimap.big{left:50%;top:50%;transform:translate(-50%,-50%);width:min(82vmin,440px);height:min(82vmin,440px)}
+body.m #hud-team{top:calc(156px + env(safe-area-inset-top,0px));left:max(14px,env(safe-area-inset-left,0px))}
+.ntag.far{opacity:.72}
+.ntag small{display:block;text-align:center;font-size:10px;letter-spacing:.1em;color:var(--dim)}
 #hud-team{position:absolute;top:calc(50px + env(safe-area-inset-top,0px));left:max(20px,env(safe-area-inset-left,0px));display:flex;flex-direction:column;gap:5px;font-size:11px}
 #hud-team span{display:flex;align-items:center;gap:7px}
 #hud-team span.dead{opacity:.45;text-decoration:line-through}
@@ -340,6 +353,8 @@ body.safe h1{animation:none}
 <div id="hud" hidden>
   <div id="hud-tapes" aria-label="Tapes found"><svg class="vhs" viewBox="0 0 30 20" aria-hidden="true"><path fill="#fff" fill-rule="evenodd" d="M2.5 1h25A1.5 1.5 0 0 1 29 2.5v15a1.5 1.5 0 0 1-1.5 1.5h-25A1.5 1.5 0 0 1 1 17.5v-15A1.5 1.5 0 0 1 2.5 1zM5 3.2v2.2h20V3.2zM7.5 7.5v6.5h15V7.5zM6 16.2v1.3h2.5v-1.3zM21.5 16.2v1.3H24v-1.3z"/><path fill="#fff" fill-rule="evenodd" d="M11.3 8.4a2.35 2.35 0 1 1 0 4.7 2.35 2.35 0 1 1 0-4.7zm0 1.5a.85.85 0 1 0 0 1.7.85.85 0 1 0 0-1.7zM18.7 8.4a2.35 2.35 0 1 1 0 4.7 2.35 2.35 0 1 1 0-4.7zm0 1.5a.85.85 0 1 0 0 1.7.85.85 0 1 0 0-1.7z"/></svg><span id="pc">0/5</span></div>
   <div id="hud-team" hidden></div>
+  <canvas id="minimap" width="300" height="300" aria-label="Map of what you've explored"></canvas>
+  <span id="map-key">Map <kbd>M</kbd></span>
   <div id="cross" hidden></div>
   <div id="blind" hidden><svg viewBox="0 0 40 40"><circle class="trk" cx="20" cy="20" r="16"/><circle class="arc" id="blind-arc" cx="20" cy="20" r="16"/></svg></div>
   <div id="hud-tr"><div id="hud-inv"></div><div id="hud-fx"></div></div>
@@ -429,6 +444,11 @@ body.safe h1{animation:none}
     <div class="setting">
       <div class="row"><label class="lbl" for="set-vol">Volume</label><output id="out-vol" for="set-vol"></output></div>
       <input type="range" id="set-vol" min="0" max="1" step="0.05">
+    </div>
+    <div class="setting" id="set-tb-row">
+      <div class="row"><label class="lbl" for="set-tb">Touch controls size</label><output id="out-tb" for="set-tb"></output></div>
+      <input type="range" id="set-tb" min="0.6" max="1.3" step="0.05">
+      <p class="fine">Smaller buttons leave more of the screen clear.</p>
     </div>
     <button id="settings-done" type="button">Done</button>
   </div>
@@ -666,7 +686,8 @@ const SAFE_OPTS = (() => {
 })();
 const SAFE = Object.values(SAFE_OPTS).some(Boolean);
 if (SAFE_OPTS.fx) document.body.classList.add('safe');
-const settings = { controls: TOUCH_DEVICE ? 'mobile' : 'computer', quality: TOUCH_DEVICE || WEAK_DEVICE ? 'low' : 'high', sens: 1, vol: 0.9, view: 'third', flavor: 'on' };
+const settings = { controls: TOUCH_DEVICE ? 'mobile' : 'computer', quality: TOUCH_DEVICE || WEAK_DEVICE ? 'low' : 'high', sens: 1, vol: 0.9, view: 'third', flavor: 'on',
+  tb: Math.min(innerWidth, innerHeight) < 420 ? 0.85 : 1 };   // touch controls size
 try {
   const saved = JSON.parse(localStorage.getItem(SETTINGS_KEY) || 'null');
   if (saved && typeof saved === 'object') {
@@ -676,6 +697,7 @@ try {
     if (saved.flavor === 'on' || saved.flavor === 'off') settings.flavor = saved.flavor;
     if (isFinite(saved.sens)) settings.sens = clamp(+saved.sens, 0.3, 2.5);
     if (isFinite(saved.vol)) settings.vol = clamp(+saved.vol, 0, 1);
+    if (isFinite(saved.tb)) settings.tb = clamp(+saved.tb, 0.6, 1.3);
   }
 } catch (e) { /* storage unavailable: defaults are fine */ }
 if (SAFE_OPTS.low) settings.quality = 'low';
@@ -1625,15 +1647,16 @@ void main() {
   transparent: true, depthTest: false, depthWrite: false,
   stencilWrite: true, stencilRef: 1, stencilFunc: THREE.NotEqualStencilFunc, stencilFail: THREE.KeepStencilOp, stencilZFail: THREE.KeepStencilOp, stencilZPass: THREE.KeepStencilOp,
 });
-function olCopy(o, list) {
-  for (const [mat, order] of [[OL_MASK, 40], [OL_HULL, 41]]) {
+function olCopy(o, list, hull = OL_HULL) {
+  for (const [mat, order] of [[OL_MASK, 40], [hull, 41]]) {
     let x;
     if (o.isInstancedMesh) { x = new THREE.InstancedMesh(o.geometry, mat, o.count); x.instanceMatrix = o.instanceMatrix; }
     else x = new THREE.Mesh(o.geometry, mat);
     x.userData.xr = true; x.renderOrder = order; x.visible = false; o.add(x); list.push(x);
   }
 }
-function addOutline(root, list) { const found = []; root.traverse(o => { if (o.isMesh && !o.userData.xr) found.push(o); }); for (const o of found) olCopy(o, list); return list; }
+function addOutline(root, list, hull) { const found = []; root.traverse(o => { if (o.isMesh && !o.userData.xr) found.push(o); }); for (const o of found) olCopy(o, list, hull); return list; }
+function hullMaterial(color) { const m = OL_HULL.clone(); m.uniforms.color.value = new THREE.Color(color); return m; }
 // a box with corner-pointing normals: inflates evenly, so a box outline has no gaps at the corners
 function outlineBox(parent, sx, sy, sz, y) {
   const g = geo('olbox', () => { const b = new THREE.BoxGeometry(1, 1, 1), ps = b.attributes.position, ns = b.attributes.normal, v = new V3(); for (let i = 0; i < ps.count; i++) { v.set(ps.getX(i), ps.getY(i), ps.getZ(i)).normalize(); ns.setXYZ(i, v.x, v.y, v.z); } return b; });
@@ -2356,6 +2379,7 @@ function newGame(seed) {
   buildWorld(seed);
   for (const f of W.fridges) f.hum = AU.makeHum(f.x, f.z);
   scene.add(W.group);
+  resetMap();
   resetPlayer(); resetGoose(); spawnSurveillance();
   if (hasPerk('headstart')) {   // the nearest tape (by walking distance) is outlined for the first seconds
     const d = bfs(1, 1); let bd = 1e9;
@@ -2458,9 +2482,13 @@ function showDead(reason) {
   JS.group.visible = false; jumpLights(false);
   if (document.pointerLockElement) document.exitPointerLock();
   const m = Math.floor(gameTime / 60), s = Math.floor(gameTime % 60);
-  $('dead-stats').textContent = MP.active ? `Your team found ${player.tapes} of ${CFG.TAPES} tapes in ${m}:${String(s).padStart(2, '0')}.`
-    : `Tapes found: ${player.tapes} of ${CFG.TAPES}. Survived ${m}:${String(s).padStart(2, '0')}. Body temperature ${tempQ().toFixed(1)}°F.`;
-  if (MP.active) $('dead-title').textContent = 'Everyone was caught.';
+  $('dead-stats').textContent = `Tapes found: ${player.tapes} of ${CFG.TAPES}. Survived ${m}:${String(s).padStart(2, '0')}. Body temperature ${tempQ().toFixed(1)}°F.`;
+  if (MP.active) {   // a room: how each of you went down
+    const fates = (MP.runPlayers || []).map(q => `${q.id === MP.id ? 'You' : q.name}: ${FATE[MP.deaths[q.id]] || 'still out there'}`);
+    const whys = Object.values(MP.deaths);
+    $('dead-title').textContent = whys.length && whys.every(w => w === 'goose') ? 'Everyone was caught.' : 'Nobody made it out.';
+    $('dead-stats').textContent = `Your team found ${player.tapes} of ${CFG.TAPES} tapes in ${m}:${String(s).padStart(2, '0')}.\n` + fates.join('\n');
+  }
   $('btn-retry').textContent = MP.active ? 'Back to the room' : 'Try again'; $('dead-hint').hidden = MP.active;
   $('spec').hidden = true; $('tags').hidden = true;
   $('scr-dead').hidden = false;
@@ -2504,7 +2532,7 @@ function win(force) {
 }
 
 /* ================= INPUT ================= */
-const GAME_CODES = new Set(['KeyQ', 'Digit1', 'Digit2', 'Digit3', 'Digit4', 'KeyW', 'KeyA', 'KeyS', 'KeyD', 'KeyF', 'KeyE', 'KeyC', 'Space', 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'ShiftLeft', 'ShiftRight', 'ControlLeft', 'ControlRight']);
+const GAME_CODES = new Set(['KeyM', 'KeyQ', 'Digit1', 'Digit2', 'Digit3', 'Digit4', 'KeyW', 'KeyA', 'KeyS', 'KeyD', 'KeyF', 'KeyE', 'KeyC', 'Space', 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'ShiftLeft', 'ShiftRight', 'ControlLeft', 'ControlRight']);
 addEventListener('keydown', e => {
   if (state === 'playing') {
     if (GAME_CODES.has(e.code) || e.ctrlKey) e.preventDefault();
@@ -2517,6 +2545,7 @@ addEventListener('keydown', e => {
     else if (e.code === 'Digit2') useItem('undies');
     else if (e.code === 'Digit3') useItem('glasses');
     else if (e.code === 'Digit4') useItem('ice');
+    else if (e.code === 'KeyM') MAP.el.classList.toggle('big');
     else if (e.code === 'ControlLeft' || e.code === 'ControlRight' || e.code === 'KeyC') toggleCrouch();
     else if (e.code === 'Escape' && (fallbackLook || isMobile())) pauseGame();
   } else if (state === 'spectate' && !e.repeat) {
@@ -2552,10 +2581,10 @@ document.addEventListener('visibilitychange', () => { if (document.hidden) pause
 
 /* ---------- touch controls ---------- */
 const touch = { joyId: null, lookId: null, jx: 0, jy: 0, bx: 0, by: 0, lx: 0, ly: 0, run: false };
-const TOUCH_SENS = 0.005, JOY_R = 56;
+const TOUCH_SENS = 0.005, joyR = () => 56 * settings.tb;   // the joystick's reach scales with the buttons
 const touchEl = $('touch'), joyBase = $('joy-base'), joyKnob = $('joy-knob');
 const TB = { light: $('tb-light'), crouch: $('tb-crouch'), run: $('tb-run'), use: $('tb-use') };
-function joyHome() { return [Math.max(96, Math.min(150, innerWidth * 0.12)), innerHeight - Math.max(112, Math.min(170, innerHeight * 0.3))]; }
+function joyHome() { const k = settings.tb; return [Math.max(96 * k, Math.min(150 * k, innerWidth * 0.12)), innerHeight - Math.max(112 * k, Math.min(170 * k, innerHeight * 0.3))]; }
 function placeJoy(x, y, on) { joyBase.style.left = x + 'px'; joyBase.style.top = y + 'px'; joyBase.classList.toggle('on', on); }
 function resetJoy() { touch.joyId = null; touch.jx = touch.jy = 0; joyKnob.style.transform = ''; const [x, y] = joyHome(); placeJoy(x, y, false); }
 function releaseTouches() { resetJoy(); touch.lookId = null; }
@@ -2572,8 +2601,8 @@ touchEl.addEventListener('pointerdown', e => {
 touchEl.addEventListener('pointermove', e => {
   if (e.pointerId === touch.joyId) {
     let dx = e.clientX - touch.bx, dy = e.clientY - touch.by; const m = Math.hypot(dx, dy);
-    if (m > JOY_R) { dx *= JOY_R / m; dy *= JOY_R / m; }
-    touch.jx = dx / JOY_R; touch.jy = dy / JOY_R; joyKnob.style.transform = `translate(${dx}px,${dy}px)`;
+    const R = joyR(); if (m > R) { dx *= R / m; dy *= R / m; }
+    touch.jx = dx / R; touch.jy = dy / R; joyKnob.style.transform = `translate(${dx}px,${dy}px)`;
   } else if (e.pointerId === touch.lookId) {
     const dx = e.clientX - touch.lx, dy = e.clientY - touch.ly; touch.lx = e.clientX; touch.ly = e.clientY;
     if (state !== 'playing') return;
@@ -2608,6 +2637,7 @@ function syncSettingsUI() {
   document.querySelectorAll('[data-set]').forEach(b => b.setAttribute('aria-pressed', String(settings[b.dataset.set] === b.dataset.val)));
   $('set-sens').value = settings.sens; $('out-sens').textContent = settings.sens.toFixed(2) + 'x';
   $('set-vol').value = settings.vol; $('out-vol').textContent = Math.round(settings.vol * 100) + '%';
+  $('set-tb').value = settings.tb; $('out-tb').textContent = Math.round(settings.tb * 100) + '%'; $('set-tb-row').hidden = !isMobile();
   $('ctl-desc').textContent = isMobile()
     ? 'On-screen joystick and buttons. Drag the right side of the screen to look.'
     : 'Keyboard and mouse. WASD to move, Shift to run, Ctrl or C to crouch, F for the flashlight, E to use.';
@@ -2621,6 +2651,7 @@ function syncSettingsUI() {
 }
 function applySettings() {
   document.body.classList.toggle('m', isMobile());
+  document.documentElement.style.setProperty('--tb', String(settings.tb));
   const pr = renderRatio();
   if (renderer.getPixelRatio() !== pr) { renderer.setPixelRatio(pr); renderer.setSize(innerWidth, innerHeight); }
   flash.castShadow = settings.quality === 'high';
@@ -2630,6 +2661,7 @@ function applySettings() {
 document.querySelectorAll('[data-set]').forEach(b => b.addEventListener('click', () => { settings[b.dataset.set] = b.dataset.val; saveSettings(); applySettings(); }));
 $('set-sens').addEventListener('input', e => { settings.sens = +e.target.value; saveSettings(); syncSettingsUI(); });
 $('set-vol').addEventListener('input', e => { settings.vol = +e.target.value; saveSettings(); applySettings(); });
+$('set-tb').addEventListener('input', e => { settings.tb = clamp(+e.target.value, 0.6, 1.3); saveSettings(); applySettings(); resetJoy(); });
 $('btn-settings').addEventListener('click', () => openSettings('scr-start'));
 // perks and loadout: exactly 2 perks and 1 item
 function renderLoadout() {
@@ -3408,7 +3440,7 @@ function gooseHear(x, z, r, o = {}) {
   }
   const G = W && W.goose; if (!G || !(state === 'playing' || MP.inGame)) return false;
   const P = o.p || player;
-  if (G.state === 'bait' || G.state === 'blind' || (o.player && unseenP(P))) return false;
+  if (G.state === 'bait' || G.state === 'blind' || G.catchCD > 0 || (o.player && unseenP(P))) return false;
   r *= CFG.HEAR_MULT;   // it hears farther when there are more of you
   const d = Math.hypot(x - G.x, z - G.z);
   if (wallsBetween(G.x, G.z, x, z)) r *= 0.65;
@@ -3589,8 +3621,9 @@ function catchPlayer(p) {
   if (!MP.inGame) { caught(); return; }
   if (p === player) caught();
   else { p.alive = false; netHost({ t: 'caught', id: p.id }); }
+  recordDeath(p.id, 'goose');
   gooseSearch(W.goose);
-  W.goose.catchCD = 3;   // it's busy with the one it caught: anyone standing next to them gets 3 seconds to run
+  W.goose.catchCD = 4;   // busy with the one it caught: for 4 s it can't see, hear or catch anyone, so the others can run
   checkAllDead();
 }
 function updateGoose(dt) {
@@ -3599,7 +3632,7 @@ function updateGoose(dt) {
   const cands = voiceTargets();
   if (!cands.length) { G.sees = G.light = false; animateGoose(G, dt, false); return; }
   const distTo = p => Math.hypot(p.x - G.x, p.z - G.z);
-  const busy = G.state === 'blind' || G.state === 'bait';   // blind, or busy with a muffin
+  const busy = G.state === 'blind' || G.state === 'bait' || G.catchCD > 0;   // blind, busy with a muffin, or with someone it caught
   // who it's dealing with: whoever it's after, else the nearest
   let P = (G.state === 'chase' || G.state === 'alert' || G.state === 'hunt' || G.state === 'investigate') ? cands.find(p => p.id === G.tid) : null;
   if (!P) P = cands.reduce((a, p) => distTo(p) < distTo(a) ? p : a);
@@ -3767,10 +3800,10 @@ function updateGoose(dt) {
   }
   animateGoose(G, dt, moving);
 
-  // catching: anyone it can sense who's within reach
+  // catching: whoever it's after first, then anyone else it can sense within reach
   if (G.catchCD > 0) G.catchCD -= dt;
   if (busy || G.catchCD > 0) return;
-  for (const p of cands) {
+  for (const p of [P, ...cands.filter(q => q !== P)]) {
     if (unseenP(p) || (state !== 'playing' && p === player && !MP.inGame)) continue;
     const d = distTo(p);
     if (!p.hidden) {
@@ -4116,7 +4149,67 @@ function updateSpeedLines(dt) {
 }
 function setText(key, el, v) { if (hudCache[key] !== v) { hudCache[key] = v; el.textContent = v; } }
 function setClass(key, el, cls, on) { const k = key + cls; if (hudCache[k] !== on) { hudCache[k] = on; el.classList.toggle(cls, on); } }
+/* ---------- map: fills in as you (and your teammates) see more of the maze, like a dungeon map ---------- */
+const MAP = { el: $('minimap'), g: null, base: null, bg: null, dirty: true, t: 0, baseT: 0, revealT: 0, ts: 12 };
+function resetMap() {
+  const s = W.N * MAP.ts;
+  W.seen = new Uint8Array(W.N * W.N);
+  MAP.el.width = MAP.el.height = s; MAP.g = MAP.el.getContext('2d');
+  MAP.base = mkCanvas(s, s); MAP.bg = MAP.base.getContext('2d');
+  MAP.dirty = true; MAP.t = MAP.baseT = MAP.revealT = 0; MAP.el.classList.remove('big');
+}
+// floor tiles within 3 tiles that you have a clear line to
+function revealAround(x, z) {
+  const N = W.N, tx = tileOf(x), tz = tileOf(z), R = 3;
+  for (let dz = -R; dz <= R; dz++) for (let dx = -R; dx <= R; dx++) {
+    if (dx * dx + dz * dz > R * R + 1) continue;
+    const ix = tx + dx, iz = tz + dz; if (ix < 0 || iz < 0 || ix >= N || iz >= N || W.g[iz][ix]) continue;
+    const i = iz * N + ix; if (W.seen[i]) continue;
+    if ((dx === 0 && dz === 0) || !wallsBetween(x, z, center(ix), center(iz))) { W.seen[i] = 1; MAP.dirty = true; }
+  }
+}
+function drawMapBase() {
+  const g = MAP.bg, N = W.N, s = MAP.ts, seen = W.seen;
+  g.clearRect(0, 0, N * s, N * s);
+  const floorSeen = (x, z) => x >= 0 && z >= 0 && x < N && z < N && !W.g[z][x] && seen[z * N + x];
+  for (let z = 0; z < N; z++) for (let x = 0; x < N; x++) {
+    if (!W.g[z][x]) { if (seen[z * N + x]) { g.fillStyle = '#2f2c26'; g.fillRect(x * s, z * s, s, s); } continue; }
+    let near = false;
+    for (let dz = -1; dz <= 1 && !near; dz++) for (let dx = -1; dx <= 1; dx++) if (floorSeen(x + dx, z + dz)) { near = true; break; }
+    if (near) { g.fillStyle = '#8d8676'; g.fillRect(x * s, z * s, s, s); g.fillStyle = '#6a6458'; g.fillRect(x * s, z * s + s - 2, s, 2); }
+  }
+  for (const f of W.fridges) if (seen[tileOf(f.z) * N + tileOf(f.x)]) {   // refrigerators you've seen, dim while out of power
+    const cx = f.x / T * s, cz = f.z / T * s;
+    g.fillStyle = '#05080b'; g.fillRect(cx - 5, cz - 5, 10, 10); g.fillStyle = f.powered ? '#9fd6ff' : '#3b4a55'; g.fillRect(cx - 4, cz - 4, 8, 8);
+  }
+}
+function updateMap(dt) {
+  const P = player, me = P.alive !== false && state !== 'spectate';
+  MAP.revealT -= dt;
+  if (MAP.revealT <= 0) {
+    MAP.revealT = 0.2;
+    if (me) revealAround(P.x, P.z);
+    for (const R of MP.remotes.values()) if (R.alive && R.ready) revealAround(R.x, R.z);   // a teammate's eyes fill in your map too
+  }
+  MAP.t -= dt; if (MAP.t > 0) return; MAP.t = 0.1;
+  MAP.baseT -= 0.1; if (MAP.dirty || MAP.baseT <= 0) { drawMapBase(); MAP.dirty = false; MAP.baseT = 1; }
+  const g = MAP.g, s = MAP.ts, k = s / T, n = W.N * s;
+  g.clearRect(0, 0, n, n); g.drawImage(MAP.base, 0, 0);
+  for (const R of MP.remotes.values()) {
+    if (!R.alive || !R.ready) continue;
+    g.fillStyle = '#000'; g.beginPath(); g.arc(R.x * k, R.z * k, 6, 0, 7); g.fill();
+    g.fillStyle = R.color; g.beginPath(); g.arc(R.x * k, R.z * k, 4.5, 0, 7); g.fill();
+  }
+  if (me) {   // you: an arrow pointing where you're looking
+    const x = P.x * k, z = P.z * k, fx = -Math.sin(P.yaw), fz = -Math.cos(P.yaw);
+    g.fillStyle = MP.inGame ? SLOT_COLORS[MP.slot % 6] : '#f4efe2'; g.strokeStyle = '#000'; g.lineWidth = 2.5; g.lineJoin = 'round';
+    g.beginPath(); g.moveTo(x + fx * 9, z + fz * 9); g.lineTo(x - fx * 6 + fz * 6, z - fz * 6 - fx * 6); g.lineTo(x - fx * 3, z - fz * 3); g.lineTo(x - fx * 6 - fz * 6, z - fz * 6 + fx * 6);
+    g.closePath(); g.stroke(); g.fill();
+  }
+}
+MAP.el.addEventListener('pointerdown', e => { e.preventDefault(); e.stopPropagation(); MAP.el.classList.toggle('big'); });
 function updateHUD(dt) {
+  if (W && W.seen) updateMap(dt);
   const P = player;
   setText('pc', els.pc, `${P.tapes}/${CFG.TAPES}`);
   // the reticle only shows when you're looking at something you can use
@@ -4498,11 +4591,11 @@ function startHeartbeat() {
     if (!MP.active) return;
     const now = performance.now();
     if (MP.host) {
-      for (const p of MP.players) if (p.id !== MP.id && now - (p.t || now) > 20000) hostDrop(p.id);   // gone quiet for 20 s: they left
+      for (const p of MP.players) if (p.id !== MP.id && now - (p.t || now) > (MP.inGame ? 45000 : 20000)) hostDrop(p.id, true);   // gone quiet: they left
       hostBroadcastLobby(false);
     } else {
       netClient({ t: 'hb' });   // even in a background tab, where the game itself stops sending
-      if (MP.joined && now - MP.hostSeen > 20000) mpFail('The host left the room.');
+      if (MP.joined && now - MP.hostSeen > (MP.inGame ? 30000 : 20000)) mpFail('The host left the room.');
     }
   }, 1000);
 }
@@ -4517,11 +4610,13 @@ function hostJoin(id, name) {
   }
   hostBroadcastLobby(true); renderRoom();
 }
-function hostDrop(id) {
+function hostDrop(id, silent) {
   const i = MP.players.findIndex(q => q.id === id); if (i < 0) return;
   const p = MP.players[i]; MP.players.splice(i, 1);
+  if (silent) netHost({ t: 'kick', to: id });   // they went quiet: tell them, in case they can still hear us
+  if (MP.inGame) recordDeath(id, 'left');
   const R = MP.remotes.get(id); if (R) { R.alive = false; removeRemote(R); }
-  if (MP.inGame) { toast(`${p.name} left the room.`, false, 3); checkAllDead(); }
+  if (MP.inGame) checkAllDead();
   hostBroadcastLobby(true); if (!$('scr-room').hidden) renderRoom();
 }
 function onLobbyState(m) {
@@ -4544,7 +4639,7 @@ function hostStart() {
 }
 function beginMpRun(seed, players) {
   AU.init();
-  Object.assign(MP, { inGame: true, tapes: 0, n: players.length, spec: null, muffinId: 0, fuse: {}, sendT: 0, worldT: 0, fuseT: 0, hostSeen: performance.now() });
+  Object.assign(MP, { deaths: {}, runPlayers: players.slice(), inGame: true, tapes: 0, n: players.length, spec: null, muffinId: 0, fuse: {}, sendT: 0, worldT: 0, fuseT: 0, hostSeen: performance.now() });
   applyDifficulty(MP.n);
   clearRemotes();
   const me = players.find(p => p.id === MP.id); MP.slot = me ? me.slot : 0;
@@ -4564,14 +4659,16 @@ function addRemote(p) {
   if (!SKINS[sid]) SKINS[sid] = { ...SKINS.dusty, name: 'Player ' + (slot + 1), jacket: new THREE.Color(SLOT_COLORS[slot]).getHex() };
   const C = buildCharacter(sid); C.root.visible = false; scene.add(C.root);
   const light = new THREE.SpotLight(0xfff0d4, 0, 30, 0.42, 0.45, 1.15); light.castShadow = false; scene.add(light); scene.add(light.target);
-  const tag = document.createElement('div'); tag.className = 'ntag'; tag.textContent = p.name; tag.style.color = SLOT_COLORS[slot]; tag.hidden = true; $('tags').appendChild(tag);
+  const tag = document.createElement('div'); tag.className = 'ntag'; tag.style.color = SLOT_COLORS[slot]; tag.hidden = true;
+  const tagName = document.createElement('span'), tagDist = document.createElement('small'); tagName.textContent = p.name; tag.append(tagName, tagDist); $('tags').appendChild(tag);
+  const hull = hullMaterial(SLOT_COLORS[slot]), ol = addOutline(C.root, [], hull);   // seen through walls, in their colour
   const R = { id: p.id, name: p.name, slot, color: SLOT_COLORS[slot], alive: true, ready: false, t: performance.now(),
     x: center(1), z: center(1), nx: center(1), nz: center(1), yaw: 0, nyaw: 0, pitch: 0, face: 0, nface: 0, ap: 0, eye: CFG.STAND_EYE,
     crouch: false, sprinting: false, speedNow: 0, flashOn: false, bf: 1, bo: null, bd: null, beam: null, hid: -1, hidden: null,
-    linger: 0, undiesT: 0, evadeHideT: 0, exhausted: false, searching: false, bob: 0, C, light, tag };
+    linger: 0, undiesT: 0, evadeHideT: 0, exhausted: false, searching: false, bob: 0, C, light, tag, tagDist, hull, ol, tagKey: '' };
   MP.remotes.set(p.id, R); return R;
 }
-function removeRemote(R) { scene.remove(R.C.root); scene.remove(R.light); scene.remove(R.light.target); R.tag.remove(); MP.remotes.delete(R.id); }
+function removeRemote(R) { scene.remove(R.C.root); scene.remove(R.light); scene.remove(R.light.target); R.tag.remove(); R.hull.dispose(); MP.remotes.delete(R.id); }
 function clearRemotes() { for (const R of [...MP.remotes.values()]) removeRemote(R); }
 function onPeerState(id, m) {
   if (!id || id === MP.id) return;
@@ -4608,15 +4705,18 @@ function updateRemotes(dt) {
       R.light.intensity = 3.4 * (0.12 + 0.88 * R.bf); R.light.position.set(R.bo[0], R.bo[1], R.bo[2]);
       R.light.target.position.set(R.bo[0] + R.bd[0] * 6, R.bo[1] + R.bd[1] * 6, R.bo[2] + R.bd[2] * 6);
     } else R.light.intensity = 0;
-    // name tag over their head, when you can see them
+    setOutline(R.ol, vis);   // you can always see where your teammates are, walls or not
+    // name tag over their head; behind a wall it also says how far away they are
     let show = false;
     if (vis) {
       tmpV.set(R.x, R.crouch ? 1.45 : 2.05, R.z);
       const d = tmpV.distanceTo(camera.position);
-      if (d < 26 && !wallsBetween(camera.position.x, camera.position.z, R.x, R.z)) {
+      if (d < 90) {
         tmpV.project(camera);
         if (tmpV.z > -1 && tmpV.z < 1 && Math.abs(tmpV.x) < 1.1 && Math.abs(tmpV.y) < 1.1) {
           show = true; R.tag.style.transform = `translate(${((tmpV.x + 1) / 2 * innerWidth).toFixed(0)}px,${((1 - tmpV.y) / 2 * innerHeight).toFixed(0)}px) translate(-50%,-100%)`;
+          const occ = wallsBetween(camera.position.x, camera.position.z, R.x, R.z), key = occ ? Math.round(d) + 'm' : '';
+          if (key !== R.tagKey) { R.tagKey = key; R.tagDist.textContent = key; R.tag.classList.toggle('far', occ); }
         }
       }
     }
@@ -4722,7 +4822,7 @@ function onClientMsg(m) {
     case 'muf': if (R.alive) hostMuffin(clamp(num(m.x, R.x), 0, W.N * T), clamp(num(m.z, R.z), 0, W.N * T)); break;
     case 'vblind': { const G = W.goose; if (R.alive && G.state !== 'blind' && G.state !== 'bait' && G.blindImm <= 0) blindGoose(G, R); break; }
     case 'sgoff': { const S = W.sgeese[i]; if (S && S.state !== 'disabled') disableSG(S, clamp(num(m.s, 45), 30, 70)); break; }
-    case 'dead': R.alive = false; checkAllDead(); break;
+    case 'dead': R.alive = false; recordDeath(id, m.why === 'heat' ? 'heat' : 'goose'); checkAllDead(); break;
   }
 }
 function onHostMsg(m) {
@@ -4733,6 +4833,7 @@ function onHostMsg(m) {
     case 'lobby': onLobbyState(m); return;
     case 'deny': joinFailed(m.why === 'full' ? 'That room is full.' : m.why === 'started' ? 'That game has already started. Try again when it ends.' : "Couldn't join that room."); return;
     case 'close': mpFail('The host closed the room.'); return;
+    case 'kick': mpFail('Your connection to the room dropped for too long, so the host lost you.'); return;
     case 'start':
       if (MP.joined && !MP.inGame && Array.isArray(m.players)) beginMpRun(num(m.seed) | 0, m.players.slice(0, 6).map(p => ({ id: cleanText(p.id, 16), name: cleanText(p.name, 14) || 'Player', slot: clamp(num(p.slot) | 0, 0, 5) })));
       return;
@@ -4769,6 +4870,7 @@ function onHostMsg(m) {
     case 'fx': playVfx(cleanText(m.k, 12), m.a && typeof m.a === 'object' ? m.a : {}); break;
     case 'tell': toast(cleanText(m.m, 160), !!m.b, clamp(num(m.d, 3), 1, 6), !!m.f); break;
     case 'chase': if (player.alive && hasPerk('evasive') && !player.evadeUsed) startEvasive(); break;
+    case 'died': recordDeath(cleanText(m.id, 16), ['goose', 'heat', 'left'].includes(m.why) ? m.why : 'goose'); break;
     case 'over': endMp('over'); break;
     case 'win': endMp('win'); break;
   }
@@ -4798,8 +4900,20 @@ function localDied(reason) {
   GOOSE_RIG.root.visible = true; DUSTY.root.rotation.set(0, 0, 0); DUSTY.root.position.y = 0; DUSTY.root.visible = false;
   if (document.pointerLockElement) document.exitPointerLock();
   MP.deadReason = reason;
-  if (MP.host) { if (checkAllDead()) return; } else netClient({ t: 'dead' });
+  if (MP.host) { recordDeath(MP.id, reason === 'heat' ? 'heat' : 'goose'); if (checkAllDead()) return; } else netClient({ t: 'dead', why: reason === 'heat' ? 'heat' : 'goose' });
   enterSpectate();
+}
+// who went down and how: everyone's told as it happens, and it's listed at the end
+const FATE = { goose: 'caught by The Voice', heat: 'collapsed from the heat', left: 'left the game' };
+const nameOf = id => id === MP.id ? MP.name : ((MP.remotes.get(id) || MP.players.find(q => q.id === id) || (MP.runPlayers || []).find(q => q.id === id) || {}).name || 'Someone');
+function recordDeath(id, why) {
+  if (!MP.inGame || !id || (MP.deaths || {})[id]) return;
+  MP.deaths[id] = why;
+  if (MP.host) netHost({ t: 'died', id, why });
+  if (id !== MP.id) {
+    const R = MP.remotes.get(id); if (R) R.alive = false;
+    toast(`${nameOf(id)} ${why === 'goose' ? 'was caught by The Voice.' : why === 'heat' ? 'collapsed from the heat.' : 'left the game.'}${why === 'goose' && player.alive ? ' Run!' : ''}`, true, 3.5);
+  }
 }
 function checkAllDead() {
   if (!MP.inGame || !MP.host) return false;
@@ -4953,7 +5067,7 @@ window.__gooseflesh = {
   camera, GOOSE_RIG, DUSTY, CAM, INV, useItem, giveItem, finishSearch, TAPEUI, CFG, loadout, PERKS, hasPerk, renderLoadout, toggleFlash, GOOSE_OL, SG_RIGS, flash,
   interact: () => interact(), blindVoice: () => blindGoose(W.goose), sgDetects: S => sgDetects(S),
   start: beginNewRun, caught: () => caught(), win: () => { player.tapes = CFG.TAPES; win(); },
-  goose: () => W && W.goose, step: (n = 60, dt = 1 / 60) => { for (let i = 0; i < n; i++) { if (!(state === 'playing' || mpSimulating())) break; simStep(dt); if (state === 'caught') updateJumpscare(dt); } },
+  goose: () => W && W.goose, step: (n = 60, dt = 1 / 60) => { for (let i = 0; i < n; i++) { if (!(state === 'playing' || mpSimulating())) break; simStep(dt); if (state === 'caught') updateJumpscare(dt); else if (state === 'collapse') updateCollapse(dt); } },
   mp: MP, mpLeave: () => mpLeave(), hostStart: () => hostStart(), specCycle: d => specCycle(d), applyDifficulty, difficultyText,
 };
 })();
