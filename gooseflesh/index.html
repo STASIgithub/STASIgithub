@@ -312,6 +312,9 @@ button.room .n{grid-row:1 / span 2;grid-column:2;align-self:center;font-size:15p
   #scr-start{background:rgba(5,5,6,.82)}
   .keys{font-size:12px}
 }
+/* safe mode (?safe in the address): no full-screen blended overlays or animated title */
+body.safe #grain,body.safe #vignette{display:none}
+body.safe h1{animation:none}
 @media (prefers-reduced-motion:reduce){
   h1,#grain,#scent.hot,#tape .reels i{animation:none}
   .strip,#secret .words span{transition-duration:.01s;transition-delay:0s}
@@ -653,6 +656,10 @@ const TOUCH_DEVICE = matchMedia('(pointer: coarse)').matches && !matchMedia('(po
 const SETTINGS_KEY = 'gooseflesh.settings.v1';
 // weaker machines (few cores or little memory) start on Low graphics
 const WEAK_DEVICE = (navigator.hardwareConcurrency || 8) <= 4 || (navigator.deviceMemory || 8) <= 4;
+// Safe mode, for tracking down crashes: open the game with ?safe at the end of the address. Low graphics, no
+// antialiasing, the default graphics adapter, no blended screen overlays, 30 frames a second.
+const SAFE = /[?&]safe\b/.test(location.search);
+if (SAFE) document.body.classList.add('safe');
 const settings = { controls: TOUCH_DEVICE ? 'mobile' : 'computer', quality: TOUCH_DEVICE || WEAK_DEVICE ? 'low' : 'high', sens: 1, vol: 0.9, view: 'third', flavor: 'on' };
 try {
   const saved = JSON.parse(localStorage.getItem(SETTINGS_KEY) || 'null');
@@ -665,6 +672,7 @@ try {
     if (isFinite(saved.vol)) settings.vol = clamp(+saved.vol, 0, 1);
   }
 } catch (e) { /* storage unavailable: defaults are fine */ }
+if (SAFE) settings.quality = 'low';
 function saveSettings() { try { localStorage.setItem(SETTINGS_KEY, JSON.stringify(settings)); } catch (e) { /* ignore */ } }
 const isMobile = () => settings.controls === 'mobile';
 const firstPerson = () => settings.view === 'first';
@@ -711,7 +719,7 @@ function saveLoadout() { if (!loadoutValid()) return; try { localStorage.setItem
 
 /* ================= RENDERER ================= */
 const canvas = $('view');
-const renderer = new THREE.WebGLRenderer({ canvas, antialias: !TOUCH_DEVICE, powerPreference: 'high-performance' });
+const renderer = new THREE.WebGLRenderer({ canvas, antialias: !TOUCH_DEVICE && !SAFE, powerPreference: SAFE ? 'default' : 'high-performance' });
 // How many pixels get drawn. The total is capped, so a big or high-DPI screen (a 1080p laptop at 150% scaling would
 // otherwise draw 2880x1620 every frame) can't overload the graphics card. The picture is scaled up to fill the screen.
 const MAX_PIXELS = { high: 1920 * 1080, low: 1280 * 720 };
@@ -2593,9 +2601,9 @@ function syncSettingsUI() {
   $('view-desc').textContent = firstPerson() ? 'You see through Dusty\'s eyes.' : 'The camera follows behind Dusty.';
   $('flavor-desc').textContent = settings.flavor === 'on' ? 'Captions like MERP and peww, and story and status messages like "You\'ve caught a fever.", are shown.' : "Only essential text is shown: prompts, items, pickups and perks. Everything else still happens, you just won't read about it.";
   $('keys-pc').hidden = isMobile(); $('keys-mobile').hidden = !isMobile();
-  $('mode-note').textContent = isMobile()
+  $('mode-note').textContent = (SAFE ? 'Safe mode is on. ' : '') + (isMobile()
     ? 'Mobile controls. Play with your phone sideways. On iPhone, turn off silent mode to hear The Voice.'
-    : 'Computer controls. Change controls and graphics in Settings.';
+    : 'Computer controls. Change controls and graphics in Settings.');
 }
 function applySettings() {
   document.body.classList.toggle('m', isMobile());
@@ -4225,7 +4233,7 @@ function watchPerf(raw) {
 }
 function frame(now) {
   requestAnimationFrame(frame);
-  if (now - last < 13) return;   // at most about 60 frames a second, even on 120-240 Hz screens
+  if (now - last < (SAFE ? 30 : 13)) return;   // at most about 60 frames a second (30 in safe mode), even on 120-240 Hz screens
   const raw = (now - last) / 1000, dt = Math.min(0.05, raw); last = now;
   if (DBG.noLoop) return;
   watchPerf(raw);
