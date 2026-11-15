@@ -488,7 +488,7 @@ body.safe h1{animation:none}
 <section class="screen center" id="scr-perks" hidden>
   <div class="inner loadout">
     <h2>Perks</h2>
-    <p class="fine">Bring exactly 2 perks and 1 item into each run.</p>
+    <p class="fine">Bring exactly 3 perks and 1 item into each run.</p>
     <h3 class="sub">Perks <span id="perk-n">0 / 2</span></h3>
     <div class="cards" id="perk-cards"></div>
     <h3 class="sub">Item <span id="item-n">0 / 1</span></h3>
@@ -616,6 +616,7 @@ if (!window.THREE) {
 const T = 3.2;            // tile size (corridor width)
 const H = 4.0;            // wall height
 const CELLS = 12;         // maze is CELLS x CELLS cells
+const MAZE_DEAD_ENDS = 3; // dead ends left after the rest are knocked through
 const CFG = {
   WALK: 3.1 * 0.95, SPRINT: 5.6 * 0.95, CROUCH: 1.45 * 0.95,   // base speeds, 5% under the original 3.1 / 5.6 / 1.45
   STAND_EYE: 1.6, CROUCH_EYE: 0.85, BED_EYE: 0.3,
@@ -786,14 +787,17 @@ const LOADOUT_ITEMS = {
   propel: { name: 'Blueberry Propel', desc: 'Refills your stamina. 3.5 seconds of endless stamina and 60% more speed.' },
 };
 const LOADOUT_KEY = 'gooseflesh.loadout.v1';
-const loadout = { perks: ['endurance', 'headstart'], item: 'muffin' };
+const PERK_SLOTS = 3, DEFAULT_PERKS = ['endurance', 'headstart', 'crescendo'];
+const loadout = { perks: DEFAULT_PERKS.slice(), item: 'muffin' };
 try {
   const saved = JSON.parse(localStorage.getItem(LOADOUT_KEY) || 'null');
-  if (saved && Array.isArray(saved.perks) && saved.perks.length === 2 && saved.perks[0] !== saved.perks[1] && saved.perks.every(k => PERKS[k]) && LOADOUT_ITEMS[saved.item]) {
-    loadout.perks = saved.perks.slice(); loadout.item = saved.item;
+  if (saved && Array.isArray(saved.perks) && LOADOUT_ITEMS[saved.item]) {
+    const ps = [...new Set(saved.perks.filter(k => PERKS[k]))].slice(0, PERK_SLOTS);
+    for (const k of DEFAULT_PERKS) if (ps.length < PERK_SLOTS && !ps.includes(k)) ps.push(k);   // a saved 2-perk loadout gets a third
+    loadout.perks = ps; loadout.item = saved.item;
   }
 } catch (e) { /* storage unavailable: defaults are fine */ }
-const loadoutValid = () => loadout.perks.length === 2 && !!LOADOUT_ITEMS[loadout.item];
+const loadoutValid = () => loadout.perks.length === PERK_SLOTS && !!LOADOUT_ITEMS[loadout.item];
 function saveLoadout() { if (!loadoutValid()) return; try { localStorage.setItem(LOADOUT_KEY, JSON.stringify(loadout)); } catch (e) { /* ignore */ } }
 
 /* ================= RENDERER ================= */
@@ -1373,6 +1377,21 @@ function generateMaze(cells) {
     if (x % 2 === 0 && y % 2 === 1 && g[y][x - 1] === 0 && g[y][x + 1] === 0 && Math.random() < 0.1) g[y][x] = 0;
     else if (x % 2 === 1 && y % 2 === 0 && g[y - 1][x] === 0 && g[y + 1][x] === 0 && Math.random() < 0.1) g[y][x] = 0;
   }
+  // far fewer dead ends: knock through the end wall of all but a few (they're joined to a neighbour, another dead end if one's there)
+  const inRoom = (x, y) => rooms.some(r => x >= r.x0 && x < r.x0 + 3 && y >= r.y0 && y < r.y0 + 3);
+  const openN = (x, y) => DIRS.reduce((n, [dx, dy]) => n + (g[y + dy][x + dx] === 0 ? 1 : 0), 0);
+  const ends = [];
+  for (let cy = 0; cy < cells; cy++) for (let cx = 0; cx < cells; cx++) { const x = 2 * cx + 1, y = 2 * cy + 1; if (!inRoom(x, y) && openN(x, y) === 1) ends.push([x, y]); }
+  shuffle(ends);
+  let kept = 0;
+  for (const [x, y] of ends) {
+    if (openN(x, y) !== 1) continue;   // a neighbour already broke through into this one
+    if (kept < MAZE_DEAD_ENDS) { kept++; continue; }
+    const opts = DIRS.filter(([dx, dy]) => { const nx = x + 2 * dx, ny = y + 2 * dy; return nx > 0 && ny > 0 && nx < N - 1 && ny < N - 1 && g[y + dy][x + dx] === 1; });
+    if (!opts.length) { kept++; continue; }
+    const [dx, dy] = opts.find(([ox, oy]) => openN(x + 2 * ox, y + 2 * oy) === 1) || pick(opts);
+    g[y + dy][x + dx] = 0;
+  }
   return { g, N, rooms };
 }
 
@@ -1927,6 +1946,12 @@ function populate() {
     if (W.showers.some(o => Math.abs(o.tile % N - i % N) + Math.abs(((o.tile / N) | 0) - ((i / N) | 0)) < 8)) continue;
     const o = openDirs(i)[0], back = DIRS.findIndex(([dx, dz]) => dx === -DIRS[o][0] && dz === -DIRS[o][1]);
     makeShower(i, back); placed(i, back);
+  }
+  for (const i of shuffle(W.floors.slice())) {
+    if (W.showers.length >= wantShowers) break; if (!canPlace(i) || tapeSet.has(i) || sd[i] < 6 || roomOf[i] >= 0) continue;
+    const od = openDirs(i); if (od.length !== 2 || DIRS[od[0]][0] !== -DIRS[od[1]][0] || DIRS[od[0]][1] !== -DIRS[od[1]][1]) continue;   // straight corridors only
+    if (W.showers.some(o => Math.abs(o.tile % N - i % N) + Math.abs(((o.tile / N) | 0) - ((i / N) | 0)) < 8)) continue;
+    const k = pick(wallDirs(i)); makeShower(i, k); placed(i, k);
   }
   let deBeds = 0;
   for (const i of shuffle(deadEnds.slice())) {
@@ -2845,11 +2870,11 @@ $('set-sens').addEventListener('input', e => { settings.sens = +e.target.value; 
 $('set-vol').addEventListener('input', e => { settings.vol = +e.target.value; saveSettings(); applySettings(); });
 $('set-tb').addEventListener('input', e => { settings.tb = clamp(+e.target.value, 0.6, 1.3); saveSettings(); applySettings(); resetJoy(); });
 $('btn-settings').addEventListener('click', () => openSettings('scr-start'));
-// perks and loadout: exactly 2 perks and 1 item
+// perks and loadout: exactly 3 perks and 1 item
 function renderLoadout() {
   $('perk-cards').innerHTML = Object.entries(PERKS).map(([id, k]) => `<button class="card" type="button" data-perk="${id}" aria-pressed="${loadout.perks.includes(id)}">${icon(id)}<b>${k.name}</b><span>${k.desc}</span></button>`).join('');
   $('item-cards').innerHTML = Object.entries(LOADOUT_ITEMS).map(([id, k]) => `<button class="card" type="button" data-pick="${id}" aria-pressed="${loadout.item === id}">${icon(id)}<b>${k.name}</b><span>${k.desc}</span></button>`).join('');
-  $('perk-n').textContent = `${loadout.perks.length} / 2`; $('item-n').textContent = `${LOADOUT_ITEMS[loadout.item] ? 1 : 0} / 1`;
+  $('perk-n').textContent = `${loadout.perks.length} / ${PERK_SLOTS}`; $('item-n').textContent = `${LOADOUT_ITEMS[loadout.item] ? 1 : 0} / 1`;
   $('perks-done').disabled = !loadoutValid();
   renderLoadoutSummary();
 }
@@ -2862,7 +2887,7 @@ $('perk-cards').addEventListener('click', e => {
   const b = e.target.closest('[data-perk]'); if (!b) return;
   const id = b.dataset.perk, i = loadout.perks.indexOf(id);
   if (i >= 0) loadout.perks.splice(i, 1);
-  else { loadout.perks.push(id); if (loadout.perks.length > 2) loadout.perks.shift(); }   // a third pick replaces your first
+  else { loadout.perks.push(id); if (loadout.perks.length > PERK_SLOTS) loadout.perks.shift(); }   // a fourth pick replaces your first
   saveLoadout(); renderLoadout(); const nb = $('perk-cards').querySelector(`[data-perk="${id}"]`); if (nb) nb.focus();
 });
 $('item-cards').addEventListener('click', e => {
