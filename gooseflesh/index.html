@@ -281,6 +281,15 @@ input[type=range]{width:100%;accent-color:var(--ember);height:28px}
 #loadout-sum svg,#rm-lo svg{width:15px;height:15px}
 .ico{fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
 .loadout{width:100%;max-width:780px;gap:14px}
+/* How to Play: one big heading for the goal, medium ones for each topic, normal body text */
+.howto{width:100%;max-width:680px;gap:26px}
+.center .inner.howto{align-items:stretch;text-align:left}
+.howto section{display:flex;flex-direction:column;gap:10px;padding-top:20px;border-top:1px solid rgba(221,214,198,.14)}
+.howto h3.big{margin:0;font-family:var(--f-display);font-weight:400;font-size:clamp(32px,4.6vw,48px);line-height:1;color:var(--ember);letter-spacing:.02em}
+.howto h4{margin:0;font-family:var(--f-display);font-weight:400;font-size:clamp(22px,2.8vw,28px);line-height:1.05;color:var(--ink);letter-spacing:.03em}
+.howto p{margin:0;font-size:15.5px;line-height:1.62;color:var(--ink);max-width:62ch}
+.howto .howto-keys{margin:2px 0 0}
+.howto .actions{justify-content:flex-start}
 .center .inner.loadout{align-items:stretch}
 .sub{margin:8px 0 0;font-size:12px;font-weight:400;letter-spacing:.2em;text-transform:uppercase;color:var(--dim);display:flex;justify-content:space-between}
 .sub span{color:var(--ink);font-variant-numeric:tabular-nums}
@@ -405,6 +414,7 @@ body.safe h1{animation:none}
     <nav class="menu-list" aria-label="Main menu">
       <button id="btn-start" type="button">Play</button>
       <button id="btn-mp" class="ghost" type="button">Multiplayer</button>
+      <button id="btn-howto" class="ghost" type="button">How to Play</button>
       <button id="btn-settings" class="ghost" type="button">Settings</button>
       <button id="btn-skins" class="ghost" type="button">Skins</button>
       <button id="btn-perks" class="ghost" type="button">Perks</button>
@@ -482,6 +492,82 @@ body.safe h1{animation:none}
       <p class="fine">Smaller buttons leave more of the screen clear.</p>
     </div>
     <button id="settings-done" type="button">Done</button>
+  </div>
+</section>
+
+<section class="screen center" id="scr-howto" hidden>
+  <div class="inner howto">
+    <h2>How to Play</h2>
+
+    <section>
+      <h3 class="big">Main Objective</h3>
+      <p>Five cassette tapes are hidden somewhere in this maze. Each one holds a piece of a story that somebody didn't want told. Find all five to hear the whole thing.</p>
+      <p>You aren't alone in here. Something enormous lives in this maze, and it doesn't want that story found. It rules this place and everything that moves through it. Be careful. Trust nobody.</p>
+    </section>
+
+    <section>
+      <h4>The Voice</h4>
+      <p>You'll usually hear it before you see it. It listens for running, for heavy breathing, for doors. It notices light. Stay in one spot for too long and it starts to pick up your scent. If it comes after you, keep moving, and think twice about where you're leading it.</p>
+    </section>
+
+    <section>
+      <h4>Its Watchers</h4>
+      <p>Smaller geese wander the halls. They can't hurt you on their own, but they'll follow you and call for their master. Shaking them off is your problem.</p>
+    </section>
+
+    <section>
+      <h4>Temperature</h4>
+      <p>Keep your body temperature in check. It climbs the longer you're in here, and faster when you're running or crammed into a hiding spot. The hotter you get, the weaker your body becomes: you slow down, you run out of breath sooner, and it gets harder to see straight.</p>
+      <p>Cool yourself down with anything cold you can find. Use your common sense. Let it get too high for too long and you'll collapse from heatstroke, and your run is over.</p>
+    </section>
+
+    <section>
+      <h4>Flashlight</h4>
+      <p>Your flashlight has limited battery and slowly recharges while it's switched off. It isn't only for seeing: aimed well, it's a weapon against certain creatures in the maze. Batteries are hidden around the maze, some out in the open and some tucked away where you'd have to look for them. Keep in mind that a light can be seen from far away.</p>
+    </section>
+
+    <section>
+      <h4>Moving and Hiding</h4>
+      <p>Sprinting is fast, loud, and burns through your stamina. Run dry and you'll be stuck catching your breath. Crouching is slow but almost silent. Some furniture will hide you, as long as nothing saw you climb in, and not every hiding place is only for hiding.</p>
+    </section>
+
+    <section>
+      <h4>Items</h4>
+      <p>Pick one item to bring into each run, and find more along the way. Cabinets, refrigerators and other spots can be searched, and what's inside can save your life. Every item does something different, and some are best saved for exactly the right moment.</p>
+    </section>
+
+    <section>
+      <h4>Perks</h4>
+      <p>Bring three perks into each run to bend it in your favor. They're self-explanatory: each one says exactly what it does on the Perks screen. During a run, a perk's icon in the top right lights up while it's working.</p>
+    </section>
+
+    <section>
+      <h4>Playing Together</h4>
+      <p>Open Multiplayer to make a room or join one with its code. The more of you there are, the harder the maze fights back. A tape found by anyone counts for everyone. Get caught and you can still watch your teammates until the run ends.</p>
+    </section>
+
+    <section>
+      <h4>Controls</h4>
+      <dl class="keys howto-keys" id="howto-keys-pc">
+        <dt><kbd>W</kbd> <kbd>A</kbd> <kbd>S</kbd> <kbd>D</kbd></dt><dd>Move. Mouse to look.</dd>
+        <dt><kbd>Shift</kbd></dt><dd>Sprint (hold)</dd>
+        <dt><kbd>C</kbd> or <kbd>Ctrl</kbd></dt><dd>Crouch</dd>
+        <dt><kbd>F</kbd></dt><dd>Flashlight</dd>
+        <dt><kbd>E</kbd></dt><dd>Pick up, hide, open, search</dd>
+        <dt><kbd>Q</kbd> <kbd>1</kbd> to <kbd>4</kbd></dt><dd>Use items</dd>
+        <dt><kbd>M</kbd></dt><dd>Bigger map</dd>
+        <dt><kbd>Esc</kbd></dt><dd>Pause</dd>
+      </dl>
+      <dl class="keys howto-keys" id="howto-keys-mobile" hidden>
+        <dt><span class="chip">Left thumb</span></dt><dd>Move</dd>
+        <dt><span class="chip">Drag right side</span></dt><dd>Look around</dd>
+        <dt><span class="chip">Buttons</span></dt><dd>Run, crouch, light and use</dd>
+        <dt><span class="chip">Top right</span></dt><dd>Tap an item to use it</dd>
+        <dt><span class="chip">Map</span></dt><dd>Tap it to make it bigger</dd>
+      </dl>
+    </section>
+
+    <div class="actions"><button id="howto-back" type="button">Back</button></div>
   </div>
 </section>
 
@@ -606,6 +692,8 @@ body.safe h1{animation:none}
 <script>
 (() => {
 'use strict';
+// a fingerprint of this exact build: everyone in a room has to be on the same one, or their mazes wouldn't match
+const BUILD = (() => { const t = (document.currentScript && document.currentScript.text) || ''; let h = 2166136261; for (let i = 0; i < t.length; i++) { h ^= t.charCodeAt(i); h = Math.imul(h, 16777619); } return (h >>> 0).toString(36); })();
 
 if (!window.THREE) {
   document.querySelector('.lede').textContent = 'The 3D engine failed to load. Check your connection and reload the page.';
@@ -616,7 +704,7 @@ if (!window.THREE) {
 const T = 3.2;            // tile size (corridor width)
 const H = 4.0;            // wall height
 const CELLS = 12;         // maze is CELLS x CELLS cells
-const MAZE_DEAD_ENDS = 3; // dead ends left after the rest are knocked through
+const MAZE_DEAD_ENDS = 2; // dead ends left after the rest are knocked through
 const CFG = {
   WALK: 3.1 * 0.95, SPRINT: 5.6 * 0.95, CROUCH: 1.45 * 0.95,   // base speeds, 5% under the original 3.1 / 5.6 / 1.45
   STAND_EYE: 1.6, CROUCH_EYE: 0.85, BED_EYE: 0.3,
@@ -864,28 +952,77 @@ function tex(c, rep) {
   if (rep) { t.wrapS = t.wrapT = THREE.RepeatWrapping; t.repeat.set(rep, rep); }
   return t;
 }
-function makeWallTex() {
+// wall textures: six variants of the same institutional wall (pale upper paint, green wainscot), each worn differently,
+// so neighbouring wall blocks don't look copy-pasted
+const WALL_VARIANTS = 6, WALL_WEIGHTS = [3, 2, 2, 2, 1, 1.5];
+function makeWallTex(v = 0) {
   const S = 512, c = mkCanvas(S, S), g = c.getContext('2d');
   const split = Math.round(S * 0.58);
-  g.fillStyle = '#6b6a5d'; g.fillRect(0, 0, S, S);
-  g.fillStyle = '#3d483f'; g.fillRect(0, split, S, S - split);
+  g.fillStyle = ['#6b6a5d', '#646253', '#706b5b', '#686a60', '#6a6659', '#6c675a'][v]; g.fillRect(0, 0, S, S);
+  g.fillStyle = ['#3d483f', '#38423a', '#423f37', '#3f4a44', '#3d463d', '#3b453c'][v]; g.fillRect(0, split, S, S - split);
+  if (v === 3) {   // a tiled lower half, a few tiles missing
+    for (let y = split + 6; y < S; y += 32) for (let x = 0; x < S; x += 32) {
+      const miss = Math.random() < 0.06, k = rr(-10, 10);
+      g.fillStyle = miss ? '#1b1d19' : `rgb(${(78 + k) | 0},${(92 + k) | 0},${(84 + k) | 0})`; g.fillRect(x + 1, y + 1, 30, 30);
+    }
+  }
   g.fillStyle = '#232822'; g.fillRect(0, split - 5, S, 10);
   g.strokeStyle = 'rgba(0,0,0,.2)'; g.lineWidth = 2;
   for (let y = 0, r = 0; y < split; y += 64, r++) {
     g.beginPath(); g.moveTo(0, y); g.lineTo(S, y); g.stroke();
     for (let x = (r % 2) ? 0 : 128; x < S; x += 256) { g.beginPath(); g.moveTo(x, y); g.lineTo(x, Math.min(split, y + 64)); g.stroke(); }
   }
-  stains(g, S, S, 22, 'rgba(34,24,10,.38)', 95);
+  // an irregular outline, made once so it can be filled, clipped to and stroked the same way
+  const blob = (cx, cy, rx, ry, jag) => { const pts = []; for (let a = 0; a < 6.3; a += 0.3) { const k = rr(1 - jag, 1 + jag * 0.5); pts.push([cx + Math.cos(a) * rx * k, cy + Math.sin(a) * ry * k]); } return pts; };
+  const trace = (pts, dx = 0, dy = 0) => { g.beginPath(); pts.forEach(([x, y], i) => i ? g.lineTo(x + dx, y + dy) : g.moveTo(x + dx, y + dy)); g.closePath(); };
+  if (v === 2) for (let k = 0; k < 9; k++) {   // paint peeling off in flakes: bare grey plaster under a dark lifted edge
+    const pts = blob(rr(20, S - 20), rr(20, split - 30), rr(10, 38), rr(8, 28), 0.5);
+    trace(pts, 2, 3); g.fillStyle = 'rgba(16,13,9,.35)'; g.fill();
+    trace(pts); g.fillStyle = `rgba(${(112 + rr(-8, 8)) | 0},${(110 + rr(-8, 8)) | 0},${(98 + rr(-8, 8)) | 0},.9)`; g.fill();
+    g.strokeStyle = 'rgba(30,26,20,.7)'; g.lineWidth = 1.6; g.stroke();
+  }
+  if (v === 5) {   // plaster broken away, brick behind
+    const pts = blob(rr(130, S - 130), rr(90, split - 90), rr(70, 115), rr(48, 80), 0.35);
+    trace(pts); g.save(); g.clip();
+    g.fillStyle = '#35241d'; g.fillRect(0, 0, S, S);
+    for (let y = 0, row = 0; y < S; y += 16, row++) for (let x = row % 2 ? -16 : 0; x < S; x += 32) {
+      const k = rr(-18, 18); g.fillStyle = `rgb(${(90 + k) | 0},${(47 + k * 0.5) | 0},${(36 + k * 0.4) | 0})`; g.fillRect(x + 1, y + 1, 30, 14);
+    }
+    g.restore(); trace(pts); g.strokeStyle = 'rgba(12,9,7,.85)'; g.lineWidth = 4; g.stroke();
+  }
+  stains(g, S, S, v === 1 ? 34 : 22, 'rgba(34,24,10,.38)', 95);
   stains(g, S, S, 10, 'rgba(8,6,4,.5)', 55);
-  for (let i = 0; i < 46; i++) {
-    const x = Math.random() * S, len = 40 + Math.random() * 280, w = 1 + Math.random() * 3;
+  if (v === 1) { stains(g, S, S, 9, 'rgba(22,36,20,.5)', 70); stains(g, S, S, 6, 'rgba(14,26,14,.55)', 45); }   // water damage and mould
+  for (let i = 0, n = v === 1 ? 110 : 46; i < n; i++) {
+    const x = Math.random() * S, len = 40 + Math.random() * (v === 1 ? 420 : 280), w = 1 + Math.random() * 3;
     const gr = g.createLinearGradient(0, 0, 0, len); gr.addColorStop(0, 'rgba(26,18,8,.55)'); gr.addColorStop(1, 'rgba(26,18,8,0)');
     g.fillStyle = gr; g.fillRect(x, 0, w, len);
   }
+  if (v === 4) {   // something scratched at this one
+    for (let k = 0; k < 4; k++) {
+      const x0 = rr(30, S - 90), y0 = rr(40, S - 190), bend = rr(-30, 30);
+      for (let j = 0; j < 4; j++) {
+        const x = x0 + j * 10, y = y0 + j * 4, len = rr(110, 170);
+        g.strokeStyle = 'rgba(10,8,6,.85)'; g.lineWidth = rr(1.5, 3.2); g.beginPath(); g.moveTo(x, y); g.quadraticCurveTo(x + bend, y + len / 2, x + bend * 0.4 + rr(-6, 6), y + len); g.stroke();
+        g.strokeStyle = 'rgba(200,190,170,.16)'; g.lineWidth = 1; g.beginPath(); g.moveTo(x + 2, y); g.quadraticCurveTo(x + bend + 2, y + len / 2, x + bend * 0.4 + 2, y + len); g.stroke();
+      }
+    }
+    stains(g, S, S, 3, 'rgba(92,20,14,.32)', 42);
+  }
   const gr = g.createLinearGradient(0, S * 0.78, 0, S); gr.addColorStop(0, 'rgba(0,0,0,0)'); gr.addColorStop(1, 'rgba(6,5,3,.8)');
   g.fillStyle = gr; g.fillRect(0, S * 0.78, S, S * 0.22);
-  cracks(g, S, 7, 'rgba(10,8,6,.75)');
+  cracks(g, S, v === 2 || v === 5 ? 12 : 7, 'rgba(10,8,6,.75)');
   speckle(g, S, S, 28);
+  return c;
+}
+// a dark stain on the floor, used many times at different sizes and angles
+function makeStainTex() {
+  const S = 128, c = mkCanvas(S, S), g = c.getContext('2d');
+  for (let k = 0; k < 7; k++) {
+    const x = rr(40, 88), y = rr(40, 88), r = rr(14, 34), gr = g.createRadialGradient(x, y, 0, x, y, r);
+    gr.addColorStop(0, 'rgba(20,12,6,.55)'); gr.addColorStop(0.7, 'rgba(20,12,6,.25)'); gr.addColorStop(1, 'rgba(20,12,6,0)'); g.fillStyle = gr; g.fillRect(0, 0, S, S);
+  }
+  for (let k = 0; k < 12; k++) { g.fillStyle = 'rgba(16,10,5,.5)'; g.beginPath(); g.arc(rr(20, 108), rr(20, 108), rr(1, 3.5), 0, 6.3); g.fill(); }
   return c;
 }
 function makeFloorTex() {
@@ -1016,7 +1153,8 @@ function makeGrainURL() {
 }
 
 const TEX = {
-  wall: tex(makeWallTex()),
+  walls: Array.from({ length: WALL_VARIANTS }, (_, v) => tex(makeWallTex(v))),
+  stain: tex(makeStainTex()),
   floor: tex(makeFloorTex(), 1),
   ceil: tex(makeCeilTex(), 1),
   crate: tex(makeCrateTex()),
@@ -1032,7 +1170,8 @@ $('grain').style.backgroundImage = `url(${makeGrainURL()})`;
 
 /* ================= MATERIALS ================= */
 const MAT = {
-  wall: new THREE.MeshStandardMaterial({ map: TEX.wall, bumpMap: TEX.wall, bumpScale: 0.03, roughness: 0.95, metalness: 0 }),
+  walls: TEX.walls.map(t => new THREE.MeshStandardMaterial({ map: t, bumpMap: t, bumpScale: 0.03, roughness: 0.95, metalness: 0 })),
+  stain: new THREE.MeshStandardMaterial({ map: TEX.stain, transparent: true, depthWrite: false, roughness: 0.55, polygonOffset: true, polygonOffsetFactor: -2, polygonOffsetUnits: -2 }),
   floor: new THREE.MeshStandardMaterial({ map: TEX.floor, bumpMap: TEX.floor, bumpScale: 0.02, roughness: 0.85, metalness: 0 }),
   ceil: new THREE.MeshStandardMaterial({ map: TEX.ceil, roughness: 1 }),
   crate: new THREE.MeshStandardMaterial({ map: TEX.crate, bumpMap: TEX.crate, bumpScale: 0.03, roughness: 0.9 }),
@@ -1077,6 +1216,7 @@ const GM = {
   loc: new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 1, map: TEX.loc, bumpMap: TEX.loc, bumpScale: 0.04 }),
   clip: new THREE.MeshStandardMaterial({ color: 0x2f6fd8, roughness: 0.4, metalness: 0.2 }),
 };
+MAT.wall = MAT.walls[0];
 function addMesh(parent, g, m, pos, scl, rot, shadow = true) {
   const me = new THREE.Mesh(g, m);
   if (pos) me.position.set(pos[0], pos[1], pos[2]);
@@ -1416,6 +1556,15 @@ function generateMaze(cells) {
     const [dx, dy] = opts.find(([ox, oy]) => openN(x + 2 * ox, y + 2 * oy) === 1) || pick(opts);
     g[y + dy][x + dx] = 0;
   }
+  // a room with only one doorway is a dead end too: give it a second one
+  for (const r of rooms) {
+    const doors = [], walls = [];
+    for (let k = 0; k < 3; k++) for (const [wx, wz, dx, dz] of [[r.x0 + k, r.y0 - 1, 0, -1], [r.x0 + k, r.y0 + 3, 0, 1], [r.x0 - 1, r.y0 + k, -1, 0], [r.x0 + 3, r.y0 + k, 1, 0]]) {
+      if (g[wz][wx] === 0) doors.push([wx, wz]);
+      else { const bx = wx + dx, bz = wz + dz; if (bx > 0 && bz > 0 && bx < N - 1 && bz < N - 1 && g[bz][bx] === 0) walls.push([wx, wz]); }
+    }
+    if (doors.length < 2 && walls.length) { const [wx, wz] = pick(walls); g[wz][wx] = 0; }
+  }
   return { g, N, rooms };
 }
 
@@ -1538,10 +1687,19 @@ function buildWorldNow() {
     for (let dz = -1; dz <= 1 && !vis; dz++) for (let dx = -1; dx <= 1; dx++) { const nx = x + dx, nz = z + dz; if (nx >= 0 && nz >= 0 && nx < N && nz < N && !g[nz][nx]) { vis = true; break; } }
     if (vis) wallList.push([x, z]);
   }
-  const walls = new THREE.InstancedMesh(geo('wallbox', () => new THREE.BoxGeometry(T, H, T)), MAT.wall, wallList.length);
-  const m4 = new THREE.Matrix4();
-  wallList.forEach(([x, z], i) => { m4.makeTranslation(center(x), H / 2, center(z)); walls.setMatrixAt(i, m4); });
-  walls.castShadow = true; walls.receiveShadow = true; W.group.add(walls);
+  // each wall block gets one of the worn variants and a slight tint of its own
+  const byVariant = Array.from({ length: WALL_VARIANTS }, () => []), wsum = WALL_WEIGHTS.reduce((a, b) => a + b, 0);
+  for (const w of wallList) { let r = Math.random() * wsum, v = 0; while ((r -= WALL_WEIGHTS[v]) > 0 && v < WALL_VARIANTS - 1) v++; byVariant[v].push(w); }
+  const m4 = new THREE.Matrix4(), tint = new THREE.Color();
+  byVariant.forEach((list, v) => {
+    if (!list.length) return;
+    const walls = new THREE.InstancedMesh(geo('wallbox', () => new THREE.BoxGeometry(T, H, T)), MAT.walls[v], list.length);
+    list.forEach(([x, z], i) => {
+      m4.makeTranslation(center(x), H / 2, center(z)); walls.setMatrixAt(i, m4);
+      const b = rr(0.84, 1.06); walls.setColorAt(i, tint.setRGB(b * rr(0.97, 1.04), b, b * rr(0.94, 1.02)));
+    });
+    walls.castShadow = true; walls.receiveShadow = true; W.group.add(walls);
+  });
 
   populate();
   mergeStatic();
@@ -2151,6 +2309,15 @@ function populate() {
     mm.compose(pp, q, s); feathers.setMatrixAt(f, mm);
   }
   W.group.add(feathers);
+  // stains on the floor, so it doesn't repeat tile for tile: one instanced mesh, one draw call
+  const nS = 54, stains = new THREE.InstancedMesh(geo('stain', () => { const g2 = new THREE.PlaneGeometry(1, 1); g2.rotateX(-Math.PI / 2); return g2; }), MAT.stain, nS), sc2 = new THREE.Color();
+  for (let f = 0; f < nS; f++) {
+    const i = pick(W.floors), sc = rr(0.9, 2.8);
+    pp.set(center(i % N) + rr(-1.2, 1.2), 0.004, center((i / N) | 0) + rr(-1.2, 1.2));
+    e.set(0, rr(0, 6.28), 0); q.setFromEuler(e); s.set(sc * rr(0.7, 1.3), 1, sc);
+    mm.compose(pp, q, s); stains.setMatrixAt(f, mm); stains.setColorAt(f, sc2.setScalar(rr(0.6, 1)));
+  }
+  stains.receiveShadow = true; W.group.add(stains);
 
   // ---- goose start: far from the player
   let maxd = 0; for (const i of W.floors) maxd = Math.max(maxd, sd[i]);
@@ -2724,7 +2891,7 @@ document.addEventListener('pointerlockerror', () => lockFailed());
 
 function startPlaying() {
   state = 'playing';
-  ['scr-start', 'scr-pause', 'scr-dead', 'scr-win', 'scr-settings', 'scr-perks', 'scr-skins', 'scr-mp', 'scr-create', 'scr-join', 'scr-room', 'scr-msg'].forEach(id => $(id).hidden = true);
+  ['scr-start', 'scr-pause', 'scr-dead', 'scr-win', 'scr-settings', 'scr-perks', 'scr-skins', 'scr-howto', 'scr-mp', 'scr-create', 'scr-join', 'scr-room', 'scr-msg'].forEach(id => $(id).hidden = true);
   els.hud.hidden = false; $('tags').hidden = !MP.inGame; $('spec').hidden = true; $('hud-team').hidden = !MP.inGame;
   $('touch').hidden = !isMobile(); releaseTouches();
   AU.setAmbient(true);
@@ -2996,6 +3163,11 @@ $('btn-perks').addEventListener('click', () => { perksFrom = 'scr-start'; $('scr
 let perksFrom = 'scr-start';
 $('perks-done').addEventListener('click', () => { if (!loadoutValid()) return; saveLoadout(); $('scr-perks').hidden = true; $('scr-' + perksFrom.replace('scr-', '')).hidden = false; renderLoadoutSummary(); });
 $('btn-skins').addEventListener('click', () => { $('scr-start').hidden = true; $('scr-skins').hidden = false; });
+$('btn-howto').addEventListener('click', () => {
+  const m = isMobile(); $('howto-keys-pc').hidden = m; $('howto-keys-mobile').hidden = !m;
+  $('scr-start').hidden = true; $('scr-howto').hidden = false; $('scr-howto').scrollTop = 0;
+});
+$('howto-back').addEventListener('click', () => { $('scr-howto').hidden = true; $('scr-start').hidden = false; });
 $('skins-back').addEventListener('click', () => { $('scr-skins').hidden = true; $('scr-start').hidden = false; });
 $('btn-settings-p').addEventListener('click', () => openSettings('scr-pause'));
 $('settings-done').addEventListener('click', closeSettings);
@@ -4997,7 +5169,7 @@ function onLobbyEntry(code, payload, retained) {
   let e; try { e = JSON.parse(payload); } catch (er) { return; }
   if (!e || typeof e !== 'object') return;
   MP.rooms.set(code, { code, name: cleanText(e.name, 24) || 'Room', host: cleanText(e.host, 14), n: clamp(num(e.n) | 0, 0, 6), max: clamp(num(e.max, 4) | 0, 2, 6),
-    ph: e.ph === 'game' ? 'game' : 'lobby', seen: performance.now() });
+    ph: e.ph === 'game' ? 'game' : 'lobby', v: cleanText(e.v, 12), seen: performance.now() });
   renderRooms();
 }
 function renderRooms() {
@@ -5014,9 +5186,9 @@ function renderRooms() {
     el.appendChild(p);
   }
   for (const r of list) {
-    const b = document.createElement('button'); b.type = 'button'; b.className = 'room'; b.disabled = r.n >= r.max;
+    const old = r.v !== BUILD, b = document.createElement('button'); b.type = 'button'; b.className = 'room'; b.disabled = r.n >= r.max || old;
     const nm = document.createElement('b'); nm.textContent = r.name;
-    const sm = document.createElement('small'); sm.textContent = (r.host ? `Host: ${r.host}` : 'Public room') + (r.n >= r.max ? ' · Full' : '');
+    const sm = document.createElement('small'); sm.textContent = (r.host ? `Host: ${r.host}` : 'Public room') + (r.n >= r.max ? ' · Full' : '') + (old ? ' · Different version: refresh' : '');
     const n = document.createElement('span'); n.className = 'n'; n.textContent = `${r.n}/${r.max}`;
     b.append(nm, n, sm); b.addEventListener('click', () => joinRoom(r.code)); el.appendChild(b);
   }
@@ -5024,7 +5196,7 @@ function renderRooms() {
 }
 
 /* ---------- screens ---------- */
-const SCREENS = ['scr-start', 'scr-mp', 'scr-create', 'scr-join', 'scr-room', 'scr-msg', 'scr-perks', 'scr-skins', 'scr-settings', 'scr-pause', 'scr-dead', 'scr-win'];
+const SCREENS = ['scr-start', 'scr-mp', 'scr-create', 'scr-join', 'scr-room', 'scr-msg', 'scr-perks', 'scr-skins', 'scr-howto', 'scr-settings', 'scr-pause', 'scr-dead', 'scr-win'];
 function showScreen(id) { for (const s of SCREENS) $(s).hidden = s !== id; if (MP.listing && id !== 'scr-join') stopListing(); }
 function setStatus(id, msg) { $(id).textContent = msg || ''; }
 async function copyText(text, btn) {
@@ -5075,7 +5247,7 @@ async function joinRoom(code) {
   try { await netConnect(); } catch (e) { setStatus('jn-status', "Couldn't reach the multiplayer server. Check your connection and try again."); return; }
   Object.assign(MP, { active: true, host: false, inGame: false, joined: false, code, room: null, players: [], hostSeen: performance.now() });
   MP.mq.subscribe(TOPIC.h(code)); MP.mq.subscribe(TOPIC.s(code, '+'));
-  const ask = () => netClient({ t: 'join', name: MP.name });
+  const ask = () => netClient({ t: 'join', name: MP.name, v: BUILD });
   ask(); clearInterval(MP.joinTimer); MP.joinTimer = setInterval(ask, 1500);
   clearTimeout(MP.joinTimeout);
   MP.joinTimeout = setTimeout(() => { if (MP.active && !MP.joined) joinFailed(`Couldn't find room ${code}. Check the code and try again.`); }, 7000);
@@ -5135,7 +5307,7 @@ function hostBroadcastLobby(force) {
   const R = MP.room; if (!MP.host || !R) return;
   netHost({ t: 'lobby', name: R.name, max: R.max, pub: R.pub ? 1 : 0, ph: MP.inGame ? 'game' : 'lobby', players: MP.players.map(p => ({ id: p.id, name: p.name, slot: p.slot })) });
   if (R.pub) {
-    const entry = { name: R.name, host: MP.name, n: MP.players.length, max: R.max, ph: MP.inGame ? 'game' : 'lobby' }, key = JSON.stringify(entry);
+    const entry = { name: R.name, host: MP.name, n: MP.players.length, max: R.max, ph: MP.inGame ? 'game' : 'lobby', v: BUILD }, key = JSON.stringify(entry);
     if (force || key !== MP.lobbyKey || performance.now() - MP.lobbySent > 8000) { MP.lobbyKey = key; MP.lobbySent = performance.now(); pub(TOPIC.lobby(R.code), entry, true); }
   }
 }
@@ -5153,9 +5325,10 @@ function startHeartbeat() {
     }
   }, 1000);
 }
-function hostJoin(id, name) {
+function hostJoin(id, name, v) {
   let p = MP.players.find(q => q.id === id);
   if (!p) {
+    if (v !== BUILD) { netHost({ t: 'deny', to: id, why: 'version' }); return; }
     if (MP.inGame) { netHost({ t: 'deny', to: id, why: 'started' }); return; }
     if (MP.players.length >= MP.room.max) { netHost({ t: 'deny', to: id, why: 'full' }); return; }
     const used = new Set(MP.players.map(q => q.slot)); let slot = 0; while (used.has(slot)) slot++;
@@ -5369,7 +5542,7 @@ function updatePuppets(dt) {
 function onClientMsg(m) {
   const id = cleanText(m.from, 16); if (!id) return;
   const p = MP.players.find(q => q.id === id); if (p) p.t = performance.now();
-  if (m.t === 'join') { hostJoin(id, cleanText(m.name, 14)); return; }
+  if (m.t === 'join') { hostJoin(id, cleanText(m.name, 14), cleanText(m.v, 12)); return; }
   if (m.t === 'leave') { hostDrop(id); return; }
   if (m.t === 'hb' || !MP.inGame || !W) return;
   const R = MP.remotes.get(id); if (!R) return;
@@ -5395,7 +5568,8 @@ function onHostMsg(m) {
   if (m.to && m.to !== MP.id) return;   // meant for someone else
   switch (m.t) {
     case 'lobby': onLobbyState(m); return;
-    case 'deny': joinFailed(m.why === 'full' ? 'That room is full.' : m.why === 'started' ? 'That game has already started. Try again when it ends.' : "Couldn't join that room."); return;
+    case 'deny': joinFailed(m.why === 'full' ? 'That room is full.' : m.why === 'started' ? 'That game has already started. Try again when it ends.'
+      : m.why === 'version' ? "That room is on a different version of the game. Both of you refresh the page (Ctrl+Shift+R, or close and reopen it on a phone), then try again." : "Couldn't join that room."); return;
     case 'close': mpFail('The host closed the room.'); return;
     case 'kick': mpFail('Your connection to the room dropped for too long, so the host lost you.'); return;
     case 'start':
@@ -5637,7 +5811,7 @@ window.__gooseflesh = {
   interact: () => interact(), blindVoice: () => blindGoose(W.goose), sgDetects: S => sgDetects(S),
   start: beginNewRun, caught: () => caught(), win: () => { player.tapes = CFG.TAPES; win(); },
   goose: () => W && W.goose, step: (n = 60, dt = 1 / 60) => { for (let i = 0; i < n; i++) { if (state === 'caught' && JS.strike && !MP.inGame) { updateJumpscare(dt); continue; } if (!(state === 'playing' || mpSimulating())) break; simStep(dt); if (state === 'caught') updateJumpscare(dt); else if (state === 'collapse') updateCollapse(dt); } },
-  mp: MP, MLOOK, DIFF, strike: () => strike(), JS, FIST, renderer, scene, showerUse, aimedKnob, exitSpot: () => exitSpot(), enterSpot: s => enterSpot(s), mpLeave: () => mpLeave(), hostStart: () => hostStart(), specCycle: d => specCycle(d), applyDifficulty, difficultyText,
+  mp: MP, MLOOK, DIFF, BUILD, TEX, strike: () => strike(), JS, FIST, renderer, scene, showerUse, aimedKnob, exitSpot: () => exitSpot(), enterSpot: s => enterSpot(s), mpLeave: () => mpLeave(), hostStart: () => hostStart(), specCycle: d => specCycle(d), applyDifficulty, difficultyText,
 };
 })();
 </script>
