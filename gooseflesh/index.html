@@ -243,9 +243,9 @@ input[type=range]{width:100%;accent-color:var(--ember);height:28px}
 /* main menu, perks and loadout, skins */
 .menu-list{display:flex;flex-direction:column;align-items:flex-start;gap:10px}
 .menu-list button{min-width:min(260px,100%);text-align:left}
-#loadout-sum{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
-#loadout-sum .chip{display:inline-flex;align-items:center;gap:6px;color:var(--ink)}
-#loadout-sum svg{width:15px;height:15px}
+#loadout-sum,#rm-lo{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+#loadout-sum .chip,#rm-lo .chip{display:inline-flex;align-items:center;gap:6px;color:var(--ink)}
+#loadout-sum svg,#rm-lo svg{width:15px;height:15px}
 .ico{fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
 .loadout{width:100%;max-width:780px;gap:14px}
 .center .inner.loadout{align-items:stretch}
@@ -358,7 +358,7 @@ body.safe h1{animation:none}
     <h1>Goose&shy;flesh</h1>
     <nav class="menu-list" aria-label="Main menu">
       <button id="btn-start" type="button">Play</button>
-      <button id="btn-mp" class="ghost" type="button" hidden>Multiplayer</button>
+      <button id="btn-mp" class="ghost" type="button">Multiplayer</button>
       <button id="btn-settings" class="ghost" type="button">Settings</button>
       <button id="btn-skins" class="ghost" type="button">Skins</button>
       <button id="btn-perks" class="ghost" type="button">Perks</button>
@@ -1261,7 +1261,8 @@ menu.scene.fog = new THREE.FogExp2(0x000000, 0.1);
 
 /* ================= WORLD STATE ================= */
 let W = null;
-const DBG = { freeze: false, holdJS: null, noLoop: false };
+const DBG = { freeze: false, holdJS: null, noLoop: false, trace: [] };
+const trace = msg => { DBG.trace.push(`${gameTime.toFixed(2)} ${msg}`); if (DBG.trace.length > 60) DBG.trace.shift(); };
 const player = {};
 let TP = player;   // the player The Voice's senses are checking right now (you, or a teammate in a room)
 let state = 'menu';
@@ -2405,7 +2406,7 @@ document.addEventListener('pointerlockerror', () => lockFailed());
 function startPlaying() {
   state = 'playing';
   ['scr-start', 'scr-pause', 'scr-dead', 'scr-win', 'scr-settings', 'scr-perks', 'scr-skins', 'scr-mp', 'scr-create', 'scr-join', 'scr-room', 'scr-msg'].forEach(id => $(id).hidden = true);
-  els.hud.hidden = false; $('tags').hidden = !MP.inGame; $('spec').hidden = true;
+  els.hud.hidden = false; $('tags').hidden = !MP.inGame; $('spec').hidden = true; $('hud-team').hidden = !MP.inGame;
   $('touch').hidden = !isMobile(); releaseTouches();
   AU.setAmbient(true);
   if (!isMobile()) canvas.focus();
@@ -2438,6 +2439,7 @@ function resumeGame() {
 }
 
 function caught() {
+  trace('caught state=' + state);
   if (state !== 'playing' && !(MP.inGame && state === 'paused')) return;
   state = 'caught'; player.alive = false; $('scr-pause').hidden = true;
   if (player.hidden) { player.hidden = null; els.hide.hidden = true; }
@@ -3588,6 +3590,7 @@ function catchPlayer(p) {
   if (p === player) caught();
   else { p.alive = false; netHost({ t: 'caught', id: p.id }); }
   gooseSearch(W.goose);
+  W.goose.catchCD = 3;   // it's busy with the one it caught: anyone standing next to them gets 3 seconds to run
   checkAllDead();
 }
 function updateGoose(dt) {
@@ -3765,7 +3768,8 @@ function updateGoose(dt) {
   animateGoose(G, dt, moving);
 
   // catching: anyone it can sense who's within reach
-  if (busy) return;
+  if (G.catchCD > 0) G.catchCD -= dt;
+  if (busy || G.catchCD > 0) return;
   for (const p of cands) {
     if (unseenP(p) || (state !== 'playing' && p === player && !MP.inGame)) continue;
     const d = distTo(p);
@@ -4070,8 +4074,9 @@ function updateFx(dt) {
   document.body.classList.toggle('lit', player.flashOn);
   const G = W.goose, P = player;
   const chase = (G.state === 'chase' || G.state === 'alert') && (!MP.inGame || (G.tid === MP.id && player.alive));
-  const danger = chase ? 1 : G.state === 'hunt' ? 0.7 : clamp(1 - G.dist / 18, 0, 1) * 0.75;
-  AU.setChase(chase ? 1 : G.state === 'hunt' ? 0.5 : 0);
+  const huntingYou = G.state === 'hunt' && (!MP.inGame || G.tid === MP.id);
+  const danger = chase ? 1 : huntingYou ? 0.7 : clamp(1 - Math.hypot(G.x - player.x, G.z - player.z) / 18, 0, 1) * 0.75;
+  AU.setChase(chase ? 1 : huntingYou ? 0.5 : 0);
   els.danger.style.opacity = (chase ? 0.85 : danger * 0.5).toFixed(2);
   // rapid heartbeat for exactly as long as the chase lasts (one scheduler, so beats never stack)
   if (chase) { P.hbT -= dt; if (P.hbT <= 0) { AU.heart(0.6); P.hbT = 0.36; } } else P.hbT = 0;
@@ -4218,18 +4223,691 @@ function updateMenu(dt) {
   menu.torch.intensity = 2.2 * fl;
 }
 
-/* ================= MULTIPLAYER (in progress) ================= */
-// Rooms aren't finished yet. Until they are, this keeps the shared code paths in single-player mode and the
-// Multiplayer button stays hidden.
-const MP = { active: false, host: false, inGame: false, id: '', name: '', remotes: new Map(), fuse: {}, muffinId: 0, tapes: 0 };
-function netHost() { /* no room yet */ }
-function netClient() { /* no room yet */ }
-function localDied(reason) { MP.inGame = false; showDead(reason); }
-function checkAllDead() { /* only one player */ }
-function backToRoom() { MP.active = false; beginNewRun(); }
-function mpLeave() { MP.active = MP.inGame = false; }
-function hostTake(p) { hidePickup(p); gainPickup(p, p.type === 'tape' ? player.tapes + 1 : 0); }
-function specCycle() { /* nobody to watch */ }
+/* ================= MULTIPLAYER ================= */
+// Rooms ride on a public MQTT relay over a secure WebSocket: the room list, each room's lobby and the game itself.
+// The player who creates a room is its host: their game runs The Voice and the surveillance geese and everyone
+// else mirrors them. Each player's own movement, flashlight, stamina, heat and items stay on their own computer.
+const NET_PREFIX = 'gooseflesh1/';
+const BROKERS = (() => {
+  const b = new URLSearchParams(location.search).get('broker');
+  return b ? [b] : ['wss://broker.emqx.io:8084/mqtt', 'wss://broker.hivemq.com:8884/mqtt', 'wss://test.mosquitto.org:8081/mqtt'];
+})();
+const CODE_CHARS = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';   // no O/0 or I/1 to mix up
+const randCode = () => Array.from({ length: 4 }, () => CODE_CHARS[Math.floor(Math.random() * CODE_CHARS.length)]).join('');
+const randId = () => Math.random().toString(36).slice(2, 10).padEnd(8, '0');
+const SLOT_COLORS = ['#e2493b', '#3d8ee8', '#3fbf6a', '#e8c547', '#a666e0', '#ef8a35'];
+const TOPIC = {
+  lobby: c => NET_PREFIX + 'lobby/' + c,
+  h: c => NET_PREFIX + 'r/' + c + '/h',   // host to everyone
+  c: c => NET_PREFIX + 'r/' + c + '/c',   // players to the host
+  s: (c, id) => NET_PREFIX + 'r/' + c + '/s/' + id,   // each player's own state, to everyone
+};
+const num = (v, d = 0) => { const n = +v; return Number.isFinite(n) ? n : d; };
+const r2 = v => Math.round(v * 100) / 100, r3 = v => Math.round(v * 1000) / 1000;
+const cleanText = (s, n) => String(s ?? '').replace(/[\u0000-\u001f\u007f]/g, '').trim().slice(0, n);
+const NAME_KEY = 'gooseflesh.name';
+const MP = {
+  active: false, host: false, inGame: false, joined: false, id: randId(), name: '', code: '', room: null, players: [],
+  remotes: new Map(), mq: null, rooms: new Map(), filter: 'any', listing: false, tapes: 0, n: 1, slot: 0,
+  sendT: 0, worldT: 0, fuseT: 0, fuse: {}, hostSeen: 0, spec: null, muffinId: 0, bgLast: 0, lobbySent: 0, lobbyKey: '',
+};
+try { MP.name = cleanText(localStorage.getItem(NAME_KEY), 14); } catch (e) { /* storage unavailable */ }
+if (!MP.name) MP.name = 'Player ' + (10 + Math.floor(Math.random() * 90));
+
+/* ---------- a minimal MQTT 3.1.1 client: QoS 0 publish and subscribe, retained messages, a last will ---------- */
+function mqttConnect(url, clientId, will) {
+  return new Promise((resolve, reject) => {
+    let ws; try { ws = new WebSocket(url, 'mqtt'); } catch (e) { reject(e); return; }
+    ws.binaryType = 'arraybuffer';
+    const enc = new TextEncoder(), dec = new TextDecoder();
+    const cat = parts => { let n = 0; for (const a of parts) n += a.length; const o = new Uint8Array(n); let k = 0; for (const a of parts) { o.set(a, k); k += a.length; } return o; };
+    const u16 = n => Uint8Array.of((n >> 8) & 255, n & 255);
+    const str = s => { const b = enc.encode(s); return cat([u16(b.length), b]); };
+    const pkt = (h, parts) => {
+      const body = cat(parts), len = []; let n = body.length;
+      do { let b = n % 128; n = Math.floor(n / 128); if (n > 0) b |= 128; len.push(b); } while (n > 0);
+      return cat([Uint8Array.of(h, ...len), body]);
+    };
+    let buf = new Uint8Array(0), pid = 1, ping = 0, settled = false;
+    const send = b => { if (ws.readyState === 1) ws.send(b); };
+    const c = {
+      open: false, handlers: [], onclose: null, url,
+      publish(topic, msg, retain) { send(pkt(0x30 | (retain ? 1 : 0), [str(topic), enc.encode(msg)])); },
+      subscribe(f) { send(pkt(0x82, [u16(pid++ & 0xffff || 1), str(f), Uint8Array.of(0)])); },
+      unsubscribe(f) { send(pkt(0xA2, [u16(pid++ & 0xffff || 1), str(f)])); },
+      close() { c.open = false; clearInterval(ping); try { send(Uint8Array.of(0xE0, 0)); ws.close(); } catch (e) { /* closed */ } },
+    };
+    const fail = e => { if (!settled) { settled = true; clearTimeout(timer); try { ws.close(); } catch (er) { /* closed */ } reject(e); } };
+    const timer = setTimeout(() => fail(new Error('timeout')), 7000);
+    ws.onopen = () => {
+      let flags = 0x02;   // clean session
+      const parts = [str('MQTT'), Uint8Array.of(4), null, u16(30), str(clientId)];
+      if (will) { flags |= 0x04 | 0x20; parts.push(str(will.topic)); const w = enc.encode(will.msg || ''); parts.push(cat([u16(w.length), w])); }
+      parts[2] = Uint8Array.of(flags);
+      send(pkt(0x10, parts));
+    };
+    ws.onmessage = e => {
+      buf = cat([buf, new Uint8Array(e.data)]);
+      for (;;) {
+        if (buf.length < 2) return;
+        let mult = 1, len = 0, i = 1, b;
+        do { if (i >= buf.length) return; b = buf[i++]; len += (b & 127) * mult; mult *= 128; } while (b & 128);
+        if (buf.length < i + len) return;
+        const type = buf[0] >> 4, flags = buf[0] & 15, body = buf.subarray(i, i + len); buf = buf.slice(i + len);
+        if (type === 2) {   // CONNACK
+          if (body[1] === 0) { settled = true; clearTimeout(timer); c.open = true; ping = setInterval(() => send(Uint8Array.of(0xC0, 0)), 20000); resolve(c); }
+          else fail(new Error('refused ' + body[1]));
+        } else if (type === 3) {   // PUBLISH
+          const tl = (body[0] << 8) | body[1], topic = dec.decode(body.subarray(2, 2 + tl));
+          let off = 2 + tl; if ((flags >> 1) & 3) off += 2;
+          const payload = dec.decode(body.subarray(off));
+          for (const h of c.handlers) { try { h(topic, payload, !!(flags & 1)); } catch (er) { console.error(er); } }
+        }
+      }
+    };
+    ws.onerror = () => fail(new Error('socket error'));
+    ws.onclose = () => { clearInterval(ping); if (!settled) fail(new Error('closed')); else if (c.open) { c.open = false; if (c.onclose) c.onclose(); } };
+  });
+}
+async function netConnect(will) {
+  if (MP.mq && MP.mq.open && !will) return MP.mq;
+  if (MP.mq) { MP.mq.onclose = null; MP.mq.close(); MP.mq = null; }
+  let err;
+  for (const url of BROKERS) {
+    try {
+      const c = await mqttConnect(url, 'gf-' + MP.id + '-' + randId().slice(0, 4), will);
+      c.handlers.push(onNet);
+      c.onclose = () => { if (MP.mq === c) MP.mq = null; if (MP.active) mpFail('Lost the connection to the multiplayer server.'); };
+      MP.mq = c;
+      if (MP.listing) c.subscribe(NET_PREFIX + 'lobby/+');
+      return c;
+    } catch (e) { err = e; }
+  }
+  throw err || new Error('no server');
+}
+function pub(topic, obj, retain) { if (MP.mq && MP.mq.open) MP.mq.publish(topic, obj == null ? '' : JSON.stringify(obj), !!retain); }
+function netHost(m) { if (MP.active && MP.host) { m.from = MP.id; pub(TOPIC.h(MP.code), m); } }
+function netClient(m) { if (MP.active && !MP.host) { m.from = MP.id; pub(TOPIC.c(MP.code), m); } }
+
+/* ---------- incoming ---------- */
+function onNet(topic, payload, retained) {
+  if (!topic.startsWith(NET_PREFIX)) return;
+  const part = topic.slice(NET_PREFIX.length).split('/');
+  if (part[0] === 'lobby') { onLobbyEntry(part[1], payload, retained); return; }
+  if (part[0] !== 'r' || !MP.active || part[1] !== MP.code) return;
+  let m; try { m = JSON.parse(payload); } catch (e) { return; }
+  if (!m || typeof m !== 'object') return;
+  if (part[2] === 's') { onPeerState(cleanText(part[3], 16), m); return; }
+  if (m.from === MP.id) return;
+  if (part[2] === 'h' && !MP.host) onHostMsg(m);
+  else if (part[2] === 'c' && MP.host) onClientMsg(m);
+}
+
+/* ---------- the public room list ---------- */
+function onLobbyEntry(code, payload, retained) {
+  if (!/^[A-Z0-9]{4}$/.test(code || '')) return;
+  if (!payload) { MP.rooms.delete(code); renderRooms(); return; }
+  let e; try { e = JSON.parse(payload); } catch (er) { return; }
+  if (!e || typeof e !== 'object') return;
+  MP.rooms.set(code, { code, name: cleanText(e.name, 24) || 'Room', host: cleanText(e.host, 14), n: clamp(num(e.n) | 0, 0, 6), max: clamp(num(e.max, 4) | 0, 2, 6),
+    ph: e.ph === 'game' ? 'game' : 'lobby', seen: performance.now() });
+  renderRooms();
+}
+function renderRooms() {
+  if (!MP.listing) return;
+  const now = performance.now();
+  for (const [c, r] of MP.rooms) if (now - r.seen > 20000) MP.rooms.delete(c);   // hosts refresh every 8 s; anything quiet is gone
+  const f = MP.filter;
+  const list = [...MP.rooms.values()].filter(r => r.ph === 'lobby' && (f === 'any' || (f === '4' ? r.n >= 4 : r.n === +f)))
+    .sort((a, b) => b.n - a.n || a.name.localeCompare(b.name));
+  const el = $('jn-list'); el.textContent = '';
+  if (!list.length) {
+    const p = document.createElement('p'); p.className = 'fine empty';
+    p.textContent = MP.mq ? (MP.rooms.size ? 'No public rooms match that filter.' : 'No public rooms right now. Create one!') : 'Connecting...';
+    el.appendChild(p);
+  }
+  for (const r of list) {
+    const b = document.createElement('button'); b.type = 'button'; b.className = 'room'; b.disabled = r.n >= r.max;
+    const nm = document.createElement('b'); nm.textContent = r.name;
+    const sm = document.createElement('small'); sm.textContent = (r.host ? `Host: ${r.host}` : 'Public room') + (r.n >= r.max ? ' · Full' : '');
+    const n = document.createElement('span'); n.className = 'n'; n.textContent = `${r.n}/${r.max}`;
+    b.append(nm, n, sm); b.addEventListener('click', () => joinRoom(r.code)); el.appendChild(b);
+  }
+  $('jn-count').textContent = list.length ? String(list.length) : '';
+}
+
+/* ---------- screens ---------- */
+const SCREENS = ['scr-start', 'scr-mp', 'scr-create', 'scr-join', 'scr-room', 'scr-msg', 'scr-perks', 'scr-skins', 'scr-settings', 'scr-pause', 'scr-dead', 'scr-win'];
+function showScreen(id) { for (const s of SCREENS) $(s).hidden = s !== id; if (MP.listing && id !== 'scr-join') stopListing(); }
+function setStatus(id, msg) { $(id).textContent = msg || ''; }
+async function copyText(text, btn) {
+  let ok = false;
+  try { await navigator.clipboard.writeText(text); ok = true; } catch (e) {
+    const t = document.createElement('textarea'); t.value = text; t.style.cssText = 'position:fixed;opacity:0;left:0;top:0';
+    document.body.appendChild(t); t.select(); try { ok = document.execCommand('copy'); } catch (er) { ok = false; } t.remove();
+  }
+  if (!btn.dataset.label) btn.dataset.label = btn.textContent;
+  btn.textContent = ok ? 'Copied!' : 'Copy failed'; clearTimeout(btn._t); btn._t = setTimeout(() => { btn.textContent = btn.dataset.label; }, 1400);
+}
+const CR = { max: 4, vis: 'public', code: randCode() };
+function renderCreate() {
+  document.querySelectorAll('#cr-max [data-max]').forEach(b => b.setAttribute('aria-pressed', String(+b.dataset.max === CR.max)));
+  document.querySelectorAll('#cr-vis [data-vis]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.vis === CR.vis)));
+  $('cr-code-row').hidden = CR.vis !== 'private'; $('cr-code').textContent = CR.code;
+  $('cr-vis-desc').textContent = CR.vis === 'public' ? 'Anyone can see this room in the list and join with one tap.' : "It won't be listed. Friends join with the 4-character password.";
+  $('cr-diff').textContent = `Up to ${CR.max} players. The more of you there are, the harder The Voice gets.`;
+}
+function startListing() {
+  MP.listing = true; MP.rooms.clear(); renderRooms();
+  if (!(MP.mq && MP.mq.open)) setStatus('jn-status', 'Connecting...');
+  netConnect().then(c => { c.subscribe(NET_PREFIX + 'lobby/+'); if ($('jn-status').textContent === 'Connecting...') setStatus('jn-status', ''); renderRooms(); })
+    .catch(() => { setStatus('jn-status', "Couldn't reach the multiplayer server. Check your connection and try again."); renderRooms(); });
+  clearInterval(MP.listTimer); MP.listTimer = setInterval(renderRooms, 2000);
+}
+function stopListing() { MP.listing = false; clearInterval(MP.listTimer); if (MP.mq && MP.mq.open) MP.mq.unsubscribe(NET_PREFIX + 'lobby/+'); }
+function setCode(t) { $('jn-code').value = String(t || '').toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 4); }
+
+/* ---------- creating, joining, leaving ---------- */
+async function createRoom() {
+  const name = cleanText($('cr-name').value, 24) || `${MP.name}'s room`, isPub = CR.vis === 'public';
+  const code = isPub ? randCode() : CR.code;
+  setStatus('cr-status', 'Creating the room...'); $('cr-go').disabled = true;
+  try { await netConnect(isPub ? { topic: TOPIC.lobby(code), msg: '' } : null); }   // if we drop, the relay takes the room off the list
+  catch (e) { setStatus('cr-status', "Couldn't reach the multiplayer server. Check your connection and try again."); $('cr-go').disabled = false; return; }
+  $('cr-go').disabled = false; setStatus('cr-status', '');
+  Object.assign(MP, { active: true, host: true, inGame: false, joined: true, code, room: { name, max: CR.max, pub: isPub, code }, players: [{ id: MP.id, name: MP.name, slot: 0, t: performance.now() }], tapes: 0, lobbyKey: '' });
+  MP.mq.subscribe(TOPIC.c(code)); MP.mq.subscribe(TOPIC.s(code, '+'));
+  startHeartbeat(); hostBroadcastLobby(true);
+  showScreen('scr-room'); renderRoom();
+}
+async function joinRoom(code) {
+  code = String(code || '').toUpperCase().replace(/[^A-Z0-9]/g, '');
+  if (!/^[A-Z0-9]{4}$/.test(code)) { setStatus('jn-status', 'Room codes are 4 letters or numbers.'); return; }
+  if (MP.active) return;
+  setStatus('jn-status', `Joining ${code}...`);
+  try { await netConnect(); } catch (e) { setStatus('jn-status', "Couldn't reach the multiplayer server. Check your connection and try again."); return; }
+  Object.assign(MP, { active: true, host: false, inGame: false, joined: false, code, room: null, players: [], hostSeen: performance.now() });
+  MP.mq.subscribe(TOPIC.h(code)); MP.mq.subscribe(TOPIC.s(code, '+'));
+  const ask = () => netClient({ t: 'join', name: MP.name });
+  ask(); clearInterval(MP.joinTimer); MP.joinTimer = setInterval(ask, 1500);
+  clearTimeout(MP.joinTimeout);
+  MP.joinTimeout = setTimeout(() => { if (MP.active && !MP.joined) joinFailed(`Couldn't find room ${code}. Check the code and try again.`); }, 7000);
+}
+function joinFailed(msg) { mpReset(); showScreen('scr-join'); startListing(); setStatus('jn-status', msg); }
+function mpReset() {
+  clearInterval(MP.hbTimer); clearInterval(MP.joinTimer); clearTimeout(MP.joinTimeout);
+  if (MP.mq && MP.mq.open && MP.code) for (const t of [TOPIC.h(MP.code), TOPIC.c(MP.code), TOPIC.s(MP.code, '+')]) MP.mq.unsubscribe(t);
+  clearRemotes();
+  Object.assign(MP, { active: false, host: false, inGame: false, joined: false, code: '', room: null, players: [], tapes: 0, spec: null });
+  applyDifficulty(1); skinMats('dusty').jacket.color.setHex(SKINS.dusty.jacket);
+}
+function stopGameView() {
+  state = 'menu'; els.hud.hidden = true; $('touch').hidden = true; $('spec').hidden = true; $('tags').hidden = true; els.hide.hidden = true;
+  if (document.pointerLockElement) document.exitPointerLock();
+  AU.setChase(0); AU.setAmbient(false); stopTape(); hideSpeedLines();
+  JS.group.visible = false; jumpLights(false); els.fade.style.opacity = 0; els.flashFx.style.opacity = 0; els.danger.style.opacity = 0;
+  GOOSE_RIG.root.visible = true; DUSTY.root.rotation.set(0, 0, 0); DUSTY.root.position.y = 0;
+}
+function mpLeave(silent) {
+  if (MP.active && !silent) {
+    if (MP.host) { netHost({ t: 'close' }); if (MP.room && MP.room.pub) pub(TOPIC.lobby(MP.code), null, true); }
+    else netClient({ t: 'leave' });
+  }
+  const wasPlaying = state !== 'menu';
+  mpReset();
+  if (wasPlaying) stopGameView();
+  showScreen('scr-start'); renderLoadoutSummary();
+}
+function mpFail(msg) { mpLeave(true); $('msg-title').textContent = 'Room closed'; $('msg-text').textContent = msg; showScreen('scr-msg'); }
+function backToRoom() {
+  if (!MP.active) { beginNewRun(); return; }
+  stopGameView(); clearRemotes();
+  showScreen('scr-room'); renderRoom();
+  if (MP.host) hostBroadcastLobby(true);
+}
+
+/* ---------- the room screen ---------- */
+function renderRoom() {
+  const R = MP.room; if (!R) return;
+  $('rm-name').textContent = R.name; $('rm-vis').textContent = R.pub ? 'Public room' : 'Private room';
+  $('rm-code-lbl').textContent = R.pub ? 'Room code' : 'Password'; $('rm-code').textContent = R.code;
+  $('rm-count').textContent = `${MP.players.length} / ${R.max}`;
+  const ul = $('rm-players'); ul.textContent = '';
+  for (const p of [...MP.players].sort((a, b) => a.slot - b.slot)) {
+    const li = document.createElement('li'), dot = document.createElement('span'), nm = document.createElement('span'), tg = document.createElement('span');
+    dot.className = 'dot'; dot.style.background = SLOT_COLORS[p.slot % 6]; nm.textContent = p.name; tg.className = 'tag2';
+    tg.textContent = [p.slot === 0 ? 'Host' : '', p.id === MP.id ? 'You' : ''].filter(Boolean).join(' · ');
+    li.append(dot, nm, tg); ul.appendChild(li);
+  }
+  $('rm-diff').textContent = difficultyText(MP.players.length);
+  $('rm-start').hidden = !MP.host; $('rm-start').disabled = MP.inGame;
+  setStatus('rm-status', MP.host ? 'Keep this tab open and in front while you play: your computer runs The Voice for everyone.' : 'Waiting for the host to start the game.');
+  renderLoadoutSummary();
+}
+function hostBroadcastLobby(force) {
+  const R = MP.room; if (!MP.host || !R) return;
+  netHost({ t: 'lobby', name: R.name, max: R.max, pub: R.pub ? 1 : 0, ph: MP.inGame ? 'game' : 'lobby', players: MP.players.map(p => ({ id: p.id, name: p.name, slot: p.slot })) });
+  if (R.pub) {
+    const entry = { name: R.name, host: MP.name, n: MP.players.length, max: R.max, ph: MP.inGame ? 'game' : 'lobby' }, key = JSON.stringify(entry);
+    if (force || key !== MP.lobbyKey || performance.now() - MP.lobbySent > 8000) { MP.lobbyKey = key; MP.lobbySent = performance.now(); pub(TOPIC.lobby(R.code), entry, true); }
+  }
+}
+function startHeartbeat() {
+  clearInterval(MP.hbTimer);
+  MP.hbTimer = setInterval(() => {
+    if (!MP.active) return;
+    const now = performance.now();
+    if (MP.host) {
+      for (const p of MP.players) if (p.id !== MP.id && now - (p.t || now) > 20000) hostDrop(p.id);   // gone quiet for 20 s: they left
+      hostBroadcastLobby(false);
+    } else {
+      netClient({ t: 'hb' });   // even in a background tab, where the game itself stops sending
+      if (MP.joined && now - MP.hostSeen > 20000) mpFail('The host left the room.');
+    }
+  }, 1000);
+}
+function hostJoin(id, name) {
+  let p = MP.players.find(q => q.id === id);
+  if (!p) {
+    if (MP.inGame) { netHost({ t: 'deny', to: id, why: 'started' }); return; }
+    if (MP.players.length >= MP.room.max) { netHost({ t: 'deny', to: id, why: 'full' }); return; }
+    const used = new Set(MP.players.map(q => q.slot)); let slot = 0; while (used.has(slot)) slot++;
+    p = { id, name: name || 'Player', slot, t: performance.now() }; MP.players.push(p);
+    setStatus('rm-status', `${p.name} joined.`);
+  }
+  hostBroadcastLobby(true); renderRoom();
+}
+function hostDrop(id) {
+  const i = MP.players.findIndex(q => q.id === id); if (i < 0) return;
+  const p = MP.players[i]; MP.players.splice(i, 1);
+  const R = MP.remotes.get(id); if (R) { R.alive = false; removeRemote(R); }
+  if (MP.inGame) { toast(`${p.name} left the room.`, false, 3); checkAllDead(); }
+  hostBroadcastLobby(true); if (!$('scr-room').hidden) renderRoom();
+}
+function onLobbyState(m) {
+  const players = (Array.isArray(m.players) ? m.players : []).slice(0, 6).map(p => ({ id: cleanText(p.id, 16), name: cleanText(p.name, 14) || 'Player', slot: clamp(num(p.slot) | 0, 0, 5) }));
+  MP.room = { name: cleanText(m.name, 24) || 'Room', max: clamp(num(m.max, 4) | 0, 2, 6), pub: !!m.pub, code: MP.code };
+  MP.players = players;
+  const inRoom = players.some(p => p.id === MP.id);
+  if (!MP.joined && inRoom) { MP.joined = true; clearInterval(MP.joinTimer); clearTimeout(MP.joinTimeout); startHeartbeat(); showScreen('scr-room'); }
+  else if (MP.joined && !inRoom && !MP.inGame) { mpFail('You were removed from the room.'); return; }
+  if (!$('scr-room').hidden) renderRoom();
+}
+
+/* ---------- starting a game ---------- */
+function hostStart() {
+  if (!MP.host || MP.inGame) return;
+  const seed = Math.floor(Math.random() * 2147483647), players = MP.players.map(p => ({ id: p.id, name: p.name, slot: p.slot }));
+  netHost({ t: 'start', seed, players });
+  beginMpRun(seed, players);
+  hostBroadcastLobby(true);
+}
+function beginMpRun(seed, players) {
+  AU.init();
+  Object.assign(MP, { inGame: true, tapes: 0, n: players.length, spec: null, muffinId: 0, fuse: {}, sendT: 0, worldT: 0, fuseT: 0, hostSeen: performance.now() });
+  applyDifficulty(MP.n);
+  clearRemotes();
+  const me = players.find(p => p.id === MP.id); MP.slot = me ? me.slot : 0;
+  skinMats('dusty').jacket.color.set(SLOT_COLORS[MP.slot % 6]);
+  newGame(seed);
+  for (const p of players) if (p.id !== MP.id) addRemote(p);
+  const off = [[0, 0], [0.8, 0], [-0.8, 0], [0, 0.8], [0, -0.8], [0.6, 0.6]][MP.slot % 6];   // don't all stand on one spot
+  player.x += off[0]; player.z += off[1]; player.ax = player.x; player.az = player.z; collide(player, CFG.PLAYER_R);
+  startPlaying(); touch.run = false;
+  if (isMobile()) tryFullscreen(); else requestLock();
+  toast(`Find the 5 tapes together. ${MP.n} ${MP.n === 1 ? 'player' : 'players'} in this room.`, false, 5);
+}
+
+/* ---------- other players: avatars, flashlights, name tags ---------- */
+function addRemote(p) {
+  const slot = p.slot % 6, sid = 'mp' + slot;
+  if (!SKINS[sid]) SKINS[sid] = { ...SKINS.dusty, name: 'Player ' + (slot + 1), jacket: new THREE.Color(SLOT_COLORS[slot]).getHex() };
+  const C = buildCharacter(sid); C.root.visible = false; scene.add(C.root);
+  const light = new THREE.SpotLight(0xfff0d4, 0, 30, 0.42, 0.45, 1.15); light.castShadow = false; scene.add(light); scene.add(light.target);
+  const tag = document.createElement('div'); tag.className = 'ntag'; tag.textContent = p.name; tag.style.color = SLOT_COLORS[slot]; tag.hidden = true; $('tags').appendChild(tag);
+  const R = { id: p.id, name: p.name, slot, color: SLOT_COLORS[slot], alive: true, ready: false, t: performance.now(),
+    x: center(1), z: center(1), nx: center(1), nz: center(1), yaw: 0, nyaw: 0, pitch: 0, face: 0, nface: 0, ap: 0, eye: CFG.STAND_EYE,
+    crouch: false, sprinting: false, speedNow: 0, flashOn: false, bf: 1, bo: null, bd: null, beam: null, hid: -1, hidden: null,
+    linger: 0, undiesT: 0, evadeHideT: 0, exhausted: false, searching: false, bob: 0, C, light, tag };
+  MP.remotes.set(p.id, R); return R;
+}
+function removeRemote(R) { scene.remove(R.C.root); scene.remove(R.light); scene.remove(R.light.target); R.tag.remove(); MP.remotes.delete(R.id); }
+function clearRemotes() { for (const R of [...MP.remotes.values()]) removeRemote(R); }
+function onPeerState(id, m) {
+  if (!id || id === MP.id) return;
+  if (MP.host) { const p = MP.players.find(q => q.id === id); if (p) p.t = performance.now(); }
+  const R = MP.remotes.get(id); if (!R || !MP.inGame || !W) return;
+  const lim = W.N * T;
+  R.t = performance.now(); R.ready = true;
+  R.nx = clamp(num(m.x, R.nx), 0, lim); R.nz = clamp(num(m.z, R.nz), 0, lim); R.eye = clamp(num(m.e, R.eye), 0.2, 2);
+  R.nyaw = num(m.y, R.nyaw); R.pitch = clamp(num(m.p, R.pitch), -1.5, 1.5); R.nface = num(m.f, R.nface); R.ap = clamp(num(m.ap), -1.5, 1.5);
+  R.speedNow = clamp(num(m.v), 0, 15); R.crouch = !!m.c; R.sprinting = !!m.r; R.flashOn = !!m.l; R.bf = clamp(num(m.b, 1), 0, 1);
+  R.hid = num(m.h, -1) | 0; R.linger = clamp(num(m.lg), 0, 999); R.undiesT = m.u ? 1 : 0; R.evadeHideT = m.ev ? 1 : 0; R.exhausted = !!m.x2; R.searching = !!m.sr;
+  const v3 = a => Array.isArray(a) && a.length === 3 && a.every(Number.isFinite) ? a : null;
+  R.bo = v3(m.bo); R.bd = v3(m.bd); R.beam = R.flashOn ? v3(m.bs) : null;
+  if (R.alive && m.a === 0) { R.alive = false; if (MP.host) checkAllDead(); }   // dead stays dead until the next game
+}
+function updateRemotes(dt) {
+  const k = 1 - Math.exp(-dt * 12);
+  for (const R of MP.remotes.values()) {
+    if (Math.hypot(R.nx - R.x, R.nz - R.z) > 5) { R.x = R.nx; R.z = R.nz; } else { R.x += (R.nx - R.x) * k; R.z += (R.nz - R.z) * k; }
+    R.face += angDiff(R.face, R.nface) * k; R.yaw += angDiff(R.yaw, R.nyaw) * k;
+    const hidden = R.hid >= 0 ? (W.spots[R.hid] || null) : null;
+    if (hidden !== R.hidden) { const s = hidden || R.hidden; if (s && s.door) s.openT = 0.45; R.hidden = hidden; }   // their locker door swings
+    const vis = R.alive && R.ready && !R.hidden;
+    R.C.root.visible = vis;
+    if (vis) {
+      R.bob += R.speedNow * dt * (R.sprinting ? 3.2 : R.crouch ? 4.6 : 4.2);
+      R.C.root.position.set(R.x, 0, R.z); R.C.root.rotation.set(0, R.face, 0);
+      animateCharacter(R.C, dt, { phase: R.bob * 0.5, speed: R.speedNow, run: R.sprinting, crouch: R.crouch, aimPitch: R.ap, flash: R.flashOn,
+        exhausted: R.exhausted, searching: R.searching, breathPh: gameTime * 2 + R.slot, breathB: 0.3, turnRate: 0, t: gameTime });
+      R.C.lens.material.color.setHex(R.flashOn ? 0xfff3d6 : 0x55524a);
+    }
+    // their flashlight lights the maze for everyone
+    if (R.alive && R.flashOn && R.bo && R.bd) {
+      R.light.intensity = 3.4 * (0.12 + 0.88 * R.bf); R.light.position.set(R.bo[0], R.bo[1], R.bo[2]);
+      R.light.target.position.set(R.bo[0] + R.bd[0] * 6, R.bo[1] + R.bd[1] * 6, R.bo[2] + R.bd[2] * 6);
+    } else R.light.intensity = 0;
+    // name tag over their head, when you can see them
+    let show = false;
+    if (vis) {
+      tmpV.set(R.x, R.crouch ? 1.45 : 2.05, R.z);
+      const d = tmpV.distanceTo(camera.position);
+      if (d < 26 && !wallsBetween(camera.position.x, camera.position.z, R.x, R.z)) {
+        tmpV.project(camera);
+        if (tmpV.z > -1 && tmpV.z < 1 && Math.abs(tmpV.x) < 1.1 && Math.abs(tmpV.y) < 1.1) {
+          show = true; R.tag.style.transform = `translate(${((tmpV.x + 1) / 2 * innerWidth).toFixed(0)}px,${((1 - tmpV.y) / 2 * innerHeight).toFixed(0)}px) translate(-50%,-100%)`;
+        }
+      }
+    }
+    if (R.tag.hidden === show) R.tag.hidden = !show;
+  }
+}
+function renderTeam() {
+  const el = $('hud-team'), all = [{ name: MP.name, slot: MP.slot, alive: player.alive, me: true }, ...[...MP.remotes.values()].map(R => ({ name: R.name, slot: R.slot, alive: R.alive }))];
+  const key = all.map(p => p.slot + p.name + (p.alive ? 1 : 0)).join('|');
+  el.hidden = false; if (el.dataset.key === key) return; el.dataset.key = key; el.textContent = '';
+  for (const p of all.sort((a, b) => a.slot - b.slot)) {
+    const s = document.createElement('span'), d = document.createElement('i'); d.className = 'dot'; d.style.background = SLOT_COLORS[p.slot % 6];
+    s.append(d, document.createTextNode(p.name + (p.me ? ' (you)' : ''))); if (!p.alive) s.className = 'dead'; el.appendChild(s);
+  }
+}
+
+/* ---------- sync during a game ---------- */
+const VST = ['patrol', 'investigate', 'search', 'alert', 'chase', 'hunt', 'blind', 'bait'], SST = ['patrol', 'follow', 'disabled'];
+function netTick(dt) {
+  MP.sendT -= dt;
+  if (MP.sendT <= 0) { MP.sendT = 1 / 12; publishMyState(); }
+  if (MP.host) { MP.worldT -= dt; if (MP.worldT <= 0) { MP.worldT = 1 / 12; publishWorld(); } }
+  else {
+    MP.fuseT -= dt;
+    if (MP.fuseT <= 0) { MP.fuseT = 0.5; const u = Object.entries(MP.fuse).map(([i, d]) => [+i, r3(d)]); if (u.length) { netClient({ t: 'fuse', u }); MP.fuse = {}; } }
+  }
+}
+function publishMyState() {
+  const P = player, on = P.flashOn && P.alive && state !== 'spectate';
+  const m = { x: r2(P.x), z: r2(P.z), e: r2(P.eye), y: r3(P.yaw), p: r3(P.pitch), f: r3(P.face), ap: r3(FL.pitch), v: r2(P.speedNow), c: P.crouch ? 1 : 0,
+    r: P.sprinting && P.speedNow > 2 ? 1 : 0, l: on ? 1 : 0, b: r3(P.battery / CFG.BATTERY_MAX), h: P.hidden ? W.spots.indexOf(P.hidden) : -1, a: P.alive ? 1 : 0,
+    lg: r2(P.linger), u: P.undiesT > 0 ? 1 : 0, ev: P.evadeHideT > 0 ? 1 : 0, x2: P.exhausted ? 1 : 0, sr: P.searching ? 1 : 0 };
+  if (on) { m.bo = [r2(flash.position.x), r2(flash.position.y), r2(flash.position.z)]; m.bd = [r3(FL.dir.x), r3(FL.dir.y), r3(FL.dir.z)]; m.bs = beamSpot().map(r2); }
+  pub(TOPIC.s(MP.code, MP.id), m);
+}
+function publishWorld() {
+  const G = W.goose;
+  netHost({ t: 'w',
+    v: [r2(G.x), r2(G.z), r3(G.yaw), VST.indexOf(G.state), r2(G.curSpeed), G.beakT > 0 ? 1 : 0, G.flapT > 0 ? 1 : 0, G.baitPhase === 'eat' ? 1 : 0, G.tid || 0, r2(G.lookX ?? G.x), r2(G.lookZ ?? G.z), G.searchPhase === 'look' ? 1 : 0],
+    s: W.sgeese.map(S => [r2(S.x), r2(S.z), r3(S.yaw), SST.indexOf(S.state), r2(S.curSpeed), S.beakT > 0 ? 1 : 0, S.flapT > 0 ? 1 : 0, S.tid || 0, r2(S.lookX ?? S.x), r2(S.lookZ ?? S.z)]),
+    f: W.fridges.map(f => [f.open ? 1 : 0, r2(f.used), f.powered ? 1 : 0]),
+    tp: MP.tapes });
+}
+function applyWorld(m) {
+  const G = W.goose, v = m.v;
+  if (Array.isArray(v)) {
+    G.net = { x: num(v[0], G.x), z: num(v[1], G.z), yaw: num(v[2], G.yaw), sp: num(v[4]) };
+    const st = VST[v[3]] || 'patrol'; if (st !== G.state) { G.state = st; G.stateT = 0; }
+    if (v[5]) G.beakT = Math.max(G.beakT, 0.15); if (v[6]) G.flapT = Math.max(G.flapT, 0.15);
+    G.baitPhase = v[7] ? 'eat' : 'go'; G.tid = v[8] || 0; G.lookX = num(v[9], G.x); G.lookZ = num(v[10], G.z); G.searchPhase = v[11] ? 'look' : 'move';
+  }
+  if (Array.isArray(m.s)) m.s.forEach((a, i) => {
+    const S = W.sgeese[i]; if (!S || !Array.isArray(a)) return;
+    S.net = { x: num(a[0], S.x), z: num(a[1], S.z), yaw: num(a[2], S.yaw), sp: num(a[4]) };
+    const st = SST[a[3]] || 'patrol'; if (st !== S.state && !(S.localOffT > gameTime)) { S.state = st; S.stateT = 0; }
+    if (a[5]) S.beakT = Math.max(S.beakT, 0.15); if (a[6]) S.flapT = Math.max(S.flapT, 0.15);
+    S.tid = a[7] || 0; S.lookX = num(a[8], S.x); S.lookZ = num(a[9], S.z);
+  });
+  if (Array.isArray(m.f)) m.f.forEach((a, i) => {
+    const f = W.fridges[i]; if (!f || !Array.isArray(a)) return;
+    const open = !!a[0], pw = !!a[2];
+    if (open !== f.open && gameTime - (f.localT ?? -9) > 0.8) { f.open = open; AU.fridgeDoor(f.x, f.z, open); if (open && pw) for (let k = 0; k < 10; k++) emitSmoke(f, true); }
+    if (pw !== f.powered) { f.powered = pw; if (pw) AU.fridgeOn(f.x, f.z); else { f.flickerT = 0.7; AU.fridgeOff(f.x, f.z); } }
+    f.used = clamp(num(a[1], f.used), 0, CFG.FRIDGE_POWER);
+  });
+  if (Number.isFinite(m.tp) && m.tp > player.tapes) player.tapes = m.tp;
+}
+// someone else's room: The Voice and the geese are puppets of the host's, smoothed between updates
+function updatePuppets(dt) {
+  const k = 1 - Math.exp(-dt * 10), G = W.goose;
+  for (const E of [G, ...W.sgeese]) {
+    if (!E.net) continue;
+    const ox = E.x, oz = E.z;
+    if (Math.hypot(E.net.x - E.x, E.net.z - E.z) > 6) { E.x = E.net.x; E.z = E.net.z; } else { E.x += (E.net.x - E.x) * k; E.z += (E.net.z - E.z) * k; }
+    E.yaw += angDiff(E.yaw, E.net.yaw) * k; E.curSpeed = E.net.sp; E.stateT += dt;
+    if (E === G) {
+      G.stepAcc += Math.hypot(G.x - ox, G.z - oz);
+      if (G.stepAcc >= 1.75) { G.stepAcc = 0; AU.gooseStep(G.x, G.z); shakeAmt = Math.max(shakeAmt, Math.max(0, 1 - Math.hypot(G.x - EAR.x, G.z - EAR.z) / 14) * 0.018); }
+    }
+  }
+  G.dist = Math.hypot(G.x - EAR.x, G.z - EAR.z);
+  animateGoose(G, dt, G.curSpeed > 0.2);
+  updateBlind(G, dt);
+  for (const S of W.sgeese) { animateGoose(S, dt, S.curSpeed > 0.1, S.rig); updateSgBlind(S, dt); sgLed(S); }
+}
+
+/* ---------- messages ---------- */
+function onClientMsg(m) {
+  const id = cleanText(m.from, 16); if (!id) return;
+  const p = MP.players.find(q => q.id === id); if (p) p.t = performance.now();
+  if (m.t === 'join') { hostJoin(id, cleanText(m.name, 14)); return; }
+  if (m.t === 'leave') { hostDrop(id); return; }
+  if (m.t === 'hb' || !MP.inGame || !W) return;
+  const R = MP.remotes.get(id); if (!R) return;
+  const i = num(m.i, -1) | 0;
+  switch (m.t) {
+    case 'hear': if (R.alive) gooseHear(num(m.x, R.x), num(m.z, R.z), clamp(num(m.r), 0, 40), { kind: cleanText(m.k, 12), pri: clamp(num(m.p, 1), 0, 4), player: !!m.pl, exact: !!m.ex, reveal: !!m.rv, p: R }); break;
+    case 'take': { const pk = W.pickups[i]; if (pk && R.alive) hostTake(pk, R); break; }
+    case 'spotbat': { const s = W.spots[i]; if (s && s.battery && R.alive) { s.battery = false; netHost({ t: 'spotbat', i, by: id }); } break; }
+    case 'fr': { const f = W.fridges[i]; if (f && f.open !== !!m.o) { f.open = !!m.o; AU.fridgeDoor(f.x, f.z, f.open); if (f.open && f.powered) for (let k = 0; k < 10; k++) emitSmoke(f, true); } break; }
+    case 'fuse': if (Array.isArray(m.u)) for (const u of m.u.slice(0, 8)) { const f = Array.isArray(u) && W.fridges[num(u[0], -1) | 0]; if (f && f.powered) f.used += clamp(num(u[1]), 0, 1); } break;
+    case 'srch': { const list = m.k === 'f' ? W.fridges : W.cabinets, c = list[i]; if (c) { c.searched = true; netHost({ t: 'srch', k: m.k === 'f' ? 'f' : 'c', i }); } break; }
+    case 'muf': if (R.alive) hostMuffin(clamp(num(m.x, R.x), 0, W.N * T), clamp(num(m.z, R.z), 0, W.N * T)); break;
+    case 'vblind': { const G = W.goose; if (R.alive && G.state !== 'blind' && G.state !== 'bait' && G.blindImm <= 0) blindGoose(G, R); break; }
+    case 'sgoff': { const S = W.sgeese[i]; if (S && S.state !== 'disabled') disableSG(S, clamp(num(m.s, 45), 30, 70)); break; }
+    case 'dead': R.alive = false; checkAllDead(); break;
+  }
+}
+function onHostMsg(m) {
+  MP.hostSeen = performance.now();
+  if (m.t !== 'w' && m.t !== 'lobby' && m.t !== 'fx') trace('host says ' + m.t + (m.to ? ' to ' + m.to : '') + (m.id ? ' id ' + m.id : ''));
+  if (m.to && m.to !== MP.id) return;   // meant for someone else
+  switch (m.t) {
+    case 'lobby': onLobbyState(m); return;
+    case 'deny': joinFailed(m.why === 'full' ? 'That room is full.' : m.why === 'started' ? 'That game has already started. Try again when it ends.' : "Couldn't join that room."); return;
+    case 'close': mpFail('The host closed the room.'); return;
+    case 'start':
+      if (MP.joined && !MP.inGame && Array.isArray(m.players)) beginMpRun(num(m.seed) | 0, m.players.slice(0, 6).map(p => ({ id: cleanText(p.id, 16), name: cleanText(p.name, 14) || 'Player', slot: clamp(num(p.slot) | 0, 0, 5) })));
+      return;
+  }
+  if (!MP.inGame || !W) return;
+  const i = num(m.i, -1) | 0;
+  switch (m.t) {
+    case 'w': applyWorld(m); break;
+    case 'take': {
+      const p = W.pickups[i]; if (!p || p.taken) break;
+      hidePickup(p); const n = num(m.n) | 0;
+      if (p.type === 'tape') player.tapes = Math.max(player.tapes, n);
+      if (m.by === MP.id) gainPickup(p, n);
+      else if (p.type === 'tape') { const R = MP.remotes.get(m.by); toast(`${R ? R.name : 'Someone'} found tape ${n} of ${CFG.TAPES}.`, false, 3); }
+      break;
+    }
+    case 'spotbat': {
+      const s = W.spots[i]; if (!s) break; s.battery = false;
+      if (m.by === MP.id && !m.quiet) { const P = player; P.battery = Math.min(CFG.BATTERY_MAX, P.battery + CFG.BATTERY_PICKUP); P.lightDead = false; AU.battery(); toast(`Found a battery ${s.type === 'bed' ? 'under the bed' : 'in the locker'}. +${CFG.BATTERY_PICKUP} seconds.`); }
+      break;
+    }
+    case 'srch': { const c = (m.k === 'f' ? W.fridges : W.cabinets)[i]; if (c) c.searched = true; break; }
+    case 'muf':
+      if (!W.thrown.some(t => t.id === m.id)) {
+        const mesh = makeMuffinMesh(), x = num(m.x), z = num(m.z); mesh.position.set(x, 0, z); mesh.rotation.y = rr(0, 6.28); W.group.add(mesh);
+        W.thrown.push({ id: m.id, x, y: 0, z, mesh, landed: true, gone: false });
+      }
+      toast('The Voice smells a muffin.', false, 2.5, true); break;
+    case 'mgone': { const t = W.thrown.find(q => q.id === m.id); if (t) { t.gone = true; t.mesh.visible = false; } break; }
+    case 'caught':
+      if (m.id === MP.id) { if (state === 'playing' || state === 'paused') caught(); }
+      else { const R = MP.remotes.get(m.id); if (R) R.alive = false; }
+      break;
+    case 'fx': playVfx(cleanText(m.k, 12), m.a && typeof m.a === 'object' ? m.a : {}); break;
+    case 'tell': toast(cleanText(m.m, 160), !!m.b, clamp(num(m.d, 3), 1, 6), !!m.f); break;
+    case 'chase': if (player.alive && hasPerk('evasive') && !player.evadeUsed) startEvasive(); break;
+    case 'over': endMp('over'); break;
+    case 'win': endMp('win'); break;
+  }
+}
+function hostTake(p, who) {
+  if (!MP.inGame) { hidePickup(p); gainPickup(p, p.type === 'tape' ? player.tapes + 1 : 0); return; }
+  if (p.taken) return;
+  hidePickup(p);
+  const n = p.type === 'tape' ? ++MP.tapes : 0;
+  netHost({ t: 'take', i: W.pickups.indexOf(p), by: who.id, n });
+  if (p.type === 'tape') player.tapes = n;
+  if (who === player) gainPickup(p, n);
+  else if (p.type === 'tape') toast(`${who.name} found tape ${n} of ${CFG.TAPES}.`, false, 3);
+  if (p.type === 'tape' && n >= CFG.TAPES) setTimeout(() => { if (MP.inGame) { netHost({ t: 'win' }); endMp('win'); } }, 900);
+}
+function hostMuffin(x, z) {
+  const mesh = makeMuffinMesh(); mesh.position.set(x, 0, z); mesh.rotation.y = rr(0, 6.28); W.group.add(mesh);
+  const m = { x, y: 0, z, vx: 0, vy: 0, vz: 0, mesh, landed: true, gone: false, spin: 0 };
+  W.thrown.push(m); muffinLanded(m);
+}
+
+/* ---------- getting caught, spectating, the end ---------- */
+function localDied(reason) {
+  trace('localDied ' + reason);
+  player.alive = false; player.flashOn = false; player.hidden = null; flash.intensity = 0;
+  JS.group.visible = false; jumpLights(false); els.fade.style.opacity = 0; els.flashFx.style.opacity = 0; els.hide.hidden = true;
+  GOOSE_RIG.root.visible = true; DUSTY.root.rotation.set(0, 0, 0); DUSTY.root.position.y = 0; DUSTY.root.visible = false;
+  if (document.pointerLockElement) document.exitPointerLock();
+  MP.deadReason = reason;
+  if (MP.host) { if (checkAllDead()) return; } else netClient({ t: 'dead' });
+  enterSpectate();
+}
+function checkAllDead() {
+  if (!MP.inGame || !MP.host) return false;
+  trace('checkAllDead me=' + player.alive + ' others=' + [...MP.remotes.values()].map(r => r.name + ':' + r.alive).join(','));
+  if (player.alive || [...MP.remotes.values()].some(r => r.alive)) return false;
+  netHost({ t: 'over' }); endMp('over'); return true;
+}
+function endMp(kind) {
+  trace('endMp ' + kind);
+  if (!MP.inGame) return;
+  MP.inGame = false;
+  for (const R of MP.remotes.values()) { R.light.intensity = 0; R.C.root.visible = false; R.tag.hidden = true; }
+  $('spec').hidden = true; $('tags').hidden = true; $('touch').hidden = true; $('hud-team').hidden = true;
+  AU.setChase(0); AU.setAmbient(false); hideSpeedLines();
+  if (document.pointerLockElement) document.exitPointerLock();
+  if (kind === 'win') win(true); else showDead(MP.deadReason || 'goose');
+  if (MP.host) hostBroadcastLobby(true);
+}
+const aliveRemotes = () => [...MP.remotes.values()].filter(r => r.alive && r.ready).sort((a, b) => a.slot - b.slot);
+function enterSpectate() {
+  state = 'spectate';
+  els.hud.hidden = true; $('touch').hidden = true; $('scr-pause').hidden = true; $('tags').hidden = false;
+  const list = aliveRemotes(); MP.spec = list.length ? list[0].id : null;
+  $('spec').hidden = false; renderSpec();
+}
+function specCycle(dir) {
+  const list = aliveRemotes(); if (!list.length) return;
+  let i = list.findIndex(r => r.id === MP.spec); i = (i + dir + list.length) % list.length;
+  MP.spec = list[i].id; renderSpec();
+}
+function renderSpec() {
+  const R = MP.remotes.get(MP.spec), many = aliveRemotes().length > 1;
+  $('spec-name').textContent = R ? R.name : 'Waiting for the game to end...'; $('spec-name').style.color = R ? R.color : '';
+  $('spec-prev').disabled = $('spec-next').disabled = !many;
+}
+const SPC = { cur: 2.8 };
+function updateSpectate(dt) {
+  let R = MP.remotes.get(MP.spec);
+  if (!R || !R.alive) { const list = aliveRemotes(); MP.spec = list.length ? list[0].id : null; renderSpec(); R = MP.remotes.get(MP.spec); }
+  SPC.t = (SPC.t || 0) - dt; if (SPC.t <= 0) { SPC.t = 0.5; renderSpec(); }   // keeps the arrows right as teammates are caught
+  flash.intensity = 0;
+  if (R) {
+    if (R.hidden) { const s = R.hidden; camera.position.set(s.x, s.eye, s.z); camera.rotation.set(0, s.viewYaw, 0); }
+    else {   // the third-person camera, behind them
+      const cy = R.yaw, cp = clamp(R.pitch, -1, 0.75), h = R.crouch ? 1.12 : 1.55;
+      const fx = -Math.sin(cy) * Math.cos(cp), fy = Math.sin(cp), fz = -Math.cos(cy) * Math.cos(cp), rx = Math.cos(cy), rz = -Math.sin(cy);
+      let bx = R.x + rx * 0.42, bz = R.z + rz * 0.42; const by = h;
+      if (camBlocked(bx, by, bz)) { bx = R.x; bz = R.z; }
+      let free = 2.8; for (let d = 0.1; d <= 2.8; d += 0.08) if (camBlocked(bx - fx * d, by - fy * d, bz - fz * d)) { free = Math.max(0.25, d - 0.1); break; }
+      SPC.cur = free < SPC.cur ? free : SPC.cur + (free - SPC.cur) * (1 - Math.exp(-dt * 3));
+      camera.position.set(bx - fx * SPC.cur, by - fy * SPC.cur, bz - fz * SPC.cur); camera.rotation.set(cp, cy, 0);
+    }
+  }
+  EAR.copy(camera.position); aura.position.set(EAR.x, EAR.y + 0.25, EAR.z);
+  if (Math.abs(camera.fov - 74) > 0.01) { camera.fov = 74; camera.updateProjectionMatrix(); }
+}
+
+/* ---------- one simulation step, shared by the render loop, the test hook and a hidden host tab ---------- */
+function simStep(dt) {
+  gameTime += dt;
+  if (state === 'playing' || state === 'paused') updatePlayer(dt);   // paused only gets here in a room: the game goes on
+  else if (state === 'spectate') updateSpectate(dt);
+  if (!MP.inGame || MP.host) {
+    if (!DBG.freeze) { updateGoose(dt); if (MP.inGame || state === 'playing') updateSurveillance(dt); }
+    else { animateGoose(W.goose, dt, false); for (const S of W.sgeese) animateGoose(S, dt, false, S.rig); }
+  } else updatePuppets(dt);
+  if (MP.inGame) { updateRemotes(dt); netTick(dt); }
+  if (state === 'playing' || state === 'paused' || state === 'spectate') { updateFx(dt); updateHUD(dt); if (MP.inGame) renderTeam(); }
+}
+const mpSimulating = () => MP.inGame && (state === 'paused' || state === 'spectate' || state === 'caught' || state === 'collapse');
+// a browser stops drawing a tab you can't see, but the host's tab has to keep running The Voice for everyone
+setInterval(() => {
+  if (!document.hidden || !MP.inGame || !MP.host) return;
+  const now = performance.now(); let dt = Math.min(2, (now - (MP.bgLast || now)) / 1000); MP.bgLast = now;
+  while (dt > 0 && (state === 'playing' || mpSimulating())) { const s = Math.min(0.05, dt); simStep(s); dt -= s; }
+}, 250);
+
+/* ---------- buttons ---------- */
+$('btn-mp').addEventListener('click', () => { $('mp-name').value = MP.name; showScreen('scr-mp'); });
+$('mp-name').addEventListener('input', e => { MP.name = cleanText(e.target.value, 14) || 'Player'; try { localStorage.setItem(NAME_KEY, MP.name); } catch (er) { /* ignore */ } });
+$('mp-back').addEventListener('click', () => showScreen('scr-start'));
+$('mp-create').addEventListener('click', () => { CR.code = randCode(); $('cr-name').value = `${MP.name}'s room`; setStatus('cr-status', ''); renderCreate(); showScreen('scr-create'); });
+$('mp-join').addEventListener('click', () => { setCode(''); showScreen('scr-join'); startListing(); });
+$('cr-max').addEventListener('click', e => { const b = e.target.closest('[data-max]'); if (b) { CR.max = +b.dataset.max; renderCreate(); } });
+$('cr-vis').addEventListener('click', e => { const b = e.target.closest('[data-vis]'); if (b) { CR.vis = b.dataset.vis; renderCreate(); } });
+$('cr-copy').addEventListener('click', e => copyText(CR.code, e.currentTarget));
+$('cr-reroll').addEventListener('click', () => { CR.code = randCode(); renderCreate(); });
+$('cr-go').addEventListener('click', createRoom);
+$('cr-back').addEventListener('click', () => showScreen('scr-mp'));
+$('jn-code').addEventListener('input', e => setCode(e.target.value));
+$('jn-code').addEventListener('keydown', e => { if (e.key === 'Enter') joinRoom($('jn-code').value); });
+$('jn-paste').addEventListener('click', async () => {
+  try { setCode(await navigator.clipboard.readText()); setStatus('jn-status', $('jn-code').value ? '' : "There's no room code on your clipboard."); }
+  catch (e) { setStatus('jn-status', `Your browser blocked pasting. Click the box and press ${isMobile() ? 'and hold, then Paste' : 'Ctrl+V'} instead.`); $('jn-code').focus(); }
+});
+$('jn-go').addEventListener('click', () => joinRoom($('jn-code').value));
+$('jn-filter').addEventListener('click', e => { const b = e.target.closest('[data-f]'); if (!b) return; MP.filter = b.dataset.f; document.querySelectorAll('#jn-filter [data-f]').forEach(x => x.setAttribute('aria-pressed', String(x === b))); renderRooms(); });
+document.querySelector('#jn-filter [data-f="any"]').setAttribute('aria-pressed', 'true');
+$('jn-back').addEventListener('click', () => showScreen('scr-mp'));
+$('rm-copy').addEventListener('click', e => copyText(MP.code, e.currentTarget));
+$('rm-start').addEventListener('click', hostStart);
+$('rm-perks').addEventListener('click', () => { perksFrom = 'scr-room'; showScreen('scr-perks'); renderLoadout(); });
+$('rm-leave').addEventListener('click', () => mpLeave());
+$('msg-ok').addEventListener('click', () => showScreen('scr-start'));
+$('spec-prev').addEventListener('click', () => specCycle(-1));
+$('spec-next').addEventListener('click', () => specCycle(1));
+$('spec-leave').addEventListener('click', () => mpLeave());
+addEventListener('pagehide', () => { if (MP.active) mpLeave(); });
 
 /* ================= LOOP ================= */
 let last = performance.now();
@@ -4247,16 +4925,12 @@ function frame(now) {
   requestAnimationFrame(frame);
   if (now - last < (SAFE_OPTS.fps ? 30 : 13)) return;   // at most about 60 frames a second (30 in safe mode), even on 120-240 Hz screens
   const raw = (now - last) / 1000, dt = Math.min(0.05, raw); last = now;
+  MP.bgLast = now;
   if (DBG.noLoop) return;
   watchPerf(raw);
   if (state === 'menu') { updateMenu(dt); renderer.render(menu.scene, menu.cam); return; }
-  if (state === 'playing') {
-    gameTime += dt;
-    updatePlayer(dt);
-    if (!DBG.freeze) { updateGoose(dt); if (state === 'playing') updateSurveillance(dt); }
-    else { animateGoose(W.goose, dt, false); for (const S of W.sgeese) animateGoose(S, dt, false, S.rig); }
-    if (state === 'playing') { updateFx(dt); updateHUD(dt); }
-  } else if (state === 'caught') updateJumpscare(dt);
+  if (state === 'playing' || mpSimulating()) simStep(dt);   // in a room the game keeps going while you're dead or in the menu
+  if (state === 'caught') updateJumpscare(dt);
   else if (state === 'collapse') updateCollapse(dt);
   AU.listener();
   renderer.render(scene, camera);
@@ -4279,7 +4953,8 @@ window.__gooseflesh = {
   camera, GOOSE_RIG, DUSTY, CAM, INV, useItem, giveItem, finishSearch, TAPEUI, CFG, loadout, PERKS, hasPerk, renderLoadout, toggleFlash, GOOSE_OL, SG_RIGS, flash,
   interact: () => interact(), blindVoice: () => blindGoose(W.goose), sgDetects: S => sgDetects(S),
   start: beginNewRun, caught: () => caught(), win: () => { player.tapes = CFG.TAPES; win(); },
-  goose: () => W && W.goose, step: (n = 60, dt = 1 / 60) => { for (let i = 0; i < n; i++) { if (state !== 'playing') break; gameTime += dt; updatePlayer(dt); if (!DBG.freeze) { updateGoose(dt); if (state === 'playing') updateSurveillance(dt); } if (state === 'playing') { updateFx(dt); updateHUD(dt); } } },
+  goose: () => W && W.goose, step: (n = 60, dt = 1 / 60) => { for (let i = 0; i < n; i++) { if (!(state === 'playing' || mpSimulating())) break; simStep(dt); if (state === 'caught') updateJumpscare(dt); } },
+  mp: MP, mpLeave: () => mpLeave(), hostStart: () => hostStart(), specCycle: d => specCycle(d), applyDifficulty, difficultyText,
 };
 })();
 </script>
