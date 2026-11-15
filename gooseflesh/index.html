@@ -657,7 +657,7 @@ const CFG = {
   // perks
   LIGHTBRINGER_START: 1.5, LIGHTBRINGER_SG: 45, ENDURANCE_WALK: 1.35, ENDURANCE_EFF: 0.035, ENDURANCE_EFF_MAX: 0.18,
   HYPO_COOL: 1.12, ASE_TIME: 13.5, EVADE_SPEED_T: 3, EVADE_HIDE_T: 8, EVADE_LOCK: 4, SCAVENGER_AT: 0.5, SCAVENGER_GAIN: 0.6,
-  HEAD_REVEAL: 10, HEAD_SPEED: 1.07, CRESCENDO: 0.03, CRIT_TEMP: 102, CRIT_COOL: 2,
+  HEAD_REVEAL: 10, HEAD_SPEED: 1.07, CRESCENDO: 0.03, CRIT_TEMP: 102, CRIT_COOL: 2, FRIGID_TIME: 45, FRIGID_SLOW: 0.3,
 };
 
 // difficulty grows with the number of players in a room (1 = single player, the base values)
@@ -761,6 +761,7 @@ const ICON = {
   scavenger: '<rect x="2.5" y="4" width="11" height="6.5" rx="1"/><path d="M13.5 6.2h1.6v2.1h-1.6M5.5 7.2h4"/><circle cx="15.5" cy="15.5" r="3.6"/><path d="M18.1 18.1L21.5 21.5"/>',
   headstart: '<path d="M3 5.5l7.5 6.5L3 18.5z"/><path d="M11.5 5.5l7.5 6.5-7.5 6.5z"/><path d="M21.5 4.5v15"/>',
   crescendo: '<path d="M21 3.5L3.5 7.5 21 11.5"/><path d="M5 20.5v-3M10 20.5v-5M15 20.5v-7M20 20.5v-9"/>',
+  frigid: '<path d="M12 3l8 4.5v9L12 21l-8-4.5v-9z"/><path d="M4 7.5l8 4.5 8-4.5M12 12v9"/><path d="M7.5 13.6v2.2M9.5 15.4v1.6M16.5 13.6v2.2"/>',
   critical: '<path d="M7 4.5a2 2 0 0 1 4 0v9.3a4 4 0 1 1-4 0z"/><path d="M9 15V8.5"/><circle cx="9" cy="16.9" r="1.6" fill="currentColor"/><path d="M17.5 4v8.5M17.5 16v.6"/>',
   muffin: '<path d="M6 13h12l-1.6 7.5H7.6z"/><path d="M4.8 13c0-4.2 3.2-7.4 7.2-7.4s7.2 3.2 7.2 7.4"/><path d="M9 15.5l.5 3M12 15.5v3M15 15.5l-.5 3"/><circle cx="9.4" cy="10.2" r="1" fill="currentColor"/><circle cx="13.2" cy="8.8" r="1" fill="currentColor"/><circle cx="15.2" cy="11.4" r="1" fill="currentColor"/>',
   ice: '<path d="M10 2.5h4v3.2h-4z"/><path d="M9.2 5.7h5.6c3 2 4.2 5.2 4.2 8.3 0 4.2-3.1 7.5-7 7.5S5 18.2 5 14c0-3.1 1.2-6.3 4.2-8.3z"/><path d="M9.4 12.6L12 11l2.6 1.6v3.2L12 17.4l-2.6-1.6zM9.4 12.6L12 14.2l2.6-1.6M12 14.2v3.2"/>',
@@ -776,6 +777,7 @@ const PERKS = {
   scavenger: { name: 'Scavenger', desc: "When your flashlight is at 50% or lower, see the nearest battery through walls. That battery adds 60%, even past 100%. Works once per run." },
   headstart: { name: 'Headstart', desc: "For the first 10 seconds, see the nearest tape, refrigerator and cabinet through walls, move 7% faster and use no stamina." },
   crescendo: { name: 'Crescendo', desc: "Every tape your team finds: 3% more speed, stamina recovery and stamina efficiency, refrigerators cool you 3% faster, you blind geese 3% faster and heat up 3% slower." },
+  frigid: { name: 'Frigid', desc: "For the first 45 seconds, your body temperature can't rise. After that, it rises 30% slower." },
   critical: { name: 'Critical Condition', desc: "At 102°F or hotter, refrigerators cool you twice as fast, and while you're cooling down you see The Voice through walls." },
 };
 const LOADOUT_ITEMS = {
@@ -2499,7 +2501,7 @@ function resetPlayer() {
     ax: center(1), az: center(1), linger: 0, stepAcc: 0, bob: 0, target: null, hbT: 0, fov: 72, stamGhost: 1, ghostHold: 0,
     // perks chosen in the loadout, and their timers
     perks: new Set(loadout.perks), aseT: 0, aseFridge: null, headT: 0, headTape: null, headFridge: null, headCab: null,
-    showerHot: false, showerCold: 0, showerCooling: false, scentHideT: 0, coldBoost: 0, coldBoostT: 0,
+    frigidT: loadout.perks.includes('frigid') ? CFG.FRIGID_TIME : 0, showerHot: false, showerCold: 0, showerCooling: false, scentHideT: 0, coldBoost: 0, coldBoostT: 0,
     scavUsed: false, scavBat: null, scavClaim: null, scavGotT: 0, endEff: 0, endTokens: 0, critOn: false, lbT: 0,
     evadeUsed: false, evadeSpeedT: 0, evadeHideT: 0, evadePending: false, stamLockT: 0, firstFridge: false,
   });
@@ -2514,6 +2516,8 @@ const hasPerk = id => !!(player.perks && player.perks.has(id));
 const cresc = () => hasPerk('crescendo') ? CFG.CRESCENDO * player.tapes : 0;
 // Critical Condition: at 102 or hotter
 const critical = () => hasPerk('critical') && tempQ() >= CFG.CRIT_TEMP - 1e-6;
+// Frigid: no heating for the first 45 s, then 30% less
+const heatMult = () => !hasPerk('frigid') ? 1 : player.frigidT > 0 ? 0 : 1 - CFG.FRIGID_SLOW;
 const batFrac = P => Math.min(1, P.battery / CFG.BATTERY_MAX);   // past 100% (LightBringer, Scavenger) the beam is just full
 // The Voice can't sense you: Adam's Underwear, or Evasive Maneuvers
 const unseen = () => player.undiesT > 0 || player.evadeHideT > 0;
@@ -3105,7 +3109,7 @@ function updateItems(dt) {
 // perk timers, and what each perk is pointing at right now
 function updatePerks(dt) {
   const P = player;
-  for (const k of ['aseT', 'headT', 'evadeSpeedT', 'evadeHideT', 'flickerT', 'blinkT', 'lbT', 'scavGotT', 'scentHideT', 'coldBoostT']) if (P[k] > 0) P[k] = Math.max(0, P[k] - dt);
+  for (const k of ['aseT', 'headT', 'evadeSpeedT', 'evadeHideT', 'flickerT', 'blinkT', 'lbT', 'scavGotT', 'scentHideT', 'coldBoostT', 'frigidT']) if (P[k] > 0) P[k] = Math.max(0, P[k] - dt);
   if (P.evadePending && P.evadeSpeedT <= 0 && P.evadeHideT <= 0) {   // Evasive Maneuvers is over: stamina empties and stays empty
     P.evadePending = false; P.stamina = 0; P.exhausted = true; P.stamLockT = CFG.EVADE_LOCK; P.sprinting = false; touch.run = false;
   }
@@ -3475,7 +3479,7 @@ function updateTemperature(dt) {
   if (P.tempPauseT > 0) P.tempPauseT -= dt;
   else if (!P.cooling) {
     const runningHot = P.sprinting && P.speedNow > 2;
-    P.tempRiseT -= dt * ((P.hidden && P.hidden.type !== 'shower') || runningHot ? 1.5 : 1) * (1 - cresc());   // hiding spots and running heat you up 50% faster
+    P.tempRiseT -= dt * ((P.hidden && P.hidden.type !== 'shower') || runningHot ? 1.5 : 1) * (1 - cresc()) * heatMult();   // hiding spots and running heat you up 50% faster
     if (P.tempRiseT <= 0) { P.tempRiseT = rr(3, 5); P.temp = Math.min(CFG.TEMP_MAX, Math.round((P.temp + 0.1) * 10) / 10); }
   }
   const tq = tempQ();
@@ -3569,7 +3573,7 @@ function updateShowerPlayer(dt) {
   P.showerCooling = false;
   setClass('shs', els.hide, 'steam', !!sh && sh.run === 'hot' && sh.onT > CFG.SHOWER_STEAM);
   if (!sh || !sh.run) return;
-  if (sh.run === 'hot') { P.temp = Math.min(CFG.TEMP_MAX, P.temp + CFG.SHOWER_HOT * dt); P.showerHot = true; }
+  if (sh.run === 'hot') { P.temp = Math.min(CFG.TEMP_MAX, P.temp + CFG.SHOWER_HOT * heatMult() * dt); P.showerHot = true; }
   else { P.temp = Math.max(CFG.TEMP_FLOOR, P.temp - CFG.SHOWER_COLD * dt); P.cooling = true; P.showerCooling = true; P.showerCold += dt; }
 }
 let humT = 0;
@@ -4430,6 +4434,7 @@ function perkState(id) {
     case 'headstart': return [P.headT > 0, P.headT > 0 ? P.headT / CFG.HEAD_REVEAL : -1, '', P.headT <= 0, false];
     case 'crescendo': return [P.tapes > 0, -1, P.tapes ? String(P.tapes) : '', false, false];
     case 'critical': return [!!P.critOn, -1, '', false, false];
+    case 'frigid': return [P.frigidT > 0, P.frigidT > 0 ? P.frigidT / CFG.FRIGID_TIME : -1, '', false, false];
   }
   return [false, -1, '', false, false];
 }
