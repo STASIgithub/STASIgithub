@@ -660,7 +660,7 @@ const CFG = {
   HYPO_COOL: 1.12, ASE_TIME: 13.5, EVADE_SPEED_T: 3, EVADE_HIDE_T: 8, EVADE_LOCK: 4, SCAVENGER_AT: 0.5, SCAVENGER_GAIN: 0.6,
   HEAD_REVEAL: 10, HEAD_SPEED: 1.07, CRESCENDO: 0.03, CRIT_TEMP: 102, CRIT_COOL: 2, FRIGID_TIME: 45, FRIGID_SLOW: 0.3,
   CLEANSE_EXTRA: 30, CLEANSE_LINGER: 8,   // Deep Cleanse
-  IRON_SPEED: 0.94, IRON_DRAIN: 1.1, STRIKE_WINDOW: 1.25, STRIKE_CD: 3, STRIKE_STUN: 5, STRIKE_STAMINA: 0.3,   // Iron Nerve
+  IRON_SPEED: 0.92, IRON_DRAIN: 1.12, STRIKE_WINDOW: 0.6, STRIKE_STUN: 4, STRIKE_STAMINA: 0.3,   // Iron Nerve: one Strike per game
 };
 
 // difficulty grows with the number of players in a room (1 = single player, the base values)
@@ -783,7 +783,7 @@ const PERKS = {
   headstart: { name: 'Headstart', desc: "For the first 10 seconds, see the nearest tape, refrigerator and cabinet through walls, move 7% faster and use no stamina." },
   crescendo: { name: 'Crescendo', desc: "Every tape your team finds: 3% more speed, stamina recovery and stamina efficiency, refrigerators cool you 3% faster, you blind geese 3% faster and heat up 3% slower." },
   cleanse: { name: 'Deep Cleanse', desc: "Shower effects last 30 seconds longer. While you're showering, and for 8 seconds after you get out, your whole team sees The Voice through walls." },
-  ironnerve: { name: 'Iron Nerve', desc: "You move 6% slower, use 10% more stamina, and can't hide or crouch. Crouch becomes Strike: if The Voice catches you within 1.25 s of a Strike, you punch it in the face and stun it for 5 s, for 30% of your stamina. Strike recharges in 3 s." },
+  ironnerve: { name: 'Iron Nerve', desc: "You move 8% slower, use 12% more stamina, and can't hide or crouch. Crouch becomes Strike, once per game: if The Voice catches you within 0.6 s of pressing it, you punch it in the face and stun it for 4 s, for 30% of your stamina. A miss still uses it up." },
   frigid: { name: 'Frigid', desc: "For the first 45 seconds, your body temperature can't rise. After that, it rises 30% slower." },
   critical: { name: 'Critical Condition', desc: "At 102°F or hotter, refrigerators cool you twice as fast, and while you're cooling down you see The Voice through walls." },
 };
@@ -2555,7 +2555,7 @@ function resetPlayer() {
     ax: center(1), az: center(1), linger: 0, stepAcc: 0, bob: 0, target: null, hbT: 0, fov: 72, stamGhost: 1, ghostHold: 0,
     // perks chosen in the loadout, and their timers
     perks: new Set(loadout.perks), aseT: 0, aseFridge: null, headT: 0, headTape: null, headFridge: null, headCab: null,
-    frigidT: loadout.perks.includes('frigid') ? CFG.FRIGID_TIME : 0, cleanseT: 0, strikeT: 0, strikeCD: 0, showerHot: false, showerCold: 0, showerCooling: false, scentHideT: 0, coldBoost: 0, coldBoostT: 0,
+    frigidT: loadout.perks.includes('frigid') ? CFG.FRIGID_TIME : 0, cleanseT: 0, strikeT: 0, strikeUsed: false, showerHot: false, showerCold: 0, showerCooling: false, scentHideT: 0, coldBoost: 0, coldBoostT: 0,
     scavUsed: false, scavBat: null, scavClaim: null, scavGotT: 0, endEff: 0, endTokens: 0, critOn: false, lbT: 0,
     evadeUsed: false, evadeSpeedT: 0, evadeHideT: 0, evadePending: false, stamLockT: 0, firstFridge: false,
   });
@@ -2951,11 +2951,11 @@ function toggleCrouch() {
   player.crouch = !player.crouch;
   if (player.crouch) touch.run = false;
 }
-// Iron Nerve's Strike: a 1.25 s window. If The Voice's jumpscare starts inside it, you punch it mid-scare.
+// Iron Nerve's Strike: a 0.6 s window, once per game. If The Voice's jumpscare starts inside it, you punch it mid-scare.
 function strike() {
   const P = player;
-  if (P.hidden || P.strikeCD > 0 || state !== 'playing') return;
-  P.strikeT = CFG.STRIKE_WINDOW; P.strikeCD = CFG.STRIKE_CD; AU.swing();
+  if (P.hidden || P.strikeUsed || state !== 'playing') return;
+  P.strikeT = CFG.STRIKE_WINDOW; P.strikeUsed = true; AU.swing();   // once per game, hit or miss
 }
 const canCounter = p => p === player ? player.strikeT > 0 && hasPerk('ironnerve') && !player.hidden : !!p.strikeOn && !p.hidden;
 // The Voice reached someone mid-Strike: no catch. It's stunned, and they get the punch scene.
@@ -3195,7 +3195,7 @@ function updateItems(dt) {
 // perk timers, and what each perk is pointing at right now
 function updatePerks(dt) {
   const P = player;
-  for (const k of ['aseT', 'headT', 'evadeSpeedT', 'evadeHideT', 'flickerT', 'blinkT', 'lbT', 'scavGotT', 'scentHideT', 'coldBoostT', 'frigidT', 'cleanseT', 'strikeT', 'strikeCD']) if (P[k] > 0) P[k] = Math.max(0, P[k] - dt);
+  for (const k of ['aseT', 'headT', 'evadeSpeedT', 'evadeHideT', 'flickerT', 'blinkT', 'lbT', 'scavGotT', 'scentHideT', 'coldBoostT', 'frigidT', 'cleanseT', 'strikeT']) if (P[k] > 0) P[k] = Math.max(0, P[k] - dt);
   if (P.evadePending && P.evadeSpeedT <= 0 && P.evadeHideT <= 0) {   // Evasive Maneuvers is over: stamina empties and stays empty
     P.evadePending = false; P.stamina = 0; P.exhausted = true; P.stamLockT = CFG.EVADE_LOCK; P.sprinting = false; touch.run = false;
   }
@@ -4528,7 +4528,7 @@ function perkState(id) {
     case 'crescendo': return [P.tapes > 0, -1, P.tapes ? String(P.tapes) : '', false, false];
     case 'critical': return [!!P.critOn, -1, '', false, false];
     case 'cleanse': { const after = P.scentHideT > CFG.SHOWER_AFTER || P.coldBoostT > CFG.SHOWER_AFTER; return [P.cleanseT > 0 || after, P.cleanseT > 0 ? P.cleanseT / CFG.CLEANSE_LINGER : -1, '', false, false]; }
-    case 'ironnerve': return [P.strikeT > 0, P.strikeT > 0 ? P.strikeT / CFG.STRIKE_WINDOW : P.strikeCD > 0 ? 1 - P.strikeCD / CFG.STRIKE_CD : -1, '', false, false];
+    case 'ironnerve': return [P.strikeT > 0, P.strikeT > 0 ? P.strikeT / CFG.STRIKE_WINDOW : -1, '', P.strikeUsed && P.strikeT <= 0, false];
     case 'frigid': return [P.frigidT > 0, P.frigidT > 0 ? P.frigidT / CFG.FRIGID_TIME : -1, '', false, false];
   }
   return [false, -1, '', false, false];
@@ -4676,7 +4676,7 @@ function updateHUD(dt) {
     setClass('tbr', TB.run, 'off', P.exhausted || tq >= CFG.TEMP_MAX - 1e-6);
     const iron = hasPerk('ironnerve');
     setText('tbcl', TB.crouch, iron ? 'Strike' : 'Crouch');
-    setClass('tbc', TB.crouch, 'on', iron ? P.strikeT > 0 : P.crouch); setClass('tbc', TB.crouch, 'off', iron && P.strikeCD > 0 && P.strikeT <= 0);
+    setClass('tbc', TB.crouch, 'on', iron ? P.strikeT > 0 : P.crouch); setClass('tbc', TB.crouch, 'off', iron && P.strikeUsed && P.strikeT <= 0);
     setClass('tbl', TB.light, 'on', P.flashOn);
     setClass('tbu', TB.use, 'ready', !!P.target);
     setText('tbut', TB.use, !P.target ? 'Use' : P.target.kind === 'leave' ? 'Leave' : P.target.kind === 'spot' ? 'Hide' : P.target.kind === 'fridge' ? (P.target.f.open ? 'Close' : 'Open') : P.target.kind === 'cabinet' || P.target.kind === 'fsearch' ? 'Search' : P.target.kind === 'knob' ? 'Turn' : 'Take');
@@ -4705,7 +4705,7 @@ function updateJumpscare(dt) {
 function updateStrikeScene(dt) {
   const t = (JS.st += dt), k = Math.min(1, t / 0.14), e = 1 - Math.pow(1 - k, 3), HIT = 0.5;
   if (!JS.hit && t >= HIT) {
-    JS.hit = true; AU.punch(); shakeAmt = 1; AU.honk(W.goose.x, W.goose.z, { pitch: 1.6, loud: 1.4 });
+    JS.hit = true; AU.punch(); AU.honk(W.goose.x, W.goose.z, { pitch: 1.6, loud: 1.4 });
     els.flashFx.style.transition = 'none'; els.flashFx.style.background = '#fff'; els.flashFx.style.opacity = 0.7;
     requestAnimationFrame(() => { els.flashFx.style.transition = 'opacity .25s'; els.flashFx.style.opacity = 0; });
   }
