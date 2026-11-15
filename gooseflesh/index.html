@@ -725,7 +725,13 @@ function saveLoadout() { if (!loadoutValid()) return; try { localStorage.setItem
 
 /* ================= RENDERER ================= */
 const canvas = $('view');
-const renderer = new THREE.WebGLRenderer({ canvas, antialias: !TOUCH_DEVICE && !SAFE_OPTS.aa, powerPreference: SAFE_OPTS.gpu ? 'default' : 'high-performance' });
+// More crash-hunting switches: ?nogl starts no 3D at all (the view stays black), ?gl=1 uses the older WebGL 1.
+const DIAG = new URLSearchParams(location.search), NO_GL = DIAG.has('nogl'), GL1 = DIAG.get('gl') === '1';
+const GL_OPTS = { antialias: !TOUCH_DEVICE && !SAFE_OPTS.aa, powerPreference: SAFE_OPTS.gpu ? 'default' : 'high-performance' };
+const renderer = NO_GL
+  ? { domElement: canvas, shadowMap: { enabled: false, type: 0, autoUpdate: false }, capabilities: { getMaxAnisotropy: () => 1 },
+      setPixelRatio() {}, getPixelRatio: () => 1, setSize() {}, setClearColor() {}, render() {} }
+  : new THREE.WebGLRenderer({ canvas, ...GL_OPTS, context: GL1 ? canvas.getContext('webgl', GL_OPTS) : undefined });
 // How many pixels get drawn. The total is capped, so a big or high-DPI screen (a 1080p laptop at 150% scaling would
 // otherwise draw 2880x1620 every frame) can't overload the graphics card. The picture is scaled up to fill the screen.
 const MAX_PIXELS = { high: 1920 * 1080, low: 1280 * 720 };
@@ -2607,7 +2613,7 @@ function syncSettingsUI() {
   $('view-desc').textContent = firstPerson() ? 'You see through Dusty\'s eyes.' : 'The camera follows behind Dusty.';
   $('flavor-desc').textContent = settings.flavor === 'on' ? 'Captions like MERP and peww, and story and status messages like "You\'ve caught a fever.", are shown.' : "Only essential text is shown: prompts, items, pickups and perks. Everything else still happens, you just won't read about it.";
   $('keys-pc').hidden = isMobile(); $('keys-mobile').hidden = !isMobile();
-  $('mode-note').textContent = (SAFE ? `Safe mode is on (${Object.keys(SAFE_OPTS).filter(k => SAFE_OPTS[k]).join(', ')}). ` : '') + (isMobile()
+  $('mode-note').textContent = (SAFE ? `Safe mode is on (${Object.keys(SAFE_OPTS).filter(k => SAFE_OPTS[k]).join(', ')}). ` : '') + (NO_GL ? 'No 3D (nogl). ' : '') + (GL1 ? 'WebGL 1. ' : '') + (isMobile()
     ? 'Mobile controls. Play with your phone sideways. On iPhone, turn off silent mode to hear The Voice.'
     : 'Computer controls. Change controls and graphics in Settings.');
 }
