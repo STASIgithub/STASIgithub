@@ -528,7 +528,9 @@ const angDiff = (a, b) => { let d = (b - a) % (Math.PI * 2); if (d > Math.PI) d 
 /* ================= SETTINGS ================= */
 const TOUCH_DEVICE = matchMedia('(pointer: coarse)').matches && !matchMedia('(pointer: fine)').matches;
 const SETTINGS_KEY = 'gooseflesh.settings.v1';
-const settings = { controls: TOUCH_DEVICE ? 'mobile' : 'computer', quality: TOUCH_DEVICE ? 'low' : 'high', sens: 1, vol: 0.9, view: 'third', flavor: 'on' };
+// weaker machines (few cores or little memory) start on Low graphics
+const WEAK_DEVICE = (navigator.hardwareConcurrency || 8) <= 4 || (navigator.deviceMemory || 8) <= 4;
+const settings = { controls: TOUCH_DEVICE ? 'mobile' : 'computer', quality: TOUCH_DEVICE || WEAK_DEVICE ? 'low' : 'high', sens: 1, vol: 0.9, view: 'third', flavor: 'on' };
 try {
   const saved = JSON.parse(localStorage.getItem(SETTINGS_KEY) || 'null');
   if (saved && typeof saved === 'object') {
@@ -587,11 +589,18 @@ function saveLoadout() { if (!loadoutValid()) return; try { localStorage.setItem
 /* ================= RENDERER ================= */
 const canvas = $('view');
 const renderer = new THREE.WebGLRenderer({ canvas, antialias: !TOUCH_DEVICE, powerPreference: 'high-performance' });
-renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, settings.quality === 'high' ? 1.5 : 1));
+// How many pixels get drawn. The total is capped, so a big or high-DPI screen (a 1080p laptop at 150% scaling would
+// otherwise draw 2880x1620 every frame) can't overload the graphics card. The picture is scaled up to fill the screen.
+const MAX_PIXELS = { high: 1920 * 1080, low: 1280 * 720 };
+function renderRatio() {
+  const dpr = window.devicePixelRatio || 1, area = Math.max(1, innerWidth * innerHeight);
+  return Math.max(0.5, Math.min(dpr, settings.quality === 'high' ? 1.5 : 1, Math.sqrt(MAX_PIXELS[settings.quality] / area)));
+}
+renderer.setPixelRatio(renderRatio());
 renderer.setSize(innerWidth, innerHeight);
 renderer.setClearColor(0x000000);
 renderer.shadowMap.enabled = true;
-renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+renderer.shadowMap.type = THREE.PCFShadowMap;   // cheaper than PCFSoft; the flashlight is the only shadow caster
 const MAX_ANISO = renderer.capabilities.getMaxAnisotropy();
 
 /* ================= TEXTURES ================= */
@@ -1054,15 +1063,16 @@ scene.add(flash); scene.add(flash.target);   // driven by updateFlashRig(): lags
 flash.castShadow = true; flash.shadow.mapSize.set(1024, 1024);
 flash.shadow.camera.near = 0.2; flash.shadow.camera.far = 46; flash.shadow.bias = -0.0006;
 
-const EMERG = [];
+// five red emergency fixtures, but only the two nearest you cast real light: every light costs work on every pixel
+const EMERG = [], EMERG_LIGHTS = [];
+for (let i = 0; i < 2; i++) { const l = new THREE.PointLight(0xff2c18, 0, 9.5, 2); scene.add(l); EMERG_LIGHTS.push(l); }
 for (let i = 0; i < 5; i++) {
-  const light = new THREE.PointLight(0xff2c18, 0, 9.5, 2); scene.add(light);
   const mat = new THREE.MeshStandardMaterial({ color: 0x220000, emissive: 0xff2a14, emissiveIntensity: 1 });
   const fix = new THREE.Group();
   addMesh(fix, geo('box'), mat, [0, 0, 0], [0.36, 0.18, 0.12], null, false);
   addMesh(fix, geo('box'), MAT.metal, [0, 0, -0.07], [0.46, 0.26, 0.04], null, false);
   scene.add(fix);
-  EMERG.push({ light, mat, fix, t: 0, cur: 1, target: 1 });
+  EMERG.push({ pos: new V3(), mat, fix, t: 0, cur: 1, target: 1 });
 }
 
 const GOOSE_RIG = buildGooseRig(); scene.add(GOOSE_RIG.root);
@@ -1073,8 +1083,11 @@ scene.add(DUSTY.root);
 // jumpscare head, attached to the camera
 const JS = buildGooseHead();
 JS.group.visible = false; camera.add(JS.group);
-const jsLight = new THREE.PointLight(0xff3a22, 0, 4, 2); jsLight.position.set(0, 0.5, -0.2); camera.add(jsLight);
-const jsLight2 = new THREE.PointLight(0xdfe6ff, 0, 4, 2); jsLight2.position.set(0.2, -0.6, -0.1); camera.add(jsLight2);
+// the jumpscare borrows the two lights that are always there (aura and fill), so it never adds lights to the scene
+function jumpLights(on) {
+  if (on) { aura.color.setHex(0xff3a22); aura.distance = 4; aura.intensity = 3.2; fill.color.setHex(0xdfe6ff); fill.intensity = 0.9; fill.position.set(0.2, -0.6, -0.1); }
+  else { aura.color.setHex(0x8a9ab4); aura.distance = 5; aura.intensity = 0.32; fill.color.setHex(0x9aa8c0); fill.intensity = 0.2; fill.position.set(0, 0, 0); }
+}
 
 /* ================= MENU SCENE ================= */
 const menu = { scene: new THREE.Scene(), cam: new THREE.PerspectiveCamera(46, innerWidth / innerHeight, 0.1, 80), t: 0 };
@@ -1685,11 +1698,11 @@ function populate() {
     if (lightPos.some(([x, z]) => Math.hypot(x - p.x, z - p.z) < T * 6)) continue;
     const L = EMERG[lightPos.length];
     L.fix.position.set(p.x, 3.1, p.z); L.fix.rotation.y = p.yaw;
-    L.light.position.set(p.x - p.dx * 0.45, 3.0, p.z - p.dz * 0.45);
+    L.pos.set(p.x - p.dx * 0.45, 3.0, p.z - p.dz * 0.45);
     L.cur = L.target = 1; L.t = 0;
     lightPos.push([p.x, p.z]); W.sideUsed.add(i * 4 + k);
   }
-  EMERG.forEach((L, k) => { L.on = k < lightPos.length; if (!L.on) { L.light.intensity = 0; L.fix.visible = false; } else L.fix.visible = true; });
+  EMERG.forEach((L, k) => { L.on = k < lightPos.length; L.fix.visible = L.on; });
 
   // ---- graffiti
   const msgs = shuffle(GRAFFITI.slice());
@@ -2192,7 +2205,7 @@ function newGame() {
     player.headT = CFG.HEAD_REVEAL;
   }
   gameTime = 0; shakeAmt = 0;
-  JS.group.visible = false; jsLight.intensity = 0; jsLight2.intensity = 0;
+  JS.group.visible = false; jumpLights(false);
   els.flashFx.style.opacity = 0; els.danger.style.opacity = 0;
   els.hide.hidden = true; els.toast.style.opacity = 0;
   for (const k in hudCache) delete hudCache[k];
@@ -2271,7 +2284,7 @@ function caught() {
   els.hud.hidden = true; $('touch').hidden = true; hideSpeedLines();
   GOOSE_RIG.root.visible = false;
   JS.group.visible = true; JS.start = performance.now();
-  jsLight.intensity = 3.2; jsLight2.intensity = 0.9; renderer.shadowMap.autoUpdate = true;
+  jumpLights(true); renderer.shadowMap.autoUpdate = true;
   AU.scream(); AU.setChase(0); AU.setAmbient(false);
   els.flashFx.style.transition = 'none'; els.flashFx.style.background = '#fff'; els.flashFx.style.opacity = 0.85;
   requestAnimationFrame(() => { els.flashFx.style.transition = 'opacity .35s'; els.flashFx.style.opacity = 0; });
@@ -2279,7 +2292,7 @@ function caught() {
 function showDead(reason) {
   state = 'dead';
   $('dead-title').textContent = reason === 'heat' ? 'The heat took you.' : 'The Voice found you.';
-  JS.group.visible = false; jsLight.intensity = 0; jsLight2.intensity = 0;
+  JS.group.visible = false; jumpLights(false);
   if (document.pointerLockElement) document.exitPointerLock();
   const m = Math.floor(gameTime / 60), s = Math.floor(gameTime % 60);
   $('dead-stats').textContent = `Tapes found: ${player.tapes} of ${CFG.TAPES}. Survived ${m}:${String(s).padStart(2, '0')}. Body temperature ${tempQ().toFixed(1)}°F.`;
@@ -2435,7 +2448,7 @@ function syncSettingsUI() {
 }
 function applySettings() {
   document.body.classList.toggle('m', isMobile());
-  const pr = Math.min(window.devicePixelRatio || 1, settings.quality === 'high' ? 1.5 : 1);
+  const pr = renderRatio();
   if (renderer.getPixelRatio() !== pr) { renderer.setPixelRatio(pr); renderer.setSize(innerWidth, innerHeight); }
   flash.castShadow = settings.quality === 'high';
   if (AU.master) AU.master.gain.value = settings.vol;
@@ -3700,7 +3713,7 @@ function updateScreenFx(dt) {
   setOpacity('a', els.heatA, FX.red); setOpacity('b', els.heatB, FX.dark); setOpacity('t', els.tunnel, FX.tunnel);
   setOpacity('f', els.fade, Math.min(0.6, FX.fade)); setOpacity('r', els.tired, FX.tired);
   let filt = '';
-  if (FX.distort > 0.02) {
+  if (FX.distort > 0.02 && settings.quality === 'high') {   // a CSS blur over the whole canvas is expensive: High only
     const blur = FX.distort * (0.5 + 1.6 * (0.5 + 0.5 * Math.sin(gameTime * 2.1)));
     filt = `blur(${blur.toFixed(1)}px) saturate(${(1 - 0.35 * FX.distort).toFixed(2)})`;
   }
@@ -3713,8 +3726,11 @@ function updateFx(dt) {
     L.t -= dt;
     if (L.t <= 0) { L.t = Math.random() < 0.08 ? rr(0.3, 0.9) : rr(0.04, 0.18); L.target = Math.random() < 0.14 ? 0.04 : rr(0.65, 1.15); }
     L.cur += (L.target - L.cur) * Math.min(1, dt * 25);
-    L.light.intensity = L.cur * 1.1; L.mat.emissiveIntensity = L.cur;
+    L.mat.emissiveIntensity = L.cur;
   }
+  // the two lit fixtures nearest you get the two real lights
+  const lit = EMERG.filter(L => L.on).sort((a, b) => a.pos.distanceToSquared(EAR) - b.pos.distanceToSquared(EAR));
+  EMERG_LIGHTS.forEach((l, k) => { const L = lit[k]; if (L) { l.position.copy(L.pos); l.intensity = L.cur * 1.1; } else l.intensity = 0; });
   for (const g of W.glows) g.s.material.opacity = g.base * (0.7 + 0.3 * Math.sin(gameTime * 2.2 + g.ph));
   // tapes: brighter, lifted and spinning as you approach; visible through walls with the glasses
   const xr = player.glassesT > 0;
@@ -3868,7 +3884,8 @@ function updateJumpscare(dt) {
   JS.jaw.rotation.x = 0.62 + Math.abs(Math.sin(t * 34)) * 0.22;
   camera.rotation.x = player.pitch * (1 - e) + rr(-j, j) * 2; camera.rotation.z = rr(-j, j) * 2;
   flash.intensity = 1.5;
-  jsLight.intensity = 3.2 * (Math.random() < 0.15 ? 0.3 : 1);
+  aura.intensity = 3.2 * (Math.random() < 0.15 ? 0.3 : 1);
+  camera.updateMatrixWorld(); aura.position.set(0, 0.5, -0.2); camera.localToWorld(aura.position);
   if (t > 1.45 && state === 'caught') showDead('goose');
 }
 
@@ -3897,10 +3914,22 @@ function updateMenu(dt) {
 
 /* ================= LOOP ================= */
 let last = performance.now();
+// if High runs slowly on this computer, switch to Low once and say so, instead of grinding the machine
+const PERF = { t: 0, n: 0, sum: 0, done: !!navigator.webdriver };
+function watchPerf(raw) {
+  if (PERF.done || settings.quality !== 'high' || state !== 'playing') return;
+  PERF.t += raw; if (PERF.t > 3) { PERF.sum += raw; PERF.n++; }   // skip the first 3 s while shaders compile
+  if (PERF.t > 9) {
+    PERF.done = true;
+    if (PERF.sum / Math.max(1, PERF.n) > 0.028) { settings.quality = 'low'; saveSettings(); applySettings(); toast('Graphics set to Low so the game runs smoothly. You can change this in Settings.', false, 5); }
+  }
+}
 function frame(now) {
   requestAnimationFrame(frame);
-  const dt = Math.min(0.05, (now - last) / 1000); last = now;
+  if (now - last < 13) return;   // at most about 60 frames a second, even on 120-240 Hz screens
+  const raw = (now - last) / 1000, dt = Math.min(0.05, raw); last = now;
   if (DBG.noLoop) return;
+  watchPerf(raw);
   if (state === 'menu') { updateMenu(dt); renderer.render(menu.scene, menu.cam); return; }
   if (state === 'playing') {
     gameTime += dt;
@@ -3919,7 +3948,7 @@ resetJoy();
 requestAnimationFrame(frame);
 
 addEventListener('resize', () => {
-  renderer.setSize(innerWidth, innerHeight);
+  renderer.setPixelRatio(renderRatio()); renderer.setSize(innerWidth, innerHeight);
   if (touch.joyId === null) resetJoy();
   camera.aspect = innerWidth / innerHeight; camera.updateProjectionMatrix();
   menu.cam.aspect = innerWidth / innerHeight; menu.cam.updateProjectionMatrix();
