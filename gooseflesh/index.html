@@ -60,6 +60,21 @@ body.lit #grain{opacity:.04}
 #fade{z-index:4;opacity:0;background:#000}
 @keyframes grain{0%{background-position:0 0}20%{background-position:-61px 37px}40%{background-position:83px -29px}60%{background-position:-17px -71px}80%{background-position:47px 59px}100%{background-position:0 0}}
 
+/* quick-time prompts */
+#qte{position:fixed;inset:0;z-index:30;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;gap:12px;padding-bottom:calc(9vh + env(safe-area-inset-bottom,0px));pointer-events:none}   /* below the face, not over it */
+.qte-box{position:relative;width:132px;height:132px;display:grid;place-items:center}
+.qte-ring{position:absolute;inset:0;transform:rotate(-90deg)}
+.qte-ring circle{fill:rgba(10,8,8,.72);stroke-width:7}
+.qte-ring .bg{stroke:rgba(255,255,255,.18)}
+.qte-ring .fg{fill:none;stroke:#ffd24a;stroke-dasharray:276.5;stroke-dashoffset:0;stroke-linecap:round}
+#qte.spam .qte-ring .fg{stroke:#44e07a}
+#qte-label{position:relative;font-family:var(--f-display);font-size:58px;line-height:1;color:#fff;text-shadow:0 0 18px rgba(255,210,74,.6)}
+#qte-label.small{font-size:40px}
+#qte-label svg{width:64px;height:64px;stroke:#fff;fill:none;stroke-width:3;stroke-linecap:round;stroke-linejoin:round}
+#qte-hint{margin:0;font-size:13px;letter-spacing:.24em;text-transform:uppercase;color:#fff;text-shadow:0 2px 8px #000}
+#qte.pop .qte-box{animation:qpop .12s ease-out}
+@keyframes qpop{0%{transform:scale(1.14)}100%{transform:scale(1)}}
+
 /* hiding overlays */
 #hide{z-index:5}
 #hide .slits{position:absolute;left:50%;top:47%;width:min(74vw,980px);height:40vh;transform:translate(-50%,-50%);
@@ -281,6 +296,35 @@ input[type=range]{width:100%;accent-color:var(--ember);height:28px}
 #loadout-sum svg,#rm-lo svg{width:15px;height:15px}
 .ico{fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
 .loadout{width:100%;max-width:780px;gap:14px}
+/* perk picker, Dead by Daylight style: a grid of diamonds; hover (or tap on a phone) for the details */
+.pk-slots{display:flex;gap:16px;justify-content:center;align-items:center;min-height:84px}
+.pk-tools{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.pk-tools .txt{flex:1 1 200px;min-width:0}
+.pk-sel{display:flex;align-items:center;gap:8px;font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--dim)}
+.pk-sel select{background:rgba(8,8,10,.8);color:var(--ink);border:1px solid rgba(221,214,198,.3);border-radius:3px;padding:8px 10px;font:inherit;font-size:12px;letter-spacing:.06em;text-transform:none}
+.pk-grid{display:flex;flex-wrap:wrap;gap:6px 8px;justify-content:center}
+button.pk-pick{clip-path:none;position:relative;width:76px;height:76px;padding:0;display:grid;place-items:center;background:none;border:0;color:rgba(221,214,198,.62);cursor:pointer}
+button.pk-pick::before{content:"";position:absolute;inset:12px;transform:rotate(45deg);border:1px solid rgba(221,214,198,.3);background:rgba(16,15,13,.85);transition:border-color .2s,background .2s,box-shadow .2s}
+button.pk-pick svg{position:relative;width:28px;height:28px;transition:color .2s,transform .2s}
+button.pk-pick:hover::before,button.pk-pick:focus-visible::before,button.pk-pick.sel::before{border-color:var(--ink);background:rgba(40,37,32,.9)}
+button.pk-pick:hover svg,button.pk-pick:focus-visible svg{transform:scale(1.12);color:var(--ink)}
+button.pk-pick[aria-pressed="true"]{color:#ffe1a1}
+button.pk-pick[aria-pressed="true"]::before{border-color:var(--ember);background:rgba(227,166,78,.2);box-shadow:0 0 16px rgba(227,166,78,.45)}
+button.pk-pick .n{position:absolute;right:6px;top:4px;font-size:11px;color:var(--ember)}
+button.pk-pick.empty{cursor:default;color:rgba(221,214,198,.25)}
+button.pk-pick.empty::before{border-style:dashed;background:rgba(8,8,10,.5)}
+.pk-tip{position:fixed;z-index:40;max-width:320px;padding:12px 14px;background:#141312;border:1px solid rgba(221,214,198,.28);border-radius:4px;box-shadow:0 10px 30px rgba(0,0,0,.7);pointer-events:none}
+.pk-tip b,.pk-sheet b{display:block;font-family:var(--f-display);font-weight:400;font-size:21px;letter-spacing:.03em;color:var(--ink)}
+.pk-tip p,.pk-sheet p{margin:6px 0 0;font-size:13px;line-height:1.5;color:var(--ink)}
+.pk-tags{display:flex;gap:6px;flex-wrap:wrap}
+.pk-tip .pk-tags,.pk-sheet .pk-tags{margin-top:6px}
+.pk-tags span{font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--ember);border:1px solid rgba(227,166,78,.4);border-radius:3px;padding:2px 6px}
+.pk-tip .used{font-size:11px;color:var(--dim);letter-spacing:.06em}
+.pk-sheet{position:fixed;z-index:40;left:0;right:0;bottom:0;padding:0 12px calc(12px + env(safe-area-inset-bottom,0px))}
+.pk-sheet-in{max-width:560px;margin:0 auto;padding:16px;background:#141312;border:1px solid rgba(221,214,198,.3);border-radius:6px;box-shadow:0 -10px 40px rgba(0,0,0,.8)}
+.pk-sheet-head{display:flex;align-items:center;gap:12px}
+.pk-sheet-head svg{width:30px;height:30px;color:var(--ember)}
+.pk-sheet .actions{margin-top:12px}
 /* How to Play: one big heading for the goal, medium ones for each topic, normal body text */
 .howto{width:100%;max-width:680px;gap:26px}
 .center .inner.howto{align-items:stretch;text-align:left}
@@ -392,6 +436,7 @@ body.safe h1{animation:none}
 <div class="fx" id="fade"></div>
 <div class="fx" id="grain"></div>
 <div class="fx" id="flash"></div>
+<div id="qte" hidden><div class="qte-box"><svg class="qte-ring" viewBox="0 0 100 100" aria-hidden="true"><circle class="bg" cx="50" cy="50" r="44"/><circle class="fg" id="qte-fg" cx="50" cy="50" r="44"/></svg><span id="qte-label"></span></div><p id="qte-hint"></p></div>
 
 <div id="hud" hidden>
   <div id="hud-tapes" aria-label="Tapes found"><svg class="vhs" viewBox="0 0 30 20" aria-hidden="true"><path fill="#fff" fill-rule="evenodd" d="M2.5 1h25A1.5 1.5 0 0 1 29 2.5v15a1.5 1.5 0 0 1-1.5 1.5h-25A1.5 1.5 0 0 1 1 17.5v-15A1.5 1.5 0 0 1 2.5 1zM5 3.2v2.2h20V3.2zM7.5 7.5v6.5h15V7.5zM6 16.2v1.3h2.5v-1.3zM21.5 16.2v1.3H24v-1.3z"/><path fill="#fff" fill-rule="evenodd" d="M11.3 8.4a2.35 2.35 0 1 1 0 4.7 2.35 2.35 0 1 1 0-4.7zm0 1.5a.85.85 0 1 0 0 1.7.85.85 0 1 0 0-1.7zM18.7 8.4a2.35 2.35 0 1 1 0 4.7 2.35 2.35 0 1 1 0-4.7zm0 1.5a.85.85 0 1 0 0 1.7.85.85 0 1 0 0-1.7z"/></svg><span id="pc">0/5</span></div>
@@ -510,7 +555,7 @@ body.safe h1{animation:none}
 
     <section>
       <h4>The Voice</h4>
-      <p>You'll usually hear it before you see it. It listens for running, for heavy breathing, for doors. It notices light. Stay in one spot for too long and it starts to pick up your scent. If it comes after you, keep moving, and think twice about where you're leading it.</p>
+      <p>You'll usually hear it before you see it. It listens for running, for heavy breathing, for doors. It notices light. Stay in one spot for too long and it starts to pick up your scent. If it comes after you, keep moving, and think twice about where you're leading it. And if it's been quiet for a while, don't assume it's gone. Listen above you.</p>
     </section>
 
     <section>
@@ -589,8 +634,20 @@ body.safe h1{animation:none}
   <div class="inner loadout">
     <h2>Perks</h2>
     <p class="fine">Bring exactly 3 perks and 1 item into each run.</p>
-    <h3 class="sub">Perks <span id="perk-n">0 / 2</span></h3>
-    <div class="cards" id="perk-cards"></div>
+    <div class="pk-slots" id="pk-slots" aria-label="Equipped perks"></div>
+    <div class="pk-tools">
+      <input id="pk-search" class="txt" type="search" placeholder="Search perks" aria-label="Search perks" autocomplete="off" spellcheck="false">
+      <label class="pk-sel"><span>Sort</span><select id="pk-sort"><option value="az">A to Z</option><option value="za">Z to A</option><option value="most">Most used</option><option value="least">Least used</option></select></label>
+      <label class="pk-sel"><span>Type</span><select id="pk-tag"><option value="">All</option></select></label>
+    </div>
+    <h3 class="sub">Perks <span id="perk-n">0 / 3</span></h3>
+    <div class="pk-grid" id="perk-cards"></div>
+    <p class="fine" id="pk-none" hidden>No perks match.</p>
+    <div class="pk-tip" id="pk-tip" hidden></div>
+    <div class="pk-sheet" id="pk-sheet" hidden>
+      <div class="pk-sheet-in"><div class="pk-sheet-head"><span id="pk-sheet-ico"></span><b id="pk-sheet-name"></b></div><p class="pk-tags" id="pk-sheet-tags"></p><p id="pk-sheet-desc"></p>
+        <div class="actions"><button id="pk-equip" type="button">Equip</button><button id="pk-close" class="ghost" type="button">Close</button></div></div>
+    </div>
     <h3 class="sub">Item <span id="item-n">0 / 1</span></h3>
     <div class="cards" id="item-cards"></div>
     <button id="perks-done" type="button">Done</button>
@@ -765,8 +822,12 @@ const CFG = {
   LP_CROUCH: 3, LP_LINGER: 8,   // Low Profile
   LC_EVERY: 25, LC_CHANCE: 1 / 50, LC_CD: 100, LC_SPEED: 3, LC_SPEED_T: 10, LC_FOV: 65, LC_VITAL_T: 10, LC_TAPES_T: 10, LC_KILL_R: 0.95,   // Loose Cannon
   RAPPORT_R: 5, RAPPORT_LINGER: 15, RAPPORT_HEAT: 0.05,   // Rapport
+  MUFFIN_BONUS: 1.5, BRAWLER_BONUS: 1.5, ICE_PATROL_T: 20,
+  // The Voice takes to the air after 70 s without finding anyone: 30 s up in the dark, one drop attack after 8 s at the earliest
+  FLY_AFTER: 70, FLY_TIME: 30, FLY_ALT: 9, FLY_SPEED: 4.2, FLY_MIN_ATTACK: 8, DIVE_SPEED: 26,
+  PIN_PRESSES: 40, PIN_TIME: 9.2, PIN_STUN: 4, PIN_VITALITY: 10,   // Muffin Man, Blueberry Brawler, Ice Pack Patroller
   CLEANSE_EXTRA: 30, CLEANSE_LINGER: 8,   // Deep Cleanse
-  IRON_SPEED: 0.92, IRON_DRAIN: 1.12, STRIKE_WINDOW: 0.6, STRIKE_STUN: 4, STRIKE_STAMINA: 0.3,   // Iron Nerve: one Strike per game
+  IRON_SPEED: 0.92, IRON_DRAIN: 1.12, STRIKE_WINDOW: 0.35, STRIKE_STUN: 4, STRIKE_STAMINA: 0.3, STRIKE_QTE: 0.8,   // Iron Nerve: one Strike per game
 };
 
 // difficulty grows with the number of players in a room (1 = single player, the base values)
@@ -877,6 +938,9 @@ const ICON = {
   lowprofile: '<path d="M3 20.5h18"/><path d="M6.5 17.5c0-2.4 1.9-4.2 4.4-4.2h2.6c1.7 0 3 .9 3.8 2.3l1.2 1.9"/><circle cx="9" cy="10" r="2"/><path d="M15.5 6.5c1.2.6 1.2 2 0 2.6M18 4.5c2.4 1.3 2.4 5.3 0 6.6" stroke-dasharray="1.6 1.4"/>',
   loosecannon: '<path d="M4 15.5a4.5 4.5 0 0 0 9 0 4.5 4.5 0 0 0-9 0z"/><path d="M11.4 12.2l3.4-3.4"/><path d="M14.8 8.8c.6-1.6 2-2.7 3.7-2.9"/><path d="M19 3.5v1.6M21.2 6.1h-1.6M20.5 4.2l-1.1 1.1" />',
   rapport: '<circle cx="8" cy="7.5" r="2.6"/><circle cx="16" cy="7.5" r="2.6"/><path d="M3 19.5c0-3.1 2.2-5.4 5-5.4 1.5 0 2.8.6 3.7 1.7M21 19.5c0-3.1-2.2-5.4-5-5.4-1.5 0-2.8.6-3.7 1.7"/><path d="M10 17.5h4"/>',
+  muffinman: '<path d="M4.5 13h10l-1.3 6.8H5.8z"/><path d="M3.3 13c0-3.7 2.8-6.4 6.2-6.4s6.2 2.7 6.2 6.4"/><circle cx="8" cy="10.4" r=".9" fill="currentColor"/><circle cx="11.3" cy="9.3" r=".9" fill="currentColor"/><path d="M19.5 3.5v5M17 6h5"/>',
+  brawler: '<path d="M5.6 2.5h3.6v2.4H5.6z"/><path d="M5.2 4.9h4.4l1 2.7v11.8a1.8 1.8 0 0 1-1.8 1.8H6a1.8 1.8 0 0 1-1.8-1.8V7.6z"/><path d="M7.9 9.5l-1.6 2.8h2.1l-1.6 2.8"/><path d="M14 12V9.6a1.2 1.2 0 0 1 2.4 0v2M16.4 11.4V9a1.2 1.2 0 0 1 2.4 0v2.6M18.8 11.4V10a1.2 1.2 0 0 1 2.4 0v4.4a5 5 0 0 1-5 5h-.6a4.3 4.3 0 0 1-4.3-4.3v-.9a1.2 1.2 0 0 1 2.4 0"/>',
+  icepatroller: '<path d="M7.6 3h4v2.6h-4z"/><path d="M6.9 5.6h5.4c2.4 1.7 3.4 4.2 3.4 6.8 0 3.6-2.6 6.5-6.1 6.5s-6.1-2.9-6.1-6.5c0-2.6 1-5.1 3.4-6.8z"/><path d="M18.5 9v8.5M21.5 9v8.5"/>',
   frigid: '<path d="M12 3l8 4.5v9L12 21l-8-4.5v-9z"/><path d="M4 7.5l8 4.5 8-4.5M12 12v9"/><path d="M7.5 13.6v2.2M9.5 15.4v1.6M16.5 13.6v2.2"/>',
   critical: '<path d="M7 4.5a2 2 0 0 1 4 0v9.3a4 4 0 1 1-4 0z"/><path d="M9 15V8.5"/><circle cx="9" cy="16.9" r="1.6" fill="currentColor"/><path d="M17.5 4v8.5M17.5 16v.6"/>',
   muffin: '<path d="M6 13h12l-1.6 7.5H7.6z"/><path d="M4.8 13c0-4.2 3.2-7.4 7.2-7.4s7.2 3.2 7.2 7.4"/><path d="M9 15.5l.5 3M12 15.5v3M15 15.5l-.5 3"/><circle cx="9.4" cy="10.2" r="1" fill="currentColor"/><circle cx="13.2" cy="8.8" r="1" fill="currentColor"/><circle cx="15.2" cy="11.4" r="1" fill="currentColor"/>',
@@ -894,10 +958,13 @@ const PERKS = {
   headstart: { name: 'Headstart', desc: "For the first 12 seconds, see the nearest tape through walls and get +12% Speed and Vitality." },
   crescendo: { name: 'Crescendo', desc: "Start with a 2% bonus, plus 4% for every tape your team finds, to: Speed, stamina recovery, stamina efficiency, refrigerator cooling, how fast you blind geese, and how slowly you heat up." },
   cleanse: { name: 'Deep Cleanse', desc: "Shower effects last 30 seconds longer. While you're showering, and for 8 seconds after you get out, your whole team sees The Voice through walls." },
-  ironnerve: { name: 'Iron Nerve', desc: "You have 8% less Speed, use 12% more stamina, and can't hide or crouch. Crouch becomes Strike, once per game: if The Voice catches you within 0.6 s of pressing it, you punch it in the face and stun it for 4 s, for 30% of your stamina. A miss still uses it up." },
+  ironnerve: { name: 'Iron Nerve', desc: "You have 8% less Speed, use 12% more stamina, and can't hide or crouch. Crouch becomes Strike, once per game and only while running: if The Voice catches you within 0.35 s of pressing it, a prompt flashes up. Hit it in time to punch The Voice and stun it for 4 s (costs 30% stamina). Miss it and you're caught." },
   lowprofile: { name: 'Low Profile', desc: "After 3 seconds of crouching you're Odorless, and surveillance geese only notice you if you touch them. When you stand up, Odorless lasts 8 more seconds." },
   loosecannon: { name: 'Loose Cannon', desc: "Every 25 seconds there's a 1 in 50 chance you get +200% Speed, Vitality and every tape outlined through walls, all for 10 seconds. Run into a surveillance goose while it lasts and it's destroyed for good. Afterwards it can't happen again for 100 seconds." },
   rapport: { name: 'Rapport', desc: "Multiplayer only. Teammates within 5 meters of you get Vitality and heat up 5% slower, and so do you while you're near a teammate. It lasts 15 seconds after you move apart." },
+  muffinman: { name: 'Muffin Man', desc: "You start with an extra Blueberry Muffin, and every muffin you throw keeps The Voice busy 1.5 seconds longer." },
+  brawler: { name: 'Blueberry Brawler', desc: "You start with an extra Blueberry Propel, and its effects last 1.5 seconds longer." },
+  icepatroller: { name: 'Ice Pack Patroller', desc: "You start with an extra Ice Pack. When an ice pack runs out, your temperature can't rise for 20 seconds." },
   frigid: { name: 'Frigid', desc: "For the first 45 seconds, your body temperature can't rise. After that, it rises 20% slower." },
   critical: { name: 'Critical Condition', desc: "At 102°F or hotter, refrigerators cool you twice as fast, and while you're cooling down you see The Voice through walls." },
 };
@@ -1060,15 +1127,6 @@ function makeFloorTex() {
   speckle(g, S, S, 30);
   return c;
 }
-function makeCeilTex() {
-  const S = 256, c = mkCanvas(S, S), g = c.getContext('2d');
-  g.fillStyle = '#2b2c2a'; g.fillRect(0, 0, S, S);
-  g.strokeStyle = '#0d0d0d'; g.lineWidth = 5;
-  g.strokeRect(0, 0, S, S); g.beginPath(); g.moveTo(S / 2, 0); g.lineTo(S / 2, S); g.moveTo(0, S / 2); g.lineTo(S, S / 2); g.stroke();
-  stains(g, S, S, 6, 'rgba(70,50,20,.4)', 60);
-  speckle(g, S, S, 24);
-  return c;
-}
 function makeCrateTex() {
   const S = 256, c = mkCanvas(S, S), g = c.getContext('2d');
   g.fillStyle = '#5e4429'; g.fillRect(0, 0, S, S);
@@ -1179,7 +1237,6 @@ const TEX = {
   walls: Array.from({ length: WALL_VARIANTS }, (_, v) => tex(makeWallTex(v))),
   stain: tex(makeStainTex()),
   floor: tex(makeFloorTex(), 1),
-  ceil: tex(makeCeilTex(), 1),
   crate: tex(makeCrateTex()),
   wing: texRep(makeWingTex(), 3, 2),
   flank: texRep(makeBarTex('#837666', '#463b31', '#b9ae9c', 16), 3, 2),
@@ -1196,7 +1253,6 @@ const MAT = {
   walls: TEX.walls.map(t => new THREE.MeshStandardMaterial({ map: t, bumpMap: t, bumpScale: 0.03, roughness: 0.95, metalness: 0 })),
   stain: new THREE.MeshStandardMaterial({ map: TEX.stain, transparent: true, depthWrite: false, roughness: 0.55, polygonOffset: true, polygonOffsetFactor: -2, polygonOffsetUnits: -2 }),
   floor: new THREE.MeshStandardMaterial({ map: TEX.floor, bumpMap: TEX.floor, bumpScale: 0.02, roughness: 0.85, metalness: 0 }),
-  ceil: new THREE.MeshStandardMaterial({ map: TEX.ceil, roughness: 1 }),
   crate: new THREE.MeshStandardMaterial({ map: TEX.crate, bumpMap: TEX.crate, bumpScale: 0.03, roughness: 0.9 }),
   locker: new THREE.MeshStandardMaterial({ color: 0x46534c, roughness: 0.55, metalness: 0.55, bumpMap: TEX.noise, bumpScale: 0.01 }),
   lockerDark: new THREE.MeshStandardMaterial({ color: 0x0b0d0c, roughness: 0.8 }),
@@ -1240,6 +1296,14 @@ const GM = {
   clip: new THREE.MeshStandardMaterial({ color: 0x2f6fd8, roughness: 0.4, metalness: 0.2 }),
 };
 MAT.wall = MAT.walls[0];
+// No ceiling: the walls fade into pitch black overhead. It's done after lighting, so no light, the flashlight included,
+// can bring the tops back.
+for (const m of MAT.walls) m.onBeforeCompile = sh => {
+  sh.vertexShader = sh.vertexShader.replace('#include <common>', '#include <common>\nvarying float vWY;')
+    .replace('#include <begin_vertex>', '#include <begin_vertex>\nvec4 gfP = vec4(transformed, 1.0);\n#ifdef USE_INSTANCING\ngfP = instanceMatrix * gfP;\n#endif\nvWY = (modelMatrix * gfP).y;');
+  sh.fragmentShader = sh.fragmentShader.replace('#include <common>', '#include <common>\nvarying float vWY;')
+    .replace('#include <dithering_fragment>', 'gl_FragColor.rgb *= 1.0 - smoothstep(2.55, 3.55, vWY);\n#include <dithering_fragment>');
+};
 function addMesh(parent, g, m, pos, scl, rot, shadow = true) {
   const me = new THREE.Mesh(g, m);
   if (pos) me.position.set(pos[0], pos[1], pos[2]);
@@ -1505,7 +1569,6 @@ menu.scene.fog = new THREE.FogExp2(0x000000, 0.1);
   const fl = new THREE.Mesh(new THREE.PlaneGeometry(8, 40), new THREE.MeshStandardMaterial({ map: (() => { const t = TEX.floor.clone(); t.needsUpdate = true; t.repeat.set(1, 40 / T); return t; })(), roughness: 0.85 }));
   fl.material.map.repeat.set(8 / T, 40 / T);
   fl.rotation.x = -Math.PI / 2; fl.position.set(0, 0, -12); ms.add(fl);
-  const ce = new THREE.Mesh(new THREE.PlaneGeometry(8, 40), MAT.ceil); ce.rotation.x = Math.PI / 2; ce.position.set(0, H, -12); ms.add(ce);
   for (const s of [-1, 1]) {
     for (let k = 0; k < 9; k++) {
       const w = new THREE.Mesh(geo('wallbox', () => new THREE.BoxGeometry(T, H, T)), MAT.wall);
@@ -1700,9 +1763,6 @@ function buildWorldNow() {
   const floorTex = TEX.floor; floorTex.repeat.set(N, N);
   const floor = new THREE.Mesh(new THREE.PlaneGeometry(size, size), MAT.floor);
   floor.rotation.x = -Math.PI / 2; floor.position.set(size / 2, 0, size / 2); floor.receiveShadow = true; W.group.add(floor);
-  const ceilTex = TEX.ceil; ceilTex.repeat.set(N, N);
-  const ceil = new THREE.Mesh(new THREE.PlaneGeometry(size, size), MAT.ceil);
-  ceil.rotation.x = Math.PI / 2; ceil.position.set(size / 2, H, size / 2); W.group.add(ceil);
   const wallList = [];
   for (let z = 0; z < N; z++) for (let x = 0; x < N; x++) {
     if (!g[z][x]) continue;
@@ -2007,7 +2067,7 @@ function updateSmoke(dt) {
     const k = 1 - q.life / q.max, drag = 1 - dt * 0.8, P = q.s.position;
     P.x += q.vx * dt; P.y += q.vy * dt; P.z += q.vz * dt; q.vx *= drag; q.vz *= drag;
     if (!q.rise && P.y < 0.12) { P.y = 0.12; q.vy = 0; q.vx *= 1 + dt * 0.4; q.vz *= 1 + dt * 0.4; }   // cold air pools on the floor
-    if (q.rise && P.y > H - 0.3) { P.y = H - 0.3; q.vy = 0; }   // steam spreads under the ceiling
+    if (q.rise && P.y > 2.6) { P.y = 2.6; q.vy = 0; }   // steam thins out into the dark overhead
     const sc = q.s0 + k * 1.15; q.s.scale.set(sc, sc, 1); q.s.material.opacity = (q.rise ? 0.3 : 0.42) * Math.sin(k * Math.PI);
   }
 }
@@ -2302,8 +2362,8 @@ function populate() {
     const p = slotPose(i, k, 0.1, 0);
     if (lightPos.some(([x, z]) => Math.hypot(x - p.x, z - p.z) < T * 6)) continue;
     const L = EMERG[lightPos.length];
-    L.fix.position.set(p.x, 3.1, p.z); L.fix.rotation.y = p.yaw;
-    L.pos.set(p.x - p.dx * 0.45, 3.0, p.z - p.dz * 0.45);
+    L.fix.position.set(p.x, 2.45, p.z); L.fix.rotation.y = p.yaw;   // below the dark band at the top of the walls
+    L.pos.set(p.x - p.dx * 0.45, 2.35, p.z - p.dz * 0.45);
     L.cur = L.target = 1; L.t = 0;
     lightPos.push([p.x, p.z]); W.sideUsed.add(i * 4 + k);
   }
@@ -2761,6 +2821,29 @@ const AU = {
     this.chain(n, this.filt('bandpass', 330, 2.5), ng, lp); n.start(c.currentTime, Math.random()); srcs.push(n);
     return { g, srcs, cur: 0 };
   },
+  flyCue() {   // placeholder: a high-pitched whine as it readies to fly
+    const out = this.direct(0.55); if (!out) return; const t = this.t;
+    const o = this.osc('sine', 1900, t, 1.7); o.frequency.exponentialRampToValueAtTime(3400, t + 1.5);
+    const tr = this.osc('sine', 13, t, 1.7), tg = this.gain(0.35); tr.connect(tg);
+    const g = this.gain(); this.env(g, t, 0.15, 1.1, 0.4, 0.5); tg.connect(g.gain); this.chain(o, g, out);
+    const n = this.gain(); this.env(n, t, 0.2, 1.0, 0.4, 0.18); this.chain(this.noise(t, 1.7), this.filt('highpass', 4200), n, out);
+  },
+  dive(x, z) {   // a rushing fall from above
+    const out = this.at(x, 2, z, 45, 1.0); if (!out) return; const t = this.t;
+    const f = this.filt('bandpass', 500, 1.4); f.frequency.exponentialRampToValueAtTime(2600, t + 0.45);
+    const g = this.gain(); this.env(g, t, 0.05, 0.3, 0.12, 0.9); this.chain(this.noise(t, 0.5), f, g, out);
+  },
+  slam(x, z) {   // hitting the floor with someone under it
+    const out = this.at(x, 0.5, z, 50, 1.4); if (!out) return; const t = this.t;
+    const b = this.osc('sine', 90, t, 0.6); b.frequency.exponentialRampToValueAtTime(30, t + 0.5);
+    const bg = this.gain(); this.env(bg, t, 0.002, 0.08, 0.5, 1.0); this.chain(b, bg, out);
+    const ng = this.gain(); this.env(ng, t, 0.001, 0.05, 0.35, 0.9); this.chain(this.noise(t, 0.45), this.filt('lowpass', 1400, 0.8), ng, out);
+  },
+  snap() {   // its beak clacking shut in your face
+    const out = this.direct(0.5); if (!out) return; const t = this.t;
+    const g = this.gain(); this.env(g, t, 0.001, 0.006, 0.04, 0.8); this.chain(this.noise(t, 0.06), this.filt('bandpass', rr(1800, 2600), 2.5), g, out);
+    const o = this.osc('square', rr(170, 210), t, 0.05), og = this.gain(); this.env(og, t, 0.001, 0.005, 0.04, 0.15); this.chain(o, this.filt('lowpass', 900), og, out);
+  },
   ui() {   // placeholder menu button click
     const out = this.direct(0.4); if (!out) return; const t = this.t;
     const o = this.osc('triangle', 560, t, 0.09); o.frequency.exponentialRampToValueAtTime(240, t + 0.08);
@@ -2834,7 +2917,7 @@ function resetPlayer() {
     ax: center(1), az: center(1), linger: 0, stepAcc: 0, bob: 0, target: null, hbT: 0, fov: 72, stamGhost: 1, ghostHold: 0,
     // perks chosen in the loadout, and their timers
     perks: new Set(loadout.perks), aseT: 0, aseFridge: null, headT: 0, headTape: null, hypoFridge: null, hypoT: 0, lbRevealT: 0,
-    frigidT: loadout.perks.includes('frigid') ? CFG.FRIGID_TIME : 0, cleanseT: 0, coldBoostMax: 0,
+    frigidT: loadout.perks.includes('frigid') ? CFG.FRIGID_TIME : 0, cleanseT: 0, coldBoostMax: 0, icePatrolT: 0, pinVitalT: 0, pinned: false,
     lpCrouchT: 0, lpOdorT: 0, lcRollT: CFG.LC_EVERY, lcCD: 0, lcSpeedT: 0, lcVitalT: 0, lcTapeT: 0, strikeT: 0, strikeUsed: false, showerHot: false, showerCold: 0, showerCooling: false, scentHideT: 0, coldBoost: 0, coldBoostT: 0,
     scavBuffT: 0, rapportT: 0, rapportNear: false, endEff: 0, endTokens: 0, endCD: 0, critOn: false, evadeRearmed: false,
     evadeUsed: false, evadeSpeedT: 0, evadeHideT: 0, evadePending: false, stamLockT: 0,
@@ -2852,7 +2935,7 @@ const hypo = () => hasPerk('hypothermia') ? CFG.HYPO_COOL : 1;   // Hypothermia:
 // Critical Condition: at 102 or hotter
 const critical = () => hasPerk('critical') && tempQ() >= CFG.CRIT_TEMP - 1e-6;
 // Frigid: no heating for the first 45 s, then 30% less
-const heatMult = () => !hasPerk('frigid') ? 1 : player.frigidT > 0 ? 0 : 1 - CFG.FRIGID_SLOW;
+const heatMult = () => player.icePatrolT > 0 ? 0 : !hasPerk('frigid') ? 1 : player.frigidT > 0 ? 0 : 1 - CFG.FRIGID_SLOW;   // Ice Pack Patroller, Frigid
 const batFrac = P => Math.min(1, P.battery / CFG.BATTERY_MAX);   // past 100% (LightBringer, Scavenger) the beam is just full
 // The Voice can't sense you: Adam's Underwear, or Evasive Maneuvers
 const unseen = () => player.undiesT > 0 || player.evadeHideT > 0;
@@ -2863,6 +2946,7 @@ function resetGoose() {
     speed: 0, curSpeed: 0, stateT: 0, waitT: 3, lastSeen: null, lostT: 0, alertT: 0, knowT: 0, scent: false,
     honkT: rr(3, 6), stepAcc: 0, phase: 0, searchPts: [], searchPhase: 'look', lookT: 0, headYaw: 0, beakT: 0, flapT: 0,
     sees: false, light: false, senseT: 0, msgCD: 0, forcePathT: 0, merpT: 3, stingCD: 0, eydamCD: 0, swerveCD: 0, rearCD: 0, cornerCD: 0, hHist: [], dananaArmed: true,
+    y: 0, idleT: 0, flyT: 0, attackAt: 0, flyTarget: null, flapAcc: 0, pinId: null, pinT: 0, holdT: 0,
     blindCharge: 0, blindImm: 0, blindT: 0, bait: null, baitPhase: 'go', eatT: 0, eatTotal: 1, munchT: 0, bestRem: 1e9, progT: 0, dist: 99, neckX: 0.2, occluded: true,
   };
   W.goose.lastSeen = { x: W.goose.x, z: W.goose.z };   // never null, so a chase or hunt always has somewhere to go
@@ -2901,6 +2985,9 @@ function newGame(seed) {
   if (!GOOSE_OL.length) addOutline(GOOSE_RIG.root, GOOSE_OL);
   for (const k in INV) INV[k] = 0;
   INV[loadout.item] = 1;   // the item you chose to bring
+  if (hasPerk('muffinman')) INV.muffin++;   // Muffin Man
+  if (hasPerk('brawler')) INV.propel++;     // Blueberry Brawler
+  if (hasPerk('icepatroller')) INV.ice++;   // Ice Pack Patroller
   stopTape(); els.tape.hidden = true;
   DUSTY.root.rotation.set(0, 0, 0); DUSTY.root.position.y = 0;
   els.stam.classList.remove('show', 'out', 'inf');
@@ -2941,7 +3028,7 @@ function startPlaying() {
 }
 function beginNewRun() {
   if (MP.active) { backToRoom(); return; }
-  AU.init();
+  AU.init(); countPerkUse();
   applyDifficulty(1); skinMats('dusty').jacket.color.setHex(SKINS.dusty.jacket);
   newGame();
   startPlaying();
@@ -3178,8 +3265,58 @@ $('set-vol').addEventListener('input', e => { settings.vol = +e.target.value; sa
 $('set-tb').addEventListener('input', e => { settings.tb = clamp(+e.target.value, 0.6, 1.3); saveSettings(); applySettings(); resetJoy(); });
 $('btn-settings').addEventListener('click', () => openSettings('scr-start'));
 // perks and loadout: exactly 3 perks and 1 item
+// what each perk is about, for the Type filter
+const PERK_TAGS = {
+  lightbringer: ['Flashlight', 'Team', 'Sight'], endurance: ['Speed', 'Stamina'], hypothermia: ['Temperature', 'Sight'], ase: ['Sight'],
+  evasive: ['Speed', 'Stealth', 'Stamina'], scavenger: ['Items', 'Speed', 'Vitality'], headstart: ['Speed', 'Vitality', 'Sight'],
+  crescendo: ['Speed', 'Stamina', 'Temperature', 'Flashlight', 'Team'], frigid: ['Temperature'], critical: ['Temperature', 'Sight'],
+  cleanse: ['Stealth', 'Speed', 'Sight', 'Team'], ironnerve: ['Combat'], lowprofile: ['Stealth'], loosecannon: ['Speed', 'Vitality', 'Sight', 'Combat'],
+  rapport: ['Vitality', 'Temperature', 'Team'], muffinman: ['Items'], brawler: ['Items', 'Speed', 'Vitality'], icepatroller: ['Items', 'Temperature'],
+};
+const PERK_TAG_LIST = ['Speed', 'Vitality', 'Stamina', 'Temperature', 'Stealth', 'Sight', 'Flashlight', 'Items', 'Team', 'Combat'];
+// how many runs each perk has been brought into (for Most used / Least used)
+const PERK_USE_KEY = 'gooseflesh.perkuse.v1';
+let PERK_USE = {}; try { PERK_USE = JSON.parse(localStorage.getItem(PERK_USE_KEY) || '{}') || {}; } catch (e) { PERK_USE = {}; }
+function countPerkUse() { for (const id of loadout.perks) PERK_USE[id] = (PERK_USE[id] || 0) + 1; try { localStorage.setItem(PERK_USE_KEY, JSON.stringify(PERK_USE)); } catch (e) { /* ignore */ } }
+const PKF = { q: '', sort: 'az', tag: '', sheet: null };
+$('pk-tag').innerHTML = '<option value="">All</option>' + PERK_TAG_LIST.map(t => `<option value="${t}">${t}</option>`).join('');
+function perkList() {
+  const q = PKF.q.trim().toLowerCase();
+  const ids = Object.keys(PERKS).filter(id => (!PKF.tag || (PERK_TAGS[id] || []).includes(PKF.tag))
+    && (!q || (PERKS[id].name + ' ' + PERKS[id].desc + ' ' + (PERK_TAGS[id] || []).join(' ')).toLowerCase().includes(q)));
+  const name = id => PERKS[id].name, use = id => PERK_USE[id] || 0;
+  return ids.sort((a, b) => PKF.sort === 'za' ? name(b).localeCompare(name(a)) : PKF.sort === 'most' ? use(b) - use(a) || name(a).localeCompare(name(b))
+    : PKF.sort === 'least' ? use(a) - use(b) || name(a).localeCompare(name(b)) : name(a).localeCompare(name(b)));
+}
+const perkInfo = id => `<b>${PERKS[id].name}</b><p class="pk-tags">${(PERK_TAGS[id] || []).map(t => `<span>${t}</span>`).join('')}</p><p>${PERKS[id].desc}</p>`;
+function togglePerk(id) {
+  const i = loadout.perks.indexOf(id);
+  if (i >= 0) loadout.perks.splice(i, 1);
+  else { loadout.perks.push(id); if (loadout.perks.length > PERK_SLOTS) loadout.perks.shift(); }   // a fourth pick replaces your first
+  saveLoadout(); renderLoadout();
+}
+function openPerkSheet(id) {   // phones: tap a perk to read it, then Equip
+  PKF.sheet = id; const on = loadout.perks.includes(id);
+  $('pk-sheet-ico').innerHTML = icon(id); $('pk-sheet-name').textContent = PERKS[id].name; $('pk-sheet-desc').textContent = PERKS[id].desc;
+  $('pk-sheet-tags').innerHTML = (PERK_TAGS[id] || []).map(t => `<span>${t}</span>`).join('');
+  $('pk-equip').textContent = on ? 'Unequip' : 'Equip'; $('pk-sheet').hidden = false;
+  for (const b of document.querySelectorAll('#perk-cards .pk-pick')) b.classList.toggle('sel', b.dataset.perk === id);
+}
+function closePerkSheet() { PKF.sheet = null; $('pk-sheet').hidden = true; for (const b of document.querySelectorAll('#perk-cards .pk-pick.sel')) b.classList.remove('sel'); }
+function showPerkTip(b) {
+  const id = b.dataset.perk; if (!id || !PERKS[id] || isMobile()) return;
+  const tip = $('pk-tip'); tip.innerHTML = perkInfo(id) + `<p class="used">Brought into ${PERK_USE[id] || 0} ${(PERK_USE[id] || 0) === 1 ? 'run' : 'runs'}</p>`; tip.hidden = false;
+  const r = b.getBoundingClientRect(), w = tip.offsetWidth, h = tip.offsetHeight;
+  let x = r.left + r.width / 2 - w / 2, y = r.top - h - 6; if (y < 8) y = r.bottom + 6;
+  tip.style.left = clamp(x, 8, innerWidth - w - 8) + 'px'; tip.style.top = clamp(y, 8, innerHeight - h - 8) + 'px';
+}
+const hidePerkTip = () => { $('pk-tip').hidden = true; };
 function renderLoadout() {
-  $('perk-cards').innerHTML = Object.entries(PERKS).map(([id, k]) => `<button class="card" type="button" data-perk="${id}" aria-pressed="${loadout.perks.includes(id)}">${icon(id)}<b>${k.name}</b><span>${k.desc}</span></button>`).join('');
+  const pick = (id, extra = '') => `<button class="pk-pick${extra}" type="button" data-perk="${id}" aria-pressed="${loadout.perks.includes(id)}" aria-label="${PERKS[id].name}">${icon(id)}${loadout.perks.includes(id) ? `<span class="n">${loadout.perks.indexOf(id) + 1}</span>` : ''}</button>`;
+  $('pk-slots').innerHTML = Array.from({ length: PERK_SLOTS }, (_, k) => loadout.perks[k] ? pick(loadout.perks[k]) : '<button class="pk-pick empty" type="button" tabindex="-1" aria-label="Empty slot"></button>').join('');
+  const list = perkList();
+  $('perk-cards').innerHTML = list.map(id => pick(id)).join(''); $('pk-none').hidden = list.length > 0;
+  if (PKF.sheet) openPerkSheet(PKF.sheet);
   $('item-cards').innerHTML = Object.entries(LOADOUT_ITEMS).map(([id, k]) => `<button class="card" type="button" data-pick="${id}" aria-pressed="${loadout.item === id}">${icon(id)}<b>${k.name}</b><span>${k.desc}</span></button>`).join('');
   $('perk-n').textContent = `${loadout.perks.length} / ${PERK_SLOTS}`; $('item-n').textContent = `${LOADOUT_ITEMS[loadout.item] ? 1 : 0} / 1`;
   $('perks-done').disabled = !loadoutValid();
@@ -3190,20 +3327,33 @@ function renderLoadoutSummary() {
     ? loadout.perks.map(id => `<span class="chip">${icon(id)}${PERKS[id].name}</span>`).join('') + `<span class="chip">${icon(loadout.item)}${LOADOUT_ITEMS[loadout.item].name}</span>`
     : '<span class="chip">Choose your perks</span>';
 }
-$('perk-cards').addEventListener('click', e => {
-  const b = e.target.closest('[data-perk]'); if (!b) return;
-  const id = b.dataset.perk, i = loadout.perks.indexOf(id);
-  if (i >= 0) loadout.perks.splice(i, 1);
-  else { loadout.perks.push(id); if (loadout.perks.length > PERK_SLOTS) loadout.perks.shift(); }   // a fourth pick replaces your first
-  saveLoadout(); renderLoadout(); const nb = $('perk-cards').querySelector(`[data-perk="${id}"]`); if (nb) nb.focus();
-});
+// mouse: hover for the details, click to equip. Phones: tap for the details, then Equip.
+for (const el of [$('perk-cards'), $('pk-slots')]) {
+  el.addEventListener('click', e => {
+    const b = e.target.closest('[data-perk]'); if (!b) return;
+    const id = b.dataset.perk;
+    if (isMobile()) { openPerkSheet(id); return; }
+    togglePerk(id); hidePerkTip();
+    const nb = $('perk-cards').querySelector(`[data-perk="${id}"]`); if (nb) { nb.focus({ preventScroll: true }); showPerkTip(nb); }
+  });
+  el.addEventListener('mouseover', e => { const b = e.target.closest('[data-perk]'); if (b) showPerkTip(b); });
+  el.addEventListener('mouseout', e => { if (!e.relatedTarget || !e.relatedTarget.closest || !e.relatedTarget.closest('[data-perk]')) hidePerkTip(); });
+  el.addEventListener('focusin', e => { const b = e.target.closest('[data-perk]'); if (b) showPerkTip(b); });
+  el.addEventListener('focusout', hidePerkTip);
+}
+$('pk-equip').addEventListener('click', () => { if (PKF.sheet) togglePerk(PKF.sheet); });
+$('pk-close').addEventListener('click', closePerkSheet);
+$('pk-search').addEventListener('input', e => { PKF.q = e.target.value; renderLoadout(); });
+$('pk-sort').addEventListener('change', e => { PKF.sort = e.target.value; renderLoadout(); });
+$('pk-tag').addEventListener('change', e => { PKF.tag = e.target.value; renderLoadout(); });
+$('scr-perks').addEventListener('scroll', hidePerkTip, { passive: true });
 $('item-cards').addEventListener('click', e => {
   const b = e.target.closest('[data-pick]'); if (!b) return;
   loadout.item = b.dataset.pick; saveLoadout(); renderLoadout(); const nb = $('item-cards').querySelector(`[data-pick="${loadout.item}"]`); if (nb) nb.focus();
 });
 $('btn-perks').addEventListener('click', () => { perksFrom = 'scr-start'; $('scr-start').hidden = true; $('scr-perks').hidden = false; renderLoadout(); });
 let perksFrom = 'scr-start';
-$('perks-done').addEventListener('click', () => { if (!loadoutValid()) return; saveLoadout(); $('scr-perks').hidden = true; $('scr-' + perksFrom.replace('scr-', '')).hidden = false; renderLoadoutSummary(); });
+$('perks-done').addEventListener('click', () => { if (!loadoutValid()) return; saveLoadout(); closePerkSheet(); hidePerkTip(); $('scr-perks').hidden = true; $('scr-' + perksFrom.replace('scr-', '')).hidden = false; renderLoadoutSummary(); });
 $('btn-skins').addEventListener('click', () => { $('scr-start').hidden = true; $('scr-skins').hidden = false; });
 // placeholder sound on every menu button (before a run starts); the first click also wakes the audio up
 document.addEventListener('click', e => {
@@ -3250,23 +3400,76 @@ function toggleCrouch() {
   player.crouch = !player.crouch;
   if (player.crouch) touch.run = false;
 }
-// Iron Nerve's Strike: a 0.6 s window, once per game. If The Voice's jumpscare starts inside it, you punch it mid-scare.
+// Quick-time prompts. 'one': press the shown key (or swipe the shown way) inside the window; anything else fails.
+// 'spam': hit the shown key (or tap) enough times before the time runs out.
+const QTE = { on: false, kind: '', want: '', t: 0, dur: 0, count: 0, need: 0, cb: null, sx: 0, sy: 0, popT: 0 };
+const QTE_ARROW = { up: 'M32 52V12M16 28l16-16 16 16', down: 'M32 12v40M16 36l16 16 16-16', left: 'M52 32H12M28 16L12 32l16 16', right: 'M12 32h40M36 16l16 16-16 16' };
+function startQTE(kind, o, cb) {
+  Object.assign(QTE, { on: true, kind, want: o.want, t: 0, dur: o.dur, count: 0, need: o.need || 1, cb });
+  const lbl = $('qte-label'), arrow = QTE_ARROW[o.want];
+  lbl.className = o.want.length > 1 && !arrow ? 'small' : '';
+  lbl.innerHTML = arrow ? `<svg viewBox="0 0 64 64"><path d="${arrow}"/></svg>` : o.want === 'tap' ? 'Tap!' : o.want;
+  $('qte-hint').textContent = o.hint || ''; $('qte').className = kind === 'spam' ? 'spam' : ''; $('qte').hidden = false; drawQTE();
+}
+function drawQTE() {
+  const f = QTE.kind === 'spam' ? QTE.count / QTE.need : 1 - QTE.t / QTE.dur;   // spam: progress fills; one: time drains
+  $('qte-fg').style.strokeDashoffset = (276.5 * (1 - clamp(f, 0, 1))).toFixed(1);
+}
+function endQTE(ok) { if (!QTE.on) return; QTE.on = false; $('qte').hidden = true; const cb = QTE.cb; QTE.cb = null; if (cb) cb(ok); }
+function updateQTE(dt) {
+  if (!QTE.on) return;
+  QTE.t += dt; drawQTE();
+  if (QTE.popT > 0 && (QTE.popT -= dt) <= 0) $('qte').classList.remove('pop');
+  if (QTE.t >= QTE.dur) endQTE(QTE.kind === 'spam' && QTE.count >= QTE.need);
+}
+function qteInput(tok) {
+  if (!QTE.on || QTE.t < 0.05) return;
+  if (QTE.kind === 'one') { endQTE(tok === QTE.want); return; }
+  if (tok !== QTE.want) return;   // mashing: other keys don't count, and don't hurt
+  QTE.count++; $('qte').classList.add('pop'); QTE.popT = 0.1; drawQTE();
+  if (QTE.count >= QTE.need) endQTE(true);
+}
+addEventListener('keydown', e => {
+  if (!QTE.on) return;
+  e.preventDefault(); e.stopImmediatePropagation();
+  if (e.repeat || ['ShiftLeft', 'ShiftRight', 'ControlLeft', 'ControlRight', 'AltLeft', 'AltRight', 'MetaLeft', 'MetaRight', 'Escape'].includes(e.code)) return;
+  qteInput(e.code === 'KeyE' ? 'E' : e.code === 'KeyQ' ? 'Q' : 'other:' + e.code);
+}, true);
+addEventListener('mousedown', e => { if (!QTE.on || isMobile()) return; e.preventDefault(); if (e.button === 0) qteInput('M1'); else if (e.button === 2) qteInput('M2'); }, true);
+addEventListener('contextmenu', e => { if (QTE.on || state === 'playing') e.preventDefault(); });
+addEventListener('touchstart', e => {
+  if (!QTE.on) return; const t = e.changedTouches[0]; QTE.sx = t.clientX; QTE.sy = t.clientY;
+  if (QTE.kind === 'spam') qteInput('tap');
+}, { capture: true, passive: true });
+addEventListener('touchend', e => {
+  if (!QTE.on || QTE.kind !== 'one') return; const t = e.changedTouches[0], dx = t.clientX - QTE.sx, dy = t.clientY - QTE.sy;
+  if (Math.hypot(dx, dy) < 30) return;   // a tap isn't a swipe
+  qteInput(Math.abs(dx) > Math.abs(dy) ? (dx > 0 ? 'right' : 'left') : (dy > 0 ? 'down' : 'up'));
+}, { capture: true, passive: true });
+
+// Iron Nerve's Strike: a 0.35 s window, once per game, and only while running. If The Voice's jumpscare starts inside it, you punch it mid-scare.
 function strike() {
   const P = player;
-  if (P.hidden || P.strikeUsed || state !== 'playing') return;
+  if (P.hidden || P.strikeUsed || state !== 'playing' || !(P.sprinting && P.speedNow > 2)) return;   // only while running
   P.strikeT = CFG.STRIKE_WINDOW; P.strikeUsed = true; AU.swing();   // once per game, hit or miss
 }
 const canCounter = p => p === player ? player.strikeT > 0 && hasPerk('ironnerve') && !player.hidden : !!p.strikeOn && !p.hidden;
-// The Voice reached someone mid-Strike: no catch. It's stunned, and they get the punch scene.
+// The Voice reached someone mid-Strike: it freezes in their face while they get the prompt. Hit it: it's stunned.
+// Miss it: they're caught after all.
 function counterStrike(p) {
   const G = W.goose;
-  G.blindT = CFG.STRIKE_STUN + 0.6; G.blindCharge = 0; G.curSpeed = 0; G.lastSeen = { x: p.x, z: p.z }; gooseSet(G, 'blind'); G.catchCD = 0;
+  G.holdT = 2.5; G.curSpeed = 0; G.lastSeen = { x: p.x, z: p.z };
   if (p === player) strikeScare(); else netHost({ t: 'struck', to: p.id });
   trace('strike ' + (p.id || 'me'));
 }
+function strikeStun() {   // host or single player: the punch landed
+  const G = W.goose; G.holdT = 0;
+  G.blindT = CFG.STRIKE_STUN; G.blindCharge = 0; G.curSpeed = 0; G.catchCD = 0; gooseSet(G, 'blind');
+}
+function voiceAfterKill() { const G = W.goose; if (G.holdT > 0) { G.holdT = 0; gooseSearch(G); G.catchCD = 4; } }
 function strikeScare() {
   if (state !== 'playing' && !(MP.inGame && state === 'paused')) return;
-  state = 'caught'; $('scr-pause').hidden = true; JS.strike = true; JS.hit = false; JS.st = 0; player.strikeT = 0;
+  state = 'caught'; $('scr-pause').hidden = true; JS.strike = true; JS.hit = false; JS.hitAt = 0; JS.qte = false; JS.st = 0; player.strikeT = 0;
   els.hud.hidden = true; $('touch').hidden = true; hideSpeedLines();
   GOOSE_RIG.root.visible = false; DUSTY.root.visible = false; JS.group.visible = true; JS.start = performance.now();
   jumpLights(true); AU.scream();
@@ -3383,7 +3586,7 @@ function useItem(kind) {
   if (!INV[kind]) return;
   if (kind === 'muffin') { if (P.hidden) { toast("You can't throw from in here."); return; } throwMuffin(); return; }
   INV[kind]--;
-  if (kind === 'propel') { P.propelT = CFG.PROPEL_TIME; if (P.stamina < CFG.STAMINA_MAX) P.stamShowT = 3; P.stamina = CFG.STAMINA_MAX; P.exhausted = false; P.stamLockT = 0; AU.drink(); }
+  if (kind === 'propel') { P.propelT = propelTime(); if (P.stamina < CFG.STAMINA_MAX) P.stamShowT = 3; P.stamina = CFG.STAMINA_MAX; P.exhausted = false; P.stamLockT = 0; AU.drink(); }
   if (kind === 'undies') { P.undiesT = CFG.UNDIES_TIME; P.linger = 0; if (!AU.play('supadam', { gain: 1.2 })) AU.paper(); }
   if (kind === 'glasses') { P.glassesT = CFG.GLASSES_TIME; AU.click(); }
 }
@@ -3392,7 +3595,7 @@ function throwMuffin() {
   const d = camera.getWorldDirection(tmpV), mesh = makeMuffinMesh();
   if (firstPerson()) tmpH.set(camera.position.x + d.x * 0.3, camera.position.y - 0.25, camera.position.z + d.z * 0.3);
   else DUSTY.arms[1].hand.getWorldPosition(tmpH);
-  const m = { x: tmpH.x, y: Math.max(1.0, tmpH.y), z: tmpH.z, vx: d.x * 9, vy: d.y * 9 + 3.2, vz: d.z * 9, mesh, landed: false, gone: false, spin: rr(5, 9) };
+  const m = { bonus: hasPerk('muffinman') ? CFG.MUFFIN_BONUS : 0, x: tmpH.x, y: Math.max(1.0, tmpH.y), z: tmpH.z, vx: d.x * 9, vy: d.y * 9 + 3.2, vz: d.z * 9, mesh, landed: false, gone: false, spin: rr(5, 9) };
   if (isWallAt(m.x, m.z)) { m.x = P.x; m.z = P.z; }
   mesh.position.set(m.x, m.y, m.z); W.group.add(mesh); W.thrown.push(m);
   AU.click();
@@ -3417,11 +3620,12 @@ function updateThrown(dt) {
 function muffinLanded(m) {
   const G = W.goose, P = player; if (!G) return;
   if (MP.inGame && !MP.host) {   // the host puts the muffin in everyone's game and sends The Voice after it
-    netClient({ t: 'muf', x: +m.x.toFixed(2), z: +m.z.toFixed(2) }); m.gone = true; W.group.remove(m.mesh);
+    netClient({ t: 'muf', x: +m.x.toFixed(2), z: +m.z.toFixed(2), b: m.bonus ? 1 : 0 }); m.gone = true; W.group.remove(m.mesh);
     P.linger = 0; P.ax = P.x; P.az = P.z; return;
   }
   if (!(state === 'playing' || MP.inGame)) return;
   if (MP.inGame) { m.id = ++MP.muffinId; netHost({ t: 'muf', id: m.id, x: +m.x.toFixed(2), z: +m.z.toFixed(2) }); }
+  if (AIR.has(G.state)) return;   // it's in the air: the muffin just sits there
   G.bait = m; G.baitPhase = 'go'; gooseSet(G, 'bait');
   // it forgets your trail
   P.linger = 0; P.ax = P.x; P.az = P.z; G.scent = false; G.knowT = 0; G.lastSeen = { x: m.x, z: m.z };
@@ -3493,13 +3697,14 @@ function updateItems(dt) {
   for (const k of ['propelT', 'undiesT', 'glassesT']) if (P[k] > 0) P[k] = Math.max(0, P[k] - dt);   // items run out quietly
   updatePerks(dt);
   const xr = P.glassesT > 0;
-  if (FX.xray !== xr) { FX.xray = xr; for (const x of GOOSE_XRAY) x.visible = xr; for (const x of W.xray) x.visible = xr; }
+  if (FX.xray !== xr) { FX.xray = xr; for (const x of W.xray) x.visible = xr; }
+  const xrv = xr && !voiceUp(); if (FX.xrayV !== xrv) { FX.xrayV = xrv; for (const x of GOOSE_XRAY) x.visible = xrv; }   // not while it's in the air
   updateThrown(dt); updateCabinets(dt);
 }
 // perk timers, and what each perk is pointing at right now
 function updatePerks(dt) {
   const P = player;
-  for (const k of ['aseT', 'headT', 'evadeSpeedT', 'evadeHideT', 'flickerT', 'blinkT', 'lbRevealT', 'endCD', 'scavBuffT', 'rapportT', 'scentHideT', 'coldBoostT', 'frigidT', 'cleanseT', 'strikeT', 'lpOdorT', 'lcCD', 'lcSpeedT', 'lcVitalT', 'lcTapeT']) if (P[k] > 0) P[k] = Math.max(0, P[k] - dt);
+  for (const k of ['aseT', 'headT', 'evadeSpeedT', 'evadeHideT', 'flickerT', 'blinkT', 'lbRevealT', 'endCD', 'scavBuffT', 'rapportT', 'scentHideT', 'coldBoostT', 'frigidT', 'cleanseT', 'strikeT', 'icePatrolT', 'pinVitalT', 'lpOdorT', 'lcCD', 'lcSpeedT', 'lcVitalT', 'lcTapeT']) if (P[k] > 0) P[k] = Math.max(0, P[k] - dt);
   if (P.evadePending && P.evadeSpeedT <= 0 && P.evadeHideT <= 0) {   // Evasive Maneuvers is over: stamina empties and stays empty
     P.evadePending = false; P.stamina = 0; P.exhausted = true; P.stamLockT = CFG.EVADE_LOCK; P.sprinting = false; touch.run = false;
   }
@@ -3540,7 +3745,8 @@ function looseCannon() {
 }
 // the shared terms: Odorless (The Voice can't pick up your scent) and Vitality (stamina doesn't run out)
 const isOdorless = P => P === player ? P.scentHideT > 0 || P.lpOdorT > 0 : P.scentHideT > 0;
-const hasVitality = () => player.propelT > 0 || player.headT > 0 || player.lcVitalT > 0 || player.scavBuffT > 0 || player.rapportT > 0;
+const propelTime = () => CFG.PROPEL_TIME + (hasPerk('brawler') ? CFG.BRAWLER_BONUS : 0);   // Blueberry Brawler
+const hasVitality = () => player.pinVitalT > 0 || player.propelT > 0 || player.headT > 0 || player.lcVitalT > 0 || player.scavBuffT > 0 || player.rapportT > 0;
 function startEvasive() {
   const P = player; P.evadeUsed = true; P.evadePending = true;
   P.evadeSpeedT = CFG.EVADE_SPEED_T; P.evadeHideT = CFG.EVADE_HIDE_T;
@@ -4052,7 +4258,7 @@ function updateFridges(dt) {
     P.temp = Math.max(CFG.TEMP_FLOOR, P.temp - CFG.ICE_RATE * hypo() * use); P.iceLeft -= use;
     P.cooling = true; P.iceCooling = true;
     if (P.temp <= CFG.TEMP_FLOOR + 1e-6) { P.temp = CFG.TEMP_FLOOR; P.tempPauseT = CFG.COOL_PAUSE; P.tempRiseT = rr(3, 5); toast('You feel cool again.', false, 2.5, true); }
-    if (P.iceLeft <= 1e-9) { P.iceLeft = 0; P.iceOn = false; }
+    if (P.iceLeft <= 1e-9) { P.iceLeft = 0; P.iceOn = false; if (hasPerk('icepatroller')) P.icePatrolT = CFG.ICE_PATROL_T; }   // Ice Pack Patroller
   }
   updateSmoke(dt);
   humT -= dt;
@@ -4140,6 +4346,7 @@ function gooseHear(x, z, r, o = {}) {
     return false;
   }
   const G = W && W.goose; if (!G || !(state === 'playing' || MP.inGame)) return false;
+  if (AIR.has(G.state)) return false;   // up in the dark (or pinning someone) it isn't listening
   const P = o.p || player;
   if (G.state === 'bait' || G.state === 'blind' || G.catchCD > 0 || (o.player && unseenP(P))) return false;
   r *= CFG.HEAR_MULT;   // it hears farther when there are more of you
@@ -4231,6 +4438,9 @@ function playVfx(k, a) {
     case 'flap': AU.flap(x, z); break;
     case 'munch': AU.munch(x, z); break;
     case 'sting': AU.chaseSting(); break;
+    case 'flycue': AU.flyCue(); break;
+    case 'dive': AU.dive(x, z); break;
+    case 'slam': AU.slam(x, z); break;
   }
 }
 function farHonk(G, o) { vfx('farhonk', { g: gid(G), x: G.x, z: G.z, o }); G.beakT = Math.max(G.beakT, 0.35); }
@@ -4294,7 +4504,7 @@ function updateBlind(G, dt) {
   const P = player;
   G.blindImm = Math.max(0, G.blindImm - dt);
   let on = false;
-  if (P.flashOn && P.alive !== false && G.state !== 'blind' && G.state !== 'bait' && G.blindImm <= 0) {
+  if (P.flashOn && P.alive !== false && G.state !== 'blind' && G.state !== 'bait' && !AIR.has(G.state) && G.blindImm <= 0) {
     GOOSE_RIG.headPivot.getWorldPosition(tmpH);
     const o = flash.position, vx = tmpH.x - o.x, vy = tmpH.y - o.y, vz = tmpH.z - o.z, d = Math.hypot(vx, vy, vz) || 1;
     const reach = 4 + 8 * batFrac(P);
@@ -4328,8 +4538,88 @@ function catchPlayer(p) {
   W.goose.catchCD = 4;   // busy with the one it caught: for 4 s it can't see, hear or catch anyone, so the others can run
   checkAllDead();
 }
+// ---------- flight: after 70 s without finding anyone it rises into the dark, and may drop on someone ----------
+const AIR = new Set(['takeoff', 'fly', 'dive', 'pin', 'land']);
+const voiceUp = () => !!(W && W.goose && (AIR.has(W.goose.state) && W.goose.state !== 'pin'));   // no outline, no x-ray, no blinding
+const dropTarget = p => p && p.alive !== false && !p.hidden && !unseenP(p) && !p.pinned && (p !== player || state === 'playing' || (MP.inGame && state === 'paused'));
+function startTakeoff(G) {
+  gooseSet(G, 'takeoff'); G.curSpeed = 0; G.flapT = 1.6; G.y = 0; G.sees = G.light = false;
+  vfx('flycue', { x: G.x, z: G.z });   // the cue: everyone hears it get ready
+}
+function startLand(G) {   // come down on the nearest open floor
+  let bx = G.x, bz = G.z, bd = 1e9;
+  for (const i of W.floors) { const x = center(i % W.N), z = center((i / W.N) | 0), d = Math.hypot(x - G.x, z - G.z); if (d < bd) { bd = d; bx = x; bz = z; } }
+  G.x = bx; G.z = bz; gooseSet(G, 'land');
+}
+function startDive(G, v) { gooseSet(G, 'dive'); G.pinId = v === player ? '__me' : v.id; G.diveV = v; vfx('dive', { x: v.x, z: v.z }); }
+function pinVictim(G) { return G.diveV && (G.diveV === player ? player : MP.remotes.get(G.pinId)) || null; }
+// the pinned player's answer: they fought it off, or they didn't
+function pinResolved(ok, v) {
+  const G = W.goose; if (G.state !== 'pin') return;
+  G.y = 0; G.idleT = 0; G.diveV = null; G.pinId = null;
+  if (ok) {   // it's knocked off them, stunned
+    const a = rr(0, 6.28); let x = G.x + Math.sin(a) * 1.3, z = G.z + Math.cos(a) * 1.3; if (isWallAt(x, z)) { x = G.x; z = G.z; }
+    G.x = x; G.z = z; G.blindT = CFG.PIN_STUN; G.blindCharge = 0; G.curSpeed = 0; gooseSet(G, 'blind'); G.flapT = 1;
+  } else {
+    if (v && v !== player && MP.inGame) { v.alive = false; recordDeath(v.id, 'goose'); checkAllDead(); }
+    gooseSearch(G); G.catchCD = 4;
+  }
+}
+function updateFlight(G, dt) {
+  if (!AIR.has(G.state)) return false;
+  G.stateT += dt; G.sees = G.light = false; G.curSpeed = 0;
+  switch (G.state) {
+    case 'takeoff':   // crouch and beat the wings, then up into the dark
+      if (G.stateT > 1.2) G.y += dt * 7.5;
+      if (G.y >= CFG.FLY_ALT) { G.y = CFG.FLY_ALT; gooseSet(G, 'fly'); G.flyT = 0; G.attackAt = rr(CFG.FLY_MIN_ATTACK, CFG.FLY_TIME - 2); G.flyTarget = null; }
+      break;
+    case 'fly': {
+      G.flyT += dt; G.y = CFG.FLY_ALT + Math.sin(gameTime * 0.9) * 0.4;
+      if (!G.flyTarget || Math.hypot(G.flyTarget.x - G.x, G.flyTarget.z - G.z) < 1.2) { const i = pick(W.floors); G.flyTarget = { x: center(i % W.N), z: center((i / W.N) | 0) }; }
+      const dx = G.flyTarget.x - G.x, dz = G.flyTarget.z - G.z, d = Math.hypot(dx, dz) || 1;
+      G.x += dx / d * CFG.FLY_SPEED * dt; G.z += dz / d * CFG.FLY_SPEED * dt; G.yaw += angDiff(G.yaw, Math.atan2(dx, dz)) * Math.min(1, dt * 3);
+      if ((G.flapAcc += dt) > 0.85) { G.flapAcc = 0; vfx('flap', { g: 'v', x: G.x, z: G.z }); }   // wingbeats somewhere overhead
+      if (G.flyT >= G.attackAt) {
+        const pool = voiceTargets().filter(dropTarget);
+        if (pool.length) { startDive(G, pick(pool)); break; }
+        G.attackAt = G.flyT + 1;   // nobody to drop on right now: try again in a second
+      }
+      if (G.flyT >= CFG.FLY_TIME) startLand(G);
+      break;
+    }
+    case 'dive': {   // straight down on top of them
+      const v = pinVictim(G);
+      if (!dropTarget(v)) { if (G.flyT < CFG.FLY_TIME) { gooseSet(G, 'fly'); G.attackAt = G.flyT + 2; } else startLand(G); break; }
+      G.x += (v.x - G.x) * Math.min(1, dt * 14); G.z += (v.z - G.z) * Math.min(1, dt * 14);
+      G.y -= CFG.DIVE_SPEED * dt;
+      if (G.y <= 0) {
+        G.y = 0; G.x = v.x; G.z = v.z; gooseSet(G, 'pin'); G.pinT = 0;
+        vfx('slam', { x: v.x, z: v.z });
+        if (v === player) pinScene(); else netHost({ t: 'pinned', to: v.id });
+      }
+      break;
+    }
+    case 'pin': {   // on top of them, beak snapping, until they fight it off or don't
+      const v = pinVictim(G); G.pinT += dt; G.beakT = 0.2;
+      if (v) { G.x = v.x; G.z = v.z; }
+      if (G.pinT > CFG.PIN_TIME + 4) pinResolved(false, v);   // never heard back
+      break;
+    }
+    case 'land':
+      G.y = Math.max(0, G.y - dt * 7);
+      if (G.y <= 0) { G.y = 0; G.idleT = 0; gooseSearch(G); }
+      break;
+  }
+  animateGoose(G, dt, false);
+  return true;
+}
 function updateGoose(dt) {
   const G = W.goose;
+  if (G.holdT > 0) { G.holdT -= dt; G.curSpeed = 0; animateGoose(G, dt, false); return; }   // frozen in someone's face (Strike prompt)
+  if (updateFlight(G, dt)) return;
+  // 70 s without finding anyone (not seen, not chased): it takes to the air
+  G.idleT = G.sees || G.state === 'chase' || G.state === 'alert' ? 0 : G.idleT + dt;
+  if (G.idleT >= CFG.FLY_AFTER && !(G.catchCD > 0) && ['patrol', 'search', 'investigate', 'hunt'].includes(G.state)) { startTakeoff(G); animateGoose(G, dt, false); return; }
   G.stateT += dt; G.msgCD -= dt; G.forcePathT = (G.forcePathT || 0) - dt;
   const cands = voiceTargets();
   if (!cands.length) { G.sees = G.light = false; animateGoose(G, dt, false); return; }
@@ -4401,7 +4691,7 @@ function updateGoose(dt) {
       if (!m || m.gone) { gooseAfterMuffin(G); break; }
       if (G.baitPhase === 'go') {
         const rem = moveGoose(G, m.x, m.z, CFG.CHASE, dt); moving = true;
-        if (rem < 1.25) { G.baitPhase = 'eat'; G.eatT = rr(CFG.EAT_MIN, CFG.EAT_MAX); G.eatTotal = G.eatT; G.munchT = 0; }
+        if (rem < 1.25) { G.baitPhase = 'eat'; G.eatT = rr(CFG.EAT_MIN, CFG.EAT_MAX) + (m.bonus || 0); G.eatTotal = G.eatT; G.munchT = 0; }   // Muffin Man: longer
       } else {
         G.curSpeed = Math.max(0, G.curSpeed - dt * 12); faceToward(G, m.x - G.x, m.z - G.z, dt, 6);
         G.eatT -= dt; G.munchT -= dt;
@@ -4518,8 +4808,9 @@ function updateGoose(dt) {
 }
 function mouthParts(R) { const open = R.jaw.rotation.x > 0.12; if (R.innerOpen !== open) { R.innerOpen = open; R.inner.forEach(m => { m.visible = open; }); } }
 function animateGoose(G, dt, moving, R = GOOSE_RIG) {
-  const k = 1 - Math.exp(-dt * 6), sitting = G.state === 'disabled';
-  R.root.position.set(G.x, 0, G.z); R.root.rotation.y = G.yaw;
+  const k = 1 - Math.exp(-dt * 6), sitting = G.state === 'disabled', flying = (G.y || 0) > 0.05 || G.state === 'takeoff';
+  R.root.position.set(G.x, G.y || 0, G.z); R.root.rotation.y = G.yaw;
+  if (R === GOOSE_RIG) R.root.visible = (G.y || 0) < 4.2 && !PIN.on && state !== 'caught';   // above the walls it's lost in the dark
   const spd = moving ? G.curSpeed : 0;
   G.phase += dt * spd * 2.1;
   const s = Math.sin(G.phase), amp = Math.min(1, spd / 2.5);
@@ -4544,7 +4835,9 @@ function animateGoose(G, dt, moving, R = GOOSE_RIG) {
   if (G.beakT > 0) G.beakT -= dt;
   R.jaw.rotation.x += ((G.beakT > 0 ? 0.5 : 0.02) - R.jaw.rotation.x) * (1 - Math.exp(-dt * 20));
   if (G.flapT > 0) G.flapT -= dt;
-  const flap = G.flapT > 0 ? 0.35 + Math.abs(Math.sin(gameTime * 17)) * 0.9 : (chase ? 0.15 + Math.abs(Math.sin(gameTime * 6)) * 0.1 : 0);
+  let flap = G.flapT > 0 ? 0.35 + Math.abs(Math.sin(gameTime * 17)) * 0.9 : (chase ? 0.15 + Math.abs(Math.sin(gameTime * 6)) * 0.1 : 0);
+  if (flying) { flap = 0.9 + Math.sin(gameTime * (G.state === 'dive' ? 4 : 11)) * 0.75; R.legs[0].rotation.x = R.legs[1].rotation.x = -0.9; }   // wings beating, legs tucked
+  if (G.state === 'takeoff' && G.stateT < 1.2) R.body.position.y = 0.95;   // crouched, about to spring
   R.wings[0].rotation.z = -flap; R.wings[1].rotation.z = flap;
   mouthParts(R);
 }
@@ -4909,7 +5202,7 @@ function updateFx(dt) {
 // perk outlines through walls: All Seeing Eye, Headstart, Scavenger
 function updateOutlines(dt) {
   const P = player, ase = P.aseT > 0, head = P.headT > 0;
-  setOutline(GOOSE_OL, ase || (P.cooling && P.critOn) || cleanseReveal() || P.lbRevealT > 0);   // Critical Condition: while you cool down; Deep Cleanse
+  setOutline(GOOSE_OL, !voiceUp() && (ase || (P.cooling && P.critOn) || cleanseReveal() || P.lbRevealT > 0));   // Critical Condition: while you cool down; Deep Cleanse
   for (const S of W.sgeese) setOutline(S.rig.ol, ase && !S.dead);
   for (const f of W.fridges) setOutline(f.ol, (ase && f === P.aseFridge) || (f === P.hypoFridge && hasPerk('hypothermia') && P.alive !== false));
   for (const p of W.pickups) {
@@ -4962,6 +5255,7 @@ function perkState(id) {
     case 'lowprofile': { const on = P.lpOdorT > 0, crouched = P.crouch && P.lpCrouchT >= CFG.LP_CROUCH;
       return [on, crouched ? -1 : on ? P.lpOdorT / CFG.LP_LINGER : P.crouch ? P.lpCrouchT / CFG.LP_CROUCH : -1, '', false, false]; }
     case 'loosecannon': { const on = P.lcSpeedT > 0 || P.lcVitalT > 0 || P.lcTapeT > 0; return [on, on ? P.lcVitalT / CFG.LC_VITAL_T : -1, '', false, false]; }
+    case 'icepatroller': return [P.icePatrolT > 0, P.icePatrolT > 0 ? P.icePatrolT / CFG.ICE_PATROL_T : -1, '', false, false];
     case 'frigid': return [P.frigidT > 0, P.frigidT > 0 ? P.frigidT / CFG.FRIGID_TIME : -1, '', false, false];
   }
   return [false, -1, '', false, false];
@@ -5059,7 +5353,7 @@ function updateHUD(dt) {
     hudCache.inv = invKey;
     els.inv.innerHTML = Object.keys(ITEMS).filter(k => INV[k] > 0 || (k === 'ice' && P.iceLeft > 0)).map(k => `<button class="slot" type="button" data-item="${k}"><b>${ITEMS[k].name}</b><span class="n">x${INV[k]}</span><kbd>${ITEMS[k].key}</kbd></button>`).join('');
   }
-  const act = [['propelT', 'Propel', CFG.PROPEL_TIME], ['lcVitalT', 'Loose Cannon', CFG.LC_VITAL_T], ['rapportT', 'Rapport', CFG.RAPPORT_LINGER], ['scavBuffT', 'Scavenger', CFG.SCAV_BUFF_T], ['coldBoostT', `+${Math.round(P.coldBoost * 100)}% Speed`, P.coldBoostMax || 1], ['scentHideT', 'Odorless', showerAfter()], ['lpOdorT', 'Odorless', CFG.LP_LINGER], ['undiesT', 'Undetectable', CFG.UNDIES_TIME],
+  const act = [['propelT', 'Propel', propelTime()], ['icePatrolT', 'Temperature paused', CFG.ICE_PATROL_T], ['pinVitalT', 'Vitality', CFG.PIN_VITALITY], ['lcVitalT', 'Loose Cannon', CFG.LC_VITAL_T], ['rapportT', 'Rapport', CFG.RAPPORT_LINGER], ['scavBuffT', 'Scavenger', CFG.SCAV_BUFF_T], ['coldBoostT', `+${Math.round(P.coldBoost * 100)}% Speed`, P.coldBoostMax || 1], ['scentHideT', 'Odorless', showerAfter()], ['lpOdorT', 'Odorless', CFG.LP_LINGER], ['undiesT', 'Undetectable', CFG.UNDIES_TIME],
     ['glassesT', 'X-ray', CFG.GLASSES_TIME], ['iceLeft', 'Ice pack', CFG.ICE_TIME]].filter(([k]) => P[k] > 0);
   const fxKey = act.map(([k]) => k + Math.ceil(P[k])).join('|') + (P.iceOn ? '' : 'p');
   if (hudCache.fx !== fxKey) {
@@ -5135,13 +5429,94 @@ function updateJumpscare(dt) {
 }
 
 // Strike: the scare starts as usual, the punch lands at 0.5 s, the head flies back, and you're back in control at 1.2 s
-function updateStrikeScene(dt) {
-  const t = (JS.st += dt), k = Math.min(1, t / 0.14), e = 1 - Math.pow(1 - k, 3), HIT = 0.5;
-  if (!JS.hit && t >= HIT) {
-    JS.hit = true; AU.punch(); AU.honk(W.goose.x, W.goose.z, { pitch: 1.6, loud: 1.4 });
+// Strike: the scare starts as usual and freezes on The Voice in your face while the prompt is up. Hit it and the
+// fist lands, the head flies back, and you're back in control; miss it and the scare plays out.
+// Pinned by a drop attack: on your back with The Voice on top, your hand holding its beak off your face.
+// Mash Q (or tap) 40 times in 9.2 s to punch it off; otherwise it gets you.
+const PIN = { on: false, t: 0, res: null, endT: 0, qte: false, snapT: 0 };
+function emitDust(x, z, n) {
+  for (let k = 0; k < n; k++) {
+    const q = SMOKE.find(o => o.life <= 0); if (!q) return;
+    const a = rr(0, 6.28), sp = rr(1.2, 3.2);
+    q.s.position.set(x + Math.sin(a) * 0.3, rr(0.1, 0.5), z + Math.cos(a) * 0.3); q.vx = Math.sin(a) * sp; q.vz = Math.cos(a) * sp; q.vy = rr(0.2, 0.9);
+    q.max = q.life = rr(0.9, 1.6); q.s0 = rr(0.3, 0.55); q.s.visible = true; q.rise = false; q.s.material.color.setHex(0x8c8070);
+  }
+}
+function pinScene() {
+  if (state !== 'playing' && !(MP.inGame && state === 'paused')) return;
+  const P = player;
+  state = 'pinned'; $('scr-pause').hidden = true; els.hud.hidden = true; $('touch').hidden = true; hideSpeedLines(); releaseTouches();
+  for (const k in keys) keys[k] = false;
+  P.pinned = true; P.sprinting = false; P.vx = P.vz = 0; P.searching = null;
+  Object.assign(PIN, { on: true, t: 0, res: null, endT: 0, qte: false, snapT: 0 });
+  DUSTY.root.visible = false; JS.group.visible = true; FIST.visible = true; jumpLights(true);
+  AU.slam(P.x, P.z); emitDust(P.x, P.z, 22);
+  els.flashFx.style.transition = 'none'; els.flashFx.style.background = '#fff'; els.flashFx.style.opacity = 0.6;
+  requestAnimationFrame(() => { els.flashFx.style.transition = 'opacity .3s'; els.flashFx.style.opacity = 0; });
+}
+function pinResult(ok) {
+  const P = player; PIN.res = ok;
+  if (MP.inGame && !MP.host) netClient({ t: 'pinres', ok: ok ? 1 : 0 }); else pinResolved(ok, player);
+  if (ok) {   // punched it off you
+    PIN.endT = PIN.t + 0.8; P.pinVitalT = CFG.PIN_VITALITY; AU.punch(); AU.honk(P.x, P.z, { pitch: 1.6, loud: 1.4 });
     els.flashFx.style.transition = 'none'; els.flashFx.style.background = '#fff'; els.flashFx.style.opacity = 0.7;
     requestAnimationFrame(() => { els.flashFx.style.transition = 'opacity .25s'; els.flashFx.style.opacity = 0; });
+  } else {   // it gets you: the scare plays out and the run ends the usual way
+    PIN.on = false; P.pinned = false; FIST.visible = false; P.alive = false; P.pitch = 1.0;
+    state = 'caught'; JS.strike = false; JS.start = performance.now() - 450; AU.scream();
   }
+}
+function endPinScene() {
+  const P = player;
+  PIN.on = false; P.pinned = false; JS.group.visible = false; FIST.visible = false; jumpLights(false);
+  els.hud.hidden = false; $('touch').hidden = !isMobile(); P.pitch = 0; P.eye = CFG.STAND_EYE;
+  state = 'playing';
+}
+function updatePinScene(dt) {
+  if (!PIN.on) return;
+  const P = player, t = (PIN.t += dt), fall = Math.min(1, t / 0.16), ef = fall * fall;
+  const shake = t < 0.55 ? 0.2 * (1 - t / 0.55) : PIN.res === null ? 0.012 + 0.012 * Math.abs(Math.sin(t * 7)) : 0.01;   // violent on impact
+  camera.position.set(P.x + rr(-shake, shake) * 0.4, lerp(P.eye, 0.3, ef) + rr(-shake, shake) * 0.3, P.z + rr(-shake, shake) * 0.4);
+  camera.rotation.set(lerp(P.pitch, 1.2, ef) + rr(-shake, shake), P.yaw + rr(-shake, shake), rr(-shake, shake) * 1.6);
+  // its head: drops into your face and keeps lunging and snapping; after a punch it's knocked away
+  const come = clamp((t - 0.08) / 0.18, 0, 1), away = PIN.res === true ? clamp((t - (PIN.endT - 0.8)) / 0.3, 0, 1) : 0, lunge = Math.sin(t * 6.5) * 0.06;
+  JS.group.position.set(0.04 + rr(-0.012, 0.012) + away * 0.4, lerp(1.6, -0.1, come) + away * 0.5, lerp(-1.6, -1.1, come) + lunge * 1.6 - away * 0.9);   // framed like the jumpscare
+  JS.group.rotation.set(-0.05 - away * 0.9 + rr(-0.04, 0.04), 1.05 + rr(-0.04, 0.04), 0.12 + away * 0.5);   // turned so the snapping beak is in your face
+  JS.jaw.rotation.x = PIN.res === true ? 0.9 : 0.2 + Math.abs(Math.sin(t * 19)) * 0.6;
+  // your hand, braced against the beak and shaking with the effort; a fist when you punch
+  const punch = PIN.res === true ? clamp((t - (PIN.endT - 0.8)) / 0.12, 0, 1) : 0;
+  FIST.position.set(0.12 + rr(-0.008, 0.008), -0.2 + lunge * 0.5 + punch * 0.08, -0.74 + lunge - punch * 0.3); FIST.rotation.set(-0.35 + rr(-0.03, 0.03), 0.22, -0.2);   // braced under its beak
+  if (PIN.res === null && (PIN.snapT -= dt) <= 0) { PIN.snapT = rr(0.12, 0.24); AU.snap(); }
+  updateSmoke(dt);   // the dust from the slam
+  aura.intensity = 3.2 * (Math.random() < 0.15 ? 0.4 : 1);
+  camera.updateMatrixWorld(); aura.position.set(0, 0.5, -0.2); camera.localToWorld(aura.position);
+  if (!PIN.qte && t >= 0.5) {
+    PIN.qte = true; const m = isMobile();
+    startQTE('spam', { want: m ? 'tap' : 'Q', need: CFG.PIN_PRESSES, dur: CFG.PIN_TIME, hint: m ? 'Tap as fast as you can' : 'Mash Q' }, ok => pinResult(ok));
+  }
+  updateQTE(dt);
+  if (PIN.res === true && t >= PIN.endT) endPinScene();
+}
+function strikeHit() {
+  JS.hit = true; JS.hitAt = JS.st; AU.punch(); AU.honk(W.goose.x, W.goose.z, { pitch: 1.6, loud: 1.4 });
+  els.flashFx.style.transition = 'none'; els.flashFx.style.background = '#fff'; els.flashFx.style.opacity = 0.7;
+  requestAnimationFrame(() => { els.flashFx.style.transition = 'opacity .25s'; els.flashFx.style.opacity = 0; });
+  if (MP.inGame && !MP.host) netClient({ t: 'punch' }); else strikeStun();
+}
+function strikeMiss() {   // caught after all: the ordinary scare takes over and ends in the usual way
+  JS.strike = false; FIST.visible = false; player.alive = false; JS.start = performance.now() - 300;
+  if (!MP.inGame || MP.host) voiceAfterKill();
+}
+function updateStrikeScene(dt) {
+  const t = (JS.st += dt), k = Math.min(1, t / 0.14), e = 1 - Math.pow(1 - k, 3);
+  if (!JS.qte && t >= 0.12) {
+    JS.qte = true;
+    const m = isMobile(), want = m ? pick(['up', 'down', 'left', 'right']) : pick(['E', 'Q', 'M1', 'M2']);
+    startQTE('one', { want, dur: CFG.STRIKE_QTE, hint: m ? 'Swipe' : want === 'M1' ? 'Left click' : want === 'M2' ? 'Right click' : 'Press' }, ok => ok ? strikeHit() : strikeMiss());
+  }
+  updateQTE(dt);
+  if (!JS.strike) return;
+  const HIT = JS.hit ? JS.hitAt : 1e9;
   const back = JS.hit ? Math.min(1, (t - HIT) / 0.22) : 0, b2 = 1 - Math.pow(1 - back, 3), j = JS.hit ? 0.05 * (1 - back) : 0.03;
   JS.group.position.set(0.04 + rr(-j, j) - b2 * 0.22, -0.1 + rr(-j, j) + b2 * 0.18, lerp(-3.4, -1.12, e) - b2 * 0.75);
   JS.group.rotation.set(0.3 - b2 * 0.85 + rr(-0.05, 0.05), 0.42 - b2 * 0.55, 0.14 + b2 * 0.45);
@@ -5153,7 +5528,7 @@ function updateStrikeScene(dt) {
   camera.rotation.x = player.pitch * (1 - e) + rr(-j, j) * 2; camera.rotation.z = rr(-j, j) * 2 + (JS.hit ? 0.06 * (1 - back) : 0);
   aura.intensity = 3.2 * (Math.random() < 0.15 ? 0.3 : 1);
   camera.updateMatrixWorld(); aura.position.set(0, 0.5, -0.2); camera.localToWorld(aura.position);
-  if (t > 1.2) strikeEnd();
+  if (JS.hit && t > HIT + 0.7) strikeEnd();
 }
 
 /* ================= MENU ================= */
@@ -5533,7 +5908,7 @@ function hostStart() {
   hostBroadcastLobby(true);
 }
 function beginMpRun(seed, players) {
-  AU.init();
+  AU.init(); countPerkUse();
   Object.assign(MP, { deaths: {}, runPlayers: players.slice(), inGame: true, tapes: 0, n: players.length, spec: null, muffinId: 0, fuse: {}, sendT: 0, worldT: 0, fuseT: 0, hostSeen: performance.now() });
   applyDifficulty(MP.n);
   clearRemotes();
@@ -5574,7 +5949,7 @@ function onPeerState(id, m) {
   R.nx = clamp(num(m.x, R.nx), 0, lim); R.nz = clamp(num(m.z, R.nz), 0, lim); R.eye = clamp(num(m.e, R.eye), 0.2, 2);
   R.nyaw = num(m.y, R.nyaw); R.pitch = clamp(num(m.p, R.pitch), -1.5, 1.5); R.nface = num(m.f, R.nface); R.ap = clamp(num(m.ap), -1.5, 1.5);
   R.speedNow = clamp(num(m.v), 0, 15); R.crouch = !!m.c; R.sprinting = !!m.r; R.flashOn = !!m.l; R.bf = clamp(num(m.b, 1), 0, 1);
-  R.hid = num(m.h, -1) | 0; R.linger = clamp(num(m.lg), 0, 999); R.undiesT = m.u ? 1 : 0; R.evadeHideT = m.ev ? 1 : 0; R.scentHideT = m.sh ? 1 : 0; R.dc = !!m.dc; R.strikeOn = !!m.sk; R.rapport = !!m.rp; R.exhausted = !!m.x2; R.searching = !!m.sr;
+  R.hid = num(m.h, -1) | 0; R.linger = clamp(num(m.lg), 0, 999); R.undiesT = m.u ? 1 : 0; R.evadeHideT = m.ev ? 1 : 0; R.scentHideT = m.sh ? 1 : 0; R.dc = !!m.dc; R.strikeOn = !!m.sk; R.rapport = !!m.rp; R.pinned = !!m.pn; R.exhausted = !!m.x2; R.searching = !!m.sr;
   const v3 = a => Array.isArray(a) && a.length === 3 && a.every(Number.isFinite) ? a : null;
   R.bo = v3(m.bo); R.bd = v3(m.bd); R.beam = R.flashOn ? v3(m.bs) : null;
   if (R.alive && m.a === 0) { R.alive = false; if (MP.host) checkAllDead(); }   // dead stays dead until the next game
@@ -5593,6 +5968,7 @@ function updateRemotes(dt) {
       R.C.root.position.set(R.x, 0, R.z); R.C.root.rotation.set(0, R.face, 0);
       animateCharacter(R.C, dt, { phase: R.bob * 0.5, speed: R.speedNow, run: R.sprinting, crouch: R.crouch, aimPitch: R.ap, flash: R.flashOn,
         exhausted: R.exhausted, searching: R.searching, breathPh: gameTime * 2 + R.slot, breathB: 0.3, turnRate: 0, t: gameTime });
+      if (R.pinned) { R.C.root.rotation.x = -1.45; R.C.root.position.y = 0.32; }   // on their back under The Voice
       R.C.lens.material.color.setHex(R.flashOn ? 0xfff3d6 : 0x55524a);
     }
     // their flashlight lights the maze for everyone
@@ -5629,7 +6005,7 @@ function renderTeam() {
 }
 
 /* ---------- sync during a game ---------- */
-const VST = ['patrol', 'investigate', 'search', 'alert', 'chase', 'hunt', 'blind', 'bait'], SST = ['patrol', 'follow', 'disabled', 'destroyed'];
+const VST = ['patrol', 'investigate', 'search', 'alert', 'chase', 'hunt', 'blind', 'bait', 'takeoff', 'fly', 'dive', 'pin', 'land'], SST = ['patrol', 'follow', 'disabled', 'destroyed'];
 function netTick(dt) {
   MP.sendT -= dt;
   if (MP.sendT <= 0) { MP.sendT = 1 / 12; publishMyState(); }
@@ -5643,14 +6019,14 @@ function publishMyState() {
   const P = player, on = P.flashOn && P.alive && state !== 'spectate';
   const m = { x: r2(P.x), z: r2(P.z), e: r2(P.eye), y: r3(P.yaw), p: r3(P.pitch), f: r3(P.face), ap: r3(FL.pitch), v: r2(P.speedNow), c: P.crouch ? 1 : 0,
     r: P.sprinting && P.speedNow > 2 ? 1 : 0, l: on ? 1 : 0, b: r3(batFrac(P)), h: P.hidden ? W.spots.indexOf(P.hidden) : -1, a: P.alive ? 1 : 0,
-    lg: r2(P.linger), u: P.undiesT > 0 ? 1 : 0, ev: P.evadeHideT > 0 ? 1 : 0, sh: isOdorless(P) ? 1 : 0, rp: hasPerk('rapport') ? 1 : 0, dc: P.cleanseT > 0 ? 1 : 0, sk: P.strikeT > 0 ? 1 : 0, x2: P.exhausted ? 1 : 0, sr: P.searching ? 1 : 0 };
+    lg: r2(P.linger), u: P.undiesT > 0 ? 1 : 0, ev: P.evadeHideT > 0 ? 1 : 0, pn: P.pinned ? 1 : 0, sh: isOdorless(P) ? 1 : 0, rp: hasPerk('rapport') ? 1 : 0, dc: P.cleanseT > 0 ? 1 : 0, sk: P.strikeT > 0 ? 1 : 0, x2: P.exhausted ? 1 : 0, sr: P.searching ? 1 : 0 };
   if (on) { m.bo = [r2(flash.position.x), r2(flash.position.y), r2(flash.position.z)]; m.bd = [r3(FL.dir.x), r3(FL.dir.y), r3(FL.dir.z)]; m.bs = beamSpot().map(r2); }
   pub(TOPIC.s(MP.code, MP.id), m);
 }
 function publishWorld() {
   const G = W.goose;
   netHost({ t: 'w',
-    v: [r2(G.x), r2(G.z), r3(G.yaw), VST.indexOf(G.state), r2(G.curSpeed), G.beakT > 0 ? 1 : 0, G.flapT > 0 ? 1 : 0, G.baitPhase === 'eat' ? 1 : 0, G.tid || 0, r2(G.lookX ?? G.x), r2(G.lookZ ?? G.z), G.searchPhase === 'look' ? 1 : 0, r2(G.blindImm)],
+    v: [r2(G.x), r2(G.z), r3(G.yaw), VST.indexOf(G.state), r2(G.curSpeed), G.beakT > 0 ? 1 : 0, G.flapT > 0 ? 1 : 0, G.baitPhase === 'eat' ? 1 : 0, G.tid || 0, r2(G.lookX ?? G.x), r2(G.lookZ ?? G.z), G.searchPhase === 'look' ? 1 : 0, r2(G.blindImm), r2(G.y || 0)],
     s: W.sgeese.map(S => [r2(S.x), r2(S.z), r3(S.yaw), SST.indexOf(S.state), r2(S.curSpeed), S.beakT > 0 ? 1 : 0, S.flapT > 0 ? 1 : 0, S.tid || 0, r2(S.lookX ?? S.x), r2(S.lookZ ?? S.z)]),
     f: W.fridges.map(f => [f.open ? 1 : 0, r2(f.used), f.powered ? 1 : 0]),
     sh: W.showers.map(o => [o.run === 'hot' ? 1 : o.run === 'cold' ? 2 : 0, r2(o.runT), r2(Math.max(0, o.readyAt - gameTime))]),
@@ -5670,7 +6046,8 @@ function applyWorld(m) {
     const st = VST[v[3]] || 'patrol'; if (st !== G.state) { G.state = st; G.stateT = 0; }
     if (v[5]) G.beakT = Math.max(G.beakT, 0.15); if (v[6]) G.flapT = Math.max(G.flapT, 0.15);
     G.baitPhase = v[7] ? 'eat' : 'go'; G.tid = v[8] || 0; G.lookX = num(v[9], G.x); G.lookZ = num(v[10], G.z); G.searchPhase = v[11] ? 'look' : 'move';
-    if (Number.isFinite(v[12])) G.blindImm = clamp(v[12], 0, CFG.BLIND_IMMUNE);   // nobody can blind it again until this runs out
+    if (Number.isFinite(v[12])) G.blindImm = clamp(v[12], 0, CFG.BLIND_IMMUNE);
+    G.y = clamp(num(v[13], 0), 0, 20);   // nobody can blind it again until this runs out
   }
   if (Array.isArray(m.s)) m.s.forEach((a, i) => {
     const S = W.sgeese[i]; if (!S || !Array.isArray(a)) return;
@@ -5723,15 +6100,17 @@ function onClientMsg(m) {
     case 'take': { const pk = W.pickups[i]; if (pk && R.alive) hostTake(pk, R); break; }
     case 'spotbat': { const s = W.spots[i]; if (s && s.battery && R.alive) { s.battery = false; netHost({ t: 'spotbat', i, by: id }); } break; }
     case 'lbbat': if (R.alive) { lbBoost(); netHost({ t: 'lbbat' }); } break;
+    case 'punch': if (R.alive) strikeStun(); break;
     case 'sgkill': { const S = W.sgeese[i]; if (S && !S.dead && R.alive) wreckSG(S); break; }
     case 'shw': { const o = W.showers[i]; if (o && R.alive && (m.k === 'hot' || m.k === 'cold')) showerApply(o, m.k); break; }
     case 'fr': { const f = W.fridges[i]; if (f && f.open !== !!m.o) { f.open = !!m.o; AU.fridgeDoor(f.x, f.z, f.open); if (f.open && f.powered) for (let k = 0; k < 10; k++) emitSmoke(f, true); } break; }
     case 'fuse': if (Array.isArray(m.u)) for (const u of m.u.slice(0, 8)) { const f = Array.isArray(u) && W.fridges[num(u[0], -1) | 0]; if (f && f.powered) f.used += clamp(num(u[1]), 0, 1); } break;
     case 'srch': { const list = m.k === 'f' ? W.fridges : W.cabinets, c = list[i]; if (c) { c.searched = true; netHost({ t: 'srch', k: m.k === 'f' ? 'f' : 'c', i }); } break; }
-    case 'muf': if (R.alive) hostMuffin(clamp(num(m.x, R.x), 0, W.N * T), clamp(num(m.z, R.z), 0, W.N * T)); break;
-    case 'vblind': { const G = W.goose; if (R.alive && G.state !== 'blind' && G.state !== 'bait' && G.blindImm <= 0) blindGoose(G, R); break; }
+    case 'muf': if (R.alive) hostMuffin(clamp(num(m.x, R.x), 0, W.N * T), clamp(num(m.z, R.z), 0, W.N * T), m.b ? CFG.MUFFIN_BONUS : 0); break;
+    case 'vblind': { const G = W.goose; if (R.alive && G.state !== 'blind' && G.state !== 'bait' && !AIR.has(G.state) && G.blindImm <= 0) blindGoose(G, R); break; }
+    case 'pinres': { const G = W.goose; if (G.state === 'pin' && G.pinId === id) pinResolved(!!m.ok, R); break; }
     case 'sgoff': { const S = W.sgeese[i]; if (S && S.state !== 'disabled') disableSG(S, clamp(num(m.s, 45), 30, 70)); break; }
-    case 'dead': R.alive = false; recordDeath(id, m.why === 'heat' ? 'heat' : 'goose'); checkAllDead(); break;
+    case 'dead': R.alive = false; voiceAfterKill(); recordDeath(id, m.why === 'heat' ? 'heat' : 'goose'); checkAllDead(); break;
   }
 }
 function onHostMsg(m) {
@@ -5775,6 +6154,7 @@ function onHostMsg(m) {
       break;
     case 'mgone': { const t = W.thrown.find(q => q.id === m.id); if (t) { t.gone = true; t.mesh.visible = false; } break; }
     case 'struck': strikeScare(); break;
+    case 'pinned': pinScene(); break;
     case 'lbbat': lbBoost(); break;
     case 'caught':
       if (m.id === MP.id) { if (state === 'playing' || state === 'paused') caught(); }
@@ -5799,9 +6179,9 @@ function hostTake(p, who) {
   else if (p.type === 'tape') { showTape(n); toast(`${who.name} found tape ${n} of ${CFG.TAPES}.`, false, 3); }
   if (p.type === 'tape' && n >= CFG.TAPES) setTimeout(() => { if (MP.inGame) { netHost({ t: 'win' }); endMp('win'); } }, 900);
 }
-function hostMuffin(x, z) {
+function hostMuffin(x, z, bonus = 0) {
   const mesh = makeMuffinMesh(); mesh.position.set(x, 0, z); mesh.rotation.y = rr(0, 6.28); W.group.add(mesh);
-  const m = { x, y: 0, z, vx: 0, vy: 0, vz: 0, mesh, landed: true, gone: false, spin: 0 };
+  const m = { bonus, x, y: 0, z, vx: 0, vy: 0, vz: 0, mesh, landed: true, gone: false, spin: 0 };
   W.thrown.push(m); muffinLanded(m);
 }
 
@@ -5898,7 +6278,7 @@ function simStep(dt) {
   if (MP.inGame) { updateRemotes(dt); netTick(dt); }
   if (state === 'playing' || state === 'paused' || state === 'spectate') { updateFx(dt); updateHUD(dt); if (MP.inGame) renderTeam(); }
 }
-const mpSimulating = () => MP.inGame && (state === 'paused' || state === 'spectate' || state === 'caught' || state === 'collapse');
+const mpSimulating = () => MP.inGame && (state === 'paused' || state === 'spectate' || state === 'caught' || state === 'collapse' || state === 'pinned');
 // a browser stops drawing a tab you can't see, but the host's tab has to keep running The Voice for everyone
 setInterval(() => {
   if (!document.hidden || !MP.inGame || !MP.host) return;
@@ -5963,6 +6343,7 @@ function frame(now) {
   if (state === 'playing' || mpSimulating()) simStep(dt);   // in a room the game keeps going while you're dead or in the menu
   if (state === 'caught') updateJumpscare(dt);
   else if (state === 'collapse') updateCollapse(dt);
+  else if (state === 'pinned') updatePinScene(dt);
   AU.listener();
   renderer.render(scene, camera);
 }
@@ -5991,8 +6372,8 @@ window.__gooseflesh = {
   camera, GOOSE_RIG, DUSTY, CAM, INV, useItem, giveItem, finishSearch, TAPEUI, CFG, loadout, PERKS, hasPerk, renderLoadout, toggleFlash, GOOSE_OL, SG_RIGS, flash,
   interact: () => interact(), blindVoice: () => blindGoose(W.goose), sgDetects: S => sgDetects(S),
   start: beginNewRun, caught: () => caught(), win: () => { player.tapes = CFG.TAPES; win(); },
-  goose: () => W && W.goose, step: (n = 60, dt = 1 / 60) => { for (let i = 0; i < n; i++) { if (state === 'caught' && JS.strike && !MP.inGame) { updateJumpscare(dt); continue; } if (!(state === 'playing' || mpSimulating())) break; simStep(dt); if (state === 'caught') updateJumpscare(dt); else if (state === 'collapse') updateCollapse(dt); } },
-  mp: MP, MLOOK, DIFF, BUILD, TEX, looseCannon: () => looseCannon(), wreckSG: S => wreckSG(S), SPARKS, strike: () => strike(), JS, FIST, renderer, scene, showerUse, aimedKnob, exitSpot: () => exitSpot(), enterSpot: s => enterSpot(s), mpLeave: () => mpLeave(), hostStart: () => hostStart(), specCycle: d => specCycle(d), applyDifficulty, difficultyText,
+  goose: () => W && W.goose, step: (n = 60, dt = 1 / 60) => { for (let i = 0; i < n; i++) { if (state === 'caught' && JS.strike && !MP.inGame) { updateJumpscare(dt); continue; } if (state === 'pinned' && !MP.inGame) { updatePinScene(dt); continue; } if (!(state === 'playing' || mpSimulating())) break; simStep(dt); if (state === 'caught') updateJumpscare(dt); else if (state === 'collapse') updateCollapse(dt); else if (state === 'pinned') updatePinScene(dt); } },
+  mp: MP, MLOOK, DIFF, BUILD, TEX, QTE, PIN, startTakeoff: () => startTakeoff(W.goose), startDive: v => startDive(W.goose, v || player), qteInput: t => qteInput(t), PERK_USE, looseCannon: () => looseCannon(), wreckSG: S => wreckSG(S), SPARKS, strike: () => strike(), JS, FIST, renderer, scene, showerUse, aimedKnob, exitSpot: () => exitSpot(), enterSpot: s => enterSpot(s), mpLeave: () => mpLeave(), hostStart: () => hostStart(), specCycle: d => specCycle(d), applyDifficulty, difficultyText,
 };
 })();
 </script>
