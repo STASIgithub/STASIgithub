@@ -622,7 +622,7 @@ body.safe h1{animation:none}
       <p class="fine" id="cr-vis-desc"></p>
       <div class="code-row" id="cr-code-row" hidden><span class="lbl">Password</span><output id="cr-code" class="code"></output><button id="cr-copy" class="mini" type="button">Copy</button><button id="cr-reroll" class="mini ghost" type="button">New code</button></div>
     </fieldset>
-    <div class="actions"><button id="cr-go" type="button">Create</button><button id="cr-back" class="ghost" type="button">Back</button></div>
+    <div class="actions"><button id="cr-go" type="button">Create</button><button id="cr-back" class="ghost" type="button">Back</button><button id="cr-menu" class="ghost" type="button">Main menu</button></div>
     <p class="fine" id="cr-status" role="status"></p>
   </div>
 </section>
@@ -637,7 +637,7 @@ body.safe h1{animation:none}
     <div class="seg n5" id="jn-filter" aria-label="Players in the room"><button type="button" data-f="any">Any</button><button type="button" data-f="1">1</button><button type="button" data-f="2">2</button><button type="button" data-f="3">3</button><button type="button" data-f="4">4+</button></div>
     <p class="fine">Filter by how many players are in the room.</p>
     <div id="jn-list" class="rooms"></div>
-    <div class="actions"><button id="jn-back" class="ghost" type="button">Back</button></div>
+    <div class="actions"><button id="jn-back" class="ghost" type="button">Back</button><button id="jn-menu" class="ghost" type="button">Main menu</button></div>
   </div>
 </section>
 
@@ -650,7 +650,7 @@ body.safe h1{animation:none}
     <ul id="rm-players" class="plist"></ul>
     <p class="fine" id="rm-diff"></p>
     <div id="rm-lo" class="code-row"></div>
-    <div class="actions"><button id="rm-start" type="button">Start</button><button id="rm-perks" class="ghost" type="button">Perks</button><button id="rm-leave" class="ghost" type="button">Leave</button></div>
+    <div class="actions"><button id="rm-start" type="button">Start</button><button id="rm-perks" class="ghost" type="button">Perks</button><button id="rm-leave" class="ghost" type="button">Main menu</button></div>
     <p class="fine" id="rm-status" role="status"></p>
   </div>
 </section>
@@ -751,7 +751,7 @@ const CFG = {
   // how far the goose can hear breathing
   BREATH_R_MIN: 2.4, BREATH_R_MAX: 11,
   // defenses and items
-  BLIND_TIME: 0.6, BLIND_DUR: 3.5, BLIND_IMMUNE: 12, CABINETS: 10, SEARCH_TIME: 1.6,
+  BLIND_TIME: 0.6, BLIND_DUR: 3.5, BLIND_IMMUNE: 90, CABINETS: 10, SEARCH_TIME: 1.6,
   PROPEL_TIME: 5, PROPEL_SPEED: 1.6, PROPEL_FOV: 30, EVADE_FOV: 40, UNDIES_TIME: 30, GLASSES_TIME: 15, EAT_MIN: 5, EAT_MAX: 10,
   VOICE_FLICKER: 2,   // the flashlight sputters, very fast, this long after you blind The Voice
   // The Voice by tapes found. Single player: before the first tape it's a bit slower than your sprint and has a poor nose;
@@ -759,11 +759,12 @@ const CFG = {
   VOICE_EARLY: 0.94, VOICE_EARLY_SMELL: 1.75, VOICE_TAPE_SPEED: 0.0225,
   // perks
   LB_TEAM: 0.1, LB_REVEAL: 4, ENDURANCE_WALK: 1.3, ENDURANCE_EFF: 0.2, ENDURANCE_EFF_MAX: 0.6, ENDURANCE_CD: 40,
-  HYPO_COOL: 1.3, ASE_TIME: 13.5, EVADE_SPEED_T: 3, EVADE_HIDE_T: 8, EVADE_LOCK: 4, SCAVENGER_AT: 0.5, SCAVENGER_GAIN: 0.6,
+  HYPO_COOL: 1.3, ASE_TIME: 13.5, EVADE_SPEED_T: 3, EVADE_HIDE_T: 8, EVADE_LOCK: 4, SCAV_SEARCH: 7.5, SCAV_BUFF_T: 7.5, SCAV_SPEED: 1.05,
   HEAD_REVEAL: 12, HEAD_SPEED: 1.12, CRESCENDO_BASE: 0.02, CRESCENDO: 0.04, CRIT_TEMP: 102, CRIT_COOL: 2, FRIGID_TIME: 45, FRIGID_SLOW: 0.2,
   EVADE_RECHARGE_TAPE: 3,
   LP_CROUCH: 3, LP_LINGER: 8,   // Low Profile
-  LC_EVERY: 25, LC_CHANCE: 1 / 50, LC_CD: 60, LC_SPEED: 2.5, LC_SPEED_T: 4, LC_FOV: 55, LC_VITAL_T: 10, LC_TAPES_T: 3.5,   // Loose Cannon
+  LC_EVERY: 25, LC_CHANCE: 1 / 50, LC_CD: 100, LC_SPEED: 3, LC_SPEED_T: 10, LC_FOV: 65, LC_VITAL_T: 10, LC_TAPES_T: 10, LC_KILL_R: 0.95,   // Loose Cannon
+  RAPPORT_R: 5, RAPPORT_LINGER: 15, RAPPORT_HEAT: 0.05,   // Rapport
   CLEANSE_EXTRA: 30, CLEANSE_LINGER: 8,   // Deep Cleanse
   IRON_SPEED: 0.92, IRON_DRAIN: 1.12, STRIKE_WINDOW: 0.6, STRIKE_STUN: 4, STRIKE_STAMINA: 0.3,   // Iron Nerve: one Strike per game
 };
@@ -875,6 +876,7 @@ const ICON = {
   ironnerve: '<path d="M7.5 11.5V8a1.5 1.5 0 0 1 3 0v3M10.5 10.5V6.8a1.5 1.5 0 0 1 3 0v3.7M13.5 10.5V7.6a1.5 1.5 0 0 1 3 0v3.4"/><path d="M16.5 10.2a1.5 1.5 0 0 1 3 0v4.3a6 6 0 0 1-6 6h-1.6A5.4 5.4 0 0 1 6.5 15v-2.3a1.5 1.5 0 0 1 3 0v1.6"/>',
   lowprofile: '<path d="M3 20.5h18"/><path d="M6.5 17.5c0-2.4 1.9-4.2 4.4-4.2h2.6c1.7 0 3 .9 3.8 2.3l1.2 1.9"/><circle cx="9" cy="10" r="2"/><path d="M15.5 6.5c1.2.6 1.2 2 0 2.6M18 4.5c2.4 1.3 2.4 5.3 0 6.6" stroke-dasharray="1.6 1.4"/>',
   loosecannon: '<path d="M4 15.5a4.5 4.5 0 0 0 9 0 4.5 4.5 0 0 0-9 0z"/><path d="M11.4 12.2l3.4-3.4"/><path d="M14.8 8.8c.6-1.6 2-2.7 3.7-2.9"/><path d="M19 3.5v1.6M21.2 6.1h-1.6M20.5 4.2l-1.1 1.1" />',
+  rapport: '<circle cx="8" cy="7.5" r="2.6"/><circle cx="16" cy="7.5" r="2.6"/><path d="M3 19.5c0-3.1 2.2-5.4 5-5.4 1.5 0 2.8.6 3.7 1.7M21 19.5c0-3.1-2.2-5.4-5-5.4-1.5 0-2.8.6-3.7 1.7"/><path d="M10 17.5h4"/>',
   frigid: '<path d="M12 3l8 4.5v9L12 21l-8-4.5v-9z"/><path d="M4 7.5l8 4.5 8-4.5M12 12v9"/><path d="M7.5 13.6v2.2M9.5 15.4v1.6M16.5 13.6v2.2"/>',
   critical: '<path d="M7 4.5a2 2 0 0 1 4 0v9.3a4 4 0 1 1-4 0z"/><path d="M9 15V8.5"/><circle cx="9" cy="16.9" r="1.6" fill="currentColor"/><path d="M17.5 4v8.5M17.5 16v.6"/>',
   muffin: '<path d="M6 13h12l-1.6 7.5H7.6z"/><path d="M4.8 13c0-4.2 3.2-7.4 7.2-7.4s7.2 3.2 7.2 7.4"/><path d="M9 15.5l.5 3M12 15.5v3M15 15.5l-.5 3"/><circle cx="9.4" cy="10.2" r="1" fill="currentColor"/><circle cx="13.2" cy="8.8" r="1" fill="currentColor"/><circle cx="15.2" cy="11.4" r="1" fill="currentColor"/>',
@@ -888,13 +890,14 @@ const PERKS = {
   hypothermia: { name: 'Hypothermia', desc: 'You cool down 30% faster, from refrigerators, ice packs and cold showers. The nearest refrigerator is always outlined.' },
   ase: { name: 'All Seeing Eye', desc: 'For 13.5 seconds after you pick up a tape, see The Voice, every surveillance goose and the nearest refrigerator through walls.' },
   evasive: { name: 'Evasive Maneuvers', desc: "The first time The Voice chases you, you get +100% Speed for 3 seconds and you're Undetectable to it for 8. Then your stamina's empty for 4 seconds. It recharges when your team picks up the 3rd tape." },
-  scavenger: { name: 'Scavenger', desc: "When your flashlight is at 50% or lower, see the nearest battery through walls. That battery adds 60%, even past 100%. Works once per run." },
+  scavenger: { name: 'Scavenger', desc: "You always find something when you search, but every search takes 7.5 seconds. After each one you get +5% Speed and Vitality for 7.5 seconds." },
   headstart: { name: 'Headstart', desc: "For the first 12 seconds, see the nearest tape through walls and get +12% Speed and Vitality." },
   crescendo: { name: 'Crescendo', desc: "Start with a 2% bonus, plus 4% for every tape your team finds, to: Speed, stamina recovery, stamina efficiency, refrigerator cooling, how fast you blind geese, and how slowly you heat up." },
   cleanse: { name: 'Deep Cleanse', desc: "Shower effects last 30 seconds longer. While you're showering, and for 8 seconds after you get out, your whole team sees The Voice through walls." },
   ironnerve: { name: 'Iron Nerve', desc: "You have 8% less Speed, use 12% more stamina, and can't hide or crouch. Crouch becomes Strike, once per game: if The Voice catches you within 0.6 s of pressing it, you punch it in the face and stun it for 4 s, for 30% of your stamina. A miss still uses it up." },
   lowprofile: { name: 'Low Profile', desc: "After 3 seconds of crouching you're Odorless, and surveillance geese only notice you if you touch them. When you stand up, Odorless lasts 8 more seconds." },
-  loosecannon: { name: 'Loose Cannon', desc: "Every 25 seconds there's a 1 in 50 chance you get +150% Speed for 4 seconds, Vitality for 10, and see every tape through walls for 3.5. Then it can't happen again for 60 seconds." },
+  loosecannon: { name: 'Loose Cannon', desc: "Every 25 seconds there's a 1 in 50 chance you get +200% Speed, Vitality and every tape outlined through walls, all for 10 seconds. Run into a surveillance goose while it lasts and it's destroyed for good. Afterwards it can't happen again for 100 seconds." },
+  rapport: { name: 'Rapport', desc: "Multiplayer only. Teammates within 5 meters of you get Vitality and heat up 5% slower, and so do you while you're near a teammate. It lasts 15 seconds after you move apart." },
   frigid: { name: 'Frigid', desc: "For the first 45 seconds, your body temperature can't rise. After that, it rises 20% slower." },
   critical: { name: 'Critical Condition', desc: "At 102°F or hotter, refrigerators cool you twice as fast, and while you're cooling down you see The Voice through walls." },
 };
@@ -2758,6 +2761,24 @@ const AU = {
     this.chain(n, this.filt('bandpass', 330, 2.5), ng, lp); n.start(c.currentTime, Math.random()); srcs.push(n);
     return { g, srcs, cur: 0 };
   },
+  ui() {   // placeholder menu button click
+    const out = this.direct(0.4); if (!out) return; const t = this.t;
+    const o = this.osc('triangle', 560, t, 0.09); o.frequency.exponentialRampToValueAtTime(240, t + 0.08);
+    const g = this.gain(); this.env(g, t, 0.002, 0.01, 0.07, 0.55); this.chain(o, g, out);
+    const n = this.gain(); this.env(n, t, 0.001, 0.004, 0.03, 0.3); this.chain(this.noise(t, 0.04), this.filt('highpass', 2600), n, out);
+  },
+  sgCrash(x, z) {   // metal crunch, a clang, and a short-circuit snap
+    const out = this.at(x, 0.8, z, 40, 1.1); if (!out) return; const t = this.t;
+    const ng = this.gain(); this.env(ng, t, 0.002, 0.05, 0.35, 0.9); this.chain(this.noise(t, 0.45), this.filt('bandpass', 1500, 0.9), ng, out);
+    const b = this.osc('sine', 110, t, 0.4); b.frequency.exponentialRampToValueAtTime(40, t + 0.3);
+    const bg = this.gain(); this.env(bg, t, 0.002, 0.04, 0.3, 0.9); this.chain(b, bg, out);
+    for (const [f, d] of [[620, 0.9], [1340, 0.6], [2210, 0.4]]) { const o = this.osc('sine', f * rr(0.97, 1.03), t, d); const og = this.gain(); this.env(og, t, 0.001, 0.01, d, 0.18); this.chain(o, og, out); }
+    this.crackle(x, z, 0.05);
+  },
+  crackle(x, z, delay = 0) {   // electrical sparking
+    const out = this.at(x, 0.8, z, 22, 0.55); if (!out) return; const t = this.t + delay;
+    for (let k = 0, n = ri(2, 5); k < n; k++) { const tk = t + k * rr(0.02, 0.07), g = this.gain(); this.env(g, tk, 0.001, 0.008, 0.03, rr(0.4, 0.9)); this.chain(this.noise(tk, 0.05), this.filt('highpass', rr(2500, 4500)), g, out); }
+  },
   swing() {
     const out = this.direct(0.35); if (!out) return; const t = this.t;
     const g = this.gain(); this.env(g, t, 0.04, 0.05, 0.14, 0.5); this.chain(this.noise(t, 0.25), this.filt('bandpass', 1100, 1.3), g, out);
@@ -2815,7 +2836,7 @@ function resetPlayer() {
     perks: new Set(loadout.perks), aseT: 0, aseFridge: null, headT: 0, headTape: null, hypoFridge: null, hypoT: 0, lbRevealT: 0,
     frigidT: loadout.perks.includes('frigid') ? CFG.FRIGID_TIME : 0, cleanseT: 0, coldBoostMax: 0,
     lpCrouchT: 0, lpOdorT: 0, lcRollT: CFG.LC_EVERY, lcCD: 0, lcSpeedT: 0, lcVitalT: 0, lcTapeT: 0, strikeT: 0, strikeUsed: false, showerHot: false, showerCold: 0, showerCooling: false, scentHideT: 0, coldBoost: 0, coldBoostT: 0,
-    scavUsed: false, scavBat: null, scavClaim: null, scavGotT: 0, endEff: 0, endTokens: 0, endCD: 0, critOn: false, evadeRearmed: false,
+    scavBuffT: 0, rapportT: 0, rapportNear: false, endEff: 0, endTokens: 0, endCD: 0, critOn: false, evadeRearmed: false,
     evadeUsed: false, evadeSpeedT: 0, evadeHideT: 0, evadePending: false, stamLockT: 0,
   });
   // face down an open corridor
@@ -3184,6 +3205,11 @@ $('btn-perks').addEventListener('click', () => { perksFrom = 'scr-start'; $('scr
 let perksFrom = 'scr-start';
 $('perks-done').addEventListener('click', () => { if (!loadoutValid()) return; saveLoadout(); $('scr-perks').hidden = true; $('scr-' + perksFrom.replace('scr-', '')).hidden = false; renderLoadoutSummary(); });
 $('btn-skins').addEventListener('click', () => { $('scr-start').hidden = true; $('scr-skins').hidden = false; });
+// placeholder sound on every menu button (before a run starts); the first click also wakes the audio up
+document.addEventListener('click', e => {
+  if (state !== 'menu' || !e.target.closest || !e.target.closest('.screen button')) return;
+  AU.init(); AU.ui();
+}, true);
 $('btn-howto').addEventListener('click', () => {
   const m = isMobile(); $('howto-keys-pc').hidden = m; $('howto-keys-mobile').hidden = !m;
   $('scr-start').hidden = true; $('scr-howto').hidden = false; $('scr-howto').scrollTop = 0;
@@ -3265,8 +3291,7 @@ function interact() {
   if (!tgt) return;
   if (tgt.kind === 'pickup') {
     const p = tgt.p;
-    if (p.type === 'battery' && p !== P.scavBat && !wantsBattery()) { toast("Your flashlight's already full."); return; }
-    if (p === P.scavBat) P.scavClaim = p;   // in a room the host answers later: remember it was the Scavenger battery
+    if (p.type === 'battery' && !wantsBattery()) { toast("Your flashlight's already full."); return; }
     if (MP.inGame && !MP.host) {   // the host decides who got it first
       if (gameTime - (p.claimT || -9) > 1) { p.claimT = gameTime; netClient({ t: 'take', i: W.pickups.indexOf(p) }); }
       return;
@@ -3284,12 +3309,10 @@ function hidePickup(p) { p.taken = true; p.mesh.visible = false; p.glow.visible 
 function gainPickup(p, n) {
   const P = player;
   if (p.type === 'battery') {
-    const scav = hasPerk('scavenger') && !P.scavUsed && (p === P.scavBat || p === P.scavClaim);   // Scavenger's outlined battery
-    if (scav) { P.battery += CFG.SCAVENGER_GAIN * CFG.BATTERY_MAX; P.scavUsed = true; P.scavBat = P.scavClaim = null; P.scavGotT = 2; }   // no cap
-    else P.battery = Math.max(P.battery, Math.min(CFG.BATTERY_MAX, P.battery + CFG.BATTERY_PICKUP));
+    P.battery = Math.max(P.battery, Math.min(CFG.BATTERY_MAX, P.battery + CFG.BATTERY_PICKUP));
     P.lightDead = false;
     AU.battery();
-    if (hasPerk('lightbringer')) lbPickup(); else if (!scav) toast(`+${CFG.BATTERY_PICKUP} seconds of flashlight.`);
+    if (hasPerk('lightbringer')) lbPickup(); else toast(`+${CFG.BATTERY_PICKUP} seconds of flashlight.`);
     return;
   }
   // tapes always play in order: the first one found plays recording 1, the second recording 2, and so on
@@ -3412,7 +3435,7 @@ function gooseAfterMuffin(G) {
 // cabinets: a short search that locks you in place, like a chest in Dead by Daylight
 function startSearch(c) {
   const P = player; P.searching = c; P.searchT = 0; P.vx = P.vz = 0;
-  P.searchDur = c.isFridge ? CFG.FRIDGE_SEARCH_TIME : CFG.SEARCH_TIME;
+  P.searchDur = hasPerk('scavenger') ? CFG.SCAV_SEARCH : c.isFridge ? CFG.FRIDGE_SEARCH_TIME : CFG.SEARCH_TIME;   // Scavenger: slow but sure
   AU.rummage(c.x, c.z, P.searchDur);
   gooseHear(c.x, c.z, 7, { kind: 'search', pri: 1.5, player: true });
 }
@@ -3423,7 +3446,9 @@ function finishSearch(c) {
     const m = { t: 'srch', k: c.isFridge ? 'f' : 'c', i: (c.isFridge ? W.fridges : W.cabinets).indexOf(c) };
     if (MP.host) netHost(m); else netClient(m);
   }
-  const r = Math.random() * 100;
+  // Scavenger never comes up empty: the roll only covers the items. After every search: Speed and Vitality.
+  const sure = hasPerk('scavenger'), r = Math.random() * (sure ? (c.isFridge ? 45 : 21) : 100);
+  if (sure) player.scavBuffT = CFG.SCAV_BUFF_T;
   if (c.isFridge) {   // refrigerator: 30% muffin, 15% ice pack, 55% nothing (Hypothermia: the first one you open has an ice pack)
     if (r < 30) giveItem('muffin');
     else if (r < 45) giveItem('ice');
@@ -3474,14 +3499,19 @@ function updateItems(dt) {
 // perk timers, and what each perk is pointing at right now
 function updatePerks(dt) {
   const P = player;
-  for (const k of ['aseT', 'headT', 'evadeSpeedT', 'evadeHideT', 'flickerT', 'blinkT', 'lbRevealT', 'endCD', 'scavGotT', 'scentHideT', 'coldBoostT', 'frigidT', 'cleanseT', 'strikeT', 'lpOdorT', 'lcCD', 'lcSpeedT', 'lcVitalT', 'lcTapeT']) if (P[k] > 0) P[k] = Math.max(0, P[k] - dt);
+  for (const k of ['aseT', 'headT', 'evadeSpeedT', 'evadeHideT', 'flickerT', 'blinkT', 'lbRevealT', 'endCD', 'scavBuffT', 'rapportT', 'scentHideT', 'coldBoostT', 'frigidT', 'cleanseT', 'strikeT', 'lpOdorT', 'lcCD', 'lcSpeedT', 'lcVitalT', 'lcTapeT']) if (P[k] > 0) P[k] = Math.max(0, P[k] - dt);
   if (P.evadePending && P.evadeSpeedT <= 0 && P.evadeHideT <= 0) {   // Evasive Maneuvers is over: stamina empties and stays empty
     P.evadePending = false; P.stamina = 0; P.exhausted = true; P.stamLockT = CFG.EVADE_LOCK; P.sprinting = false; touch.run = false;
   }
-  P.scavBat = null;
-  if (hasPerk('scavenger') && !P.scavUsed && P.alive !== false && P.battery <= CFG.BATTERY_MAX * CFG.SCAVENGER_AT + 1e-6) {
-    let bd = 1e9;
-    for (const p of W.pickups) { if (p.type !== 'battery' || p.taken) continue; const d = Math.hypot(p.x - P.x, p.z - P.z); if (d < bd) { bd = d; P.scavBat = p; } }
+  // Rapport: near a teammate who has it, or near anyone while you have it: Vitality and slower heat, lingering 15 s
+  P.rapportNear = false;
+  if (MP.inGame && P.alive !== false) {
+    let near = false, theirs = false;
+    for (const R of MP.remotes.values()) {
+      if (!R.alive || !R.ready || Math.hypot(R.x - P.x, R.z - P.z) > CFG.RAPPORT_R) continue;
+      near = true; if (R.rapport) theirs = true;
+    }
+    if (theirs || (near && hasPerk('rapport'))) { P.rapportT = CFG.RAPPORT_LINGER; P.rapportNear = true; }
   }
   P.critOn = critical() && P.alive !== false;
   // Low Profile: 3 s of crouching makes you Odorless; standing up, it lingers 8 s
@@ -3504,13 +3534,13 @@ function updatePerks(dt) {
 }
 function looseCannon() {
   const P = player;
-  P.lcSpeedT = CFG.LC_SPEED_T; P.lcVitalT = CFG.LC_VITAL_T; P.lcTapeT = CFG.LC_TAPES_T; P.lcCD = CFG.LC_CD;
+  P.lcSpeedT = CFG.LC_SPEED_T; P.lcVitalT = CFG.LC_VITAL_T; P.lcTapeT = CFG.LC_TAPES_T; P.lcCD = CFG.LC_SPEED_T + CFG.LC_CD;   // the 100 s count starts when it wears off
   if (P.stamina < CFG.STAMINA_MAX) P.stamShowT = 3; P.stamina = CFG.STAMINA_MAX; P.exhausted = false; P.stamLockT = 0;
   AU.swing(); AU.drink();
 }
 // the shared terms: Odorless (The Voice can't pick up your scent) and Vitality (stamina doesn't run out)
 const isOdorless = P => P === player ? P.scentHideT > 0 || P.lpOdorT > 0 : P.scentHideT > 0;
-const hasVitality = () => player.propelT > 0 || player.headT > 0 || player.lcVitalT > 0;
+const hasVitality = () => player.propelT > 0 || player.headT > 0 || player.lcVitalT > 0 || player.scavBuffT > 0 || player.rapportT > 0;
 function startEvasive() {
   const P = player; P.evadeUsed = true; P.evadePending = true;
   P.evadeSpeedT = CFG.EVADE_SPEED_T; P.evadeHideT = CFG.EVADE_HIDE_T;
@@ -3615,6 +3645,7 @@ function updatePlayer(dt) {
     if (P.coldBoostT > 0) mult *= 1 + P.coldBoost;   // cold shower
     if (hasPerk('ironnerve')) mult *= CFG.IRON_SPEED;
     if (P.lcSpeedT > 0) mult *= CFG.LC_SPEED;   // Loose Cannon
+    if (P.scavBuffT > 0) mult *= CFG.SCAV_SPEED;   // Scavenger, after a search
     mult *= 1 + cresc();
     const speed = (P.sprinting ? CFG.SPRINT : (P.crouch ? CFG.CROUCH : CFG.WALK)) * analog * mult;
     const fx = -Math.sin(P.yaw), fz = -Math.cos(P.yaw), rx = Math.cos(P.yaw), rz = -Math.sin(P.yaw);
@@ -3634,6 +3665,12 @@ function updatePlayer(dt) {
     }
   }
   updateItems(dt);
+  if (P.lcSpeedT > 0 && !P.hidden && W.sgeese) for (const S of W.sgeese) {   // Loose Cannon: run straight through a surveillance goose
+    if (!S.dead && S.rig.root.visible && Math.hypot(S.x - P.x, S.z - P.z) < CFG.LC_KILL_R) {
+      if (MP.inGame && !MP.host) netClient({ t: 'sgkill', i: S.id });
+      wreckSG(S);
+    }
+  }
   updateStamina(dt, HE);
   updateBreathing(dt);
   updateFridges(dt);
@@ -3649,9 +3686,10 @@ function updatePlayer(dt) {
   P.flickT -= dt;
   if (P.flickT <= 0) {   // a weak battery sputters; right after you blind The Voice the light strobes very fast
     const strobe = P.flickerT > 0 && P.blinkT <= 0;
-    P.flickT = strobe ? rr(0.012, 0.03) : rr(0.04, 0.16);
-    const shaky = strobe ? 0.6 : frac < 0.15 ? 0.35 : 0;
-    P.flick = Math.random() < shaky ? rr(strobe ? 0.02 : 0.15, strobe ? 0.35 : 0.6) : 1;
+    P.flickT = strobe ? rr(0.008, 0.022) : rr(0.04, 0.16);
+    const shaky = strobe ? 0.78 : frac < 0.15 ? 0.35 : 0;
+    // strobing: near-black most of the time, with over-bright bursts in between
+    P.flick = Math.random() < shaky ? (strobe ? rr(0, 0.06) : rr(0.15, 0.6)) : (strobe ? rr(1.05, 1.4) : 1);
   }
   // eye adaptation: when the beam lands on something close, it is turned down so near surfaces don't burn out to white
   if (P.flashOn) { const k = clamp(Math.pow(beamHitDist() / 4.2, 0.9), 0.4, 1); P.expo += (k - P.expo) * (1 - Math.exp(-dt * 8)); } else P.expo = 1;
@@ -3876,7 +3914,7 @@ function updateTemperature(dt) {
   if (P.tempPauseT > 0) P.tempPauseT -= dt;
   else if (!P.cooling) {
     const runningHot = P.sprinting && P.speedNow > 2;
-    P.tempRiseT -= dt * ((P.hidden && P.hidden.type !== 'shower') || runningHot ? 1.5 : 1) * (1 - cresc()) * heatMult();   // hiding spots and running heat you up 50% faster
+    P.tempRiseT -= dt * ((P.hidden && P.hidden.type !== 'shower') || runningHot ? 1.5 : 1) * (1 - cresc()) * heatMult() * (P.rapportT > 0 ? 1 - CFG.RAPPORT_HEAT : 1);   // hiding spots and running heat you up 50% faster
     if (P.tempRiseT <= 0) { P.tempRiseT = rr(3, 5); P.temp = Math.min(CFG.TEMP_MAX, Math.round((P.temp + 0.1) * 10) / 10); }
   }
   const tq = tempQ();
@@ -4526,6 +4564,89 @@ function surveillanceRig(k) {
   R.ol = addOutline(R.root, []);
   scene.add(R.root); SG_RIGS[k] = R; return R;
 }
+// Loose Cannon wrecks a surveillance goose for good: it's a machine underneath. The head drops off, the neck shows a
+// metal stump with torn wires, metal shows through the body, and it keeps sparking.
+const SPARKS = [];
+(() => {
+  const c = mkCanvas(32, 32), g = c.getContext('2d'), gr = g.createRadialGradient(16, 16, 0, 16, 16, 16);
+  gr.addColorStop(0, 'rgba(255,255,255,1)'); gr.addColorStop(0.2, 'rgba(255,250,220,1)'); gr.addColorStop(0.45, 'rgba(255,214,110,.5)'); gr.addColorStop(1, 'rgba(255,190,60,0)'); g.fillStyle = gr; g.fillRect(0, 0, 32, 32);
+  const t = tex(c);
+  for (let k = 0; k < 64; k++) {
+    const sp = new THREE.Sprite(new THREE.SpriteMaterial({ map: t, color: 0xfff2b0, transparent: true, depthWrite: false, blending: THREE.AdditiveBlending, fog: true }));
+    sp.visible = false; scene.add(sp); SPARKS.push({ s: sp, life: 0, vx: 0, vy: 0, vz: 0 });
+  }
+})();
+function sparkBurst(x, y, z, n) {
+  for (let k = 0; k < n; k++) {
+    const q = SPARKS.find(o => o.life <= 0); if (!q) return;
+    q.s.position.set(x, y, z); q.vx = rr(-2.2, 2.2); q.vy = rr(0.8, 3.4); q.vz = rr(-2.2, 2.2); q.life = q.max = rr(0.2, 0.55);
+    q.s.scale.setScalar(rr(0.022, 0.05)); q.s.visible = true;
+  }
+}
+function updateSparks(dt) {
+  for (const q of SPARKS) {
+    if (q.life <= 0) continue;
+    q.life -= dt; if (q.life <= 0) { q.s.visible = false; continue; }
+    q.vy -= 9 * dt; const P = q.s.position; P.x += q.vx * dt; P.y += q.vy * dt; P.z += q.vz * dt;
+    if (P.y < 0.02) { P.y = 0.02; q.vy *= -0.3; q.vx *= 0.5; q.vz *= 0.5; }
+    q.s.material.opacity = Math.min(1, q.life / q.max * 1.5);
+  }
+}
+const WRECK = {};
+function rigWreck(R, S) {
+  if (!R.wreckParts) {   // built once per rig, hidden until needed
+    WRECK.metal = WRECK.metal || new THREE.MeshStandardMaterial({ color: 0x9aa0a5, roughness: 0.3, metalness: 0.7 });
+    WRECK.dark = WRECK.dark || new THREE.MeshStandardMaterial({ color: 0x161617, roughness: 0.7, metalness: 0.4 });
+    WRECK.wires = WRECK.wires || [0xc22a1c, 0xe2b322, 0x2a6fd0].map(c => new THREE.MeshStandardMaterial({ color: c, roughness: 0.6 }));
+    const B = geo('box'), cyl = geo('shcyl', () => new THREE.CylinderGeometry(1, 1, 1, 18)), stump = new THREE.Group();
+    stump.position.copy(R.headPivot.position); R.neck.add(stump);
+    addMesh(stump, cyl, WRECK.metal, [0, -0.02, 0], [0.13, 0.2, 0.13], null, false);
+    addMesh(stump, cyl, WRECK.dark, [0, 0.085, 0], [0.105, 0.03, 0.105], null, false);
+    for (let k = 0; k < 3; k++) addMesh(stump, B, WRECK.wires[k], [-0.05 + k * 0.05, 0.2, rr(-0.03, 0.03)], [0.022, 0.26, 0.022], [rr(-0.8, 0.8), 0, rr(-0.9, 0.9)], false);
+    const plates = [];
+    for (const [x, y, z, ry] of [[0.66, 0.08, -0.1, 0.15], [-0.62, 0.18, 0.25, -0.2]]) {
+      const pl = new THREE.Group(); pl.position.set(x, y, z); pl.rotation.y = ry; R.body.add(pl);
+      addMesh(pl, B, WRECK.dark, [0, 0, 0], [0.05, 0.34, 0.48], null, false);
+      addMesh(pl, B, WRECK.metal, [Math.sign(x) * 0.012, 0, 0], [0.04, 0.26, 0.38], null, false);
+      for (let k = 0; k < 3; k++) addMesh(pl, B, WRECK.dark, [Math.sign(x) * 0.035, -0.08 + k * 0.08, 0], [0.01, 0.015, 0.34], null, false);
+      plates.push(pl);
+    }
+    R.wreckParts = { stump, plates };
+    R.headHome = { pos: R.headPivot.position.clone(), rot: R.headPivot.rotation.clone() };
+  }
+  R.wreckParts.stump.visible = true; R.wreckParts.plates.forEach(pl => { pl.visible = true; });
+  R.root.position.set(S.x, 0, S.z); R.root.rotation.y = S.yaw;
+  R.body.rotation.set(0, 0, 0.32); R.body.position.y = 1.05; R.neck.rotation.x = 0.85;
+  R.root.updateMatrixWorld(true); R.root.attach(R.headPivot);   // the head comes off
+  const hp = R.headPivot.position; R.fall = { t: 0, x0: hp.x, y0: hp.y, z0: hp.z, x1: hp.x + rr(0.6, 1.1), z1: hp.z + rr(0.6, 1.2), rx: rr(-0.4, 0.4), rz: rr(1.2, 1.6) * (Math.random() < 0.5 ? -1 : 1) };
+  R.ledMat.color.setHex(0x1a0505); R.wreck = true;
+}
+function rigRepair(R) {
+  if (!R.wreck) return;
+  R.neck.add(R.headPivot); R.headPivot.position.copy(R.headHome.pos); R.headPivot.rotation.copy(R.headHome.rot);
+  R.wreckParts.stump.visible = false; R.wreckParts.plates.forEach(pl => { pl.visible = false; });
+  R.body.rotation.set(0, 0, 0); R.body.position.y = 1.25; R.neck.rotation.x = 0; R.fall = null; R.wreck = false;
+}
+function wreckSG(S) {
+  if (S.dead) return;
+  S.dead = true; S.state = 'destroyed'; S.curSpeed = 0; S.target = null; S.path = null; S.blindCharge = 0; S.sparkT = 0.15;
+  rigWreck(S.rig, S);
+  AU.sgCrash(S.x, S.z); sparkBurst(S.x, 0.9, S.z, 16);
+}
+function updateWreck(S, dt) {
+  const R = S.rig, f = R.fall;
+  if (f && f.t < 1) {   // the head drops and rolls onto its side
+    f.t = Math.min(1, f.t + dt / 0.55); const e = f.t * f.t, hp = R.headPivot.position;
+    hp.set(f.x0 + (f.x1 - f.x0) * f.t, f.y0 + (0.35 - f.y0) * e + Math.sin(f.t * Math.PI) * 0.25, f.z0 + (f.z1 - f.z0) * f.t);
+    R.headPivot.rotation.set(f.rx * f.t, 0, f.rz * f.t);
+  }
+  S.sparkT -= dt;
+  if (S.sparkT <= 0) {   // the stump keeps shorting out
+    S.sparkT = rr(0.3, 1.5);
+    R.wreckParts.stump.getWorldPosition(tmpH); sparkBurst(tmpH.x, tmpH.y + 0.05, tmpH.z, ri(7, 14));
+    if (Math.hypot(tmpH.x - EAR.x, tmpH.z - EAR.z) < 22) AU.crackle(tmpH.x, tmpH.z);
+  }
+}
 function spawnSurveillance() {
   const N = W.N, sd = W.startDist, out = [];
   const far = W.floors.filter(i => sd[i] >= 9 && !W.avoid[i] && i !== W.gooseStart);
@@ -4533,7 +4654,7 @@ function spawnSurveillance() {
     let c = far.filter(i => out.every(o => Math.hypot(center(i % N) - o.x, center((i / N) | 0) - o.z) > CFG.SG_SEPARATION * 1.3));
     if (!c.length) c = far.filter(i => out.every(o => Math.hypot(center(i % N) - o.x, center((i / N) | 0) - o.z) > CFG.SG_SEPARATION * 0.6));
     if (!c.length) c = far;
-    const i = pick(c), R = surveillanceRig(k); R.root.visible = true;
+    const i = pick(c), R = surveillanceRig(k); rigRepair(R); R.root.visible = true;
     out.push({ id: k, rig: R, x: center(i % N), z: center((i / N) | 0), r: CFG.SG_R, yaw: rr(0, 6.28), state: 'patrol', target: null,
       path: null, pathI: 0, repathT: 0, pathGoal: -1, curSpeed: 0, stepAcc: 0, bestRem: 1e9, progT: 0, forcePathT: 0, waitT: rr(1, 4), stateT: 0,
       honkT: 0, lostT: 0, blindCharge: 0, disabledT: 0, sepCD: 0, phase: 0, headYaw: 0, beakT: 0, flapT: 0, neckX: 0.2, occluded: true });
@@ -4597,7 +4718,7 @@ function sgInBeam(S) {
   return false;
 }
 function updateSgBlind(S, dt) {
-  const P = player;
+  const P = player; if (S.dead) return;
   const on = P.flashOn && P.alive !== false && S.state !== 'disabled' && !(S.localOffT > gameTime) && sgInBeam(S);
   S.blindCharge = on ? S.blindCharge + dt * (1 + cresc()) : 0;   // looking away starts the count over
   if (S.blindCharge >= CFG.SG_BLIND_TIME) {
@@ -4616,6 +4737,7 @@ function sgLed(S) {
 function updateSurveillance(dt) {
   const cands = voiceTargets();
   for (const S of W.sgeese) {
+    if (S.dead) { updateWreck(S, dt); continue; }
     S.stateT += dt; S.sepCD -= dt; S.forcePathT = (S.forcePathT || 0) - dt;
     let moving = false;
     if (S.state === 'disabled') {
@@ -4770,6 +4892,7 @@ function updateFx(dt) {
   }
   updateOutlines(dt);
   updateOutlineFades(dt);
+  updateSparks(dt);
   updateSpeedLines(dt);
   updateAmbient(dt);
   updateScreenFx(dt);
@@ -4787,10 +4910,10 @@ function updateFx(dt) {
 function updateOutlines(dt) {
   const P = player, ase = P.aseT > 0, head = P.headT > 0;
   setOutline(GOOSE_OL, ase || (P.cooling && P.critOn) || cleanseReveal() || P.lbRevealT > 0);   // Critical Condition: while you cool down; Deep Cleanse
-  for (const S of W.sgeese) setOutline(S.rig.ol, ase);
+  for (const S of W.sgeese) setOutline(S.rig.ol, ase && !S.dead);
   for (const f of W.fridges) setOutline(f.ol, (ase && f === P.aseFridge) || (f === P.hypoFridge && hasPerk('hypothermia') && P.alive !== false));
   for (const p of W.pickups) {
-    const on = !p.taken && ((head && p === P.headTape) || p === P.scavBat || (P.lcTapeT > 0 && p.type === 'tape'));   // Loose Cannon: every tape
+    const on = !p.taken && ((head && p === P.headTape) || (P.lcTapeT > 0 && p.type === 'tape'));   // Loose Cannon: every tape
     setOutline(p.ol, on);
     if (p.ol.vis) {   // tapes and batteries are tiny: grow the outline with distance so it stays readable from far away
       const k = Math.max(1, Math.hypot(p.x - camera.position.x, p.z - camera.position.z) / 6), [a, b, c] = p.ol.base;
@@ -4809,10 +4932,11 @@ function updateSpeedLines(dt) {
   if (!SPD.g || SPD.w !== innerWidth || SPD.h !== innerHeight) { SPD.w = els.speed.width = innerWidth; SPD.h = els.speed.height = innerHeight; SPD.g = els.speed.getContext('2d'); }
   const g = SPD.g, cx = SPD.w / 2, cy = SPD.h / 2, R = Math.hypot(cx, cy), k = 0.45 + 0.55 * clamp(P.speedNow / CFG.SPRINT, 0, 1);
   const fade = clamp(Math.max(P.propelT, P.evadeSpeedT, P.lcSpeedT) / 0.6, 0, 1);   // eases out in the last moment
+  const big = P.lcSpeedT > 0;   // Loose Cannon: far more lines, brighter, reaching further in
   g.clearRect(0, 0, SPD.w, SPD.h); g.lineCap = 'round';
-  for (let i = 0, n = Math.round(24 + 36 * k); i < n; i++) {
-    const a = Math.random() * Math.PI * 2, r0 = R * rr(0.48, 0.78), r1 = R * rr(0.95, 1.08), c = Math.cos(a), s = Math.sin(a);
-    g.strokeStyle = `rgba(236,246,255,${(rr(0.06, 0.26) * k * fade).toFixed(3)})`; g.lineWidth = rr(0.8, 2.8);
+  for (let i = 0, n = Math.round((24 + 36 * k) * (big ? 2.4 : 1)); i < n; i++) {
+    const a = Math.random() * Math.PI * 2, r0 = R * (big ? rr(0.3, 0.68) : rr(0.48, 0.78)), r1 = R * rr(0.95, 1.08), c = Math.cos(a), s = Math.sin(a);
+    g.strokeStyle = `rgba(236,246,255,${(rr(0.06, 0.26) * k * fade * (big ? 1.8 : 1)).toFixed(3)})`; g.lineWidth = big ? rr(1.2, 4.2) : rr(0.8, 2.8);
     g.beginPath(); g.moveTo(cx + c * r0, cy + s * r0); g.lineTo(cx + c * r1, cy + s * r1); g.stroke();
   }
 }
@@ -4828,7 +4952,8 @@ function perkState(id) {
       const on = P.evadeSpeedT > 0 || P.evadeHideT > 0;
       return [on, on ? P.evadeHideT / CFG.EVADE_HIDE_T : P.stamLockT > 0 ? P.stamLockT / CFG.EVADE_LOCK : -1, '', P.evadeUsed && !on && P.stamLockT <= 0, P.stamLockT > 0 && !on];
     }
-    case 'scavenger': return [!!P.scavBat || P.scavGotT > 0, -1, '', P.scavUsed && P.scavGotT <= 0, false];
+    case 'scavenger': return [P.scavBuffT > 0, P.scavBuffT > 0 ? P.scavBuffT / CFG.SCAV_BUFF_T : -1, '', false, false];
+    case 'rapport': return [P.rapportT > 0, P.rapportT > 0 && !P.rapportNear ? P.rapportT / CFG.RAPPORT_LINGER : -1, '', !MP.inGame, false];
     case 'headstart': return [P.headT > 0, P.headT > 0 ? P.headT / CFG.HEAD_REVEAL : -1, '', P.headT <= 0, false];
     case 'crescendo': return [true, -1, P.tapes ? String(P.tapes) : '', false, false];
     case 'critical': return [!!P.critOn, -1, '', false, false];
@@ -4934,7 +5059,7 @@ function updateHUD(dt) {
     hudCache.inv = invKey;
     els.inv.innerHTML = Object.keys(ITEMS).filter(k => INV[k] > 0 || (k === 'ice' && P.iceLeft > 0)).map(k => `<button class="slot" type="button" data-item="${k}"><b>${ITEMS[k].name}</b><span class="n">x${INV[k]}</span><kbd>${ITEMS[k].key}</kbd></button>`).join('');
   }
-  const act = [['propelT', 'Propel', CFG.PROPEL_TIME], ['lcVitalT', 'Loose Cannon', CFG.LC_VITAL_T], ['coldBoostT', `+${Math.round(P.coldBoost * 100)}% Speed`, P.coldBoostMax || 1], ['scentHideT', 'Odorless', showerAfter()], ['lpOdorT', 'Odorless', CFG.LP_LINGER], ['undiesT', 'Undetectable', CFG.UNDIES_TIME],
+  const act = [['propelT', 'Propel', CFG.PROPEL_TIME], ['lcVitalT', 'Loose Cannon', CFG.LC_VITAL_T], ['rapportT', 'Rapport', CFG.RAPPORT_LINGER], ['scavBuffT', 'Scavenger', CFG.SCAV_BUFF_T], ['coldBoostT', `+${Math.round(P.coldBoost * 100)}% Speed`, P.coldBoostMax || 1], ['scentHideT', 'Odorless', showerAfter()], ['lpOdorT', 'Odorless', CFG.LP_LINGER], ['undiesT', 'Undetectable', CFG.UNDIES_TIME],
     ['glassesT', 'X-ray', CFG.GLASSES_TIME], ['iceLeft', 'Ice pack', CFG.ICE_TIME]].filter(([k]) => P[k] > 0);
   const fxKey = act.map(([k]) => k + Math.ceil(P[k])).join('|') + (P.iceOn ? '' : 'p');
   if (hudCache.fx !== fxKey) {
@@ -5435,7 +5560,7 @@ function addRemote(p) {
   const R = { id: p.id, name: p.name, slot, color: SLOT_COLORS[slot], alive: true, ready: false, t: performance.now(),
     x: center(1), z: center(1), nx: center(1), nz: center(1), yaw: 0, nyaw: 0, pitch: 0, face: 0, nface: 0, ap: 0, eye: CFG.STAND_EYE,
     crouch: false, sprinting: false, speedNow: 0, flashOn: false, bf: 1, bo: null, bd: null, beam: null, hid: -1, hidden: null,
-    linger: 0, undiesT: 0, evadeHideT: 0, scentHideT: 0, dc: false, strikeOn: false, exhausted: false, searching: false, bob: 0, C, light, tag, tagDist, hull, ol, tagKey: '' };
+    linger: 0, undiesT: 0, evadeHideT: 0, scentHideT: 0, dc: false, strikeOn: false, rapport: false, exhausted: false, searching: false, bob: 0, C, light, tag, tagDist, hull, ol, tagKey: '' };
   MP.remotes.set(p.id, R); return R;
 }
 function removeRemote(R) { hideOutline(R.ol); scene.remove(R.C.root); scene.remove(R.light); scene.remove(R.light.target); R.tag.remove(); R.hull.dispose(); MP.remotes.delete(R.id); }
@@ -5449,7 +5574,7 @@ function onPeerState(id, m) {
   R.nx = clamp(num(m.x, R.nx), 0, lim); R.nz = clamp(num(m.z, R.nz), 0, lim); R.eye = clamp(num(m.e, R.eye), 0.2, 2);
   R.nyaw = num(m.y, R.nyaw); R.pitch = clamp(num(m.p, R.pitch), -1.5, 1.5); R.nface = num(m.f, R.nface); R.ap = clamp(num(m.ap), -1.5, 1.5);
   R.speedNow = clamp(num(m.v), 0, 15); R.crouch = !!m.c; R.sprinting = !!m.r; R.flashOn = !!m.l; R.bf = clamp(num(m.b, 1), 0, 1);
-  R.hid = num(m.h, -1) | 0; R.linger = clamp(num(m.lg), 0, 999); R.undiesT = m.u ? 1 : 0; R.evadeHideT = m.ev ? 1 : 0; R.scentHideT = m.sh ? 1 : 0; R.dc = !!m.dc; R.strikeOn = !!m.sk; R.exhausted = !!m.x2; R.searching = !!m.sr;
+  R.hid = num(m.h, -1) | 0; R.linger = clamp(num(m.lg), 0, 999); R.undiesT = m.u ? 1 : 0; R.evadeHideT = m.ev ? 1 : 0; R.scentHideT = m.sh ? 1 : 0; R.dc = !!m.dc; R.strikeOn = !!m.sk; R.rapport = !!m.rp; R.exhausted = !!m.x2; R.searching = !!m.sr;
   const v3 = a => Array.isArray(a) && a.length === 3 && a.every(Number.isFinite) ? a : null;
   R.bo = v3(m.bo); R.bd = v3(m.bd); R.beam = R.flashOn ? v3(m.bs) : null;
   if (R.alive && m.a === 0) { R.alive = false; if (MP.host) checkAllDead(); }   // dead stays dead until the next game
@@ -5504,7 +5629,7 @@ function renderTeam() {
 }
 
 /* ---------- sync during a game ---------- */
-const VST = ['patrol', 'investigate', 'search', 'alert', 'chase', 'hunt', 'blind', 'bait'], SST = ['patrol', 'follow', 'disabled'];
+const VST = ['patrol', 'investigate', 'search', 'alert', 'chase', 'hunt', 'blind', 'bait'], SST = ['patrol', 'follow', 'disabled', 'destroyed'];
 function netTick(dt) {
   MP.sendT -= dt;
   if (MP.sendT <= 0) { MP.sendT = 1 / 12; publishMyState(); }
@@ -5518,14 +5643,14 @@ function publishMyState() {
   const P = player, on = P.flashOn && P.alive && state !== 'spectate';
   const m = { x: r2(P.x), z: r2(P.z), e: r2(P.eye), y: r3(P.yaw), p: r3(P.pitch), f: r3(P.face), ap: r3(FL.pitch), v: r2(P.speedNow), c: P.crouch ? 1 : 0,
     r: P.sprinting && P.speedNow > 2 ? 1 : 0, l: on ? 1 : 0, b: r3(batFrac(P)), h: P.hidden ? W.spots.indexOf(P.hidden) : -1, a: P.alive ? 1 : 0,
-    lg: r2(P.linger), u: P.undiesT > 0 ? 1 : 0, ev: P.evadeHideT > 0 ? 1 : 0, sh: isOdorless(P) ? 1 : 0, dc: P.cleanseT > 0 ? 1 : 0, sk: P.strikeT > 0 ? 1 : 0, x2: P.exhausted ? 1 : 0, sr: P.searching ? 1 : 0 };
+    lg: r2(P.linger), u: P.undiesT > 0 ? 1 : 0, ev: P.evadeHideT > 0 ? 1 : 0, sh: isOdorless(P) ? 1 : 0, rp: hasPerk('rapport') ? 1 : 0, dc: P.cleanseT > 0 ? 1 : 0, sk: P.strikeT > 0 ? 1 : 0, x2: P.exhausted ? 1 : 0, sr: P.searching ? 1 : 0 };
   if (on) { m.bo = [r2(flash.position.x), r2(flash.position.y), r2(flash.position.z)]; m.bd = [r3(FL.dir.x), r3(FL.dir.y), r3(FL.dir.z)]; m.bs = beamSpot().map(r2); }
   pub(TOPIC.s(MP.code, MP.id), m);
 }
 function publishWorld() {
   const G = W.goose;
   netHost({ t: 'w',
-    v: [r2(G.x), r2(G.z), r3(G.yaw), VST.indexOf(G.state), r2(G.curSpeed), G.beakT > 0 ? 1 : 0, G.flapT > 0 ? 1 : 0, G.baitPhase === 'eat' ? 1 : 0, G.tid || 0, r2(G.lookX ?? G.x), r2(G.lookZ ?? G.z), G.searchPhase === 'look' ? 1 : 0],
+    v: [r2(G.x), r2(G.z), r3(G.yaw), VST.indexOf(G.state), r2(G.curSpeed), G.beakT > 0 ? 1 : 0, G.flapT > 0 ? 1 : 0, G.baitPhase === 'eat' ? 1 : 0, G.tid || 0, r2(G.lookX ?? G.x), r2(G.lookZ ?? G.z), G.searchPhase === 'look' ? 1 : 0, r2(G.blindImm)],
     s: W.sgeese.map(S => [r2(S.x), r2(S.z), r3(S.yaw), SST.indexOf(S.state), r2(S.curSpeed), S.beakT > 0 ? 1 : 0, S.flapT > 0 ? 1 : 0, S.tid || 0, r2(S.lookX ?? S.x), r2(S.lookZ ?? S.z)]),
     f: W.fridges.map(f => [f.open ? 1 : 0, r2(f.used), f.powered ? 1 : 0]),
     sh: W.showers.map(o => [o.run === 'hot' ? 1 : o.run === 'cold' ? 2 : 0, r2(o.runT), r2(Math.max(0, o.readyAt - gameTime))]),
@@ -5545,9 +5670,12 @@ function applyWorld(m) {
     const st = VST[v[3]] || 'patrol'; if (st !== G.state) { G.state = st; G.stateT = 0; }
     if (v[5]) G.beakT = Math.max(G.beakT, 0.15); if (v[6]) G.flapT = Math.max(G.flapT, 0.15);
     G.baitPhase = v[7] ? 'eat' : 'go'; G.tid = v[8] || 0; G.lookX = num(v[9], G.x); G.lookZ = num(v[10], G.z); G.searchPhase = v[11] ? 'look' : 'move';
+    if (Number.isFinite(v[12])) G.blindImm = clamp(v[12], 0, CFG.BLIND_IMMUNE);   // nobody can blind it again until this runs out
   }
   if (Array.isArray(m.s)) m.s.forEach((a, i) => {
     const S = W.sgeese[i]; if (!S || !Array.isArray(a)) return;
+    if (SST[a[3]] === 'destroyed' && !S.dead) wreckSG(S);
+    if (S.dead) return;   // a wreck stays a wreck
     S.net = { x: num(a[0], S.x), z: num(a[1], S.z), yaw: num(a[2], S.yaw), sp: num(a[4]) };
     const st = SST[a[3]] || 'patrol'; if (st !== S.state && !(S.localOffT > gameTime)) { S.state = st; S.stateT = 0; }
     if (a[5]) S.beakT = Math.max(S.beakT, 0.15); if (a[6]) S.flapT = Math.max(S.flapT, 0.15);
@@ -5578,7 +5706,7 @@ function updatePuppets(dt) {
   G.dist = Math.hypot(G.x - EAR.x, G.z - EAR.z);
   animateGoose(G, dt, G.curSpeed > 0.2);
   updateBlind(G, dt);
-  for (const S of W.sgeese) { animateGoose(S, dt, S.curSpeed > 0.1, S.rig); updateSgBlind(S, dt); sgLed(S); }
+  for (const S of W.sgeese) { if (S.dead) { updateWreck(S, dt); continue; } animateGoose(S, dt, S.curSpeed > 0.1, S.rig); updateSgBlind(S, dt); sgLed(S); }
 }
 
 /* ---------- messages ---------- */
@@ -5595,6 +5723,7 @@ function onClientMsg(m) {
     case 'take': { const pk = W.pickups[i]; if (pk && R.alive) hostTake(pk, R); break; }
     case 'spotbat': { const s = W.spots[i]; if (s && s.battery && R.alive) { s.battery = false; netHost({ t: 'spotbat', i, by: id }); } break; }
     case 'lbbat': if (R.alive) { lbBoost(); netHost({ t: 'lbbat' }); } break;
+    case 'sgkill': { const S = W.sgeese[i]; if (S && !S.dead && R.alive) wreckSG(S); break; }
     case 'shw': { const o = W.showers[i]; if (o && R.alive && (m.k === 'hot' || m.k === 'cold')) showerApply(o, m.k); break; }
     case 'fr': { const f = W.fridges[i]; if (f && f.open !== !!m.o) { f.open = !!m.o; AU.fridgeDoor(f.x, f.z, f.open); if (f.open && f.powered) for (let k = 0; k < 10; k++) emitSmoke(f, true); } break; }
     case 'fuse': if (Array.isArray(m.u)) for (const u of m.u.slice(0, 8)) { const f = Array.isArray(u) && W.fridges[num(u[0], -1) | 0]; if (f && f.powered) f.used += clamp(num(u[1]), 0, 1); } break;
@@ -5789,6 +5918,7 @@ $('cr-copy').addEventListener('click', e => copyText(CR.code, e.currentTarget));
 $('cr-reroll').addEventListener('click', () => { CR.code = randCode(); renderCreate(); });
 $('cr-go').addEventListener('click', createRoom);
 $('cr-back').addEventListener('click', () => showScreen('scr-mp'));
+$('cr-menu').addEventListener('click', () => { showScreen('scr-start'); renderLoadoutSummary(); });
 $('jn-code').addEventListener('input', e => setCode(e.target.value));
 $('jn-code').addEventListener('keydown', e => { if (e.key === 'Enter') joinRoom($('jn-code').value); });
 $('jn-paste').addEventListener('click', async () => {
@@ -5799,6 +5929,7 @@ $('jn-go').addEventListener('click', () => joinRoom($('jn-code').value));
 $('jn-filter').addEventListener('click', e => { const b = e.target.closest('[data-f]'); if (!b) return; MP.filter = b.dataset.f; document.querySelectorAll('#jn-filter [data-f]').forEach(x => x.setAttribute('aria-pressed', String(x === b))); renderRooms(); });
 document.querySelector('#jn-filter [data-f="any"]').setAttribute('aria-pressed', 'true');
 $('jn-back').addEventListener('click', () => showScreen('scr-mp'));
+$('jn-menu').addEventListener('click', () => { showScreen('scr-start'); renderLoadoutSummary(); });
 $('rm-copy').addEventListener('click', e => copyText(MP.code, e.currentTarget));
 $('rm-start').addEventListener('click', hostStart);
 $('rm-perks').addEventListener('click', () => { perksFrom = 'scr-room'; showScreen('scr-perks'); renderLoadout(); });
@@ -5861,7 +5992,7 @@ window.__gooseflesh = {
   interact: () => interact(), blindVoice: () => blindGoose(W.goose), sgDetects: S => sgDetects(S),
   start: beginNewRun, caught: () => caught(), win: () => { player.tapes = CFG.TAPES; win(); },
   goose: () => W && W.goose, step: (n = 60, dt = 1 / 60) => { for (let i = 0; i < n; i++) { if (state === 'caught' && JS.strike && !MP.inGame) { updateJumpscare(dt); continue; } if (!(state === 'playing' || mpSimulating())) break; simStep(dt); if (state === 'caught') updateJumpscare(dt); else if (state === 'collapse') updateCollapse(dt); } },
-  mp: MP, MLOOK, DIFF, BUILD, TEX, looseCannon: () => looseCannon(), strike: () => strike(), JS, FIST, renderer, scene, showerUse, aimedKnob, exitSpot: () => exitSpot(), enterSpot: s => enterSpot(s), mpLeave: () => mpLeave(), hostStart: () => hostStart(), specCycle: d => specCycle(d), applyDifficulty, difficultyText,
+  mp: MP, MLOOK, DIFF, BUILD, TEX, looseCannon: () => looseCannon(), wreckSG: S => wreckSG(S), SPARKS, strike: () => strike(), JS, FIST, renderer, scene, showerUse, aimedKnob, exitSpot: () => exitSpot(), enterSpot: s => enterSpot(s), mpLeave: () => mpLeave(), hostStart: () => hostStart(), specCycle: d => specCycle(d), applyDifficulty, difficultyText,
 };
 })();
 </script>
