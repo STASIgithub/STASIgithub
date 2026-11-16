@@ -289,6 +289,9 @@ input[type=range]{width:100%;accent-color:var(--ember);height:28px}
 .howto h4{margin:0;font-family:var(--f-display);font-weight:400;font-size:clamp(22px,2.8vw,28px);line-height:1.05;color:var(--ink);letter-spacing:.03em}
 .howto p{margin:0;font-size:15.5px;line-height:1.62;color:var(--ink);max-width:62ch}
 .howto .howto-keys{margin:2px 0 0}
+.howto .terms{display:grid;grid-template-columns:auto 1fr;gap:8px 18px;margin:2px 0 0;font-size:15px;line-height:1.5}
+.howto .terms dt{font-family:var(--f-display);font-size:19px;color:var(--ember);letter-spacing:.03em}
+.howto .terms dd{margin:0;color:var(--ink)}
 .howto .actions{justify-content:flex-start}
 .center .inner.loadout{align-items:stretch}
 .sub{margin:8px 0 0;font-size:12px;font-weight:400;letter-spacing:.2em;text-transform:uppercase;color:var(--dim);display:flex;justify-content:space-between}
@@ -547,6 +550,17 @@ body.safe h1{animation:none}
     </section>
 
     <section>
+      <h4>Terms</h4>
+      <p>Perks, items and other effects use a few words to keep things short:</p>
+      <dl class="terms">
+        <dt>Speed</dt><dd>How fast you move. "+20% Speed" means you move 20% faster.</dd>
+        <dt>Odorless</dt><dd>The Voice can't pick up your scent, however long you stay in one place.</dd>
+        <dt>Undetectable</dt><dd>Nothing can track you: not by sight, sound or smell.</dd>
+        <dt>Vitality</dt><dd>Your stamina doesn't run out.</dd>
+      </dl>
+    </section>
+
+    <section>
       <h4>Controls</h4>
       <dl class="keys howto-keys" id="howto-keys-pc">
         <dt><kbd>W</kbd> <kbd>A</kbd> <kbd>S</kbd> <kbd>D</kbd></dt><dd>Move. Mouse to look.</dd>
@@ -727,8 +741,8 @@ const CFG = {
   FRIDGE_LOW: 0.3,   // below 30% power a fridge can't cool you; it runs itself down, then recharges
   ICE_TIME: 30, ICE_RATE: 0.1,   // 3 degrees over 30 seconds
   // showers: 1 or 2 per maze. Hot: +0.04 degrees a second, scent hidden for 11 s after. Cold: -0.05 degrees a second,
-  // +1% speed for every second under it, for 11 s after. 10 s of water, then 60 s with none.
-  SHOWER_RUN: 10, SHOWER_COOLDOWN: 60, SHOWER_HOT: 0.04, SHOWER_COLD: 0.05, SHOWER_AFTER: 11, SHOWER_STEAM: 0.5, SHOWER_SPEED: 0.01,
+  // +1% Speed for every second under it, lasting 5 s per second spent under it. 10 s of water, then 60 s with none.
+  SHOWER_RUN: 10, SHOWER_COOLDOWN: 60, SHOWER_HOT: 0.04, SHOWER_COLD: 0.05, SHOWER_AFTER: 11, SHOWER_STEAM: 0.5, SHOWER_SPEED: 0.01, SHOWER_SPEED_T: 5,
   // surveillance geese: three ordinary-sized geese that follow you and honk for The Voice
   SG_COUNT: 3, SG_SCALE: 0.34, SG_SPEED: 0.85, SG_R: 0.3, SG_SEPARATION: 18, SG_EYE: 0.92,
   SG_SIGHT: 6, SG_SIGHT_RUN: 8.5, SG_SMELL: 2.6, SG_HEAR_RUN: 7, SG_TOUCH: 0.95,
@@ -738,7 +752,7 @@ const CFG = {
   BREATH_R_MIN: 2.4, BREATH_R_MAX: 11,
   // defenses and items
   BLIND_TIME: 0.6, BLIND_DUR: 3.5, BLIND_IMMUNE: 12, CABINETS: 10, SEARCH_TIME: 1.6,
-  PROPEL_TIME: 3.5, PROPEL_SPEED: 1.6, PROPEL_FOV: 30, EVADE_FOV: 40, UNDIES_TIME: 30, GLASSES_TIME: 15, EAT_MIN: 5, EAT_MAX: 10,
+  PROPEL_TIME: 5, PROPEL_SPEED: 1.6, PROPEL_FOV: 30, EVADE_FOV: 40, UNDIES_TIME: 30, GLASSES_TIME: 15, EAT_MIN: 5, EAT_MAX: 10,
   VOICE_FLICKER: 2,   // the flashlight sputters, very fast, this long after you blind The Voice
   // The Voice by tapes found. Single player: before the first tape it's a bit slower than your sprint and has a poor nose;
   // from the second tape on it gets 2.25% faster per tape (half that in a room)
@@ -748,6 +762,8 @@ const CFG = {
   HYPO_COOL: 1.3, ASE_TIME: 13.5, EVADE_SPEED_T: 3, EVADE_HIDE_T: 8, EVADE_LOCK: 4, SCAVENGER_AT: 0.5, SCAVENGER_GAIN: 0.6,
   HEAD_REVEAL: 12, HEAD_SPEED: 1.12, CRESCENDO_BASE: 0.02, CRESCENDO: 0.04, CRIT_TEMP: 102, CRIT_COOL: 2, FRIGID_TIME: 45, FRIGID_SLOW: 0.2,
   EVADE_RECHARGE_TAPE: 3,
+  LP_CROUCH: 3, LP_LINGER: 8,   // Low Profile
+  LC_EVERY: 25, LC_CHANCE: 1 / 50, LC_CD: 60, LC_SPEED: 2.5, LC_SPEED_T: 4, LC_FOV: 55, LC_VITAL_T: 10, LC_TAPES_T: 3.5,   // Loose Cannon
   CLEANSE_EXTRA: 30, CLEANSE_LINGER: 8,   // Deep Cleanse
   IRON_SPEED: 0.92, IRON_DRAIN: 1.12, STRIKE_WINDOW: 0.6, STRIKE_STUN: 4, STRIKE_STAMINA: 0.3,   // Iron Nerve: one Strike per game
 };
@@ -857,6 +873,8 @@ const ICON = {
   crescendo: '<path d="M21 3.5L3.5 7.5 21 11.5"/><path d="M5 20.5v-3M10 20.5v-5M15 20.5v-7M20 20.5v-9"/>',
   cleanse: '<path d="M4 4.5h6.5a3.5 3.5 0 0 1 3.5 3.5v1.5"/><path d="M10 9.5h8l-1.2 2.8h-5.6z"/><path d="M11.6 15.2l-.5 1.6M14 15.2v1.8M16.4 15.2l.5 1.6M12.2 19.4l-.4 1.3M15.8 19.4l.4 1.3"/>',
   ironnerve: '<path d="M7.5 11.5V8a1.5 1.5 0 0 1 3 0v3M10.5 10.5V6.8a1.5 1.5 0 0 1 3 0v3.7M13.5 10.5V7.6a1.5 1.5 0 0 1 3 0v3.4"/><path d="M16.5 10.2a1.5 1.5 0 0 1 3 0v4.3a6 6 0 0 1-6 6h-1.6A5.4 5.4 0 0 1 6.5 15v-2.3a1.5 1.5 0 0 1 3 0v1.6"/>',
+  lowprofile: '<path d="M3 20.5h18"/><path d="M6.5 17.5c0-2.4 1.9-4.2 4.4-4.2h2.6c1.7 0 3 .9 3.8 2.3l1.2 1.9"/><circle cx="9" cy="10" r="2"/><path d="M15.5 6.5c1.2.6 1.2 2 0 2.6M18 4.5c2.4 1.3 2.4 5.3 0 6.6" stroke-dasharray="1.6 1.4"/>',
+  loosecannon: '<path d="M4 15.5a4.5 4.5 0 0 0 9 0 4.5 4.5 0 0 0-9 0z"/><path d="M11.4 12.2l3.4-3.4"/><path d="M14.8 8.8c.6-1.6 2-2.7 3.7-2.9"/><path d="M19 3.5v1.6M21.2 6.1h-1.6M20.5 4.2l-1.1 1.1" />',
   frigid: '<path d="M12 3l8 4.5v9L12 21l-8-4.5v-9z"/><path d="M4 7.5l8 4.5 8-4.5M12 12v9"/><path d="M7.5 13.6v2.2M9.5 15.4v1.6M16.5 13.6v2.2"/>',
   critical: '<path d="M7 4.5a2 2 0 0 1 4 0v9.3a4 4 0 1 1-4 0z"/><path d="M9 15V8.5"/><circle cx="9" cy="16.9" r="1.6" fill="currentColor"/><path d="M17.5 4v8.5M17.5 16v.6"/>',
   muffin: '<path d="M6 13h12l-1.6 7.5H7.6z"/><path d="M4.8 13c0-4.2 3.2-7.4 7.2-7.4s7.2 3.2 7.2 7.4"/><path d="M9 15.5l.5 3M12 15.5v3M15 15.5l-.5 3"/><circle cx="9.4" cy="10.2" r="1" fill="currentColor"/><circle cx="13.2" cy="8.8" r="1" fill="currentColor"/><circle cx="15.2" cy="11.4" r="1" fill="currentColor"/>',
@@ -866,22 +884,24 @@ const ICON = {
 const icon = id => `<svg class="ico" viewBox="0 0 24 24" aria-hidden="true">${ICON[id]}</svg>`;
 const PERKS = {
   lightbringer: { name: 'LightBringer', desc: 'Your flashlight never runs out. Every battery you pick up gives your whole team 10% flashlight and shows you The Voice through walls for 4 seconds.' },
-  endurance: { name: 'Endurance', desc: "While you're out of stamina, you walk 30% faster. Each time you run out, your stamina lasts 20% longer, up to 60%. That can grow at most once every 40 seconds." },
+  endurance: { name: 'Endurance', desc: "While you're out of stamina, you get +30% Speed. Each time you run out, your stamina lasts 20% longer, up to 60%. That can grow at most once every 40 seconds." },
   hypothermia: { name: 'Hypothermia', desc: 'You cool down 30% faster, from refrigerators, ice packs and cold showers. The nearest refrigerator is always outlined.' },
   ase: { name: 'All Seeing Eye', desc: 'For 13.5 seconds after you pick up a tape, see The Voice, every surveillance goose and the nearest refrigerator through walls.' },
-  evasive: { name: 'Evasive Maneuvers', desc: "The first time The Voice chases you, you move twice as fast for 3 seconds and it can't detect you for 8. Then your stamina's empty for 4 seconds. It recharges when your team picks up the 3rd tape." },
+  evasive: { name: 'Evasive Maneuvers', desc: "The first time The Voice chases you, you get +100% Speed for 3 seconds and you're Undetectable to it for 8. Then your stamina's empty for 4 seconds. It recharges when your team picks up the 3rd tape." },
   scavenger: { name: 'Scavenger', desc: "When your flashlight is at 50% or lower, see the nearest battery through walls. That battery adds 60%, even past 100%. Works once per run." },
-  headstart: { name: 'Headstart', desc: "For the first 12 seconds, see the nearest tape through walls, move 12% faster and use no stamina." },
-  crescendo: { name: 'Crescendo', desc: "Start with a 2% bonus, plus 4% for every tape your team finds, to: speed, stamina recovery, stamina efficiency, refrigerator cooling, how fast you blind geese, and how slowly you heat up." },
+  headstart: { name: 'Headstart', desc: "For the first 12 seconds, see the nearest tape through walls and get +12% Speed and Vitality." },
+  crescendo: { name: 'Crescendo', desc: "Start with a 2% bonus, plus 4% for every tape your team finds, to: Speed, stamina recovery, stamina efficiency, refrigerator cooling, how fast you blind geese, and how slowly you heat up." },
   cleanse: { name: 'Deep Cleanse', desc: "Shower effects last 30 seconds longer. While you're showering, and for 8 seconds after you get out, your whole team sees The Voice through walls." },
-  ironnerve: { name: 'Iron Nerve', desc: "You move 8% slower, use 12% more stamina, and can't hide or crouch. Crouch becomes Strike, once per game: if The Voice catches you within 0.6 s of pressing it, you punch it in the face and stun it for 4 s, for 30% of your stamina. A miss still uses it up." },
+  ironnerve: { name: 'Iron Nerve', desc: "You have 8% less Speed, use 12% more stamina, and can't hide or crouch. Crouch becomes Strike, once per game: if The Voice catches you within 0.6 s of pressing it, you punch it in the face and stun it for 4 s, for 30% of your stamina. A miss still uses it up." },
+  lowprofile: { name: 'Low Profile', desc: "After 3 seconds of crouching you're Odorless, and surveillance geese only notice you if you touch them. When you stand up, Odorless lasts 8 more seconds." },
+  loosecannon: { name: 'Loose Cannon', desc: "Every 25 seconds there's a 1 in 50 chance you get +150% Speed for 4 seconds, Vitality for 10, and see every tape through walls for 3.5. Then it can't happen again for 60 seconds." },
   frigid: { name: 'Frigid', desc: "For the first 45 seconds, your body temperature can't rise. After that, it rises 20% slower." },
   critical: { name: 'Critical Condition', desc: "At 102°F or hotter, refrigerators cool you twice as fast, and while you're cooling down you see The Voice through walls." },
 };
 const LOADOUT_ITEMS = {
   muffin: { name: 'Blueberry Muffin', desc: 'Throw it and The Voice goes straight for it.' },
   ice: { name: 'Ice Pack', desc: 'Cools you down by up to 3 degrees over 30 seconds, anywhere.' },
-  propel: { name: 'Blueberry Propel', desc: 'Refills your stamina. 3.5 seconds of endless stamina and 60% more speed.' },
+  propel: { name: 'Blueberry Propel', desc: 'Refills your stamina, then 5 seconds of Vitality and +60% Speed.' },
 };
 const LOADOUT_KEY = 'gooseflesh.loadout.v1';
 const PERK_SLOTS = 3, DEFAULT_PERKS = ['endurance', 'headstart', 'crescendo'];
@@ -2793,7 +2813,8 @@ function resetPlayer() {
     ax: center(1), az: center(1), linger: 0, stepAcc: 0, bob: 0, target: null, hbT: 0, fov: 72, stamGhost: 1, ghostHold: 0,
     // perks chosen in the loadout, and their timers
     perks: new Set(loadout.perks), aseT: 0, aseFridge: null, headT: 0, headTape: null, hypoFridge: null, hypoT: 0, lbRevealT: 0,
-    frigidT: loadout.perks.includes('frigid') ? CFG.FRIGID_TIME : 0, cleanseT: 0, strikeT: 0, strikeUsed: false, showerHot: false, showerCold: 0, showerCooling: false, scentHideT: 0, coldBoost: 0, coldBoostT: 0,
+    frigidT: loadout.perks.includes('frigid') ? CFG.FRIGID_TIME : 0, cleanseT: 0, coldBoostMax: 0,
+    lpCrouchT: 0, lpOdorT: 0, lcRollT: CFG.LC_EVERY, lcCD: 0, lcSpeedT: 0, lcVitalT: 0, lcTapeT: 0, strikeT: 0, strikeUsed: false, showerHot: false, showerCold: 0, showerCooling: false, scentHideT: 0, coldBoost: 0, coldBoostT: 0,
     scavUsed: false, scavBat: null, scavClaim: null, scavGotT: 0, endEff: 0, endTokens: 0, endCD: 0, critOn: false, evadeRearmed: false,
     evadeUsed: false, evadeSpeedT: 0, evadeHideT: 0, evadePending: false, stamLockT: 0,
   });
@@ -3303,8 +3324,8 @@ function exitSpot() {
   P.hidden = null; P.x = s.ex; P.z = s.ez; collide(P, CFG.PLAYER_R);
   if (s.type === 'shower') {   // what the water did for you kicks in as you step out
     if (P.showerHot) { P.scentHideT = showerAfter(); P.linger = 0; }
-    const secs = Math.min(CFG.SHOWER_RUN, Math.floor(P.showerCold + 1e-6));
-    if (secs > 0) { P.coldBoost = secs * CFG.SHOWER_SPEED; P.coldBoostT = showerAfter(); }
+    const secs = Math.min(CFG.SHOWER_RUN, Math.floor(P.showerCold + 0.05));   // a full 10 s run counts as 10 despite frame rounding
+    if (secs > 0) { P.coldBoost = secs * CFG.SHOWER_SPEED; P.coldBoostT = P.coldBoostMax = secs * CFG.SHOWER_SPEED_T + (hasPerk('cleanse') ? CFG.CLEANSE_EXTRA : 0); }
     P.showerHot = false; P.showerCold = 0; P.showerCooling = false; setClass('shs', els.hide, 'steam', false);
   }
   P.eye = s.type === 'bed' ? CFG.CROUCH_EYE : CFG.STAND_EYE; P.crouch = s.type === 'bed';
@@ -3317,10 +3338,10 @@ function exitSpot() {
 const INV = { muffin: 0, propel: 0, undies: 0, glasses: 0, ice: 0 };
 const ITEMS = {
   muffin: { name: 'Blueberry muffin', key: 'Q', found: "A blueberry muffin. Throw it and The Voice will go for it." },
-  propel: { name: 'Blueberry Propel', key: '1', found: 'Blueberry Propel! Drink it for 10 seconds of endless stamina and extra speed.' },
-  undies: { name: "Adam's Underwear", key: '2', found: "Adam's Underwear! Put it on your head and The Voice can't detect you for 30 seconds." },
+  propel: { name: 'Blueberry Propel', key: '1', found: 'Blueberry Propel! Drink it for 5 seconds of Vitality and +60% Speed.' },
+  undies: { name: "Adam's Underwear", key: '2', found: "Adam's Underwear! Put it on your head and you're Undetectable for 30 seconds." },
   glasses: { name: "HardLife's Glasses", key: '3', found: "HardLife's Glasses! See The Voice and the tapes through walls for 15 seconds." },
-  ice: { name: 'Ice pack', key: '4', found: 'An ice pack. Use it anywhere to cool down by up to 2 degrees.' },
+  ice: { name: 'Ice pack', key: '4', found: 'An ice pack. Use it anywhere to cool down by up to 3 degrees over 30 seconds.' },
 };
 function giveItem(kind) {
   INV[kind]++; AU.battery();
@@ -3453,7 +3474,7 @@ function updateItems(dt) {
 // perk timers, and what each perk is pointing at right now
 function updatePerks(dt) {
   const P = player;
-  for (const k of ['aseT', 'headT', 'evadeSpeedT', 'evadeHideT', 'flickerT', 'blinkT', 'lbRevealT', 'endCD', 'scavGotT', 'scentHideT', 'coldBoostT', 'frigidT', 'cleanseT', 'strikeT']) if (P[k] > 0) P[k] = Math.max(0, P[k] - dt);
+  for (const k of ['aseT', 'headT', 'evadeSpeedT', 'evadeHideT', 'flickerT', 'blinkT', 'lbRevealT', 'endCD', 'scavGotT', 'scentHideT', 'coldBoostT', 'frigidT', 'cleanseT', 'strikeT', 'lpOdorT', 'lcCD', 'lcSpeedT', 'lcVitalT', 'lcTapeT']) if (P[k] > 0) P[k] = Math.max(0, P[k] - dt);
   if (P.evadePending && P.evadeSpeedT <= 0 && P.evadeHideT <= 0) {   // Evasive Maneuvers is over: stamina empties and stays empty
     P.evadePending = false; P.stamina = 0; P.exhausted = true; P.stamLockT = CFG.EVADE_LOCK; P.sprinting = false; touch.run = false;
   }
@@ -3463,6 +3484,15 @@ function updatePerks(dt) {
     for (const p of W.pickups) { if (p.type !== 'battery' || p.taken) continue; const d = Math.hypot(p.x - P.x, p.z - P.z); if (d < bd) { bd = d; P.scavBat = p; } }
   }
   P.critOn = critical() && P.alive !== false;
+  // Low Profile: 3 s of crouching makes you Odorless; standing up, it lingers 8 s
+  if (hasPerk('lowprofile')) {
+    if (P.crouch && !P.hidden) { P.lpCrouchT += dt; if (P.lpCrouchT >= CFG.LP_CROUCH) P.lpOdorT = CFG.LP_LINGER; } else P.lpCrouchT = 0;
+  }
+  // Loose Cannon: a 1 in 50 roll every 25 s, then 60 s before it can fire again
+  if (hasPerk('loosecannon') && P.alive !== false && (P.lcRollT -= dt) <= 0) {
+    P.lcRollT += CFG.LC_EVERY;
+    if (P.lcCD <= 0 && Math.random() < CFG.LC_CHANCE) looseCannon();
+  }
   if (hasPerk('hypothermia') && (P.hypoT -= dt) <= 0) {   // the nearest refrigerator by walking distance, rechecked twice a second
     P.hypoT = 0.5; const d = bfs(clamp(tileOf(P.x), 0, W.N - 1), clamp(tileOf(P.z), 0, W.N - 1)); let bd = 1e9; P.hypoFridge = null;
     for (const f of W.fridges) { const v = d[tileOf(f.fz) * W.N + tileOf(f.fx)]; if (v >= 0 && v < bd) { bd = v; P.hypoFridge = f; } }
@@ -3472,6 +3502,15 @@ function updatePerks(dt) {
     P.evadeRearmed = true; P.evadeUsed = false;
   }
 }
+function looseCannon() {
+  const P = player;
+  P.lcSpeedT = CFG.LC_SPEED_T; P.lcVitalT = CFG.LC_VITAL_T; P.lcTapeT = CFG.LC_TAPES_T; P.lcCD = CFG.LC_CD;
+  if (P.stamina < CFG.STAMINA_MAX) P.stamShowT = 3; P.stamina = CFG.STAMINA_MAX; P.exhausted = false; P.stamLockT = 0;
+  AU.swing(); AU.drink();
+}
+// the shared terms: Odorless (The Voice can't pick up your scent) and Vitality (stamina doesn't run out)
+const isOdorless = P => P === player ? P.scentHideT > 0 || P.lpOdorT > 0 : P.scentHideT > 0;
+const hasVitality = () => player.propelT > 0 || player.headT > 0 || player.lcVitalT > 0;
 function startEvasive() {
   const P = player; P.evadeUsed = true; P.evadePending = true;
   P.evadeSpeedT = CFG.EVADE_SPEED_T; P.evadeHideT = CFG.EVADE_HIDE_T;
@@ -3575,6 +3614,7 @@ function updatePlayer(dt) {
     if (P.headT > 0) mult *= CFG.HEAD_SPEED;
     if (P.coldBoostT > 0) mult *= 1 + P.coldBoost;   // cold shower
     if (hasPerk('ironnerve')) mult *= CFG.IRON_SPEED;
+    if (P.lcSpeedT > 0) mult *= CFG.LC_SPEED;   // Loose Cannon
     mult *= 1 + cresc();
     const speed = (P.sprinting ? CFG.SPRINT : (P.crouch ? CFG.CROUCH : CFG.WALK)) * analog * mult;
     const fx = -Math.sin(P.yaw), fz = -Math.cos(P.yaw), rx = Math.cos(P.yaw), rz = -Math.sin(P.yaw);
@@ -3620,7 +3660,7 @@ function updatePlayer(dt) {
   flash.distance = 20 + 26 * frac; flash.angle = 0.38 + 0.1 * frac;
   renderer.shadowMap.autoUpdate = P.flashOn && flash.castShadow;
   // linger / scent
-  if (P.undiesT > 0 || P.scentHideT > 0 || Math.hypot(P.x - P.ax, P.z - P.az) > CFG.LINGER_RADIUS) { P.ax = P.x; P.az = P.z; P.linger = 0; } else P.linger += dt;
+  if (P.undiesT > 0 || isOdorless(P) || Math.hypot(P.x - P.ax, P.z - P.az) > CFG.LINGER_RADIUS) { P.ax = P.x; P.az = P.z; P.linger = 0; } else P.linger += dt;
   // eye height (used for sight lines and hiding), then the camera
   const targetEye = P.hidden ? P.hidden.eye : (P.crouch ? CFG.CROUCH_EYE : CFG.STAND_EYE);
   P.eye += (targetEye - P.eye) * (1 - Math.exp(-dt * 10));
@@ -3645,7 +3685,7 @@ function updatePlayer(dt) {
     EAR.set(P.x, P.eye, P.z);
   }
   aura.position.set(EAR.x, EAR.y + 0.25, EAR.z);
-  const haste = CFG.PROPEL_FOV * clamp(P.propelT / 0.5, 0, 1) + CFG.EVADE_FOV * clamp(P.evadeSpeedT / 0.5, 0, 1);   // Propel, Evasive Maneuvers
+  const haste = CFG.PROPEL_FOV * clamp(P.propelT / 0.5, 0, 1) + CFG.EVADE_FOV * clamp(P.evadeSpeedT / 0.5, 0, 1) + CFG.LC_FOV * clamp(P.lcSpeedT / 0.5, 0, 1);   // Propel, Evasive Maneuvers, Loose Cannon
   const wantFov = (fp ? 72 : 74) + (P.sprinting && P.speedNow > 2 ? 5 : 0) + haste + dis * 3.5 * Math.sin(gameTime * 1.13);
   P.fov += (wantFov - P.fov) * (1 - Math.exp(-dt * 6));
   if (Math.abs(camera.fov - P.fov) > 0.01) { camera.fov = P.fov; camera.updateProjectionMatrix(); }
@@ -3771,7 +3811,7 @@ function heatEffects() {
 const tempQ = () => Math.round(player.temp * 10) / 10;
 function updateStamina(dt, HE) {
   const P = player, MAX = CFG.STAMINA_MAX;
-  if (P.propelT > 0 || P.headT > 0) {   // Blueberry Propel or Headstart: endless stamina
+  if (hasVitality()) {   // Vitality: Blueberry Propel, Headstart, Loose Cannon
     if (P.stamLockT > 0) P.stamLockT = Math.max(0, P.stamLockT - dt);
     if (P.stamina < MAX) P.stamShowT = 3; else if (P.stamShowT > 0) P.stamShowT -= dt;
     P.stamina = MAX; P.exhausted = false; P.consuming = false; P.sinceUse = 99; return;
@@ -4519,7 +4559,7 @@ function sgDetects(S) {
   if (P.crouch) return d < CFG.SG_TOUCH;
   const clear = !wallsBetween(S.x, S.z, P.x, P.z), running = P.sprinting && P.speedNow > 2;
   if (!clear) return false;
-  if (d < CFG.SG_SMELL && !(P.scentHideT > 0)) return true;   // smell (not after a hot shower)
+  if (d < CFG.SG_SMELL && !isOdorless(P)) return true;   // smell (not while Odorless)
   if (running && d < CFG.SG_HEAR_RUN) return true;          // hears you running
   if (d > (running ? CFG.SG_SIGHT_RUN : CFG.SG_SIGHT)) return false;
   const hy = S.yaw + S.headYaw;
@@ -4750,7 +4790,7 @@ function updateOutlines(dt) {
   for (const S of W.sgeese) setOutline(S.rig.ol, ase);
   for (const f of W.fridges) setOutline(f.ol, (ase && f === P.aseFridge) || (f === P.hypoFridge && hasPerk('hypothermia') && P.alive !== false));
   for (const p of W.pickups) {
-    const on = !p.taken && ((head && p === P.headTape) || p === P.scavBat);
+    const on = !p.taken && ((head && p === P.headTape) || p === P.scavBat || (P.lcTapeT > 0 && p.type === 'tape'));   // Loose Cannon: every tape
     setOutline(p.ol, on);
     if (p.ol.vis) {   // tapes and batteries are tiny: grow the outline with distance so it stays readable from far away
       const k = Math.max(1, Math.hypot(p.x - camera.position.x, p.z - camera.position.z) / 6), [a, b, c] = p.ol.base;
@@ -4762,13 +4802,13 @@ function updateOutlines(dt) {
 const SPD = { on: false, g: null, w: 0, h: 0, t: 0 };
 function hideSpeedLines() { SPD.on = false; els.speed.classList.remove('on'); if (SPD.g) SPD.g.clearRect(0, 0, SPD.w, SPD.h); }
 function updateSpeedLines(dt) {
-  const P = player, on = P.propelT > 0 || P.evadeSpeedT > 0;
+  const P = player, on = P.propelT > 0 || P.evadeSpeedT > 0 || P.lcSpeedT > 0;
   if (on !== SPD.on) { if (on) { SPD.on = true; els.speed.classList.add('on'); } else hideSpeedLines(); }
   if (!on) return;
   SPD.t -= dt; if (SPD.t > 0) return; SPD.t = 1 / 30;
   if (!SPD.g || SPD.w !== innerWidth || SPD.h !== innerHeight) { SPD.w = els.speed.width = innerWidth; SPD.h = els.speed.height = innerHeight; SPD.g = els.speed.getContext('2d'); }
   const g = SPD.g, cx = SPD.w / 2, cy = SPD.h / 2, R = Math.hypot(cx, cy), k = 0.45 + 0.55 * clamp(P.speedNow / CFG.SPRINT, 0, 1);
-  const fade = clamp(Math.max(P.propelT, P.evadeSpeedT) / 0.6, 0, 1);   // eases out in the last moment
+  const fade = clamp(Math.max(P.propelT, P.evadeSpeedT, P.lcSpeedT) / 0.6, 0, 1);   // eases out in the last moment
   g.clearRect(0, 0, SPD.w, SPD.h); g.lineCap = 'round';
   for (let i = 0, n = Math.round(24 + 36 * k); i < n; i++) {
     const a = Math.random() * Math.PI * 2, r0 = R * rr(0.48, 0.78), r1 = R * rr(0.95, 1.08), c = Math.cos(a), s = Math.sin(a);
@@ -4794,6 +4834,9 @@ function perkState(id) {
     case 'critical': return [!!P.critOn, -1, '', false, false];
     case 'cleanse': { const after = P.scentHideT > CFG.SHOWER_AFTER || P.coldBoostT > CFG.SHOWER_AFTER; return [P.cleanseT > 0 || after, P.cleanseT > 0 ? P.cleanseT / CFG.CLEANSE_LINGER : -1, '', false, false]; }
     case 'ironnerve': return [P.strikeT > 0, P.strikeT > 0 ? P.strikeT / CFG.STRIKE_WINDOW : -1, '', P.strikeUsed && P.strikeT <= 0, false];
+    case 'lowprofile': { const on = P.lpOdorT > 0, crouched = P.crouch && P.lpCrouchT >= CFG.LP_CROUCH;
+      return [on, crouched ? -1 : on ? P.lpOdorT / CFG.LP_LINGER : P.crouch ? P.lpCrouchT / CFG.LP_CROUCH : -1, '', false, false]; }
+    case 'loosecannon': { const on = P.lcSpeedT > 0 || P.lcVitalT > 0 || P.lcTapeT > 0; return [on, on ? P.lcVitalT / CFG.LC_VITAL_T : -1, '', false, false]; }
     case 'frigid': return [P.frigidT > 0, P.frigidT > 0 ? P.frigidT / CFG.FRIGID_TIME : -1, '', false, false];
   }
   return [false, -1, '', false, false];
@@ -4891,7 +4934,7 @@ function updateHUD(dt) {
     hudCache.inv = invKey;
     els.inv.innerHTML = Object.keys(ITEMS).filter(k => INV[k] > 0 || (k === 'ice' && P.iceLeft > 0)).map(k => `<button class="slot" type="button" data-item="${k}"><b>${ITEMS[k].name}</b><span class="n">x${INV[k]}</span><kbd>${ITEMS[k].key}</kbd></button>`).join('');
   }
-  const act = [['propelT', 'Propel', CFG.PROPEL_TIME], ['coldBoostT', `Cold shower +${Math.round(P.coldBoost * 100)}%`, showerAfter()], ['scentHideT', 'Scent hidden', showerAfter()], ['undiesT', 'Undetectable', CFG.UNDIES_TIME],
+  const act = [['propelT', 'Propel', CFG.PROPEL_TIME], ['lcVitalT', 'Loose Cannon', CFG.LC_VITAL_T], ['coldBoostT', `+${Math.round(P.coldBoost * 100)}% Speed`, P.coldBoostMax || 1], ['scentHideT', 'Odorless', showerAfter()], ['lpOdorT', 'Odorless', CFG.LP_LINGER], ['undiesT', 'Undetectable', CFG.UNDIES_TIME],
     ['glassesT', 'X-ray', CFG.GLASSES_TIME], ['iceLeft', 'Ice pack', CFG.ICE_TIME]].filter(([k]) => P[k] > 0);
   const fxKey = act.map(([k]) => k + Math.ceil(P[k])).join('|') + (P.iceOn ? '' : 'p');
   if (hudCache.fx !== fxKey) {
@@ -4916,8 +4959,8 @@ function updateHUD(dt) {
   if (sf >= P.stamGhost) { P.stamGhost = sf; P.ghostHold = 0.45; } else if (P.ghostHold > 0) P.ghostHold -= dt; else P.stamGhost = Math.max(sf, P.stamGhost - dt * 0.6);
   const sgs = P.stamGhost.toFixed(3); if (hudCache.sg !== sgs) { hudCache.sg = sgs; els.sghost.style.transform = `scaleX(${sgs})`; }
   setClass('st', els.stam, 'out', P.exhausted);
-  setClass('st', els.stam, 'inf', P.propelT > 0 || P.headT > 0);
-  setClass('st', els.stam, 'show', P.consuming || sf < 1 || P.stamShowT > 0 || P.propelT > 0 || P.headT > 0);
+  setClass('st', els.stam, 'inf', hasVitality());
+  setClass('st', els.stam, 'show', P.consuming || sf < 1 || P.stamShowT > 0 || hasVitality());
   // body temperature: light red from 99.8 F, deepening toward 104
   const tq = tempQ(), ts = tq.toFixed(1) + '°F';
   if (hudCache.temp !== ts) {
@@ -5475,7 +5518,7 @@ function publishMyState() {
   const P = player, on = P.flashOn && P.alive && state !== 'spectate';
   const m = { x: r2(P.x), z: r2(P.z), e: r2(P.eye), y: r3(P.yaw), p: r3(P.pitch), f: r3(P.face), ap: r3(FL.pitch), v: r2(P.speedNow), c: P.crouch ? 1 : 0,
     r: P.sprinting && P.speedNow > 2 ? 1 : 0, l: on ? 1 : 0, b: r3(batFrac(P)), h: P.hidden ? W.spots.indexOf(P.hidden) : -1, a: P.alive ? 1 : 0,
-    lg: r2(P.linger), u: P.undiesT > 0 ? 1 : 0, ev: P.evadeHideT > 0 ? 1 : 0, sh: P.scentHideT > 0 ? 1 : 0, dc: P.cleanseT > 0 ? 1 : 0, sk: P.strikeT > 0 ? 1 : 0, x2: P.exhausted ? 1 : 0, sr: P.searching ? 1 : 0 };
+    lg: r2(P.linger), u: P.undiesT > 0 ? 1 : 0, ev: P.evadeHideT > 0 ? 1 : 0, sh: isOdorless(P) ? 1 : 0, dc: P.cleanseT > 0 ? 1 : 0, sk: P.strikeT > 0 ? 1 : 0, x2: P.exhausted ? 1 : 0, sr: P.searching ? 1 : 0 };
   if (on) { m.bo = [r2(flash.position.x), r2(flash.position.y), r2(flash.position.z)]; m.bd = [r3(FL.dir.x), r3(FL.dir.y), r3(FL.dir.z)]; m.bs = beamSpot().map(r2); }
   pub(TOPIC.s(MP.code, MP.id), m);
 }
@@ -5818,7 +5861,7 @@ window.__gooseflesh = {
   interact: () => interact(), blindVoice: () => blindGoose(W.goose), sgDetects: S => sgDetects(S),
   start: beginNewRun, caught: () => caught(), win: () => { player.tapes = CFG.TAPES; win(); },
   goose: () => W && W.goose, step: (n = 60, dt = 1 / 60) => { for (let i = 0; i < n; i++) { if (state === 'caught' && JS.strike && !MP.inGame) { updateJumpscare(dt); continue; } if (!(state === 'playing' || mpSimulating())) break; simStep(dt); if (state === 'caught') updateJumpscare(dt); else if (state === 'collapse') updateCollapse(dt); } },
-  mp: MP, MLOOK, DIFF, BUILD, TEX, strike: () => strike(), JS, FIST, renderer, scene, showerUse, aimedKnob, exitSpot: () => exitSpot(), enterSpot: s => enterSpot(s), mpLeave: () => mpLeave(), hostStart: () => hostStart(), specCycle: d => specCycle(d), applyDifficulty, difficultyText,
+  mp: MP, MLOOK, DIFF, BUILD, TEX, looseCannon: () => looseCannon(), strike: () => strike(), JS, FIST, renderer, scene, showerUse, aimedKnob, exitSpot: () => exitSpot(), enterSpot: s => enterSpot(s), mpLeave: () => mpLeave(), hostStart: () => hostStart(), specCycle: d => specCycle(d), applyDifficulty, difficultyText,
 };
 })();
 </script>
