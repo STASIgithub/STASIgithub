@@ -586,7 +586,7 @@ body.safe h1{animation:none}
 
     <section>
       <h4>Temperature</h4>
-      <p>Keep your body temperature in check. It climbs the longer you're in here, and faster when you're running or crammed into a hiding spot. The hotter you get, the weaker your body becomes: you slow down, you run out of breath sooner, and it gets harder to see straight.</p>
+      <p>Keep your body temperature in check. It climbs the longer you're in here, and faster when you're running or crammed into a hiding spot. The hotter you get, the weaker your body becomes: you slow down, you run out of breath sooner, and it gets harder to see straight. For the first 15 seconds of a run it doesn't rise at all.</p>
       <p>Cool yourself down with anything cold you can find. Use your common sense. Let it get too high for too long and you'll collapse from heatstroke, and your run is over.</p>
     </section>
 
@@ -797,7 +797,10 @@ if (!window.THREE) {
 /* ================= CONFIG ================= */
 const T = 3.2;            // tile size (corridor width)
 const H = 4.0;            // wall height
-const CELLS = 12;         // maze is CELLS x CELLS cells
+const CELLS = 12;         // maze is CELLS x CELLS cells, plus one more each way for every extra player in a room
+const roomSize = () => MP.inGame ? Math.max(1, MP.n | 0) : 1;
+const mapCells = () => CELLS + roomSize() - 1;
+const fridgeCount = () => 2 * roomSize() + 3;   // 5 alone, then 7, 9, 11, 13, 15
 const MAZE_DEAD_ENDS = 2; // dead ends left after the rest are knocked through
 const CFG = {
   WALK: 3.1 * 0.95, SPRINT: 5.6 * 0.95, CROUCH: 1.45 * 0.95,   // base speeds, 5% under the original 3.1 / 5.6 / 1.45
@@ -817,7 +820,7 @@ const CFG = {
   // body temperature (degrees F)
   TEMP_START: 98.0, TEMP_MAX: 104.0, TEMP_FLOOR: 97.8, HEATSTROKE_TIME: 20, COOL_RATE: 0.1, COOL_PAUSE: 30,
   // refrigerators
-  FRIDGES: 4, FRIDGE_POWER: 25, FRIDGE_OFF: 200, FRIDGE_RANGE: 2.1, FRIDGE_NOISE: 14, FRIDGE_SEARCH_TIME: 1.2,
+  FRIDGE_POWER: 25, FRIDGE_OFF: 200, FRIDGE_RANGE: 2.1, FRIDGE_NOISE: 14, FRIDGE_SEARCH_TIME: 1.2,
   FRIDGE_LOW: 0.3,   // below 30% power a fridge can't cool you; it runs itself down, then recharges
   ICE_TIME: 30, ICE_RATE: 0.1,   // 3 degrees over 30 seconds
   // showers: 1 or 2 per maze. Hot: +0.04 degrees a second, scent hidden for 11 s after. Cold: -0.05 degrees a second,
@@ -840,7 +843,7 @@ const CFG = {
   // perks
   LB_TEAM: 0.1, LB_REVEAL: 4, ENDURANCE_WALK: 1.3, ENDURANCE_EFF: 0.2, ENDURANCE_EFF_MAX: 0.6, ENDURANCE_CD: 40,
   HYPO_FRIDGE: 1.4, HYPO_FLOOR: 96, ASE_TIME: 13.5, SCOTO_ASE: 13.5, SCOTO_LC: 10, SCOTO_THIRD: 45, YELL_UD: 10, YELL_PENDING: 15, EVADE_SPEED_T: 3, EVADE_HIDE_T: 8, EVADE_LOCK: 4, SCAV_SEARCH: 7.5, SCAV_BUFF_T: 7.5, SCAV_SPEED: 1.05,
-  HEAD_REVEAL: 18, HEAD_SPEED: 1.15, CRESCENDO_BASE: 0.02, CRESCENDO: 0.04, CRIT_TEMP: 102, CRIT_COOL: 2, FRIGID_TIME: 40, FRIGID_SLOW: 0.15,
+  HEAD_REVEAL: 18, HEAD_SPEED: 1.15, CRESCENDO_BASE: 0.02, CRESCENDO: 0.04, CRIT_TEMP: 102, CRIT_COOL: 2, FRIGID_TIME: 30, FRIGID_COOL: 1.16, TEMP_GRACE: 15,
   EVADE_RECHARGE_TAPE: 3,
   LP_CROUCH: 3, LP_LINGER: 8,   // Low Profile
   LC_EVERY: 25, LC_CHANCE: 1 / 50, LC_CD: 100, LC_SPEED: 3, LC_SPEED_T: 10, LC_FOV: 65, LC_VITAL_T: 10, LC_TAPES_T: 10, LC_KILL_R: 0.95,   // Loose Cannon
@@ -993,7 +996,7 @@ const PERKS = {
   muffinman: { name: 'Muffin Man', desc: "You start with an extra Blueberry Muffin, and every muffin you throw keeps The Voice busy 1.5 seconds longer." },
   brawler: { name: 'Blueberry Brawler', desc: "You start with an extra Blueberry Propel, and its effects last 1.5 seconds longer." },
   icepatroller: { name: 'Ice Pack Patroller', desc: "You start with an extra Ice Pack. When an ice pack runs out, your temperature can't rise for 20 seconds." },
-  frigid: { name: 'Frigid', desc: "For the first 40 seconds, your body temperature can't rise. After that, it rises 15% slower." },
+  frigid: { name: 'Frigid', desc: "Your body temperature can't rise for 30 more seconds at the start of the game (45 instead of 15), and you cool down 16% faster from refrigerators, ice packs and cold showers." },
   thirdeye: { name: 'Third Eye', desc: "You have Scotopia for the first 45 seconds, and for 45 seconds every time your team picks up a tape." },
   cagm: { name: 'Come And Get Me!', desc: "Once per game, stand still and press Mouse 4 (the back side button) to scream. The Voice runs straight to where it heard you, even off a chase, and every other player is Undetectable for 10 seconds. Not from a hiding spot.",
     mob: "Once per game, stand still and tap the scream button (above Run) to scream. The Voice runs straight to where it heard you, even off a chase, and every other player is Undetectable for 10 seconds. Not from a hiding spot." },
@@ -1822,7 +1825,7 @@ function buildWorld(seed) {
   try { return buildWorldNow(); } finally { Math.random = orig; }
 }
 function buildWorldNow() {
-  const { g, N, rooms } = generateMaze(CELLS);
+  const { g, N, rooms } = generateMaze(mapCells());
   W = { g, N, rooms, group: new THREE.Group(), obstacles: [], spots: [], pickups: [], fridges: [], cabinets: [], showers: [], thrown: [], xray: [], avoid: new Uint8Array(N * N), used: new Uint8Array(N * N), sideUsed: new Set(), floors: [] };
   // geometry: floor, ceiling, walls
   const size = N * T;
@@ -2349,7 +2352,7 @@ function populate() {
     makeBed(i, back); placed(i, back); deBeds++;
   }
 
-  // ---- refrigerators: exactly CFG.FRIDGES, spread one per quadrant where possible, never in the start area
+  // ---- refrigerators: 5 alone, 2 more for each extra player, spread one per quadrant first, never in the start area
   const tdist = (a, b) => Math.abs(a % N - b % N) + Math.abs(((a / N) | 0) - ((b / N) | 0));
   const fslots = [];
   for (const i of W.floors) { if (sd[i] < 4 || tapeSet.has(i)) continue; for (const k of wallDirs(i)) fslots.push([i, k]); }
@@ -2358,7 +2361,7 @@ function populate() {
     const c = shuffle(fslots.filter(([i]) => canPlace(i) && (i % N >= half) === !!qx && (((i / N) | 0) >= half) === !!qz && fr.every(j => tdist(i, j) >= 7)));
     if (c.length) { const [i, k] = c[0]; makeFridge(i, k); placed(i, k); fr.push(i); }
   }
-  for (let sep = 7; fr.length < CFG.FRIDGES && sep >= 0;) {
+  for (let sep = 7, want = fridgeCount(); fr.length < want && sep >= 0;) {
     const c = shuffle(fslots.filter(([i]) => canPlace(i) && fr.every(j => tdist(i, j) >= sep)));
     if (c.length) { const [i, k] = c[0]; makeFridge(i, k); placed(i, k); fr.push(i); } else sep--;
   }
@@ -2999,7 +3002,7 @@ function resetPlayer() {
     ax: center(1), az: center(1), linger: 0, stepAcc: 0, bob: 0, target: null, hbT: 0, fov: 72, stamGhost: 1, ghostHold: 0,
     // perks chosen in the loadout, and their timers
     perks: new Set(loadout.perks), aseT: 0, aseFridge: null, headT: 0, headTape: null, lbRevealT: 0,
-    frigidT: loadout.perks.includes('frigid') ? CFG.FRIGID_TIME : 0, cleanseT: 0, coldBoostMax: 0, icePatrolT: 0, pinVitalT: 0, pinned: false, diveLookT: 0,
+    graceT: CFG.TEMP_GRACE + (loadout.perks.includes('frigid') ? CFG.FRIGID_TIME : 0), graceMax: CFG.TEMP_GRACE + (loadout.perks.includes('frigid') ? CFG.FRIGID_TIME : 0), cleanseT: 0, coldBoostMax: 0, icePatrolT: 0, pinVitalT: 0, pinned: false, diveLookT: 0,
     lpCrouchT: 0, lpOdorT: 0, lcRollT: CFG.LC_EVERY, lcCD: 0, lcSpeedT: 0, lcVitalT: 0, lcTapeT: 0, strikeT: 0, strikeUsed: false, strikeVitalT: 0, scotoT: 0, scotoMax: 1, yellUsed: false, yellUdT: 0, showerHot: false, showerCold: 0, showerCooling: false, scentHideT: 0, coldBoost: 0, coldBoostT: 0,
     scavBuffT: 0, rapportT: 0, rapportNear: false, endEff: 0, endTokens: 0, endCD: 0, critOn: false, evadeRearmed: false,
     evadeUsed: false, evadeSpeedT: 0, evadeHideT: 0, evadePending: false, stamLockT: 0,
@@ -3018,7 +3021,8 @@ const tempFloor = () => hasPerk('hypothermia') ? CFG.HYPO_FLOOR : CFG.TEMP_FLOOR
 // Critical Condition: at 102 or hotter
 const critical = () => hasPerk('critical') && tempQ() >= CFG.CRIT_TEMP - 1e-6;
 // Frigid: no heating for the first 45 s, then 30% less
-const heatMult = () => player.icePatrolT > 0 ? 0 : !hasPerk('frigid') ? 1 : player.frigidT > 0 ? 0 : 1 - CFG.FRIGID_SLOW;   // Ice Pack Patroller, Frigid
+const heatMult = () => player.icePatrolT > 0 || player.graceT > 0 ? 0 : 1;   // the first 15 s of a run (45 with Frigid), Ice Pack Patroller
+const coolMult = () => hasPerk('frigid') ? CFG.FRIGID_COOL : 1;   // Frigid: all cooling, 16% faster
 const batFrac = P => Math.min(1, P.battery / CFG.BATTERY_MAX);   // past 100% (LightBringer, Scavenger) the beam is just full
 // The Voice can't sense you: Adam's Underwear, or Evasive Maneuvers
 // Undetectable: Adam's Underwear, or a teammate's Come And Get Me! scream
@@ -3839,7 +3843,7 @@ function updateItems(dt) {
 // perk timers, and what each perk is pointing at right now
 function updatePerks(dt) {
   const P = player;
-  for (const k of ['aseT', 'headT', 'evadeSpeedT', 'evadeHideT', 'flickerT', 'blinkT', 'lbRevealT', 'endCD', 'scavBuffT', 'rapportT', 'scentHideT', 'coldBoostT', 'frigidT', 'cleanseT', 'strikeT', 'icePatrolT', 'pinVitalT', 'lpOdorT', 'lcCD', 'lcSpeedT', 'lcVitalT', 'lcTapeT', 'strikeVitalT', 'scotoT', 'yellUdT']) if (P[k] > 0) P[k] = Math.max(0, P[k] - dt);
+  for (const k of ['aseT', 'headT', 'evadeSpeedT', 'evadeHideT', 'flickerT', 'blinkT', 'lbRevealT', 'endCD', 'scavBuffT', 'rapportT', 'scentHideT', 'coldBoostT', 'graceT', 'cleanseT', 'strikeT', 'icePatrolT', 'pinVitalT', 'lpOdorT', 'lcCD', 'lcSpeedT', 'lcVitalT', 'lcTapeT', 'strikeVitalT', 'scotoT', 'yellUdT']) if (P[k] > 0) P[k] = Math.max(0, P[k] - dt);
   if (P.evadePending && P.evadeSpeedT <= 0 && P.evadeHideT <= 0) {   // Evasive Maneuvers is over: stamina empties and stays empty
     P.evadePending = false; P.stamina = 0; P.exhausted = true; P.stamLockT = CFG.EVADE_LOCK; P.sprinting = false; touch.run = false;
   }
@@ -4354,7 +4358,7 @@ function updateShowerPlayer(dt) {
   if (!sh || !sh.run) return;
   if (hasPerk('cleanse')) P.cleanseT = CFG.CLEANSE_LINGER;   // refreshed while the water runs on you; counts down after
   if (sh.run === 'hot') { P.temp = Math.min(CFG.TEMP_MAX, P.temp + CFG.SHOWER_HOT * heatMult() * dt); P.showerHot = true; }
-  else { P.temp = Math.max(tempFloor(), P.temp - CFG.SHOWER_COLD * dt); P.cooling = true; P.showerCooling = true; P.showerCold += dt; }
+  else { P.temp = Math.max(tempFloor(), P.temp - CFG.SHOWER_COLD * coolMult() * dt); P.cooling = true; P.showerCooling = true; P.showerCold += dt; }
 }
 let humT = 0;
 function updateFridges(dt) {
@@ -4381,7 +4385,7 @@ function updateFridges(dt) {
   P.cooling = false;
   if (best && P.temp > tempFloor() + 1e-6) {
     P.cooling = true;
-    const rate = CFG.COOL_RATE * hypo() * (1 + cresc()) * (critical() ? CFG.CRIT_COOL : 1);
+    const rate = CFG.COOL_RATE * hypo() * coolMult() * (1 + cresc()) * (critical() ? CFG.CRIT_COOL : 1);
     P.temp = Math.max(tempFloor(), P.temp - rate * dt);
     best.used += dt;   // cumulative cooling time: survives closing, reopening and walking away
     if (!auth) { const i = W.fridges.indexOf(best); MP.fuse[i] = (MP.fuse[i] || 0) + dt; }
@@ -4391,7 +4395,7 @@ function updateFridges(dt) {
   P.iceCooling = false;
   if (!P.cooling && P.iceOn && P.iceLeft > 0 && P.temp > tempFloor() + 1e-6) {
     const use = Math.min(dt, P.iceLeft);
-    P.temp = Math.max(tempFloor(), P.temp - CFG.ICE_RATE * use); P.iceLeft -= use;
+    P.temp = Math.max(tempFloor(), P.temp - CFG.ICE_RATE * coolMult() * use); P.iceLeft -= use;
     P.cooling = true; P.iceCooling = true;
     if (P.temp <= tempFloor() + 1e-6) { P.temp = tempFloor(); P.tempPauseT = CFG.COOL_PAUSE; P.tempRiseT = rr(3, 5); toast('You feel cool again.', false, 2.5, true); }
     if (P.iceLeft <= 1e-9) { P.iceLeft = 0; P.iceOn = false; if (hasPerk('icepatroller')) P.icePatrolT = CFG.ICE_PATROL_T; }   // Ice Pack Patroller
@@ -5399,7 +5403,7 @@ function perkState(id) {
       return [on, crouched ? -1 : on ? P.lpOdorT / CFG.LP_LINGER : P.crouch ? P.lpCrouchT / CFG.LP_CROUCH : -1, '', false, false]; }
     case 'loosecannon': { const on = P.lcSpeedT > 0 || P.lcVitalT > 0 || P.lcTapeT > 0; return [on, on ? P.lcVitalT / CFG.LC_VITAL_T : -1, '', false, false]; }
     case 'icepatroller': return [P.icePatrolT > 0, P.icePatrolT > 0 ? P.icePatrolT / CFG.ICE_PATROL_T : -1, '', false, false];
-    case 'frigid': return [P.frigidT > 0, P.frigidT > 0 ? P.frigidT / CFG.FRIGID_TIME : -1, '', false, false];
+    case 'frigid': return [P.graceT > 0, P.graceT > 0 ? P.graceT / P.graceMax : -1, '', false, false];
     case 'thirdeye': return [P.scotoT > 0, P.scotoT > 0 ? P.scotoT / P.scotoMax : -1, '', false, false];
     case 'cagm': return [false, -1, '', P.yellUsed, false];
   }
@@ -5498,7 +5502,7 @@ function updateHUD(dt) {
     hudCache.inv = invKey;
     els.inv.innerHTML = Object.keys(ITEMS).filter(k => INV[k] > 0 || (k === 'ice' && P.iceLeft > 0)).map(k => `<button class="slot" type="button" data-item="${k}"><b>${ITEMS[k].name}</b><span class="n">x${INV[k]}</span><kbd>${ITEMS[k].key}</kbd></button>`).join('');
   }
-  const act = [['propelT', 'Propel', propelTime()], ['icePatrolT', 'Temperature paused', CFG.ICE_PATROL_T], ['pinVitalT', 'Vitality', CFG.PIN_VITALITY], ['strikeVitalT', 'Vitality', CFG.STRIKE_VITAL], ['scotoT', 'Scotopia', P.scotoMax], ['yellUdT', 'Undetectable', CFG.YELL_UD], ['lcVitalT', 'Loose Cannon', CFG.LC_VITAL_T], ['rapportT', 'Rapport', CFG.RAPPORT_LINGER], ['scavBuffT', 'Scavenger', CFG.SCAV_BUFF_T], ['coldBoostT', `+${Math.round(P.coldBoost * 100)}% Speed`, P.coldBoostMax || 1], ['scentHideT', 'Odorless', showerAfter()], ['lpOdorT', 'Odorless', CFG.LP_LINGER], ['undiesT', 'Undetectable', CFG.UNDIES_TIME],
+  const act = [['propelT', 'Propel', propelTime()], ['graceT', 'Temperature paused', P.graceMax], ['icePatrolT', 'Temperature paused', CFG.ICE_PATROL_T], ['pinVitalT', 'Vitality', CFG.PIN_VITALITY], ['strikeVitalT', 'Vitality', CFG.STRIKE_VITAL], ['scotoT', 'Scotopia', P.scotoMax], ['yellUdT', 'Undetectable', CFG.YELL_UD], ['lcVitalT', 'Loose Cannon', CFG.LC_VITAL_T], ['rapportT', 'Rapport', CFG.RAPPORT_LINGER], ['scavBuffT', 'Scavenger', CFG.SCAV_BUFF_T], ['coldBoostT', `+${Math.round(P.coldBoost * 100)}% Speed`, P.coldBoostMax || 1], ['scentHideT', 'Odorless', showerAfter()], ['lpOdorT', 'Odorless', CFG.LP_LINGER], ['undiesT', 'Undetectable', CFG.UNDIES_TIME],
     ['glassesT', 'X-ray', CFG.GLASSES_TIME], ['iceLeft', 'Ice pack', CFG.ICE_TIME]].filter(([k]) => P[k] > 0);
   const fxKey = act.map(([k]) => k + Math.ceil(P[k])).join('|') + (P.iceOn ? '' : 'p');
   if (hudCache.fx !== fxKey) {
