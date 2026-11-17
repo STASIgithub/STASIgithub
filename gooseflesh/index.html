@@ -61,19 +61,22 @@ body.lit #grain{opacity:.04}
 @keyframes grain{0%{background-position:0 0}20%{background-position:-61px 37px}40%{background-position:83px -29px}60%{background-position:-17px -71px}80%{background-position:47px 59px}100%{background-position:0 0}}
 
 /* quick-time prompts */
-#qte{position:fixed;inset:0;z-index:30;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;gap:12px;padding-bottom:calc(9vh + env(safe-area-inset-bottom,0px));pointer-events:none}   /* below the face, not over it */
-.qte-box{position:relative;width:132px;height:132px;display:grid;place-items:center}
+#qte{position:fixed;inset:0;z-index:30;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;gap:8px;padding-bottom:calc(6vh + env(safe-area-inset-bottom,0px));pointer-events:none}   /* low and small: the scene stays visible */
+.qte-box{position:relative;width:86px;height:86px;display:grid;place-items:center}
 .qte-ring{position:absolute;inset:0;transform:rotate(-90deg)}
-.qte-ring circle{fill:rgba(10,8,8,.72);stroke-width:7}
+.qte-ring circle{fill:rgba(10,8,8,.42);stroke-width:7}
 .qte-ring .bg{stroke:rgba(255,255,255,.18)}
 .qte-ring .fg{fill:none;stroke:#ffd24a;stroke-dasharray:276.5;stroke-dashoffset:0;stroke-linecap:round}
 #qte.spam .qte-ring .fg{stroke:#44e07a}
-#qte-label{position:relative;font-family:var(--f-display);font-size:58px;line-height:1;color:#fff;text-shadow:0 0 18px rgba(255,210,74,.6)}
-#qte-label.small{font-size:40px}
-#qte-label svg{width:64px;height:64px;stroke:#fff;fill:none;stroke-width:3;stroke-linecap:round;stroke-linejoin:round}
-#qte-hint{margin:0;font-size:13px;letter-spacing:.24em;text-transform:uppercase;color:#fff;text-shadow:0 2px 8px #000}
-#qte.pop .qte-box{animation:qpop .12s ease-out}
-@keyframes qpop{0%{transform:scale(1.14)}100%{transform:scale(1)}}
+#qte-label{position:relative;font-family:var(--f-display);font-size:38px;line-height:1;color:#fff;text-shadow:0 0 14px rgba(255,210,74,.55)}
+#qte-label.small{font-size:26px}
+#qte-hint{margin:0;font-size:10px;letter-spacing:.24em;text-transform:uppercase;color:rgba(255,255,255,.85);text-shadow:0 2px 6px #000}
+#qte.pop .qte-box{animation:qpop .1s ease-out}
+@keyframes qpop{0%{transform:scale(1.07)}100%{transform:scale(1)}}
+/* phones, Iron Nerve: a TAP button somewhere on screen. Always the size of the default Strike button (the touch size setting doesn't change it). */
+#qte-tap{position:fixed;z-index:31;width:62px;height:62px;padding:0;border-radius:50%;clip-path:none;display:grid;place-items:center;background:rgba(227,166,78,.28);color:#fff;border:2px solid var(--ember);font-size:12px;letter-spacing:.14em;box-shadow:0 0 18px rgba(227,166,78,.5);pointer-events:auto;touch-action:none}
+#qte-tap svg{position:absolute;inset:-7px;width:76px;height:76px;transform:rotate(-90deg);pointer-events:none}
+#qte-tap circle{fill:none;stroke:#ffd24a;stroke-width:4;stroke-dasharray:219;stroke-linecap:round}
 
 /* hiding overlays */
 #hide{z-index:5}
@@ -436,6 +439,7 @@ body.safe h1{animation:none}
 <div class="fx" id="fade"></div>
 <div class="fx" id="grain"></div>
 <div class="fx" id="flash"></div>
+<button id="qte-tap" type="button" hidden>TAP<svg viewBox="0 0 76 76" aria-hidden="true"><circle id="qte-tap-ring" cx="38" cy="38" r="35"/></svg></button>
 <div id="qte" hidden><div class="qte-box"><svg class="qte-ring" viewBox="0 0 100 100" aria-hidden="true"><circle class="bg" cx="50" cy="50" r="44"/><circle class="fg" id="qte-fg" cx="50" cy="50" r="44"/></svg><span id="qte-label"></span></div><p id="qte-hint"></p></div>
 
 <div id="hud" hidden>
@@ -824,7 +828,7 @@ const CFG = {
   RAPPORT_R: 5, RAPPORT_LINGER: 15, RAPPORT_HEAT: 0.05,   // Rapport
   MUFFIN_BONUS: 1.5, BRAWLER_BONUS: 1.5, ICE_PATROL_T: 20,
   // The Voice takes to the air after 70 s without finding anyone: 30 s up in the dark, one drop attack after 8 s at the earliest
-  FLY_AFTER: 70, FLY_TIME: 30, FLY_ALT: 9, FLY_SPEED: 4.2, FLY_MIN_ATTACK: 8, DIVE_SPEED: 26,
+  FLY_AFTER: 70, FLY_TIME: 30, FLY_ALT: 9, FLY_SPEED: 4.2, FLY_MIN_ATTACK: 8, DIVE_TIME: 1.15,
   PIN_PRESSES: 40, PIN_TIME: 9.2, PIN_STUN: 4, PIN_VITALITY: 10,   // Muffin Man, Blueberry Brawler, Ice Pack Patroller
   CLEANSE_EXTRA: 30, CLEANSE_LINGER: 8,   // Deep Cleanse
   IRON_SPEED: 0.92, IRON_DRAIN: 1.12, STRIKE_WINDOW: 0.35, STRIKE_STUN: 4, STRIKE_STAMINA: 0.3, STRIKE_QTE: 0.8,   // Iron Nerve: one Strike per game
@@ -1296,6 +1300,13 @@ const GM = {
   clip: new THREE.MeshStandardMaterial({ color: 0x2f6fd8, roughness: 0.4, metalness: 0.2 }),
 };
 MAT.wall = MAT.walls[0];
+// The Voice's materials go black with height (only The Voice ever gets that high): diving, it comes out of the dark
+for (const m of Object.values(GM)) m.onBeforeCompile = sh => {
+  sh.vertexShader = sh.vertexShader.replace('#include <common>', '#include <common>\nvarying float vWY;')
+    .replace('#include <begin_vertex>', '#include <begin_vertex>\nvWY = (modelMatrix * vec4(transformed, 1.0)).y;');
+  sh.fragmentShader = sh.fragmentShader.replace('#include <common>', '#include <common>\nvarying float vWY;')
+    .replace('#include <dithering_fragment>', 'gl_FragColor.rgb *= 1.0 - smoothstep(4.1, 7.0, vWY);\n#include <dithering_fragment>');
+};
 // No ceiling: the walls fade into pitch black overhead. It's done after lighting, so no light, the flashlight included,
 // can bring the tops back.
 for (const m of MAT.walls) m.onBeforeCompile = sh => {
@@ -2917,7 +2928,7 @@ function resetPlayer() {
     ax: center(1), az: center(1), linger: 0, stepAcc: 0, bob: 0, target: null, hbT: 0, fov: 72, stamGhost: 1, ghostHold: 0,
     // perks chosen in the loadout, and their timers
     perks: new Set(loadout.perks), aseT: 0, aseFridge: null, headT: 0, headTape: null, hypoFridge: null, hypoT: 0, lbRevealT: 0,
-    frigidT: loadout.perks.includes('frigid') ? CFG.FRIGID_TIME : 0, cleanseT: 0, coldBoostMax: 0, icePatrolT: 0, pinVitalT: 0, pinned: false,
+    frigidT: loadout.perks.includes('frigid') ? CFG.FRIGID_TIME : 0, cleanseT: 0, coldBoostMax: 0, icePatrolT: 0, pinVitalT: 0, pinned: false, diveLookT: 0,
     lpCrouchT: 0, lpOdorT: 0, lcRollT: CFG.LC_EVERY, lcCD: 0, lcSpeedT: 0, lcVitalT: 0, lcTapeT: 0, strikeT: 0, strikeUsed: false, showerHot: false, showerCold: 0, showerCooling: false, scentHideT: 0, coldBoost: 0, coldBoostT: 0,
     scavBuffT: 0, rapportT: 0, rapportNear: false, endEff: 0, endTokens: 0, endCD: 0, critOn: false, evadeRearmed: false,
     evadeUsed: false, evadeSpeedT: 0, evadeHideT: 0, evadePending: false, stamLockT: 0,
@@ -3402,23 +3413,30 @@ function toggleCrouch() {
 }
 // Quick-time prompts. 'one': press the shown key (or swipe the shown way) inside the window; anything else fails.
 // 'spam': hit the shown key (or tap) enough times before the time runs out.
-const QTE = { on: false, kind: '', want: '', t: 0, dur: 0, count: 0, need: 0, cb: null, sx: 0, sy: 0, popT: 0 };
-const QTE_ARROW = { up: 'M32 52V12M16 28l16-16 16 16', down: 'M32 12v40M16 36l16 16 16-16', left: 'M52 32H12M28 16L12 32l16 16', right: 'M12 32h40M36 16l16 16-16 16' };
+const QTE = { on: false, kind: '', want: '', t: 0, dur: 0, count: 0, need: 0, cb: null, popT: 0, shown: 0 };
 function startQTE(kind, o, cb) {
-  Object.assign(QTE, { on: true, kind, want: o.want, t: 0, dur: o.dur, count: 0, need: o.need || 1, cb });
-  const lbl = $('qte-label'), arrow = QTE_ARROW[o.want];
-  lbl.className = o.want.length > 1 && !arrow ? 'small' : '';
-  lbl.innerHTML = arrow ? `<svg viewBox="0 0 64 64"><path d="${arrow}"/></svg>` : o.want === 'tap' ? 'Tap!' : o.want;
+  Object.assign(QTE, { on: true, kind, want: o.want, t: 0, dur: o.dur, count: 0, need: o.need || 1, cb, shown: 0 });
+  if (o.want === 'tapbtn') {   // phones (Strike): a TAP button somewhere on the screen instead of the prompt in the middle
+    const b = $('qte-tap'), x = rr(0.14, 0.86) * innerWidth - 31, y = rr(0.2, 0.72) * innerHeight - 31;
+    b.style.left = clamp(x, 12, innerWidth - 74) + 'px'; b.style.top = clamp(y, 12, innerHeight - 74) + 'px'; b.hidden = false; drawQTE(); return;
+  }
+  const lbl = $('qte-label');
+  lbl.className = o.want.length > 1 ? 'small' : '';
+  lbl.textContent = o.want === 'tap' ? 'Tap!' : o.want;
   $('qte-hint').textContent = o.hint || ''; $('qte').className = kind === 'spam' ? 'spam' : ''; $('qte').hidden = false; drawQTE();
 }
 function drawQTE() {
-  const f = QTE.kind === 'spam' ? QTE.count / QTE.need : 1 - QTE.t / QTE.dur;   // spam: progress fills; one: time drains
-  $('qte-fg').style.strokeDashoffset = (276.5 * (1 - clamp(f, 0, 1))).toFixed(1);
+  // spam: the ring fills (eased, so it slides instead of stepping); one: the time drains
+  const f = QTE.kind === 'spam' ? QTE.shown : 1 - QTE.t / QTE.dur;
+  if (QTE.want === 'tapbtn') $('qte-tap-ring').style.strokeDashoffset = (219 * (1 - clamp(f, 0, 1))).toFixed(1);
+  else $('qte-fg').style.strokeDashoffset = (276.5 * (1 - clamp(f, 0, 1))).toFixed(1);
 }
-function endQTE(ok) { if (!QTE.on) return; QTE.on = false; $('qte').hidden = true; const cb = QTE.cb; QTE.cb = null; if (cb) cb(ok); }
+function endQTE(ok) { if (!QTE.on) return; QTE.on = false; $('qte').hidden = true; $('qte-tap').hidden = true; const cb = QTE.cb; QTE.cb = null; if (cb) cb(ok); }
 function updateQTE(dt) {
   if (!QTE.on) return;
-  QTE.t += dt; drawQTE();
+  QTE.t += dt;
+  if (QTE.kind === 'spam') QTE.shown += (QTE.count / QTE.need - QTE.shown) * (1 - Math.exp(-dt * 16));
+  drawQTE();
   if (QTE.popT > 0 && (QTE.popT -= dt) <= 0) $('qte').classList.remove('pop');
   if (QTE.t >= QTE.dur) endQTE(QTE.kind === 'spam' && QTE.count >= QTE.need);
 }
@@ -3426,7 +3444,7 @@ function qteInput(tok) {
   if (!QTE.on || QTE.t < 0.05) return;
   if (QTE.kind === 'one') { endQTE(tok === QTE.want); return; }
   if (tok !== QTE.want) return;   // mashing: other keys don't count, and don't hurt
-  QTE.count++; $('qte').classList.add('pop'); QTE.popT = 0.1; drawQTE();
+  QTE.count++; $('qte').classList.add('pop'); QTE.popT = 0.08;
   if (QTE.count >= QTE.need) endQTE(true);
 }
 addEventListener('keydown', e => {
@@ -3438,13 +3456,12 @@ addEventListener('keydown', e => {
 addEventListener('mousedown', e => { if (!QTE.on || isMobile()) return; e.preventDefault(); if (e.button === 0) qteInput('M1'); else if (e.button === 2) qteInput('M2'); }, true);
 addEventListener('contextmenu', e => { if (QTE.on || state === 'playing') e.preventDefault(); });
 addEventListener('touchstart', e => {
-  if (!QTE.on) return; const t = e.changedTouches[0]; QTE.sx = t.clientX; QTE.sy = t.clientY;
-  if (QTE.kind === 'spam') qteInput('tap');
-}, { capture: true, passive: true });
-addEventListener('touchend', e => {
-  if (!QTE.on || QTE.kind !== 'one') return; const t = e.changedTouches[0], dx = t.clientX - QTE.sx, dy = t.clientY - QTE.sy;
-  if (Math.hypot(dx, dy) < 30) return;   // a tap isn't a swipe
-  qteInput(Math.abs(dx) > Math.abs(dy) ? (dx > 0 ? 'right' : 'left') : (dy > 0 ? 'down' : 'up'));
+  if (!QTE.on) return; const t = e.changedTouches[0];
+  if (QTE.kind === 'spam') { qteInput('tap'); return; }
+  if (QTE.want === 'tapbtn') {   // on the TAP button (with a little slack) or not
+    const r = $('qte-tap').getBoundingClientRect(), pad = 10;
+    qteInput(t.clientX >= r.left - pad && t.clientX <= r.right + pad && t.clientY >= r.top - pad && t.clientY <= r.bottom + pad ? 'tapbtn' : 'miss');
+  }
 }, { capture: true, passive: true });
 
 // Iron Nerve's Strike: a 0.35 s window, once per game, and only while running. If The Voice's jumpscare starts inside it, you punch it mid-scare.
@@ -3825,6 +3842,12 @@ function updatePlayer(dt) {
   const turn = (keys.ArrowLeft ? 1 : 0) - (keys.ArrowRight ? 1 : 0), tilt = (keys.ArrowUp ? 1 : 0) - (keys.ArrowDown ? 1 : 0);
   P.yaw += turn * 2.3 * dt; P.pitch = clamp(P.pitch + tilt * 1.6 * dt, -1.45, 1.45);
   P.sprinting = false;
+  if (P.diveLookT > 0) {   // a drop attack is coming: you look up and watch it fall out of the dark
+    P.diveLookT -= dt; const G = W.goose, hy = (G.y || 0) + 2.2, d = Math.hypot(G.x - P.x, G.z - P.z);
+    const wantYaw = d > 0.2 ? Math.atan2(-(G.x - P.x), -(G.z - P.z)) : P.yaw, wantPitch = clamp(Math.atan2(hy - P.eye, Math.max(d, 0.4)), -0.2, firstPerson() ? 1.4 : 1.15);
+    const k = 1 - Math.exp(-dt * 12); P.yaw += angDiff(P.yaw, wantYaw) * k; P.pitch += (wantPitch - P.pitch) * k;
+    P.vx = P.vz = 0; P.speedNow = 0; for (const c of ['KeyW', 'KeyA', 'KeyS', 'KeyD', 'ShiftLeft', 'ShiftRight']) keys[c] = false; touch.jx = touch.jy = 0; touch.run = false;
+  }
   if (P.hidden) {
     const s = P.hidden, d = angDiff(s.viewYaw, P.yaw);
     P.yaw = s.viewYaw + clamp(d, -s.yawLim, s.yawLim); P.pitch = clamp(P.pitch, -s.pitchLim, s.pitchLim);
@@ -3924,7 +3947,7 @@ function updatePlayer(dt) {
     camera.rotation.set(P.pitch + rr(-sh, sh) * 0.5 + dis * 0.02 * Math.sin(gameTime * 0.9), P.yaw + rr(-sh, sh) * 0.5, -bx * 0.15 + dis * 0.06 * Math.sin(gameTime * 0.73));
     EAR.copy(camera.position);
   } else {
-    P.pitch = clamp(P.pitch, -1.0, 0.75);
+    P.pitch = clamp(P.pitch, -1.0, P.diveLookT > 0 ? 1.15 : 0.75);   // looking up at a drop attack lets the camera tilt further
     updateCamera3P(dt, sh, dis);
     EAR.set(P.x, P.eye, P.z);
   }
@@ -4551,7 +4574,11 @@ function startLand(G) {   // come down on the nearest open floor
   for (const i of W.floors) { const x = center(i % W.N), z = center((i / W.N) | 0), d = Math.hypot(x - G.x, z - G.z); if (d < bd) { bd = d; bx = x; bz = z; } }
   G.x = bx; G.z = bz; gooseSet(G, 'land');
 }
-function startDive(G, v) { gooseSet(G, 'dive'); G.pinId = v === player ? '__me' : v.id; G.diveV = v; vfx('dive', { x: v.x, z: v.z }); }
+function startDive(G, v) {
+  gooseSet(G, 'dive'); G.pinId = v === player ? '__me' : v.id; G.diveV = v; G.y = CFG.FLY_ALT;
+  vfx('dive', { x: v.x, z: v.z });
+  if (v === player) player.diveLookT = CFG.DIVE_TIME + 0.15; else netHost({ t: 'diving', to: v.id });   // they look up and watch it come
+}
 function pinVictim(G) { return G.diveV && (G.diveV === player ? player : MP.remotes.get(G.pinId)) || null; }
 // the pinned player's answer: they fought it off, or they didn't
 function pinResolved(ok, v) {
@@ -4590,9 +4617,11 @@ function updateFlight(G, dt) {
     case 'dive': {   // straight down on top of them
       const v = pinVictim(G);
       if (!dropTarget(v)) { if (G.flyT < CFG.FLY_TIME) { gooseSet(G, 'fly'); G.attackAt = G.flyT + 2; } else startLand(G); break; }
-      G.x += (v.x - G.x) * Math.min(1, dt * 14); G.z += (v.z - G.z) * Math.min(1, dt * 14);
-      G.y -= CFG.DIVE_SPEED * dt;
-      if (G.y <= 0) {
+      // it falls out of the dark a little in front of them, faster and faster, and lands on them
+      const k = Math.min(1, G.stateT / CFG.DIVE_TIME), fy = v === player ? player.yaw : (v.yaw || 0), ahead = 1.7 * (1 - k);
+      G.x = v.x - Math.sin(fy) * ahead; G.z = v.z - Math.cos(fy) * ahead; G.yaw = Math.atan2(v.x - G.x, v.z - G.z) || G.yaw;
+      G.y = CFG.FLY_ALT * (1 - k * k);
+      if (k >= 1) {
         G.y = 0; G.x = v.x; G.z = v.z; gooseSet(G, 'pin'); G.pinT = 0;
         vfx('slam', { x: v.x, z: v.z });
         if (v === player) pinScene(); else netHost({ t: 'pinned', to: v.id });
@@ -4810,7 +4839,7 @@ function mouthParts(R) { const open = R.jaw.rotation.x > 0.12; if (R.innerOpen !
 function animateGoose(G, dt, moving, R = GOOSE_RIG) {
   const k = 1 - Math.exp(-dt * 6), sitting = G.state === 'disabled', flying = (G.y || 0) > 0.05 || G.state === 'takeoff';
   R.root.position.set(G.x, G.y || 0, G.z); R.root.rotation.y = G.yaw;
-  if (R === GOOSE_RIG) R.root.visible = (G.y || 0) < 4.2 && !PIN.on && state !== 'caught';   // above the walls it's lost in the dark
+  if (R === GOOSE_RIG) R.root.visible = ((G.y || 0) < 7.5 || G.state === 'dive') && !PIN.on && state !== 'caught';   // high up it's lost in the dark
   const spd = moving ? G.curSpeed : 0;
   G.phase += dt * spd * 2.1;
   const s = Math.sin(G.phase), amp = Math.min(1, spd / 2.5);
@@ -5511,8 +5540,8 @@ function updateStrikeScene(dt) {
   const t = (JS.st += dt), k = Math.min(1, t / 0.14), e = 1 - Math.pow(1 - k, 3);
   if (!JS.qte && t >= 0.12) {
     JS.qte = true;
-    const m = isMobile(), want = m ? pick(['up', 'down', 'left', 'right']) : pick(['E', 'Q', 'M1', 'M2']);
-    startQTE('one', { want, dur: CFG.STRIKE_QTE, hint: m ? 'Swipe' : want === 'M1' ? 'Left click' : want === 'M2' ? 'Right click' : 'Press' }, ok => ok ? strikeHit() : strikeMiss());
+    const m = isMobile(), want = m ? 'tapbtn' : pick(['E', 'Q', 'M1', 'M2']);
+    startQTE('one', { want, dur: CFG.STRIKE_QTE, hint: want === 'M1' ? 'Left click' : want === 'M2' ? 'Right click' : 'Press' }, ok => ok ? strikeHit() : strikeMiss());
   }
   updateQTE(dt);
   if (!JS.strike) return;
@@ -6047,7 +6076,7 @@ function applyWorld(m) {
     if (v[5]) G.beakT = Math.max(G.beakT, 0.15); if (v[6]) G.flapT = Math.max(G.flapT, 0.15);
     G.baitPhase = v[7] ? 'eat' : 'go'; G.tid = v[8] || 0; G.lookX = num(v[9], G.x); G.lookZ = num(v[10], G.z); G.searchPhase = v[11] ? 'look' : 'move';
     if (Number.isFinite(v[12])) G.blindImm = clamp(v[12], 0, CFG.BLIND_IMMUNE);
-    G.y = clamp(num(v[13], 0), 0, 20);   // nobody can blind it again until this runs out
+    G.netY = clamp(num(v[13], 0), 0, 20); if (G.y === undefined || Math.abs(G.netY - G.y) > 6 && G.state !== 'dive') G.y = G.netY;   // nobody can blind it again until this runs out
   }
   if (Array.isArray(m.s)) m.s.forEach((a, i) => {
     const S = W.sgeese[i]; if (!S || !Array.isArray(a)) return;
@@ -6081,6 +6110,7 @@ function updatePuppets(dt) {
     }
   }
   G.dist = Math.hypot(G.x - EAR.x, G.z - EAR.z);
+  if (G.netY !== undefined) G.y += (G.netY - G.y) * Math.min(1, dt * 14);   // height eased between the host's updates
   animateGoose(G, dt, G.curSpeed > 0.2);
   updateBlind(G, dt);
   for (const S of W.sgeese) { if (S.dead) { updateWreck(S, dt); continue; } animateGoose(S, dt, S.curSpeed > 0.1, S.rig); updateSgBlind(S, dt); sgLed(S); }
@@ -6155,6 +6185,7 @@ function onHostMsg(m) {
     case 'mgone': { const t = W.thrown.find(q => q.id === m.id); if (t) { t.gone = true; t.mesh.visible = false; } break; }
     case 'struck': strikeScare(); break;
     case 'pinned': pinScene(); break;
+    case 'diving': player.diveLookT = CFG.DIVE_TIME + 0.25; break;
     case 'lbbat': lbBoost(); break;
     case 'caught':
       if (m.id === MP.id) { if (state === 'playing' || state === 'paused') caught(); }
