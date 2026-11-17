@@ -163,6 +163,16 @@ button:hover{background:var(--paper)}
 button:focus-visible{background:var(--ember);outline:none}
 button.ghost{background:rgba(221,214,198,.1);color:var(--ink)}
 button.ghost:hover{background:rgba(221,214,198,.2)}
+/* single player difficulty */
+.diff-list{display:flex;flex-direction:column;gap:12px;width:min(460px,100%);margin:22px 0 18px}
+.diff-list button.diff{display:flex;flex-direction:column;align-items:flex-start;gap:6px;text-align:left;padding:16px 24px;background:rgba(221,214,198,.08);color:var(--ink)}
+.diff-list button.diff:hover{background:rgba(221,214,198,.16)}
+.diff-list button.diff:focus-visible{background:rgba(227,166,78,.22)}
+.diff b{font-size:22px;letter-spacing:.2em;font-weight:400}
+.diff span{font-size:12px;letter-spacing:.03em;text-transform:none;color:var(--dim);line-height:1.5}
+.diff.nm b{color:#e8271a;text-shadow:0 0 16px rgba(232,39,26,.5)}
+.diff-list button.diff.nm{background:rgba(120,12,8,.18)}
+.diff-list button.diff.nm:hover{background:rgba(150,16,10,.3)}
 .fine{margin:0;font-size:12px;color:var(--dim);letter-spacing:.06em}
 .center{align-items:center;text-align:center;background:rgba(3,3,4,.88)}
 .center .inner{margin-inline:0;align-items:center}
@@ -564,6 +574,18 @@ body.safe h1{animation:none}
   </div>
 </section>
 
+<section class="screen center" id="scr-diff" hidden>
+  <div class="inner">
+    <p class="eyebrow">Single player</p>
+    <h2>Difficulty</h2>
+    <div class="diff-list">
+      <button id="diff-normal" class="diff" type="button"><b>Normal</b><span>The maze as you know it.</span></button>
+      <button id="diff-nightmare" class="diff nm" type="button"><b>Nightmare</b><span>Fire in the halls and a faster, deafening Voice you can't blind. Six surveillance geese, weak items, hotter air, and every perk at half strength.</span></button>
+    </div>
+    <div class="actions"><button id="diff-back" class="ghost" type="button">Back</button></div>
+  </div>
+</section>
+
 <section class="screen center" id="scr-howto" hidden>
   <div class="inner howto">
     <h2>How to Play</h2>
@@ -612,7 +634,7 @@ body.safe h1{animation:none}
 
     <section>
       <h4>Playing Together</h4>
-      <p>Open Multiplayer to make a room or join one with its code. The more of you there are, the harder the maze fights back. A tape found by anyone counts for everyone. Get caught and you can still watch your teammates until the run ends.</p>
+      <p>Open Multiplayer to make a room or join one with its code. The more of you there are, the harder the maze fights back, and the bigger it gets, with more tapes, refrigerators, batteries and cabinets to search. A tape found by anyone counts for everyone. Get caught and you can still watch your teammates until the run ends.</p>
     </section>
 
     <section>
@@ -854,25 +876,60 @@ const CFG = {
   PIN_PRESSES: 40, PIN_TIME: 9.2, PIN_STUN: 4, PIN_VITALITY: 10,   // Muffin Man, Blueberry Brawler, Ice Pack Patroller
   CLEANSE_EXTRA: 30, CLEANSE_LINGER: 8,   // Deep Cleanse
   STRIKE_WINDOW: 0.35, STRIKE_STUN: 5.5, STRIKE_VITAL: 3, STRIKE_QTE: 0.8,   // Iron Nerve: one Strike per game
+  // knobs Nightmare turns (these are the Normal values)
+  FLASH_DRAIN: 1, FLASH_BRIGHT: 1, FLY_MAX_ATTACK: 28, SEARCH_LUCK: 1, PLAYER_SPEED: 1, EXHAUST_REGEN: 1, HEAT_RATE: 1,
+  EVADE_SPEED: 2, LB_DRAIN: 0, SCAV_SURE: 1, NM_SMELL_R: 8,
 };
 
 // difficulty grows with the number of players in a room (1 = single player, the base values)
 const BASE_CFG = { ...CFG };
 CFG.HEAR_MULT = 1;
+// ---------- Normal / Nightmare (single player only), and what a bigger room adds
+const MODE_KEY = 'gooseflesh.mode.v1';
+const NM = { mode: 'normal', on: false };
+try { if (localStorage.getItem(MODE_KEY) === 'nightmare') NM.mode = 'nightmare'; } catch (e) { /* ignore */ }
+const NM_SET = {
+  TEMP_GRACE: 8, COOL_PAUSE: 12.5, FRIDGE_OFF: 220, HEAT_RATE: 1.5, EXHAUST_REGEN: 0.7, PLAYER_SPEED: 0.97,
+  BATTERY_PICKUP: 6, BATTERY_REGEN: BASE_CFG.BATTERY_MAX * 0.01 / 12.5, FLASH_DRAIN: 1.1, FLASH_BRIGHT: 0.42,
+  PROPEL_SPEED: 1.15, PROPEL_TIME: 3, ICE_TIME: 15, ICE_RATE: 1 / 15, EAT_MIN: 2, EAT_MAX: 2, SEARCH_LUCK: 0.8,
+  SG_BLIND_TIME: BASE_CFG.SG_BLIND_TIME + 1.5, SG_DISABLED: 20, PIN_PRESSES: 56, PIN_TIME: 9, PIN_VITALITY: 4,
+  FLY_MIN_ATTACK: 2.5, FLY_MAX_ATTACK: 8,
+};
+// every perk at half strength in Nightmare (their downsides stay as they are)
+const PERK_HALF = ['LB_TEAM', 'LB_REVEAL', 'ENDURANCE_EFF', 'ENDURANCE_EFF_MAX', 'ASE_TIME', 'SCOTO_ASE', 'SCOTO_LC', 'SCOTO_THIRD', 'YELL_UD', 'EVADE_HIDE_T', 'SCAV_BUFF_T',
+  'HEAD_REVEAL', 'CRESCENDO_BASE', 'CRESCENDO', 'FRIGID_TIME', 'LP_LINGER', 'LC_SPEED_T', 'LC_VITAL_T', 'LC_TAPES_T', 'RAPPORT_LINGER', 'RAPPORT_HEAT', 'MUFFIN_BONUS',
+  'BRAWLER_BONUS', 'ICE_PATROL_T', 'CLEANSE_EXTRA', 'CLEANSE_LINGER', 'STRIKE_STUN', 'STRIKE_VITAL'];
+const PERK_HALF_MUL = ['ENDURANCE_WALK', 'HYPO_FRIDGE', 'SCAV_SPEED', 'HEAD_SPEED', 'CRIT_COOL', 'FRIGID_COOL', 'LC_SPEED', 'EVADE_SPEED'];
+function setRunMode(nm) {
+  NM.on = !!nm; document.body.classList.toggle('nightmare', NM.on);
+  for (const k of [...Object.keys(NM_SET), ...PERK_HALF, ...PERK_HALF_MUL, 'HYPO_FLOOR', 'SCAV_SURE', 'LB_DRAIN', 'SG_SPEED']) CFG[k] = BASE_CFG[k];
+  // a bigger room means a bigger maze: tapes, batteries and cabinets grow with its floor space
+  const area = (mapCells() / CELLS) ** 2;
+  for (const k of ['TAPES', 'MAX_BATTERIES', 'CABINETS']) CFG[k] = Math.round(BASE_CFG[k] * area);
+  if (!NM.on) return;
+  Object.assign(CFG, NM_SET); CFG.SG_SPEED = BASE_CFG.SG_SPEED * 1.5;
+  for (const k of PERK_HALF) CFG[k] = BASE_CFG[k] / 2;
+  for (const k of PERK_HALF_MUL) CFG[k] = 1 + (BASE_CFG[k] - 1) / 2;
+  CFG.HYPO_FLOOR = BASE_CFG.TEMP_FLOOR - (BASE_CFG.TEMP_FLOOR - BASE_CFG.HYPO_FLOOR) / 2;
+  CFG.SCAV_SURE = 0.5; CFG.LB_DRAIN = 0.5;   // Scavenger: halfway to a sure find. LightBringer: drains at half speed
+}
+// tapes found, on the 5-tape scale (a big room has more tapes; The Voice and Crescendo still top out the same)
+const tapeUnits = () => (player.tapes | 0) * BASE_CFG.TAPES / Math.max(1, CFG.TAPES);
 const DIFF = { n: 1, tapes: -1, mp: false };
 function applyDifficulty(n) {
-  const k = Math.max(0, Math.min(5, n - 1)), mp = !!MP.inGame, tapes = player.tapes | 0;
+  const k = Math.max(0, Math.min(5, n - 1)), mp = !!MP.inGame, tapes = player.tapes | 0, tu = tapeUnits();
   Object.assign(DIFF, { n, tapes, mp });
-  const tapeK = BASE_CFG.VOICE_TAPE_SPEED * (mp ? 0.5 : 1) * Math.max(0, tapes - 1);
+  const tapeK = BASE_CFG.VOICE_TAPE_SPEED * (mp ? 0.5 : 1) * Math.max(0, tu - 1);
   for (const key of ['PATROL', 'SEARCH', 'INVESTIGATE', 'ALERTED', 'HUNT', 'CHASE']) CFG[key] = BASE_CFG[key] * (1 + 0.04 * k) * (1 + tapeK);
-  for (const key of ['SG_ALERT_SPEED', 'SG_FOLLOW_SPEED']) CFG[key] = BASE_CFG[key] * (1 + 0.04 * k);
+  for (const key of ['SG_ALERT_SPEED', 'SG_FOLLOW_SPEED']) CFG[key] = BASE_CFG[key] * (1 + 0.04 * k) * (NM.on ? 1.5 : 1);
   const early = !mp && tapes === 0;   // single player, no tapes yet: a little slower than you, and a poor sense of smell
   if (early) { const cap = BASE_CFG.SPRINT * BASE_CFG.VOICE_EARLY; CFG.CHASE = Math.min(CFG.CHASE, cap); CFG.HUNT = Math.min(CFG.HUNT, cap); }
-  CFG.LINGER_TIME = BASE_CFG.LINGER_TIME * (early ? BASE_CFG.VOICE_EARLY_SMELL : 1);
+  if (NM.on) for (const key of ['PATROL', 'SEARCH', 'INVESTIGATE', 'ALERTED', 'HUNT', 'CHASE']) CFG[key] *= 1.2 * (1 + 0.025 * tu);   // Nightmare: 20% faster, 2.5% more per tape
+  CFG.LINGER_TIME = BASE_CFG.LINGER_TIME * (early ? BASE_CFG.VOICE_EARLY_SMELL : 1) / (NM.on ? 1.3 : 1);   // Nightmare: sniffs you out 30% faster
   for (const key of ['SIGHT_DARK', 'SIGHT_DARK_CROUCH', 'SIGHT_LIGHT', 'SG_SIGHT', 'SG_SIGHT_RUN']) CFG[key] = BASE_CFG[key] * (1 + 0.05 * k);
-  CFG.HEAR_MULT = 1 + 0.08 * k;
+  CFG.HEAR_MULT = (1 + 0.08 * k) * (NM.on ? 3 : 1);   // Nightmare: hears you from three times as far
   CFG.BLIND_TIME = BASE_CFG.BLIND_TIME + 0.08 * k;
-  CFG.SG_COUNT = Math.min(6, BASE_CFG.SG_COUNT + k);
+  CFG.SG_COUNT = NM.on ? 6 : Math.min(6, BASE_CFG.SG_COUNT + k);
 }
 function difficultyText(n) {
   const k = Math.max(0, Math.min(5, n - 1));
@@ -898,7 +955,7 @@ const SAMPLE_FILES = {
 const VOICE_LINES = new Set(['merp', 'rear', 'eydam', 'danana', 'peww', 'swerve', 'kill', 'jafggm', 'muffins']);
 // [from F, stamina drain x, move speed x, extra recovery delay s]; 104 also disables running
 const HEAT_STEPS = [[104.0, 2.0, 0.75, 12], [103.4, 2.0, 0.80, 12], [102.6, 1.4, 0.88, 6.5], [102.0, 1.25, 0.90, 4], [101.3, 1.18, 0.92, 1.5], [100.5, 1.10, 0.95, 0]];
-const GRAFFITI = ['STAY COOL', 'KEEP MOVING', 'THE VOICE HEARS YOU', 'DON\'T STAY STILL', 'LIGHTS OFF', 'HONK', 'HONK HONK HONK', 'IT CAN SMELL YOU', 'FIVE TAPES', 'NO EXIT', 'CROUCH', 'WHO COMBS HIS HAIR?', 'BREAD?', 'HIDE'];
+const GRAFFITI = ['STAY COOL', 'KEEP MOVING', 'THE VOICE HEARS YOU', 'DON\'T STAY STILL', 'LIGHTS OFF', 'HONK', 'HONK HONK HONK', 'IT CAN SMELL YOU', 'FIND THE TAPES', 'NO EXIT', 'CROUCH', 'WHO COMBS HIS HAIR?', 'BREAD?', 'HIDE'];
 
 /* ================= UTIL ================= */
 const rr = (a, b) => a + Math.random() * (b - a);
@@ -1385,7 +1442,7 @@ function buildGooseHead() {
   addMesh(group, SPH, GM.black, [0, 0.03, 0.08], [0.16, 0.155, 0.24]);
   addMesh(group, SPH, GM.white, [0, -0.035, 0.035], [0.168, 0.125, 0.165]);   // chinstrap
   const eyeG = geo('eye2', () => new THREE.SphereGeometry(0.026, 12, 8));
-  for (const s of [-1, 1]) addMesh(group, eyeG, GM.eye, [0.138 * s, 0.06, 0.15], null, null, false);
+  const eyes = [-1, 1].map(s => addMesh(group, eyeG, GM.eye, [0.138 * s, 0.06, 0.15], null, null, false));
   const cone = geo('beak2', () => { const g = new THREE.ConeGeometry(0.075, 0.3, 12); g.rotateX(Math.PI / 2); return g; });
   addMesh(group, cone, GM.beak, [0, 0.0, 0.44], [1, 0.5, 1], [0.1, 0, 0]);
   const jaw = new THREE.Group(); jaw.position.set(0, -0.035, 0.3); group.add(jaw);
@@ -1400,7 +1457,7 @@ function buildGooseHead() {
     }
   }
   const afro = buildAfro(); afro.userData.afro = true; afro.position.set(0, 0.085, 0.04); group.add(afro);
-  return { group, jaw, inner };
+  return { group, jaw, inner, eyes };
 }
 function buildGooseRig() {
   const root = new THREE.Group();
@@ -1433,7 +1490,7 @@ function buildGooseRig() {
     legs.push(hip);
   }
   root.traverse(o => { if (o.isMesh) o.receiveShadow = false; });
-  return { root, body, neck, headPivot, jaw: head.jaw, inner: head.inner, wings, legs, innerOpen: true };
+  return { root, body, neck, headPivot, jaw: head.jaw, inner: head.inner, eyes: head.eyes, wings, legs, innerOpen: true };
 }
 
 /* ================= PLAYER CHARACTER (third person) ================= */
@@ -1623,6 +1680,70 @@ const PIN_HANDS = [-1, 1].map(s => {
 });
 JS.neck = addMesh(JS.group, geo('pinNeck', () => { const g = new THREE.CylinderGeometry(0.1, 0.13, 1.5, 12); g.rotateX(Math.PI / 2); return g; }), GM.black, [0, 0.1, -0.8], null, [0.18, 0, 0], false);
 JS.neck.visible = false;
+// Nightmare: glowing red eyes, teeth like needles, and wings snapped and splintered
+const NM_LOOK = { eye: new THREE.MeshBasicMaterial({ color: 0xff2412 }), bits: [], on: null };
+(() => {
+  const bone = new THREE.MeshStandardMaterial({ color: 0xcfc2a6, roughness: 0.55 }), shard = new THREE.MeshStandardMaterial({ color: 0x0e0b09, roughness: 0.8 });
+  const spike = geo('nmSpike', () => { const g = new THREE.ConeGeometry(0.06, 0.8, 5); g.rotateX(-Math.PI / 2); return g; });
+  GOOSE_RIG.wings.forEach((piv, k) => {
+    const s = k ? 1 : -1;
+    for (const [x, y, z, rx, ry, len, m] of [[0.08, 0.22, -0.4, 0.9, 0.5, 1.1, bone], [0.12, 0.1, -0.85, 0.4, -0.6, 1.4, shard], [-0.06, 0.26, -1.2, 1.3, 0.3, 1.0, bone], [0.16, 0.0, -1.55, 0.1, 0.9, 1.3, shard], [0.0, -0.18, -1.0, -0.8, -0.2, 0.9, shard]]) {
+      const b = addMesh(piv, spike, m, [x * s * 1.6, y * 1.4, z], [1, 1, len], [rx, ry * s, 0], false); b.visible = false; NM_LOOK.bits.push(b);
+    }
+  });
+  // a red glow around each eye, so they burn in the dark
+  const c = mkCanvas(32, 32), g = c.getContext('2d'), gr = g.createRadialGradient(16, 16, 0, 16, 16, 16);
+  gr.addColorStop(0, 'rgba(255,90,60,1)'); gr.addColorStop(0.25, 'rgba(255,30,10,.8)'); gr.addColorStop(1, 'rgba(160,0,0,0)'); g.fillStyle = gr; g.fillRect(0, 0, 32, 32);
+  const halo = new THREE.SpriteMaterial({ map: new THREE.CanvasTexture(c), blending: THREE.AdditiveBlending, depthWrite: false, transparent: true });
+  for (const e of [...GOOSE_RIG.eyes, ...JS.eyes]) { const h = new THREE.Sprite(halo); h.scale.setScalar(0.16); h.visible = false; e.add(h); NM_LOOK.bits.push(h); }
+})();
+function setNightmareLook(on) {
+  if (NM_LOOK.on === on) return; NM_LOOK.on = on;
+  for (const e of [...GOOSE_RIG.eyes, ...JS.eyes]) { e.material = on ? NM_LOOK.eye : GM.eye; e.scale.setScalar(on ? 1.35 : 1); }
+  for (const m of [...GOOSE_RIG.inner, ...JS.inner]) if (m.material === GM.tooth) m.scale.set(on ? 0.7 : 1, on ? 2.7 : 1, on ? 0.7 : 1);
+  for (const b of NM_LOOK.bits) b.visible = on;
+  if (!on) for (const w of GOOSE_RIG.wings) w.rotation.x = 0;
+}
+// Nightmare: small fires burning here and there (just to look at; they don't burn you)
+const FIRE = (() => {
+  const c = mkCanvas(64, 128), g = c.getContext('2d');
+  const gr = g.createRadialGradient(32, 92, 2, 32, 80, 60);
+  gr.addColorStop(0, 'rgba(255,250,215,1)'); gr.addColorStop(0.18, 'rgba(255,214,110,.95)'); gr.addColorStop(0.45, 'rgba(255,120,30,.6)'); gr.addColorStop(0.75, 'rgba(190,40,10,.18)'); gr.addColorStop(1, 'rgba(120,10,0,0)');
+  g.fillStyle = gr; g.beginPath(); g.moveTo(32, 2); g.bezierCurveTo(46, 40, 62, 70, 58, 98); g.bezierCurveTo(54, 122, 10, 122, 6, 98); g.bezierCurveTo(2, 70, 18, 40, 32, 2); g.fill();
+  const flame = new THREE.SpriteMaterial({ map: new THREE.CanvasTexture(c), blending: THREE.AdditiveBlending, depthWrite: false, transparent: true });
+  const c2 = mkCanvas(64, 64), g2 = c2.getContext('2d'), r2 = g2.createRadialGradient(32, 32, 0, 32, 32, 32);
+  r2.addColorStop(0, 'rgba(255,140,40,.55)'); r2.addColorStop(0.5, 'rgba(200,60,10,.2)'); r2.addColorStop(1, 'rgba(120,20,0,0)'); g2.fillStyle = r2; g2.fillRect(0, 0, 64, 64);
+  const glow = new THREE.MeshBasicMaterial({ map: new THREE.CanvasTexture(c2), blending: THREE.AdditiveBlending, depthWrite: false, transparent: true });
+  const ash = new THREE.MeshStandardMaterial({ color: 0x0c0a08, roughness: 1 });
+  return { flame, glow, ash };
+})();
+function addFires() {
+  W.fires = [];
+  if (!NM.on) return;
+  const N = W.N, sd = W.startDist, want = Math.round(9 * (N / 25) ** 2), picked = [];
+  for (const i of shuffle(W.floors.slice())) {
+    if (picked.length >= want) break;
+    if ((sd && sd[i] < 4) || picked.some(j => Math.abs(j % N - i % N) + Math.abs(((j / N) | 0) - ((i / N) | 0)) < 5)) continue;
+    picked.push(i);
+    const tx = i % N, tz = (i / N) | 0, wd = DIRS.find(([dx, dz]) => isWallTile(tx + dx, tz + dz)) || [0, 0];
+    const x = center(tx) + wd[0] * 1.05 + rr(-0.4, 0.4) * (wd[0] ? 0 : 1), z = center(tz) + wd[1] * 1.05 + rr(-0.4, 0.4) * (wd[1] ? 0 : 1);
+    const grp = new THREE.Group(); grp.position.set(x, 0, z); W.group.add(grp);
+    const glow = new THREE.Mesh(geo('fireGlow', () => { const p = new THREE.PlaneGeometry(2.6, 2.6); p.rotateX(-Math.PI / 2); return p; }), FIRE.glow); glow.position.y = 0.02; grp.add(glow);
+    for (let k = 0; k < 4; k++) addMesh(grp, geo('box'), FIRE.ash, [rr(-0.25, 0.25), 0.04, rr(-0.25, 0.25)], [rr(0.25, 0.5), 0.06, rr(0.06, 0.1)], [0, rr(0, 3), 0.1], false);   // burnt debris
+    const flames = [];
+    for (const [ox, oz, w, h] of [[0, 0, 0.7, 1.25], [0.22, 0.1, 0.45, 0.8], [-0.2, -0.08, 0.5, 0.9]]) {
+      const s = new THREE.Sprite(FIRE.flame); s.position.set(ox, h / 2, oz); grp.add(s); flames.push({ s, w, h, ph: rr(0, 6.28), sp: rr(7, 12) });
+    }
+    W.fires.push({ grp, flames });
+  }
+}
+function updateFires() {
+  if (!W.fires || !W.fires.length) return;
+  for (const f of W.fires) for (const q of f.flames) {
+    const k = 0.82 + 0.22 * Math.abs(Math.sin(gameTime * q.sp + q.ph)) + rr(-0.06, 0.06);
+    q.s.scale.set(q.w * (0.92 + 0.12 * Math.sin(gameTime * q.sp * 0.7 + q.ph)), q.h * k, 1); q.s.position.y = q.h * k / 2;
+  }
+}
 // the jumpscare borrows the two lights that are always there (aura and fill), so it never adds lights to the scene
 function jumpLights(on) {
   if (on) { aura.color.setHex(0xff3a22); aura.distance = 4; aura.intensity = 3.2; fill.color.setHex(0xdfe6ff); fill.intensity = 0.9; fill.position.set(0.2, -0.6, -0.1); }
@@ -2666,6 +2787,11 @@ const AU = {
     const b = this.osc('sine', 62, t, 0.9); b.frequency.exponentialRampToValueAtTime(24, t + 0.8);
     const bg = this.gain(); this.env(bg, t, 0.005, 0.1, 0.7, 1.0); this.chain(b, bg, out);
   },
+  tapeStatic() {   // a blank tape: hiss and a few clicks
+    const out = this.direct(0.35); if (!out) return; const t = this.t;
+    const g = this.gain(); this.env(g, t, 0.05, 1.9, 0.4, 0.6); this.chain(this.noise(t, 2.4), this.filt('bandpass', 2600, 0.5), g, out);
+    for (let i = 0; i < 6; i++) { const t0 = t + rr(0.1, 2.1), c = this.gain(); this.env(c, t0, 0.002, 0.01, 0.03, 0.5); this.chain(this.noise(t0, 0.05), this.filt('highpass', 3000), c, out); }
+  },
   // Come And Get Me!: a person screaming, loud enough to carry across the maze
   yell(x, z, mine) {
     const out = mine ? this.direct(0.7) : this.at(x, 1.6, z, 120, 1.2); if (!out) return;
@@ -3015,13 +3141,13 @@ function resetPlayer() {
 }
 const hasPerk = id => !!(player.perks && player.perks.has(id));
 // Crescendo: 3% per tape the team has found
-const cresc = () => hasPerk('crescendo') ? CFG.CRESCENDO_BASE + CFG.CRESCENDO * player.tapes : 0;
+const cresc = () => hasPerk('crescendo') ? CFG.CRESCENDO_BASE + CFG.CRESCENDO * tapeUnits() : 0;
 const hypo = () => hasPerk('hypothermia') ? CFG.HYPO_FRIDGE : 1;   // Hypothermaniac: refrigerators cool you 40% faster
 const tempFloor = () => hasPerk('hypothermia') ? CFG.HYPO_FLOOR : CFG.TEMP_FLOOR;   // and you can get down to 96
 // Critical Condition: at 102 or hotter
 const critical = () => hasPerk('critical') && tempQ() >= CFG.CRIT_TEMP - 1e-6;
 // Frigid: no heating for the first 45 s, then 30% less
-const heatMult = () => player.icePatrolT > 0 || player.graceT > 0 ? 0 : 1;   // the first 15 s of a run (45 with Frigid), Ice Pack Patroller
+const heatMult = () => player.icePatrolT > 0 || player.graceT > 0 ? 0 : CFG.HEAT_RATE;   // the first 15 s of a run (45 with Frigid), Ice Pack Patroller
 const coolMult = () => hasPerk('frigid') ? CFG.FRIGID_COOL : 1;   // Frigid: all cooling, 16% faster
 const batFrac = P => Math.min(1, P.battery / CFG.BATTERY_MAX);   // past 100% (LightBringer, Scavenger) the beam is just full
 // The Voice can't sense you: Adam's Underwear, or Evasive Maneuvers
@@ -3053,7 +3179,7 @@ function newGame(seed) {
   resetMap();
   for (const L of [...OL_FADING]) hideOutline(L);
   hideOutline(GOOSE_OL); for (const R of SG_RIGS) hideOutline(R.ol);
-  resetPlayer(); resetGoose(); spawnSurveillance();
+  resetPlayer(); resetGoose(); spawnSurveillance(); addFires(); setNightmareLook(NM.on);
   if (hasPerk('headstart')) {   // the nearest tape (by walking distance) is outlined for the first seconds
     const d = bfs(1, 1), near = (list, fx, fz) => {
       let best = null, bd = 1e9;
@@ -3111,7 +3237,7 @@ document.addEventListener('pointerlockerror', () => lockFailed());
 
 function startPlaying() {
   state = 'playing';
-  ['scr-start', 'scr-pause', 'scr-dead', 'scr-win', 'scr-settings', 'scr-perks', 'scr-skins', 'scr-howto', 'scr-mp', 'scr-create', 'scr-join', 'scr-room', 'scr-msg'].forEach(id => $(id).hidden = true);
+  ['scr-start', 'scr-diff', 'scr-pause', 'scr-dead', 'scr-win', 'scr-settings', 'scr-perks', 'scr-skins', 'scr-howto', 'scr-mp', 'scr-create', 'scr-join', 'scr-room', 'scr-msg'].forEach(id => $(id).hidden = true);
   els.hud.hidden = false; $('tags').hidden = !MP.inGame; $('spec').hidden = true; $('hud-team').hidden = !MP.inGame;
   $('touch').hidden = !isMobile(); releaseTouches();
   AU.setAmbient(true);
@@ -3120,12 +3246,12 @@ function startPlaying() {
 function beginNewRun() {
   if (MP.active) { backToRoom(); return; }
   AU.init(); countPerkUse(); guardBack();
-  applyDifficulty(1); skinMats('dusty').jacket.color.setHex(SKINS.dusty.jacket);
+  setRunMode(NM.mode === 'nightmare'); applyDifficulty(1); skinMats('dusty').jacket.color.setHex(SKINS.dusty.jacket);
   newGame();
   startPlaying();
   touch.run = false;
   if (isMobile()) tryFullscreen(); else requestLock();
-  toast('Find the 5 tapes.' + (isMobile() && innerHeight > innerWidth ? ' Turn your phone sideways for a wider view.' : ''), false, 5);
+  toast((NM.on ? 'Nightmare. ' : '') + `Find the ${CFG.TAPES} tapes.` + (isMobile() && innerHeight > innerWidth ? ' Turn your phone sideways for a wider view.' : ''), false, 5);
   if (Math.random() < 0.001) playWhenReady('jafggm', { gain: 1.1 }, 1.2);   // 1 in 1000
   setTimeout(() => { if (state === 'playing' && W.goose) AU.honk(W.goose.x, W.goose.z, { pitch: 0.95, loud: 1.4 }); }, 3500);
 }
@@ -3256,7 +3382,11 @@ addEventListener('mousemove', e => {
   player.yaw -= mx * SENS * k;
   player.pitch = clamp(player.pitch - my * SENS * k, -1.45, 1.45);
 });
-$('btn-start').addEventListener('click', beginNewRun);
+$('btn-start').addEventListener('click', () => { $('scr-start').hidden = true; $('scr-diff').hidden = false; $(NM.mode === 'nightmare' ? 'diff-nightmare' : 'diff-normal').focus({ preventScroll: true }); });
+function chooseMode(m) { NM.mode = m; try { localStorage.setItem(MODE_KEY, m); } catch (e) { /* ignore */ } $('scr-diff').hidden = true; beginNewRun(); }
+$('diff-normal').addEventListener('click', () => chooseMode('normal'));
+$('diff-nightmare').addEventListener('click', () => chooseMode('nightmare'));
+$('diff-back').addEventListener('click', () => { $('scr-diff').hidden = true; $('scr-start').hidden = false; });
 els.inv.addEventListener('pointerdown', e => { const b = e.target.closest('.slot'); if (!b) return; e.preventDefault(); e.stopPropagation(); useItem(b.dataset.item); });
 $('btn-resume').addEventListener('click', resumeGame);
 $('btn-restart').addEventListener('click', beginNewRun);
@@ -3789,18 +3919,19 @@ function finishSearch(c) {
     if (MP.host) netHost(m); else netClient(m);
   }
   // Scavenger never comes up empty: the roll only covers the items. After every search: Speed and Vitality.
-  const sure = hasPerk('scavenger'), r = Math.random() * (sure ? (c.isFridge ? 45 : 21) : 100);
+  // Nightmare: every find is 20% less likely, and Scavenger only gets you halfway to a sure find
+  const L = CFG.SEARCH_LUCK, any = (c.isFridge ? 45 : 21) * L, sure = hasPerk('scavenger'), r = Math.random() * (sure ? any + (100 - any) * (1 - CFG.SCAV_SURE) : 100);
   if (sure) player.scavBuffT = CFG.SCAV_BUFF_T;
-  if (c.isFridge) {   // refrigerator: 30% muffin, 15% ice pack, 55% nothing (Hypothermia: the first one you open has an ice pack)
-    if (r < 30) giveItem('muffin');
-    else if (r < 45) giveItem('ice');
+  if (c.isFridge) {   // refrigerator: 30% muffin, 15% ice pack, 55% nothing
+    if (r < 30 * L) giveItem('muffin');
+    else if (r < 45 * L) giveItem('ice');
     else toast('Nothing in here.', false, 1.8);
     return;
   }
   // cabinet: 1% glasses, 5% underwear, 15% Propel, 79% nothing
-  if (r < 1) giveItem('glasses');
-  else if (r < 6) giveItem('undies');
-  else if (r < 21) giveItem('propel');
+  if (r < 1 * L) giveItem('glasses');
+  else if (r < 6 * L) giveItem('undies');
+  else if (r < 21 * L) giveItem('propel');
   else toast('Nothing in here.', false, 1.8);
 }
 function updateCabinets(dt) {
@@ -3822,13 +3953,21 @@ function showTape(n) {
   els.tapes.classList.remove('got'); void els.tapes.offsetWidth; els.tapes.classList.add('got');
   playTape(n);
 }
+// which of the five recordings tape n holds: with more than five tapes they're spread out, first to last, and the rest are static
+function recordingOf(n) {
+  const N = CFG.TAPES; if (N <= 5) return n;
+  for (let j = 0; j < 5; j++) if (Math.round(1 + j * (N - 1) / 4) === n) return j + 1;
+  return 0;
+}
 function playTape(n) {
   stopTape();
-  tapeSrc = AU.play('tape' + n, { gain: 1.1 });
-  const buf = AU.samples['tape' + n];
-  TAPEUI.n = n; TAPEUI.t = 0; TAPEUI.dur = buf ? buf.duration : 3;
+  const rec = recordingOf(n);
+  tapeSrc = rec ? AU.play('tape' + rec, { gain: 1.1 }) : null;
+  const buf = rec && AU.samples['tape' + rec];
+  if (!rec) AU.tapeStatic();
+  TAPEUI.n = n; TAPEUI.t = 0; TAPEUI.dur = buf ? buf.duration : rec ? 3 : 2.4;
   els.tapeH.textContent = `Tape ${n} of ${CFG.TAPES}`;
-  els.tapeS.textContent = tapeSrc ? 'Playing' : "This tape won't play here.";
+  els.tapeS.textContent = !rec ? 'Just static.' : tapeSrc ? 'Playing' : "This tape won't play here.";
   els.tape.hidden = false;
 }
 function updateItems(dt) {
@@ -3868,7 +4007,7 @@ function updatePerks(dt) {
     if (P.lcCD <= 0 && Math.random() < CFG.LC_CHANCE) looseCannon();
   }
   // Evasive Maneuvers recharges once the team has the 3rd tape (after any run of it that's still going)
-  if (hasPerk('evasive') && !P.evadeRearmed && P.tapes >= CFG.EVADE_RECHARGE_TAPE && !P.evadePending && P.evadeSpeedT <= 0 && P.evadeHideT <= 0 && P.stamLockT <= 0) {
+  if (hasPerk('evasive') && !P.evadeRearmed && P.tapes >= Math.ceil(CFG.EVADE_RECHARGE_TAPE * CFG.TAPES / BASE_CFG.TAPES) && !P.evadePending && P.evadeSpeedT <= 0 && P.evadeHideT <= 0 && P.stamLockT <= 0) {
     P.evadeRearmed = true; P.evadeUsed = false;
   }
 }
@@ -3881,6 +4020,8 @@ function looseCannon() {
 }
 // the shared terms: Odorless (The Voice can't pick up your scent) and Vitality (stamina doesn't run out)
 const isOdorless = P => P === player ? P.scentHideT > 0 || P.lpOdorT > 0 : P.scentHideT > 0;
+// Nightmare: up close, The Voice smells you through Odorless
+const smellsThrough = P => NM.on && !!(W && W.goose) && Math.hypot(W.goose.x - P.x, W.goose.z - P.z) < CFG.NM_SMELL_R;
 const propelTime = () => CFG.PROPEL_TIME + (hasPerk('brawler') ? CFG.BRAWLER_BONUS : 0);   // Blueberry Brawler
 const hasVitality = () => player.strikeVitalT > 0 || player.pinVitalT > 0 || player.propelT > 0 || player.headT > 0 || player.lcVitalT > 0 || player.scavBuffT > 0 || player.rapportT > 0;
 function startEvasive() {
@@ -3984,9 +4125,9 @@ function updatePlayer(dt) {
     const canRun = !P.exhausted && P.stamina > 0 && !HE.noRun;
     if (shift && moving && P.crouch && canRun) P.crouch = false;
     P.sprinting = shift && moving && canRun && !P.crouch;
-    let mult = HE.speed;
+    let mult = HE.speed * CFG.PLAYER_SPEED;
     if (P.propelT > 0) mult *= CFG.PROPEL_SPEED;
-    if (P.evadeSpeedT > 0) mult *= 2;
+    if (P.evadeSpeedT > 0) mult *= CFG.EVADE_SPEED;
     if (P.exhausted && !P.sprinting && !P.crouch && hasPerk('endurance')) mult *= CFG.ENDURANCE_WALK;
     if (P.headT > 0) mult *= CFG.HEAD_SPEED;
     if (P.coldBoostT > 0) mult *= 1 + P.coldBoost;   // cold shower
@@ -4023,9 +4164,9 @@ function updatePlayer(dt) {
   updateShowerPlayer(dt);
   updateTemperature(dt);
   // flashlight battery: drains while on, trickles back while off (1 second of light per 10 seconds)
-  if (hasPerk('lightbringer')) { P.battery = Math.max(P.battery, CFG.BATTERY_MAX); P.lightDead = false; }   // never runs out
+  if (hasPerk('lightbringer') && !CFG.LB_DRAIN) { P.battery = Math.max(P.battery, CFG.BATTERY_MAX); P.lightDead = false; }   // never runs out
   else if (P.flashOn) {
-    P.battery -= dt;
+    P.battery -= dt * CFG.FLASH_DRAIN * (hasPerk('lightbringer') ? CFG.LB_DRAIN : 1);   // Nightmare: 10% faster (LightBringer: half as fast)
     if (P.battery <= 0) flashDied();
   } else if (P.battery < CFG.BATTERY_MAX) P.battery = Math.min(CFG.BATTERY_MAX, P.battery + CFG.BATTERY_REGEN * dt);
   const frac = batFrac(P);
@@ -4040,11 +4181,11 @@ function updatePlayer(dt) {
   // eye adaptation: when the beam lands on something close, it is turned down so near surfaces don't burn out to white
   if (P.flashOn) { const k = clamp(Math.pow(beamHitDist() / 4.2, 0.9), 0.4, 1); P.expo += (k - P.expo) * (1 - Math.exp(-dt * 8)); } else P.expo = 1;
   const dip = P.blinkT > 0 ? 0.04 : 1;   // one quick flicker: a surveillance goose just went down
-  flash.intensity = P.flashOn ? 5.4 * (0.12 + 0.88 * frac) * P.flick * dip * P.expo : 0;
+  flash.intensity = P.flashOn ? 5.4 * CFG.FLASH_BRIGHT * (0.12 + 0.88 * frac) * P.flick * dip * P.expo : 0;
   flash.distance = 20 + 26 * frac; flash.angle = 0.38 + 0.1 * frac;
   renderer.shadowMap.autoUpdate = P.flashOn && flash.castShadow;
   // linger / scent
-  if (undetectable(P) || isOdorless(P) || Math.hypot(P.x - P.ax, P.z - P.az) > CFG.LINGER_RADIUS) { P.ax = P.x; P.az = P.z; P.linger = 0; } else P.linger += dt;
+  if (undetectable(P) || (isOdorless(P) && !smellsThrough(P)) || Math.hypot(P.x - P.ax, P.z - P.az) > CFG.LINGER_RADIUS) { P.ax = P.x; P.az = P.z; P.linger = 0; } else P.linger += dt;
   // eye height (used for sight lines and hiding), then the camera
   const targetEye = P.hidden ? P.hidden.eye : (P.crouch ? CFG.CROUCH_EYE : CFG.STAND_EYE);
   P.eye += (targetEye - P.eye) * (1 - Math.exp(-dt * 10));
@@ -4224,7 +4365,7 @@ function updateStamina(dt, HE) {
   } else {
     P.sinceUse += dt;
     if (P.sinceUse >= CFG.STAMINA_DELAY + HE.delay && P.stamina < MAX) {
-      P.stamina = Math.min(MAX, P.stamina + CFG.STAMINA_REGEN * (P.crouch ? CFG.CROUCH_REGEN : 1) * (1 + cresc()) * dt);
+      P.stamina = Math.min(MAX, P.stamina + CFG.STAMINA_REGEN * (P.crouch ? CFG.CROUCH_REGEN : 1) * (1 + cresc()) * (P.exhausted ? CFG.EXHAUST_REGEN : 1) * dt);
       if (P.stamina >= MAX) P.stamShowT = 3;   // fully recovered: keep the bar up 3 more seconds
     } else if (P.stamShowT > 0) P.stamShowT -= dt;
     if (P.exhausted && P.stamina >= MAX) P.exhausted = false;
@@ -4397,7 +4538,7 @@ function updateFridges(dt) {
     const use = Math.min(dt, P.iceLeft);
     P.temp = Math.max(tempFloor(), P.temp - CFG.ICE_RATE * coolMult() * use); P.iceLeft -= use;
     P.cooling = true; P.iceCooling = true;
-    if (P.temp <= tempFloor() + 1e-6) { P.temp = tempFloor(); P.tempPauseT = CFG.COOL_PAUSE; P.tempRiseT = rr(3, 5); toast('You feel cool again.', false, 2.5, true); }
+    if (P.temp <= tempFloor() + 1e-6) { P.temp = tempFloor(); P.iceLeft = 0; toast('You feel cool again. The ice pack is spent.', false, 2.5, true); }   // no pause after an ice pack: heat comes back at the usual rate
     if (P.iceLeft <= 1e-9) { P.iceLeft = 0; P.iceOn = false; if (hasPerk('icepatroller')) P.icePatrolT = CFG.ICE_PATROL_T; }   // Ice Pack Patroller
   }
   updateSmoke(dt);
@@ -4644,7 +4785,7 @@ function updateBlind(G, dt) {
   const P = player;
   G.blindImm = Math.max(0, G.blindImm - dt);
   let on = false;
-  if (P.flashOn && P.alive !== false && G.state !== 'blind' && G.state !== 'bait' && !AIR.has(G.state) && G.blindImm <= 0) {
+  if (!NM.on && P.flashOn && P.alive !== false && G.state !== 'blind' && G.state !== 'bait' && !AIR.has(G.state) && G.blindImm <= 0) {   // Nightmare: it can't be blinded
     GOOSE_RIG.headPivot.getWorldPosition(tmpH);
     const o = flash.position, vx = tmpH.x - o.x, vy = tmpH.y - o.y, vz = tmpH.z - o.z, d = Math.hypot(vx, vy, vz) || 1;
     const reach = 4 + 8 * batFrac(P);
@@ -4715,7 +4856,7 @@ function updateFlight(G, dt) {
   switch (G.state) {
     case 'takeoff':   // crouch and beat the wings, then up into the dark
       if (G.stateT > 1.2) G.y += dt * 7.5;
-      if (G.y >= CFG.FLY_ALT) { G.y = CFG.FLY_ALT; gooseSet(G, 'fly'); G.flyT = 0; G.attackAt = rr(CFG.FLY_MIN_ATTACK, CFG.FLY_TIME - 2); G.flyTarget = null; }
+      if (G.y >= CFG.FLY_ALT) { G.y = CFG.FLY_ALT; gooseSet(G, 'fly'); G.flyT = 0; G.attackAt = rr(CFG.FLY_MIN_ATTACK, Math.min(CFG.FLY_MAX_ATTACK, CFG.FLY_TIME - 2)); G.flyTarget = null; }   // Nightmare: it drops on you 2.5 to 8 s in
       break;
     case 'fly': {
       G.flyT += dt; G.y = CFG.FLY_ALT + Math.sin(gameTime * 0.9) * 0.4;
@@ -4986,6 +5127,10 @@ function animateGoose(G, dt, moving, R = GOOSE_RIG) {
   if (flying) { flap = 0.9 + Math.sin(gameTime * (G.state === 'dive' ? 4 : 11)) * 0.75; R.legs[0].rotation.x = R.legs[1].rotation.x = -0.9; }   // wings beating, legs tucked
   if (G.state === 'takeoff' && G.stateT < 1.2) R.body.position.y = 0.95;   // crouched, about to spring
   R.wings[0].rotation.z = -flap; R.wings[1].rotation.z = flap;
+  if (NM.on && R === GOOSE_RIG) {   // Nightmare: one wing hangs broken and twitches, the other's bent wrong
+    R.wings[0].rotation.z = -flap * 0.5 - 0.6 + Math.sin(gameTime * 23) * 0.05; R.wings[0].rotation.x = 0.5;
+    R.wings[1].rotation.z = flap * 0.8 + 0.25; R.wings[1].rotation.x = -0.3;
+  }
   mouthParts(R);
 }
 
@@ -5130,6 +5275,7 @@ function sgDetects(S) {
 // The Voice hears the honking and heads for where it came from, fast
 function alertMainGoose(x, z) {
   const G = W.goose; if (!G) return false;
+  if (AIR.has(G.state) || G.holdT > 0) return false;   // up in the dark (or frozen mid-Strike) it ignores them
   if (G.state === 'chase' || G.state === 'alert' || G.state === 'bait' || G.state === 'blind') return false;
   if (G.state === 'hunt' && (G.knowT > 0 || G.scent)) return false;
   gooseInvestigate(G, x + rr(-1, 1), z + rr(-1, 1), CFG.SG_ALERT_SPEED); G.invPri = 3.5;
@@ -5273,9 +5419,10 @@ function resetScreenFx() {
 }
 function updateScreenFx(dt) {
   const P = player, t = P.temp, f = P.stamina / CFG.STAMINA_MAX, pulse = 0.5 + 0.5 * Math.sin(gameTime * 1.6);
+  const tv = NM.on ? Math.max(t, 101) : t;   // Nightmare: the red edge of 101°F never goes away
   const tgt = {
-    red: piece(t, [[100.45, 0], [100.5, 0.15], [101.3, 0.3], [102.0, 0.55], [102.6, 0.7], [103.4, 0.9], [104, 1]]),
-    dark: piece(t, [[101.0, 0], [101.3, 0.2], [102.0, 0.35], [102.6, 0.55], [103.4, 0.85], [104, 1]]),
+    red: piece(tv, [[100.45, 0], [100.5, 0.15], [101.3, 0.3], [102.0, 0.55], [102.6, 0.7], [103.4, 0.9], [104, 1]]),
+    dark: piece(tv, [[101.0, 0], [101.3, 0.2], [102.0, 0.35], [102.6, 0.55], [103.4, 0.85], [104, 1]]),
     tunnel: piece(t, [[102.55, 0], [102.6, 0.15], [103.4, 0.5], [104, 0.8]]),
     fade: piece(t, [[102.55, 0], [102.6, 0.03], [103.4, 0.12], [104, 0.24]]) + piece(t, [[103.35, 0], [103.4, 0.06], [104, 0.24]]) * pulse,
     distort: piece(t, [[103.6, 0], [104, 1]]),
@@ -5295,6 +5442,7 @@ function updateScreenFx(dt) {
 }
 
 function updateFx(dt) {
+  updateFires();
   for (const L of EMERG) {
     if (!L.on) continue;
     L.t -= dt;
@@ -5540,7 +5688,7 @@ function updateHUD(dt) {
       els.tval.classList.toggle('hot', k > 0.35);
     }
   }
-  const pct = hasPerk('lightbringer') ? Infinity : Math.ceil(P.battery / CFG.BATTERY_MAX * 100 - 1e-6);
+  const pct = hasPerk('lightbringer') && !CFG.LB_DRAIN ? Infinity : Math.ceil(P.battery / CFG.BATTERY_MAX * 100 - 1e-6);
   if (hudCache.pct !== pct) { hudCache.pct = pct; els.bpct.textContent = pct === Infinity ? '\u221e' : pct + '%'; els.bfill.style.transform = `scaleX(${Math.min(1, pct / 100)})`; els.batt.classList.toggle('over', pct > 100); }
   setClass('b', els.batt, 'on', P.flashOn);
   setClass('b', els.batt, 'low', pct <= 20);
@@ -5900,7 +6048,7 @@ function renderRooms() {
 }
 
 /* ---------- screens ---------- */
-const SCREENS = ['scr-start', 'scr-mp', 'scr-create', 'scr-join', 'scr-room', 'scr-msg', 'scr-perks', 'scr-skins', 'scr-howto', 'scr-settings', 'scr-pause', 'scr-dead', 'scr-win'];
+const SCREENS = ['scr-start', 'scr-diff', 'scr-mp', 'scr-create', 'scr-join', 'scr-room', 'scr-msg', 'scr-perks', 'scr-skins', 'scr-howto', 'scr-settings', 'scr-pause', 'scr-dead', 'scr-win'];
 function showScreen(id) { for (const s of SCREENS) $(s).hidden = s !== id; if (MP.listing && id !== 'scr-join') stopListing(); }
 function setStatus(id, msg) { $(id).textContent = msg || ''; }
 async function copyText(text, btn) {
@@ -6097,7 +6245,7 @@ function hostStart() {
 function beginMpRun(seed, players) {
   AU.init(); countPerkUse(); guardBack();
   Object.assign(MP, { deaths: {}, runPlayers: players.slice(), inGame: true, tapes: 0, n: players.length, spec: null, muffinId: 0, fuse: {}, sendT: 0, worldT: 0, fuseT: 0, hostSeen: performance.now() });
-  applyDifficulty(MP.n);
+  setRunMode(false); applyDifficulty(MP.n);
   clearRemotes();
   const me = players.find(p => p.id === MP.id); MP.slot = me ? me.slot : 0;
   skinMats('dusty').jacket.color.set(SLOT_COLORS[MP.slot % 6]);
@@ -6107,7 +6255,7 @@ function beginMpRun(seed, players) {
   player.x += off[0]; player.z += off[1]; player.ax = player.x; player.az = player.z; collide(player, CFG.PLAYER_R);
   startPlaying(); touch.run = false;
   if (isMobile()) tryFullscreen(); else requestLock();
-  toast(`Find the 5 tapes together. ${MP.n} ${MP.n === 1 ? 'player' : 'players'} in this room.`, false, 5);
+  toast(`Find the ${CFG.TAPES} tapes together. ${MP.n} ${MP.n === 1 ? 'player' : 'players'} in this room.`, false, 5);
 }
 
 /* ---------- other players: avatars, flashlights, name tags ---------- */
@@ -6566,7 +6714,7 @@ window.__gooseflesh = {
   interact: () => interact(), blindVoice: () => blindGoose(W.goose), sgDetects: S => sgDetects(S),
   start: beginNewRun, caught: () => caught(), win: () => { player.tapes = CFG.TAPES; win(); },
   goose: () => W && W.goose, step: (n = 60, dt = 1 / 60) => { for (let i = 0; i < n; i++) { if (state === 'caught' && JS.strike && !MP.inGame) { updateJumpscare(dt); continue; } if (state === 'pinned' && !MP.inGame) { updatePinScene(dt); continue; } if (!(state === 'playing' || mpSimulating())) break; simStep(dt); if (state === 'caught') updateJumpscare(dt); else if (state === 'collapse') updateCollapse(dt); else if (state === 'pinned') updatePinScene(dt); } },
-  mp: MP, MLOOK, DIFF, BUILD, TEX, QTE, PIN, HANDS, SCOTO, ambient, yell: () => yell(), yellReady: () => yellReady(), grantScotopia: t => grantScotopia(t), canStrikeNow: () => canStrikeNow(), renderRoom: () => renderRoom(), shareLoadout: () => shareLoadout(), tempFloor: () => tempFloor(), toggleCrouch: () => toggleCrouch(), startTakeoff: () => startTakeoff(W.goose), startDive: v => startDive(W.goose, v || player), qteInput: t => qteInput(t), PERK_USE, looseCannon: () => looseCannon(), wreckSG: S => wreckSG(S), SPARKS, strike: () => strike(), JS, FIST, renderer, scene, showerUse, aimedKnob, exitSpot: () => exitSpot(), enterSpot: s => enterSpot(s), mpLeave: () => mpLeave(), hostStart: () => hostStart(), specCycle: d => specCycle(d), applyDifficulty, difficultyText,
+  mp: MP, MLOOK, DIFF, BUILD, TEX, QTE, PIN, HANDS, NM, NM_LOOK, setRunMode: n => setRunMode(n), BASE_CFG, recordingOf: n => recordingOf(n), alertMainGoose: (x, z) => alertMainGoose(x, z), smellsThrough: P => smellsThrough(P), SCOTO, ambient, yell: () => yell(), yellReady: () => yellReady(), grantScotopia: t => grantScotopia(t), canStrikeNow: () => canStrikeNow(), renderRoom: () => renderRoom(), shareLoadout: () => shareLoadout(), tempFloor: () => tempFloor(), toggleCrouch: () => toggleCrouch(), startTakeoff: () => startTakeoff(W.goose), startDive: v => startDive(W.goose, v || player), qteInput: t => qteInput(t), PERK_USE, looseCannon: () => looseCannon(), wreckSG: S => wreckSG(S), SPARKS, strike: () => strike(), JS, FIST, renderer, scene, showerUse, aimedKnob, exitSpot: () => exitSpot(), enterSpot: s => enterSpot(s), mpLeave: () => mpLeave(), hostStart: () => hostStart(), specCycle: d => specCycle(d), applyDifficulty, difficultyText,
 };
 })();
 </script>
