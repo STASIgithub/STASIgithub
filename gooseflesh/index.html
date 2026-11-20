@@ -879,6 +879,9 @@ const CFG = {
   // knobs Nightmare turns (these are the Normal values)
   FLASH_DRAIN: 1, FLASH_BRIGHT: 1, FLY_MAX_ATTACK: 28, SEARCH_LUCK: 1, PLAYER_SPEED: 1, EXHAUST_REGEN: 1, HEAT_RATE: 1,
   EVADE_SPEED: 2, LB_DRAIN: 0, SCAV_SURE: 1, NM_SMELL_R: 8,
+  // Hot Shot: heat's penalties gone, 120% faster heating, 30 s longer at 104. Per 0.1 degree above 100: run +2%, stamina use -3%,
+  // recovery +4%. Per 0.1 below 100: all three 0.5% worse.
+  HOT_NEGATE: 1, HOT_RATE: 2.2, HOT_STROKE: 30, HOT_RUN: 0.02, HOT_DRAIN: 0.03, HOT_REGEN: 0.04, HOT_COLD: 0.005,
 };
 
 // difficulty grows with the number of players in a room (1 = single player, the base values)
@@ -896,7 +899,7 @@ const NM_SET = {
   FLY_MIN_ATTACK: 2.5, FLY_MAX_ATTACK: 8,
 };
 // every perk at half strength in Nightmare (their downsides stay as they are)
-const PERK_HALF = ['LB_TEAM', 'LB_REVEAL', 'ENDURANCE_EFF', 'ENDURANCE_EFF_MAX', 'ASE_TIME', 'SCOTO_ASE', 'SCOTO_LC', 'SCOTO_THIRD', 'YELL_UD', 'EVADE_HIDE_T', 'SCAV_BUFF_T',
+const PERK_HALF = ['HOT_NEGATE', 'HOT_STROKE', 'HOT_RUN', 'HOT_DRAIN', 'HOT_REGEN', 'LB_TEAM', 'LB_REVEAL', 'ENDURANCE_EFF', 'ENDURANCE_EFF_MAX', 'ASE_TIME', 'SCOTO_ASE', 'SCOTO_LC', 'SCOTO_THIRD', 'YELL_UD', 'EVADE_HIDE_T', 'SCAV_BUFF_T',
   'HEAD_REVEAL', 'CRESCENDO_BASE', 'CRESCENDO', 'FRIGID_TIME', 'LP_LINGER', 'LC_SPEED_T', 'LC_VITAL_T', 'LC_TAPES_T', 'RAPPORT_LINGER', 'RAPPORT_HEAT', 'MUFFIN_BONUS',
   'BRAWLER_BONUS', 'ICE_PATROL_T', 'CLEANSE_EXTRA', 'CLEANSE_LINGER', 'STRIKE_STUN', 'STRIKE_VITAL'];
 const PERK_HALF_MUL = ['ENDURANCE_WALK', 'HYPO_FRIDGE', 'SCAV_SPEED', 'HEAD_SPEED', 'CRIT_COOL', 'FRIGID_COOL', 'LC_SPEED', 'EVADE_SPEED'];
@@ -1027,6 +1030,7 @@ const ICON = {
   thirdeye: '<path d="M2.5 15.5c2.6-3.4 5.8-5.2 9.5-5.2s6.9 1.8 9.5 5.2c-2.6 3.4-5.8 5.2-9.5 5.2s-6.9-1.8-9.5-5.2z"/><circle cx="12" cy="15.5" r="2.3"/><path d="M12 2.8c1.5 1.5 2.2 3 2.2 4.3S13.5 9.4 12 9.4s-2.2-1-2.2-2.3.7-2.8 2.2-4.3z"/><circle cx="12" cy="6.9" r=".8" fill="currentColor"/>',
   cagm: '<circle cx="12" cy="9.5" r="5.6"/><ellipse cx="12" cy="11.6" rx="1.6" ry="2.1"/><path d="M9.6 7.2l1.3.8M14.4 7.2l-1.3.8"/><path d="M4.4 7.4c-1.3 1.6-1.3 4.6 0 6.2M2 5.4c-2 2.7-2 7.5 0 10.2M19.6 7.4c1.3 1.6 1.3 4.6 0 6.2M22 5.4c2 2.7 2 7.5 0 10.2"/><path d="M6.5 21.5c.7-2.6 2.9-4.2 5.5-4.2s4.8 1.6 5.5 4.2"/>',
   frigid: '<path d="M12 3l8 4.5v9L12 21l-8-4.5v-9z"/><path d="M4 7.5l8 4.5 8-4.5M12 12v9"/><path d="M7.5 13.6v2.2M9.5 15.4v1.6M16.5 13.6v2.2"/>',
+  hotshot: '<path d="M12 2.8c.6 3-1.5 4.6-3 6.6-1.5 2-2.3 3.6-2.3 5.6a5.3 5.3 0 0 0 10.6 0c0-2.4-1.2-4.2-2.4-5.6-.2 1.4-.9 2.4-1.9 2.9.6-3.3-.2-6.8-1-9.5z"/><path d="M12.6 12.6l-2 3.4h2.6l-1.8 3"/>',
   critical: '<path d="M7 4.5a2 2 0 0 1 4 0v9.3a4 4 0 1 1-4 0z"/><path d="M9 15V8.5"/><circle cx="9" cy="16.9" r="1.6" fill="currentColor"/><path d="M17.5 4v8.5M17.5 16v.6"/>',
   muffin: '<path d="M6 13h12l-1.6 7.5H7.6z"/><path d="M4.8 13c0-4.2 3.2-7.4 7.2-7.4s7.2 3.2 7.2 7.4"/><path d="M9 15.5l.5 3M12 15.5v3M15 15.5l-.5 3"/><circle cx="9.4" cy="10.2" r="1" fill="currentColor"/><circle cx="13.2" cy="8.8" r="1" fill="currentColor"/><circle cx="15.2" cy="11.4" r="1" fill="currentColor"/>',
   ice: '<path d="M10 2.5h4v3.2h-4z"/><path d="M9.2 5.7h5.6c3 2 4.2 5.2 4.2 8.3 0 4.2-3.1 7.5-7 7.5S5 18.2 5 14c0-3.1 1.2-6.3 4.2-8.3z"/><path d="M9.4 12.6L12 11l2.6 1.6v3.2L12 17.4l-2.6-1.6zM9.4 12.6L12 14.2l2.6-1.6M12 14.2v3.2"/>',
@@ -1057,6 +1061,7 @@ const PERKS = {
   thirdeye: { name: 'Third Eye', desc: "You have Scotopia for the first 45 seconds, and for 45 seconds every time your team picks up a tape." },
   cagm: { name: 'Come And Get Me!', desc: "Once per game, stand still and press Mouse 4 (the back side button) to scream. The Voice runs straight to where it heard you, even off a chase, and every other player is Undetectable for 10 seconds. Not from a hiding spot.",
     mob: "Once per game, stand still and tap the scream button (above Run) to scream. The Voice runs straight to where it heard you, even off a chase, and every other player is Undetectable for 10 seconds. Not from a hiding spot." },
+  hotshot: { name: 'Hot Shot', desc: "Heat never slows you down, wears you out or blurs your vision, but you heat up 120% faster. At 104°F you still pass out, just 30 seconds later than usual. The hotter you run the better you get: every 0.1° above 100°F makes you run 2% faster, use 3% less stamina and recover stamina 4% faster (at 102°F that's +40%, -60% and +80%). Every 0.1° below 100°F makes all three 0.5% worse." },
   critical: { name: 'Critical Condition', desc: "At 102°F or hotter, refrigerators cool you twice as fast, and while you're cooling down you see The Voice through walls." },
 };
 const LOADOUT_ITEMS = {
@@ -3147,7 +3152,7 @@ const tempFloor = () => hasPerk('hypothermia') ? CFG.HYPO_FLOOR : CFG.TEMP_FLOOR
 // Critical Condition: at 102 or hotter
 const critical = () => hasPerk('critical') && tempQ() >= CFG.CRIT_TEMP - 1e-6;
 // Frigid: no heating for the first 45 s, then 30% less
-const heatMult = () => player.icePatrolT > 0 || player.graceT > 0 ? 0 : CFG.HEAT_RATE;   // the first 15 s of a run (45 with Frigid), Ice Pack Patroller
+const heatMult = () => player.icePatrolT > 0 || player.graceT > 0 ? 0 : CFG.HEAT_RATE * (hasPerk('hotshot') ? CFG.HOT_RATE : 1);   // Hot Shot: 120% faster   // the first 15 s of a run (45 with Frigid), Ice Pack Patroller
 const coolMult = () => hasPerk('frigid') ? CFG.FRIGID_COOL : 1;   // Frigid: all cooling, 16% faster
 const batFrac = P => Math.min(1, P.battery / CFG.BATTERY_MAX);   // past 100% (LightBringer, Scavenger) the beam is just full
 // The Voice can't sense you: Adam's Underwear, or Evasive Maneuvers
@@ -3491,7 +3496,7 @@ $('btn-settings').addEventListener('click', () => openSettings('scr-start'));
 const PERK_TAGS = {
   lightbringer: ['Flashlight', 'Team', 'Sight'], endurance: ['Speed', 'Stamina'], hypothermia: ['Temperature'], ase: ['Sight', 'Scotopia'],
   evasive: ['Speed', 'Stealth', 'Stamina'], scavenger: ['Items', 'Speed', 'Vitality'], headstart: ['Speed', 'Vitality', 'Sight'],
-  crescendo: ['Speed', 'Stamina', 'Temperature', 'Flashlight', 'Team'], frigid: ['Temperature'], critical: ['Temperature', 'Sight'],
+  crescendo: ['Speed', 'Stamina', 'Temperature', 'Flashlight', 'Team'], frigid: ['Temperature'], critical: ['Temperature', 'Sight'], hotshot: ['Temperature', 'Speed', 'Stamina'],
   cleanse: ['Stealth', 'Speed', 'Sight', 'Team'], ironnerve: ['Combat', 'Vitality'], lowprofile: ['Stealth'], loosecannon: ['Speed', 'Vitality', 'Sight', 'Combat', 'Scotopia'],
   rapport: ['Vitality', 'Temperature', 'Team'], muffinman: ['Items'], brawler: ['Items', 'Speed', 'Vitality'], icepatroller: ['Items', 'Temperature'],
   thirdeye: ['Scotopia', 'Team'], cagm: ['Stealth', 'Team'],
@@ -4125,7 +4130,7 @@ function updatePlayer(dt) {
     const canRun = !P.exhausted && P.stamina > 0 && !HE.noRun;
     if (shift && moving && P.crouch && canRun) P.crouch = false;
     P.sprinting = shift && moving && canRun && !P.crouch;
-    let mult = HE.speed * CFG.PLAYER_SPEED;
+    let mult = HE.speed * CFG.PLAYER_SPEED * (P.sprinting ? HE.run : 1);   // Hot Shot changes running only
     if (P.propelT > 0) mult *= CFG.PROPEL_SPEED;
     if (P.evadeSpeedT > 0) mult *= CFG.EVADE_SPEED;
     if (P.exhausted && !P.sprinting && !P.crouch && hasPerk('endurance')) mult *= CFG.ENDURANCE_WALK;
@@ -4330,8 +4335,15 @@ function updateFlashRig(dt) {
 /* ---------- stamina: the one place stamina is spent and recovered ---------- */
 function heatEffects() {
   const t = tempQ();
-  for (const [from, drain, speed, delay] of HEAT_STEPS) if (t >= from - 1e-6) return { drain, speed, delay, noRun: t >= CFG.TEMP_MAX - 1e-6 };
-  return { drain: 1, speed: 1, delay: 0, noRun: false };
+  let e = { drain: 1, speed: 1, delay: 0, noRun: false, run: 1, regen: 1 };
+  for (const [from, drain, speed, delay] of HEAT_STEPS) if (t >= from - 1e-6) { e = { drain, speed, delay, noRun: t >= CFG.TEMP_MAX - 1e-6, run: 1, regen: 1 }; break; }
+  if (!hasPerk('hotshot')) return e;
+  // Hot Shot: heat's penalties are gone (half of them in Nightmare), then every 0.1 degree away from 100 counts
+  const n = CFG.HOT_NEGATE, steps = Math.round((t - 100) * 10);
+  e.drain = 1 + (e.drain - 1) * (1 - n); e.speed = 1 - (1 - e.speed) * (1 - n); e.delay *= 1 - n; e.noRun = e.noRun && n < 1;
+  if (steps > 0) { e.run = 1 + CFG.HOT_RUN * steps; e.drain *= Math.max(0, 1 - CFG.HOT_DRAIN * steps); e.regen = 1 + CFG.HOT_REGEN * steps; }
+  else if (steps < 0) { const k = CFG.HOT_COLD * -steps; e.run = 1 - k; e.drain *= 1 + k; e.regen = 1 - k; }
+  return e;
 }
 const tempQ = () => Math.round(player.temp * 10) / 10;
 function updateStamina(dt, HE) {
@@ -4365,7 +4377,7 @@ function updateStamina(dt, HE) {
   } else {
     P.sinceUse += dt;
     if (P.sinceUse >= CFG.STAMINA_DELAY + HE.delay && P.stamina < MAX) {
-      P.stamina = Math.min(MAX, P.stamina + CFG.STAMINA_REGEN * (P.crouch ? CFG.CROUCH_REGEN : 1) * (1 + cresc()) * (P.exhausted ? CFG.EXHAUST_REGEN : 1) * dt);
+      P.stamina = Math.min(MAX, P.stamina + CFG.STAMINA_REGEN * (P.crouch ? CFG.CROUCH_REGEN : 1) * (1 + cresc()) * (P.exhausted ? CFG.EXHAUST_REGEN : 1) * HE.regen * dt);
       if (P.stamina >= MAX) P.stamShowT = 3;   // fully recovered: keep the bar up 3 more seconds
     } else if (P.stamShowT > 0) P.stamShowT -= dt;
     if (P.exhausted && P.stamina >= MAX) P.exhausted = false;
@@ -4407,13 +4419,14 @@ function updateTemperature(dt) {
   const tq = tempQ();
   const lvl = tq >= 104 ? 4 : tq >= 102.6 ? 3 : tq >= 101.3 ? 2 : tq >= 100.5 ? 1 : 0;
   if (lvl > P.heatMsg) {
-    const m = ['', "You've caught a fever. Find a refrigerator.", 'The heat is wearing you down.', 'Your vision is closing in.', "You're about to pass out. Cool down now."][lvl];
-    toast(m, lvl >= 3, 4, true);
+    const m = hasPerk('hotshot') ? ['', "You're running hot. You're getting faster.", '', '', "You're about to pass out. Cool down soon."][lvl]
+      : ['', "You've caught a fever. Find a refrigerator.", 'The heat is wearing you down.', 'Your vision is closing in.', "You're about to pass out. Cool down now."][lvl];
+    if (m) toast(m, lvl >= 3, 4, true);
   }
   P.heatMsg = lvl;
   if (tq >= CFG.TEMP_MAX - 1e-6) {   // invisible 20 s countdown; cancelled the moment you cool below 104
     P.heatT += dt;
-    if (P.heatT >= CFG.HEATSTROKE_TIME) heatstroke();
+    if (P.heatT >= CFG.HEATSTROKE_TIME + (hasPerk('hotshot') ? CFG.HOT_STROKE : 0)) heatstroke();   // Hot Shot: 30 s longer
   } else P.heatT = 0;
 }
 let collapseT = 0;
@@ -5429,6 +5442,7 @@ function updateScreenFx(dt) {
     tired: f <= CFG.LOW_STAMINA ? 0.35 + 0.3 * (1 - f / CFG.LOW_STAMINA) : 0,
   };
   const k = 1 - Math.exp(-dt * 1.5), kt = 1 - Math.exp(-dt * 2.5);
+  if (hasPerk('hotshot')) { const keep = 1 - CFG.HOT_NEGATE; tgt.dark *= keep; tgt.tunnel *= keep; tgt.fade *= keep; tgt.distort *= keep; tgt.red = Math.min(tgt.red, 0.3); }   // Hot Shot: your vision stays clear (just a red edge to warn you)
   for (const key of ['red', 'dark', 'tunnel', 'fade', 'distort']) FX[key] += (tgt[key] - FX[key]) * k;
   FX.tired += (tgt.tired - FX.tired) * kt;
   setOpacity('a', els.heatA, FX.red); setOpacity('b', els.heatB, FX.dark); setOpacity('t', els.tunnel, FX.tunnel);
@@ -5551,6 +5565,7 @@ function perkState(id) {
       return [on, crouched ? -1 : on ? P.lpOdorT / CFG.LP_LINGER : P.crouch ? P.lpCrouchT / CFG.LP_CROUCH : -1, '', false, false]; }
     case 'loosecannon': { const on = P.lcSpeedT > 0 || P.lcVitalT > 0 || P.lcTapeT > 0; return [on, on ? P.lcVitalT / CFG.LC_VITAL_T : -1, '', false, false]; }
     case 'icepatroller': return [P.icePatrolT > 0, P.icePatrolT > 0 ? P.icePatrolT / CFG.ICE_PATROL_T : -1, '', false, false];
+    case 'hotshot': { const t = tempQ(); return [t > 100.05, -1, t > 100.05 ? '+' + Math.round((t - 100) * 10 * CFG.HOT_RUN * 100) : '', false, t < 99.95]; }
     case 'frigid': return [P.graceT > 0, P.graceT > 0 ? P.graceT / P.graceMax : -1, '', false, false];
     case 'thirdeye': return [P.scotoT > 0, P.scotoT > 0 ? P.scotoT / P.scotoMax : -1, '', false, false];
     case 'cagm': return [false, -1, '', P.yellUsed, false];
