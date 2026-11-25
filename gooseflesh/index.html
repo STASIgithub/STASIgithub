@@ -70,6 +70,11 @@ body.scoto #vignette{opacity:.45}
 .qte-ring .bg{stroke:rgba(255,255,255,.18)}
 .qte-ring .fg{fill:none;stroke:#ffd24a;stroke-dasharray:276.5;stroke-dashoffset:0;stroke-linecap:round}
 #qte.spam .qte-ring .fg{stroke:#44e07a}
+.qte-ring .zone{display:none;fill:none;stroke:#fff;stroke-width:9}
+#qte-needle{display:none;position:absolute;left:calc(50% - 1.5px);top:3%;width:3px;height:47%;background:#ff4a32;transform-origin:50% 100%;box-shadow:0 0 6px #ff4a32}
+#qte.skill .qte-ring .zone,#qte.skill #qte-needle{display:block}
+#qte.skill .qte-ring .fg{display:none}
+#qte.skill #qte-label{font-size:16px;letter-spacing:.1em}
 #qte-label{position:relative;font-family:var(--f-display);font-size:38px;line-height:1;color:#fff;text-shadow:0 0 14px rgba(255,210,74,.55)}
 #qte-label.small{font-size:26px}
 #qte-hint{margin:0;font-size:10px;letter-spacing:.24em;text-transform:uppercase;color:rgba(255,255,255,.85);text-shadow:0 2px 6px #000}
@@ -275,6 +280,9 @@ body.m #tape{right:auto;left:50%;transform:translateX(-50%);top:calc(12px + env(
 #touch .tb.off{opacity:.35}
 /* playing The Voice */
 #touch .vb{display:none}
+#tb-box{width:calc(52px * var(--tb,1));height:calc(52px * var(--tb,1));right:calc(38px * var(--tb,1) + env(safe-area-inset-right,0px));bottom:calc(214px * var(--tb,1) + env(safe-area-inset-bottom,0px));font-size:calc(10px * var(--tb,1));border-color:#c99a46!important}
+#tb-fire{width:calc(66px * var(--tb,1));height:calc(66px * var(--tb,1));right:calc(206px * var(--tb,1) + env(safe-area-inset-right,0px));bottom:calc(30px * var(--tb,1) + env(safe-area-inset-bottom,0px));font-size:calc(11px * var(--tb,1));border-color:#4dff86!important;background:rgba(20,80,40,.45)!important}
+body.voice #tb-box,body.voice #tb-fire{display:none!important}
 body.voice #touch .vb{display:grid}
 body.voice #touch #tb-yell{display:none}
 #tb-fly{width:calc(60px * var(--tb,1));height:calc(60px * var(--tb,1));right:calc(124px * var(--tb,1) + env(safe-area-inset-right,0px));bottom:calc(196px * var(--tb,1) + env(safe-area-inset-bottom,0px));font-size:calc(10px * var(--tb,1))}
@@ -283,6 +291,24 @@ body.voice #touch .tb{border-color:rgba(232,69,46,.5)}
 body.voice #tb-use{background:rgba(110,18,12,.5)}
 body.voice #hud-batt,body.voice #hud-temp,body.voice #hud-stam,body.voice #hud-status,body.voice #hud-tr,body.voice #blind,body.voice #tape,body.voice #cross,body.voice #hud-team{display:none!important}
 #vhud{position:absolute;inset:0;pointer-events:none}
+#hud-task{position:absolute;top:calc(54px + env(safe-area-inset-top,0px));left:max(20px,env(safe-area-inset-left,0px));font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:#bfffd2;text-shadow:0 0 6px #000;display:flex;flex-direction:column;gap:3px}
+#hud-task b{font-weight:400;color:#6dff9a;letter-spacing:.2em}
+#hud-task .got{opacity:.45;text-decoration:line-through}
+body.m #hud-task{top:calc(150px + env(safe-area-inset-top,0px));left:max(14px,env(safe-area-inset-left,0px))}
+.char-list{display:flex;flex-wrap:wrap;gap:14px;justify-content:center;margin:20px 0}
+.char-list button.char-card{display:flex;flex-direction:column;align-items:center;gap:6px;width:230px;padding:14px;text-transform:none;letter-spacing:.02em;background:rgba(221,214,198,.07);color:var(--ink);text-align:center}
+.char-list button.char-card:hover{background:rgba(221,214,198,.14)}
+.char-list button.char-card.sel{background:rgba(227,166,78,.16);box-shadow:inset 0 0 0 2px var(--ember)}
+.char-pic{display:block;width:150px;height:210px}
+.char-pic img{width:100%;height:100%;object-fit:contain}
+.char-card b{font-family:var(--f-display);font-size:24px;font-weight:400;letter-spacing:.06em}
+.char-bio{font-size:12px;line-height:1.45;color:var(--dim)}
+.char-perks{display:flex;flex-wrap:wrap;gap:5px;justify-content:center}
+.inner.chars{max-width:760px;width:100%}
+.char-perks .chip{display:inline-flex;align-items:center;gap:5px;padding:3px 9px 3px 6px;font-size:10px;letter-spacing:.08em;text-transform:uppercase;border-radius:12px;background:rgba(255,255,255,.08);width:auto;height:auto}
+.char-perks .chip svg{width:16px;height:16px;flex:none}
+.char-card i{font-style:normal;font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--ember)}
+.pk-owner{margin:2px 0 6px;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:#c99a46}
 #vh-top{position:absolute;top:calc(52px + env(safe-area-inset-top,0px));left:max(20px,env(safe-area-inset-left,0px));color:#e8452e;font-size:12px;letter-spacing:.28em;text-transform:uppercase;text-shadow:0 0 10px rgba(232,69,46,.5)}
 #vh-surv{position:absolute;top:calc(74px + env(safe-area-inset-top,0px));left:max(20px,env(safe-area-inset-left,0px));display:flex;flex-direction:column;gap:5px;font-size:12px;letter-spacing:.08em}
 #vh-surv span{display:flex;align-items:center;gap:8px}
@@ -516,11 +542,12 @@ body.safe h1{animation:none}
 <div class="fx" id="grain"></div>
 <div class="fx" id="flash"></div>
 <button id="qte-tap" type="button" hidden>TAP<svg viewBox="0 0 76 76" aria-hidden="true"><circle id="qte-tap-ring" cx="38" cy="38" r="35"/></svg></button>
-<div id="qte" hidden><div class="qte-box"><svg class="qte-ring" viewBox="0 0 100 100" aria-hidden="true"><circle class="bg" cx="50" cy="50" r="44"/><circle class="fg" id="qte-fg" cx="50" cy="50" r="44"/></svg><span id="qte-label"></span></div><p id="qte-hint"></p></div>
+<div id="qte" hidden><div class="qte-box"><svg class="qte-ring" viewBox="0 0 100 100" aria-hidden="true"><circle class="bg" cx="50" cy="50" r="44"/><circle class="fg" id="qte-fg" cx="50" cy="50" r="44"/><circle class="zone" id="qte-zone" cx="50" cy="50" r="44"/></svg><i id="qte-needle"></i><span id="qte-label"></span></div><p id="qte-hint"></p></div>
 
 <div id="hud" hidden>
   <div id="hud-tapes" aria-label="Tapes found"><svg class="vhs" viewBox="0 0 30 20" aria-hidden="true"><path fill="#fff" fill-rule="evenodd" d="M2.5 1h25A1.5 1.5 0 0 1 29 2.5v15a1.5 1.5 0 0 1-1.5 1.5h-25A1.5 1.5 0 0 1 1 17.5v-15A1.5 1.5 0 0 1 2.5 1zM5 3.2v2.2h20V3.2zM7.5 7.5v6.5h15V7.5zM6 16.2v1.3h2.5v-1.3zM21.5 16.2v1.3H24v-1.3z"/><path fill="#fff" fill-rule="evenodd" d="M11.3 8.4a2.35 2.35 0 1 1 0 4.7 2.35 2.35 0 1 1 0-4.7zm0 1.5a.85.85 0 1 0 0 1.7.85.85 0 1 0 0-1.7zM18.7 8.4a2.35 2.35 0 1 1 0 4.7 2.35 2.35 0 1 1 0-4.7zm0 1.5a.85.85 0 1 0 0 1.7.85.85 0 1 0 0-1.7z"/></svg><span id="pc">0/5</span></div>
   <div id="hud-team" hidden></div>
+  <div id="hud-task" hidden></div>
   <canvas id="minimap" width="300" height="300" aria-label="Map of what you've explored"></canvas>
   <span id="map-key">Map <kbd>M</kbd></span>
   <div id="cross" hidden></div>
@@ -558,7 +585,7 @@ body.safe h1{animation:none}
       <button id="btn-mp" class="ghost" type="button">Multiplayer</button>
       <button id="btn-howto" class="ghost" type="button">How to Play</button>
       <button id="btn-settings" class="ghost" type="button">Settings</button>
-      <button id="btn-skins" class="ghost" type="button">Skins</button>
+      <button id="btn-skins" class="ghost" type="button">Characters</button>
       <button id="btn-perks" class="ghost" type="button">Perks</button>
     </nav>
     <div id="loadout-sum"></div>
@@ -842,9 +869,9 @@ body.safe h1{animation:none}
 </section>
 
 <section class="screen center" id="scr-skins" hidden>
-  <div class="inner settings">
-    <h2>Skins</h2>
-    <div class="skins-empty">Coming soon</div>
+  <div class="inner chars">
+    <h2>Characters</h2>
+    <div id="char-list" class="char-list"></div>
     <div class="actions"><button id="skins-back" type="button">Back</button></div>
   </div>
 </section>
@@ -883,6 +910,8 @@ body.safe h1{animation:none}
   <button class="tb" id="tb-yell" type="button" aria-label="Scream" hidden><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="9.5" r="5.6"/><ellipse cx="12" cy="11.6" rx="1.6" ry="2.1"/><path d="M9.6 7.2l1.3.8M14.4 7.2l-1.3.8"/><path d="M4.4 7.4c-1.3 1.6-1.3 4.6 0 6.2M2 5.4c-2 2.7-2 7.5 0 10.2M19.6 7.4c1.3 1.6 1.3 4.6 0 6.2M22 5.4c2 2.7 2 7.5 0 10.2"/><path d="M6.5 21.5c.7-2.6 2.9-4.2 5.5-4.2s4.8 1.6 5.5 4.2"/></svg></button>
   <button class="tb" id="tb-use" type="button" aria-label="Use">Use</button>
   <button class="tb vb" id="tb-fly" type="button" aria-label="Fly">Fly</button>
+  <button class="tb" id="tb-box" type="button" aria-label="The Box" hidden>Box</button>
+  <button class="tb" id="tb-fire" type="button" aria-label="Fire the portal gun" hidden>Fire</button>
   <button class="tb vb" id="tb-taunt" type="button" aria-label="Taunt">Merp</button>
   <button class="tb" id="tb-pause" type="button" aria-label="Pause">II</button>
 </div>
@@ -1035,7 +1064,7 @@ const SIGNATURE = 'The Caretaker';
 const SAMPLE_FILES = {
   merp: 'MERP.wav', rear: 'Rear.wav', eydam: 'EYDAM.wav', danana: 'DaNaNaNaNa.wav', peww: 'Peww.wav', swerve: 'Nerew_Swerve.wav',
   kill: 'Pusssyyyyyyyyy.wav', jafggm: 'ja_fggm.wav', muffins: 'BLUEBERRY_MUFFINS.wav', supadam: 'Sup_Adam.wav',
-  tape1: 'LETTER_1.wav', tape2: 'LETTER_2.wav', tape3: 'LETTER_3.wav', tape4: 'LETTER_4.wav', tape5: 'LETTER_5.wav',
+  fighter: 'Fighter_Geese.wav', tape1: 'LETTER_1.wav', tape2: 'LETTER_2.wav', tape3: 'LETTER_3.wav', tape4: 'LETTER_4.wav', tape5: 'LETTER_5.wav',
 };
 // The Voice's lines: only one plays at a time
 const VOICE_LINES = new Set(['merp', 'rear', 'eydam', 'danana', 'peww', 'swerve', 'kill', 'jafggm', 'muffins']);
@@ -1114,6 +1143,8 @@ const ICON = {
   cagm: '<circle cx="12" cy="9.5" r="5.6"/><ellipse cx="12" cy="11.6" rx="1.6" ry="2.1"/><path d="M9.6 7.2l1.3.8M14.4 7.2l-1.3.8"/><path d="M4.4 7.4c-1.3 1.6-1.3 4.6 0 6.2M2 5.4c-2 2.7-2 7.5 0 10.2M19.6 7.4c1.3 1.6 1.3 4.6 0 6.2M22 5.4c2 2.7 2 7.5 0 10.2"/><path d="M6.5 21.5c.7-2.6 2.9-4.2 5.5-4.2s4.8 1.6 5.5 4.2"/>',
   frigid: '<path d="M12 3l8 4.5v9L12 21l-8-4.5v-9z"/><path d="M4 7.5l8 4.5 8-4.5M12 12v9"/><path d="M7.5 13.6v2.2M9.5 15.4v1.6M16.5 13.6v2.2"/>',
   hotshot: '<path d="M12 2.8c.6 3-1.5 4.6-3 6.6-1.5 2-2.3 3.6-2.3 5.6a5.3 5.3 0 0 0 10.6 0c0-2.4-1.2-4.2-2.4-5.6-.2 1.4-.9 2.4-1.9 2.9.6-3.3-.2-6.8-1-9.5z"/><path d="M12.6 12.6l-2 3.4h2.6l-1.8 3"/>',
+  thebox: '<path d="M3.5 9.5l8.5-4 8.5 4v9l-8.5 4-8.5-4z"/><path d="M3.5 9.5l8.5 4 8.5-4M12 13.5v9"/><path d="M15.5 4.5c1.4-1.6 3.4-1.8 4.6-.6M18.4 2.6l1.8 1.3-1.3 1.8"/>',
+  portnport: '<circle cx="12" cy="12" r="8.5"/><path d="M12 6.2a5.8 5.8 0 0 1 5.8 5.8 4 4 0 0 1-4 4 2.6 2.6 0 0 1-2.6-2.6 1.6 1.6 0 0 1 1.6-1.6"/>',
   critical: '<path d="M7 4.5a2 2 0 0 1 4 0v9.3a4 4 0 1 1-4 0z"/><path d="M9 15V8.5"/><circle cx="9" cy="16.9" r="1.6" fill="currentColor"/><path d="M17.5 4v8.5M17.5 16v.6"/>',
   muffin: '<path d="M6 13h12l-1.6 7.5H7.6z"/><path d="M4.8 13c0-4.2 3.2-7.4 7.2-7.4s7.2 3.2 7.2 7.4"/><path d="M9 15.5l.5 3M12 15.5v3M15 15.5l-.5 3"/><circle cx="9.4" cy="10.2" r="1" fill="currentColor"/><circle cx="13.2" cy="8.8" r="1" fill="currentColor"/><circle cx="15.2" cy="11.4" r="1" fill="currentColor"/>',
   ice: '<path d="M10 2.5h4v3.2h-4z"/><path d="M9.2 5.7h5.6c3 2 4.2 5.2 4.2 8.3 0 4.2-3.1 7.5-7 7.5S5 18.2 5 14c0-3.1 1.2-6.3 4.2-8.3z"/><path d="M9.4 12.6L12 11l2.6 1.6v3.2L12 17.4l-2.6-1.6zM9.4 12.6L12 14.2l2.6-1.6M12 14.2v3.2"/>',
@@ -1123,34 +1154,38 @@ const icon = id => `<svg class="ico" viewBox="0 0 24 24" aria-hidden="true">${IC
 // a perk's text for the controls you're using: phones get their own where the PC text talks about keys
 const perkDesc = id => (isMobile() && PERKS[id].mob) || PERKS[id].desc;
 const PERKS = {
-  lightbringer: { name: 'LightBringer', desc: 'Your flashlight never runs out. Every battery you pick up gives your whole team 10% flashlight and shows you The Voice through walls for 4 seconds.' },
-  endurance: { name: 'Endurance', desc: "While you're out of stamina, you get +30% Speed. Each time you run out, your stamina lasts 20% longer, up to 60%. That can grow at most once every 40 seconds." },
-  hypothermia: { name: 'Hypothermaniac', desc: 'Your body temperature can drop as low as 96°F, and refrigerators cool you 40% faster.' },
-  ase: { name: 'All Seeing Eye', desc: 'For 13.5 seconds after you pick up a tape, you have Scotopia and see The Voice, every surveillance goose and the nearest refrigerator through walls.' },
-  evasive: { name: 'Evasive Maneuvers', desc: "The first time The Voice chases you, you get +100% Speed for 3 seconds and you're Undetectable to it for 8. Then your stamina's empty for 4 seconds. It recharges when your team picks up the 3rd tape." },
-  scavenger: { name: 'Scavenger', desc: "You always find something when you search, but every search takes 7.5 seconds. After each one you get +5% Speed and Vitality for 7.5 seconds." },
-  headstart: { name: 'Headstart', desc: "For the first 18 seconds, you get +15% Speed and Vitality, and you see the nearest tape through walls." },
-  crescendo: { name: 'Crescendo', desc: "Start with a 2% bonus, plus 4% for every tape your team finds, to: Speed, stamina recovery, stamina efficiency, refrigerator cooling, how fast you blind geese, and how slowly you heat up." },
-  cleanse: { name: 'Deep Cleanse', desc: "Shower effects last 30 seconds longer. While you're showering, and for 8 seconds after you get out, your whole team sees The Voice through walls." },
-  ironnerve: { name: 'Iron Nerve', desc: "Once per game, press Crouch (C or Ctrl) while running to Strike. If The Voice catches you within 0.35 s, a key flashes up (E, Q, left click or right click). Press it in time to punch The Voice, stunning it for 5.5 s and giving you Vitality for 3 s. Press the wrong key or run out of time and you're caught.",
-    mob: "Once per game, tap Crouch while running (it says Strike) to Strike. If The Voice catches you within 0.35 s, a TAP button appears somewhere on the screen. Tap it in time to punch The Voice, stunning it for 5.5 s and giving you Vitality for 3 s. Tap anywhere else or run out of time and you're caught." },
-  lowprofile: { name: 'Low Profile', desc: "After 3 seconds of crouching you're Odorless, and surveillance geese only notice you if you touch them. When you stand up, Odorless lasts 8 more seconds." },
-  loosecannon: { name: 'Loose Cannon', desc: "Every 25 seconds there's a 1 in 50 chance you get +200% Speed, Vitality, Scotopia and every tape outlined through walls, all for 10 seconds. Run into a surveillance goose while it lasts and it's destroyed for good. Afterwards it can't happen again for 100 seconds." },
-  rapport: { name: 'Rapport', desc: "Multiplayer only. Teammates within 5 meters of you get Vitality and heat up 5% slower, and so do you while you're near a teammate. It lasts 15 seconds after you move apart." },
-  muffinman: { name: 'Muffin Man', desc: "You start with an extra Blueberry Muffin, and every muffin you throw keeps The Voice busy 1.5 seconds longer." },
-  brawler: { name: 'Blueberry Brawler', desc: "You start with an extra Blueberry Propel, and its effects last 1.5 seconds longer." },
-  icepatroller: { name: 'Ice Pack Patroller', desc: "You start with an extra Ice Pack. When an ice pack runs out, your temperature can't rise for 20 seconds." },
-  frigid: { name: 'Frigid', desc: "Your body temperature can't rise for 30 more seconds at the start of the game (45 instead of 15), and you cool down 16% faster from refrigerators, ice packs and cold showers." },
-  thirdeye: { name: 'Third Eye', desc: "You have Scotopia for the first 45 seconds, and for 45 seconds every time your team picks up a tape." },
-  cagm: { name: 'Come And Get Me!', desc: "Once per game, stand still and press Mouse 4 (the back side button) to scream. The Voice runs straight to where it heard you, even off a chase, and every other player is Undetectable for 10 seconds. Not from a hiding spot.",
-    mob: "Once per game, stand still and tap the scream button (above Run) to scream. The Voice runs straight to where it heard you, even off a chase, and every other player is Undetectable for 10 seconds. Not from a hiding spot." },
-  hotshot: { name: 'Hot Shot', desc: "Heat never slows you down, wears you out or blurs your vision, but you heat up 120% faster. At 104°F you still pass out, just 30 seconds later than usual. The hotter you run the better you get: every 0.1° above 100°F makes you run 2% faster, use 3% less stamina and recover stamina 4% faster (at 102°F that's +40%, -60% and +80%). Every 0.1° below 100°F makes all three 0.5% worse." },
-  critical: { name: 'Critical Condition', desc: "At 102°F or hotter, refrigerators cool you twice as fast, and while you're cooling down you see The Voice through walls." },
+  lightbringer: { name: 'LightBringer', desc: "Your flashlight never runs out. When you grab a battery, every teammate gets 10% flashlight back, and you see The Voice through walls for 4 seconds." },
+  endurance: { name: 'Endurance', desc: "When your stamina runs out, you walk 30% faster. Each time it runs out, it lasts 20% longer next time (up to 60% longer, and at most once every 40 seconds)." },
+  hypothermia: { name: 'Hypothermaniac', desc: "You can cool all the way down to 96°F (normally 97.8°F). Refrigerators cool you 40% faster." },
+  ase: { name: 'All Seeing Eye', desc: "When you pick up a tape, for 13.5 seconds you see in the dark (Scotopia), and you see The Voice, the surveillance geese and the nearest refrigerator through walls." },
+  evasive: { name: 'Evasive Maneuvers', desc: "The first time The Voice chases you, you run twice as fast for 3 seconds and it can't track you for 8. Then your stamina is empty for 4 seconds. It works again after your team finds the 3rd tape." },
+  scavenger: { name: 'Scavenger', desc: "Searching always finds something, but every search takes 7.5 seconds. After each search you're 5% faster and don't lose stamina (Vitality) for 7.5 seconds." },
+  headstart: { name: 'Headstart', desc: "For the first 18 seconds you're 15% faster, you don't lose stamina (Vitality), and the nearest tape shows through walls." },
+  crescendo: { name: 'Crescendo', desc: "You get better as your team finds tapes: 2% to start, plus 4% for every tape. That's speed, stamina, fridge cooling, how fast you blind geese, and how slowly you heat up." },
+  cleanse: { name: 'Deep Cleanse', desc: "Shower effects last 30 seconds longer. While you shower, and for 8 seconds after, your whole team sees The Voice through walls." },
+  ironnerve: { name: 'Iron Nerve', desc: "Once per game, press Crouch (C or Ctrl) while running to get ready to punch. If The Voice grabs you in the next 0.35 seconds, a key pops up (E, Q, left click or right click). Press it fast: The Voice is stunned for 5.5 seconds and you get 3 seconds of Vitality. Wrong key or too slow and you're caught.",
+    mob: "Once per game, tap Strike (the Crouch button while you run) to get ready to punch. If The Voice grabs you in the next 0.35 seconds, a TAP button pops up somewhere on the screen. Tap it fast: The Voice is stunned for 5.5 seconds and you get 3 seconds of Vitality. Miss it or too slow and you're caught." },
+  lowprofile: { name: 'Low Profile', desc: "Crouch for 3 seconds and The Voice can't smell you (Odorless), and surveillance geese only notice you if you bump into them. Odorless lasts 8 more seconds after you stand up." },
+  loosecannon: { name: 'Loose Cannon', owner: 'fenwick', desc: "Every 25 seconds there's a 1 in 50 chance you go wild for 10 seconds: triple speed, no stamina loss, you see in the dark, and every tape shows through walls. Run into a surveillance goose while it lasts to destroy it for good. Once it ends it can't happen again for 100 seconds." },
+  rapport: { name: 'Rapport', desc: "Multiplayer only. Teammates within 5 meters of you don't lose stamina and heat up 5% slower. You get the same while you're near a teammate. It keeps going for 15 seconds after you split up." },
+  muffinman: { name: 'Muffin Man', desc: "Start with an extra Blueberry Muffin. Every muffin you throw keeps The Voice busy 1.5 seconds longer." },
+  brawler: { name: 'Blueberry Brawler', desc: "Start with an extra Blueberry Propel. Your Propels last 1.5 seconds longer." },
+  icepatroller: { name: 'Ice Pack Patroller', desc: "Start with an extra Ice Pack. When an ice pack runs out, your temperature can't go up for 20 seconds." },
+  frigid: { name: 'Frigid', desc: "Your temperature can't go up for the first 45 seconds (instead of 15). Fridges, ice packs and cold showers cool you 16% faster." },
+  thirdeye: { name: 'Third Eye', desc: "You see in the dark (Scotopia) for the first 45 seconds, and again for 45 seconds every time your team finds a tape." },
+  cagm: { name: 'Come And Get Me!', desc: "Once per game, stand still and press Mouse 4 (the side button on your mouse) to scream. The Voice runs to where you screamed, even if it's chasing someone else, and nobody else can be tracked for 10 seconds. Doesn't work from a hiding spot.",
+    mob: "Once per game, stand still and tap the scream button (above Run) to scream. The Voice runs to where you screamed, even if it's chasing someone else, and nobody else can be tracked for 10 seconds. Doesn't work from a hiding spot." },
+  hotshot: { name: 'Hot Shot', desc: "Heat never slows you down, drains your stamina or blurs your vision, but you heat up 120% faster. You still pass out at 104°F, just 30 seconds later. Above 100°F you get stronger: every 0.1° means 2% faster running, 3% less stamina used and 4% faster stamina recovery (at 102°F that's +40%, -60%, +80%). Below 100°F, every 0.1° makes those 0.5% worse." },
+  thebox: { name: 'The Box', owner: 'fenwick', desc: "Only while The Voice is chasing you: press R. A wind-up helper pops out and runs, and The Voice has to chase it. After 5 seconds it bursts and stuns The Voice for 2 seconds. You get 1 use, plus 1 more when your team finds 4 tapes (2 at most).",
+    mob: "Only while The Voice is chasing you: tap Box. A wind-up helper pops out and runs, and The Voice has to chase it. After 5 seconds it bursts and stuns The Voice for 2 seconds. You get 1 use, plus 1 more when your team finds 4 tapes (2 at most)." },
+  portnport: { name: "Port 'n' Port", owner: 'fenwick', desc: "Port 'n' Port means Portal 'n' Teleport. Find the 3 portal gun parts and the battery hidden in the maze (your checklist is top left). Press E to build the gun and hit 5 quick skill checks (miss one and you can try again in 30 seconds). Click to fire its 1 shot. Hit The Voice and it's sent through a portal to the spot farthest from all of you, stunned for 8 seconds, and everyone sees it through walls for 5 seconds.",
+    mob: "Port 'n' Port means Portal 'n' Teleport. Find the 3 portal gun parts and the battery hidden in the maze (your checklist is top left). Tap Use to build the gun and hit 5 quick skill checks (miss one and you can try again in 30 seconds). Tap Fire to shoot its 1 shot. Hit The Voice and it's sent through a portal to the spot farthest from all of you, stunned for 8 seconds, and everyone sees it through walls for 5 seconds." },
+  critical: { name: 'Critical Condition', desc: "At 102°F or hotter, fridges cool you twice as fast, and you see The Voice through walls while you cool down." },
 };
 const LOADOUT_ITEMS = {
-  muffin: { name: 'Blueberry Muffin', desc: 'Throw it and The Voice goes straight for it.' },
-  ice: { name: 'Ice Pack', desc: 'Cools you down by up to 3 degrees over 30 seconds, anywhere.' },
-  propel: { name: 'Blueberry Propel', desc: 'Refills your stamina, then 5 seconds of Vitality and +60% Speed.' },
+  muffin: { name: 'Blueberry Muffin', desc: 'Throw it. The Voice goes straight for it and stops to eat it.' },
+  ice: { name: 'Ice Pack', desc: 'Use it anywhere. Cools you down by up to 3°F over 30 seconds.' },
+  propel: { name: 'Blueberry Propel', desc: 'Drink it: full stamina, then 5 seconds of no stamina loss and 60% more speed.' },
 };
 const LOADOUT_KEY = 'gooseflesh.loadout.v1';
 const PERK_SLOTS = 3, DEFAULT_PERKS = ['endurance', 'headstart', 'crescendo'];
@@ -1585,7 +1620,12 @@ function buildGooseRig() {
 // A look is just data: add an entry here to make a new skin.
 const SKINS = {
   dusty: { name: 'Dusty', skin: 0xc8916c, hair: 0x4a2e1d, jacket: 0x7a5d3f, trim: 0x54402c, shirt: 0x6d7a5a, pants: 0x2c3746, shoes: 0x2a1e15 },
+  fenwick: { name: 'Fenwick', style: 'fenwick', skin: 0xd6ad8c, hair: 0xbcb6a8, jacket: 0x55593a, trim: 0x2f3123, shirt: 0xb8892f, pants: 0x36342f, shoes: 0x3b2718 },
 };
+// who you play as (Characters screen)
+const CHAR_KEY = 'gooseflesh.char.v1';
+const CHAR = { id: 'dusty' };
+try { const c = localStorage.getItem(CHAR_KEY); if (c === 'fenwick') CHAR.id = c; } catch (e) { /* ignore */ }
 const SKIN_MATS = {};
 function skinMats(id) {
   if (SKIN_MATS[id]) return SKIN_MATS[id];
@@ -1596,11 +1636,12 @@ function skinMats(id) {
     torch: new THREE.MeshStandardMaterial({ color: 0x2a2a2c, roughness: 0.4, metalness: 0.6 }),
     lens: new THREE.MeshBasicMaterial({ color: 0x55524a }),
     undies: m(0xf0efe8), band: m(0x2f5fd0), frames: new THREE.MeshStandardMaterial({ color: 0x101010, roughness: 0.3 }),
+    brass: new THREE.MeshStandardMaterial({ color: 0xb08d45, roughness: 0.35, metalness: 0.75 }), lensG: new THREE.MeshStandardMaterial({ color: 0x4f8f68, roughness: 0.15, metalness: 0.2, emissive: 0x0b2a16 }),
     shades: new THREE.MeshBasicMaterial({ color: 0x5fe0ff, transparent: true, opacity: 0.55 }),
   });
 }
 function buildCharacter(id) {
-  const M = skinMats(id), B = geo('box'), CYL = geo('cyl', () => new THREE.CylinderGeometry(1, 1, 1, 10));
+  const M = skinMats(id), B = geo('box'), CYL = geo('cyl', () => new THREE.CylinderGeometry(1, 1, 1, 10)), fen = (SKINS[id] || {}).style === 'fenwick';
   const root = new THREE.Group(); root.rotation.order = 'YXZ';
   const hips = new THREE.Group(); hips.position.y = 0.95; root.add(hips);
   addMesh(hips, B, M.pants, [0, -0.02, 0], [0.34, 0.2, 0.21]);
@@ -1612,15 +1653,26 @@ function buildCharacter(id) {
   addMesh(spine, CYL, M.skin, [0, 0.57, 0], [0.055, 0.08, 0.055]);
   const head = new THREE.Group(); head.position.set(0, 0.62, 0.01); spine.add(head);
   addMesh(head, SPH, M.skin, [0, 0.1, 0], [0.105, 0.125, 0.115]);
-  addMesh(head, SPH, M.hair, [0, 0.165, -0.02], [0.112, 0.085, 0.118]);
-  for (const [x, y, z, r] of [[0.05, 0.22, 0.03, 0.045], [-0.04, 0.225, 0.01, 0.05], [0, 0.215, -0.06, 0.05], [0.07, 0.19, -0.05, 0.04], [-0.07, 0.19, -0.04, 0.04], [0.02, 0.2, 0.08, 0.04]])
-    addMesh(head, SPH, M.hair, [x, y, z], [r, r * 0.8, r]);
+  if (fen) {   // bald on top, grey tufts round the sides and back, brass goggles up on his forehead, a big moustache
+    for (const [x, y, z, r] of [[0.1, 0.12, -0.03, 0.045], [-0.1, 0.12, -0.03, 0.045], [0.085, 0.16, -0.06, 0.04], [-0.085, 0.16, -0.06, 0.04], [0.04, 0.1, -0.1, 0.05], [-0.04, 0.1, -0.1, 0.05], [0, 0.14, -0.1, 0.045]])
+      addMesh(head, SPH, M.hair, [x, y, z], [r, r * 0.85, r]);
+    addMesh(head, CYL, M.trim, [0, 0.175, -0.005], [0.108, 0.022, 0.118]);   // goggle strap
+    for (const sx of [-1, 1]) {
+      addMesh(head, geo('gogR', () => new THREE.TorusGeometry(0.032, 0.01, 6, 16)), M.brass, [0.042 * sx, 0.2, 0.085], null, [-0.5, 0, 0]);
+      addMesh(head, geo('gogL', () => new THREE.CircleGeometry(0.03, 14)), M.lensG, [0.042 * sx, 0.2, 0.086], null, [-0.5, 0, 0]);
+    }
+    addMesh(head, B, M.hair, [0, 0.07, 0.112], [0.085, 0.022, 0.03], [0.1, 0, 0]);   // moustache
+  } else {
+    addMesh(head, SPH, M.hair, [0, 0.165, -0.02], [0.112, 0.085, 0.118]);
+    for (const [x, y, z, r] of [[0.05, 0.22, 0.03, 0.045], [-0.04, 0.225, 0.01, 0.05], [0, 0.215, -0.06, 0.05], [0.07, 0.19, -0.05, 0.04], [-0.07, 0.19, -0.04, 0.04], [0.02, 0.2, 0.08, 0.04]])
+      addMesh(head, SPH, M.hair, [x, y, z], [r, r * 0.8, r]);
+  }
   for (const sx of [-1, 1]) {
     addMesh(head, SPH, M.skin, [0.105 * sx, 0.09, -0.005], [0.022, 0.035, 0.02]);
     addMesh(head, geo('eyeC', () => new THREE.SphereGeometry(0.016, 8, 6)), M.eye, [0.038 * sx, 0.115, 0.1]);
-    addMesh(head, B, M.hair, [0.038 * sx, 0.145, 0.105], [0.04, 0.008, 0.01]);
+    addMesh(head, B, M.hair, [0.038 * sx, 0.145, 0.105], fen ? [0.05, 0.016, 0.014] : [0.04, 0.008, 0.01], fen ? [0, 0, -0.18 * sx] : null);   // eyebrows (his are bushy)
   }
-  addMesh(head, B, M.skin, [0, 0.085, 0.115], [0.022, 0.035, 0.025]);
+  addMesh(head, B, M.skin, [0, 0.085, 0.115], fen ? [0.028, 0.042, 0.032] : [0.022, 0.035, 0.025]);
   const undies = new THREE.Group(); undies.visible = false; head.add(undies);   // Adam's Underwear, worn as a hat
   addMesh(undies, SPH, M.undies, [0, 0.2, -0.01], [0.135, 0.095, 0.14]);
   addMesh(undies, CYL, M.band, [0, 0.14, -0.01], [0.138, 0.028, 0.142]);
@@ -1642,6 +1694,24 @@ function buildCharacter(id) {
     addMesh(hand, SPH, M.skin, [0, 0, 0], [0.045, 0.055, 0.035]);
     arms.push({ sh, el, hand });
   }
+  if (fen) {   // a long duster coat: tails to the knee, a tool belt with a pouch
+    addMesh(hips, B, M.jacket, [0, -0.25, -0.1], [0.42, 0.46, 0.03]);
+    for (const sx of [-1, 1]) addMesh(hips, B, M.jacket, [0.17 * sx, -0.23, 0.03], [0.1, 0.42, 0.22], [0, 0, 0.06 * sx]);
+    addMesh(hips, B, M.trim, [0, 0.06, 0], [0.44, 0.06, 0.26]);
+    addMesh(hips, B, M.brass, [0, 0.06, 0.13], [0.06, 0.04, 0.01]);
+    addMesh(hips, B, M.trim, [0.16, 0.0, 0.11], [0.09, 0.1, 0.05]);
+  }
+  // whatever your free hand holds (the other one has the flashlight)
+  const held = new THREE.Group(); held.position.set(0, -0.04, 0.02); arms[0].hand.add(held);
+  const pm = (c, r = 0.55, mt = 0, em) => new THREE.MeshStandardMaterial({ color: c, roughness: r, metalness: mt, emissive: em || 0x000000 });
+  const hold = { muffin: new THREE.Group(), propel: new THREE.Group(), ice: new THREE.Group(), gun: new THREE.Group(), box: new THREE.Group() };
+  addMesh(hold.muffin, CYL, pm(0xc9a46a, 0.8), [0, -0.05, 0.03], [0.045, 0.05, 0.045]); addMesh(hold.muffin, SPH, pm(0x5b3a62, 0.9), [0, -0.09, 0.03], [0.055, 0.035, 0.055]);
+  addMesh(hold.propel, CYL, pm(0x2f6fe0, 0.3), [0, -0.08, 0.03], [0.034, 0.16, 0.034]); addMesh(hold.propel, CYL, pm(0xf2f2f2, 0.4), [0, -0.17, 0.03], [0.02, 0.03, 0.02]); addMesh(hold.propel, CYL, pm(0xffffff, 0.5), [0, -0.07, 0.03], [0.036, 0.05, 0.036]);
+  addMesh(hold.ice, B, pm(0xbfe3ff, 0.3), [0, -0.06, 0.05], [0.1, 0.13, 0.035]); addMesh(hold.ice, B, pm(0x3a8fd6, 0.4), [0, -0.06, 0.068], [0.06, 0.04, 0.004]);
+  addMesh(hold.gun, B, M.brass, [0, -0.1, 0.03], [0.07, 0.2, 0.085]); addMesh(hold.gun, CYL, pm(0x1c3a24, 0.15, 0.2, 0x2dff6a), [0, -0.1, 0.085], [0.025, 0.14, 0.025]);
+  addMesh(hold.gun, CYL, pm(0x26282c, 0.4, 0.6), [0, -0.24, 0.03], [0.03, 0.09, 0.03]); addMesh(hold.gun, B, pm(0x3a2a1c, 0.8), [0, -0.02, -0.02], [0.05, 0.08, 0.05]);
+  addMesh(hold.box, B, pm(0x6b4a2a, 0.7), [0, -0.07, 0.03], [0.1, 0.1, 0.1]); addMesh(hold.box, CYL, M.brass, [0.06, -0.07, 0.03], [0.012, 0.05, 0.012], [0, 0, Math.PI / 2]);
+  for (const k in hold) { hold[k].visible = false; held.add(hold[k]); }
   const torch = new THREE.Group(); torch.position.set(0, -0.03, 0.02); arms[1].hand.add(torch);   // points along the forearm
   addMesh(torch, CYL, M.torch, [0, -0.07, 0], [0.022, 0.16, 0.022]);
   addMesh(torch, CYL, M.torch, [0, -0.16, 0], [0.032, 0.04, 0.032]);
@@ -1654,11 +1724,12 @@ function buildCharacter(id) {
     const kn = new THREE.Group(); kn.position.y = -0.43; hp.add(kn);
     addMesh(kn, CYL, M.pants, [0, -0.2, 0], [0.065, 0.41, 0.065]);
     addMesh(kn, B, M.shoes, [0, -0.43, 0.04], [0.1, 0.07, 0.24]);
+    if (fen) addMesh(kn, CYL, M.shoes, [0, -0.36, 0], [0.072, 0.12, 0.072]);   // boots
     legs.push({ hp, kn });
   }
   root.traverse(o => { if (o.isMesh) { o.castShadow = false; o.receiveShadow = false; } });
   root.scale.setScalar(0.92);
-  return { root, hips, spine, head, arms, legs, torch, tip, lens, undies, glasses, pose: {} };
+  return { root, hips, spine, head, arms, legs, torch, tip, lens, undies, glasses, hold, pose: {} };
 }
 // Procedural animation in the style of the old Dead by Daylight survivors: stiff forward-leaning run with big
 // arm pumps, snappy turns into the direction of travel, low sneaking crouch, hands-on-knees when out of breath.
@@ -1679,6 +1750,11 @@ function animateCharacter(C, dt, o) {
   }
   if (o.searching) { spineX = 0.5; hipY = 0.7; thL = thR = -0.8; knL = knR = 1.3; shL = -1.2 + Math.sin(o.t * 13) * 0.3; shR = -1.2 + Math.cos(o.t * 11) * 0.3; elL = elR = -0.4; }
   if (o.flash && !o.searching) { shR = -Math.PI / 2 - o.aimPitch - spineX; elR = -0.12; rollR = 0.12; }   // flashlight aimed where you look
+  if (o.hold === 'propel') { shL = -2.45; elL = -1.75; rollL = -0.4; headX -= 0.3; }   // drinking
+  else if (o.hold === 'ice') { shL = -2.15; elL = -2.15; rollL = -0.6; }   // pressed to the side of the neck
+  else if (o.hold === 'muffin' || o.hold === 'box') { const u = clamp(1 - (o.holdT || 0) / 0.35, 0, 1), e = u * u * (3 - 2 * u); shL = lerp(0.9, -1.9, e); elL = -0.5 * (1 - e); }   // a quick underarm throw
+  else if (o.hold === 'gun') { shL = -Math.PI / 2 - o.aimPitch - spineX; elL = -0.08; rollL = -0.1; }   // the portal gun, aimed
+  if (C.hold) for (const k in C.hold) { const v = o.hold === k; if (C.hold[k].visible !== v) C.hold[k].visible = v; }
   C.hips.position.y += ((hipY + bob * mv * (1 - Math.abs(sn))) - C.hips.position.y) * k;
   set('spX', C.spine, 'x', spineX + Math.sin(o.breathPh) * 0.02 * (1 + o.breathB * 2));
   set('spZ', C.spine, 'z', clamp(-o.turnRate * 0.035, -0.22, 0.22));
@@ -1689,7 +1765,12 @@ function animateCharacter(C, dt, o) {
   set('thL', C.legs[0].hp, 'x', thL); set('thR', C.legs[1].hp, 'x', thR);
   set('knL', C.legs[0].kn, 'x', knL); set('knR', C.legs[1].kn, 'x', knR);
 }
-const DUSTY = buildCharacter('dusty'); DUSTY.root.visible = false;
+let DUSTY = buildCharacter(CHAR.id === 'fenwick' ? 'fenwick' : 'dusty'); DUSTY.root.visible = false;
+function setCharacter(id) {
+  if (!CHARS[id] || id === CHAR.id) return;
+  CHAR.id = id; try { localStorage.setItem(CHAR_KEY, id); } catch (e) { /* ignore */ }
+  const vis = DUSTY.root.visible; scene.remove(DUSTY.root); DUSTY = buildCharacter(CHARS[id].skin); DUSTY.root.visible = vis; scene.add(DUSTY.root);
+}
 
 /* ================= SCENE ================= */
 const scene = new THREE.Scene();
@@ -2930,6 +3011,31 @@ const AU = {
     const b = this.osc('sine', 62, t, 0.9); b.frequency.exponentialRampToValueAtTime(24, t + 0.8);
     const bg = this.gain(); this.env(bg, t, 0.005, 0.1, 0.7, 1.0); this.chain(b, bg, out);
   },
+  clang(x, z) {   // a locker door torn open
+    const out = this.at(x, 1.5, z, 40, 1.1); if (!out) return; const t = this.t + 0.2;
+    const g = this.gain(); this.env(g, t, 0.002, 0.03, 0.5, 0.9); this.chain(this.noise(t, 0.6), this.filt('bandpass', 1900, 1.2), g, out);
+    for (const f of [430, 637, 1180]) { const o = this.osc('sine', f, t, 1.2), og = this.gain(); this.env(og, t, 0.002, 0.02, 1.0, 0.18); this.chain(o, og, out); }
+  },
+  windUp(x, z) {   // The Box opens: a ratchet and a pop
+    const out = this.at(x, 1, z, 35, 0.9); if (!out) return; const t = this.t;
+    for (let i = 0; i < 7; i++) { const t0 = t + i * 0.05, g = this.gain(); this.env(g, t0, 0.001, 0.008, 0.03, 0.6); this.chain(this.noise(t0, 0.05), this.filt('highpass', 3200), g, out); }
+    const o = this.osc('triangle', 520, t + 0.38, 0.25); o.frequency.exponentialRampToValueAtTime(1300, t + 0.55); const og = this.gain(); this.env(og, t + 0.38, 0.01, 0.08, 0.1, 0.5); this.chain(o, og, out);
+  },
+  boxPop(x, z, gold) {   // the helper bursts
+    const out = this.at(x, 1, z, 60, gold ? 1.5 : 1.2); if (!out) return; const t = this.t;
+    const g = this.gain(); this.env(g, t, 0.002, 0.08, 0.7, 1); this.chain(this.noise(t, 0.9), this.filt('lowpass', 2400, 0.7), g, out);
+    const b = this.osc('sine', 120, t, 0.6); b.frequency.exponentialRampToValueAtTime(38, t + 0.5); const bg = this.gain(); this.env(bg, t, 0.003, 0.05, 0.45, 1); this.chain(b, bg, out);
+  },
+  portalShot() {   // the portal gun goes off
+    const out = this.direct(0.5); if (!out) return; const t = this.t;
+    const o = this.osc('sawtooth', 900, t, 0.35); o.frequency.exponentialRampToValueAtTime(140, t + 0.3); const g = this.gain(); this.env(g, t, 0.005, 0.06, 0.25, 0.7); this.chain(o, this.filt('lowpass', 2600, 1), g, out);
+  },
+  whoosh(x, z) {   // a portal opening and swallowing something
+    const out = this.at(x, 1.8, z, 70, 1.2); if (!out) return; const t = this.t;
+    const f = this.filt('bandpass', 300, 1.2); f.frequency.exponentialRampToValueAtTime(2400, t + 0.6); f.frequency.exponentialRampToValueAtTime(200, t + 1.3);
+    const g = this.gain(); this.env(g, t, 0.15, 0.6, 0.6, 1); this.chain(this.noise(t, 1.5), f, g, out);
+    const w = this.osc('sine', 70, t, 1.4), wl = this.osc('sine', 6, t, 1.4), wg = this.gain(25); wl.connect(wg); wg.connect(w.frequency); const g2 = this.gain(); this.env(g2, t, 0.2, 0.6, 0.6, 0.6); this.chain(w, g2, out);
+  },
   tapeStatic() {   // a blank tape: hiss and a few clicks
     const out = this.direct(0.35); if (!out) return; const t = this.t;
     const g = this.gain(); this.env(g, t, 0.05, 1.9, 0.4, 0.6); this.chain(this.noise(t, 2.4), this.filt('bandpass', 2600, 0.5), g, out);
@@ -3175,7 +3281,8 @@ const AU = {
     this.chain(n, this.filt('bandpass', 330, 2.5), ng, lp); n.start(c.currentTime, Math.random()); srcs.push(n);
     return { g, srcs, cur: 0 };
   },
-  flyCue() {   // placeholder: a high-pitched whine as it readies to fly
+  flyCue() {   // everyone hears it get ready to fly
+    if (this.samples.fighter) { this.play('fighter', { gain: 1.0 }); return; }
     const out = this.direct(0.55); if (!out) return; const t = this.t;
     const o = this.osc('sine', 1900, t, 1.7); o.frequency.exponentialRampToValueAtTime(3400, t + 1.5);
     const tr = this.osc('sine', 13, t, 1.7), tg = this.gain(0.35); tr.connect(tg);
@@ -3272,7 +3379,7 @@ function resetPlayer() {
     // perks chosen in the loadout, and their timers
     perks: new Set(loadout.perks), aseT: 0, aseFridge: null, headT: 0, headTape: null, lbRevealT: 0,
     graceT: CFG.TEMP_GRACE + (loadout.perks.includes('frigid') ? CFG.FRIGID_TIME : 0), graceMax: CFG.TEMP_GRACE + (loadout.perks.includes('frigid') ? CFG.FRIGID_TIME : 0), cleanseT: 0, coldBoostMax: 0, icePatrolT: 0, pinVitalT: 0, pinned: false, diveLookT: 0,
-    lpCrouchT: 0, lpOdorT: 0, lcRollT: CFG.LC_EVERY, lcCD: 0, lcSpeedT: 0, lcVitalT: 0, lcTapeT: 0, strikeT: 0, strikeUsed: false, strikeVitalT: 0, scotoT: 0, scotoMax: 1, yellUsed: false, yellUdT: 0, showerHot: false, showerCold: 0, showerCooling: false, scentHideT: 0, coldBoost: 0, coldBoostT: 0,
+    lpCrouchT: 0, lpOdorT: 0, lcRollT: CFG.LC_EVERY, lcCD: 0, lcSpeedT: 0, lcVitalT: 0, lcTapeT: 0, holdK: '', holdT: 0, pendingThrow: null, boxUses: loadout.perks.includes('thebox') ? 1 : 0, boxSecond: false, portalAmmo: 0, portalBuilt: false, building: false, buildCD: 0, voiceRevealT: 0, strikeT: 0, strikeUsed: false, strikeVitalT: 0, scotoT: 0, scotoMax: 1, yellUsed: false, yellUdT: 0, showerHot: false, showerCold: 0, showerCooling: false, scentHideT: 0, coldBoost: 0, coldBoostT: 0,
     scavBuffT: 0, rapportT: 0, rapportNear: false, endEff: 0, endTokens: 0, endCD: 0, critOn: false, evadeRearmed: false,
     evadeUsed: false, evadeSpeedT: 0, evadeHideT: 0, evadePending: false, stamLockT: 0,
   });
@@ -3323,6 +3430,7 @@ function newGame(seed) {
   for (const L of [...OL_FADING]) hideOutline(L);
   hideOutline(GOOSE_OL); for (const R of SG_RIGS) hideOutline(R.ol);
   resetPlayer(); resetGoose(); spawnSurveillance(); addFires(); setNightmareLook(NM.on);
+  clearHelpers(); clearPortals(); clearScratches(); spawnParts(); SKS.on = false;
   if (hasPerk('headstart')) {   // the nearest tape (by walking distance) is outlined for the first seconds
     const d = bfs(1, 1), near = (list, fx, fz) => {
       let best = null, bd = 1e9;
@@ -3390,7 +3498,7 @@ function startPlaying() {
 function beginNewRun() {
   if (MP.active) { backToRoom(); return; }
   AU.init(); countPerkUse(); guardBack(); VP.last = 'survivor'; setVoiceRole(false, false, null, false); clearRemotes();
-  setRunMode(NM.mode === 'nightmare'); applyDifficulty(1); skinMats('dusty').jacket.color.setHex(SKINS.dusty.jacket);
+  setRunMode(NM.mode === 'nightmare'); applyDifficulty(1); skinMats('dusty').jacket.color.setHex(SKINS.dusty.jacket); skinMats('fenwick').shirt.color.setHex(SKINS.fenwick.shirt);
   newGame();
   startPlaying();
   touch.run = false;
@@ -3499,6 +3607,7 @@ addEventListener('keydown', e => {
     else if (e.code === 'Digit3') useItem('glasses');
     else if (e.code === 'Digit4') useItem('ice');
     else if (e.code === 'KeyM') MAP.el.classList.toggle('big');
+    else if (e.code === 'KeyR') useBox();
     else if (e.code === 'ControlLeft' || e.code === 'ControlRight' || e.code === 'KeyC') toggleCrouch();
     else if (e.code === 'Escape' && (fallbackLook || isMobile())) pauseGame();
   } else if (state === 'spectate' && !e.repeat) {
@@ -3515,6 +3624,7 @@ let dragging = false, skipMoves = 0;
 canvas.addEventListener('mousedown', e => {
   dragging = true;
   if (state === 'playing' && VP.mine && e.button === 0 && !isMobile() && (locked || fallbackLook)) { voiceBite(); return; }
+  if (state === 'playing' && !VP.mine && e.button === 0 && player.portalAmmo > 0 && !player.hidden && !isMobile() && (locked || fallbackLook)) { firePortal(); return; }   // Port 'n' Port
   if (state === 'playing' && e.button === 0 && player.hidden && player.target && player.target.kind === 'knob' && (locked || fallbackLook)) { interact(); return; }   // click a shower knob
   if (state === 'playing' && !isMobile() && !locked && !fallbackLook && lockEverWorked) requestLock();
 });
@@ -3563,7 +3673,7 @@ document.addEventListener('visibilitychange', () => { if (document.hidden) pause
 const touch = { joyId: null, lookId: null, jx: 0, jy: 0, bx: 0, by: 0, lx: 0, ly: 0, run: false };
 const TOUCH_SENS = 0.005, joyR = () => 56 * settings.tb;   // the joystick's reach scales with the buttons
 const touchEl = $('touch'), joyBase = $('joy-base'), joyKnob = $('joy-knob');
-const TB = { light: $('tb-light'), crouch: $('tb-crouch'), run: $('tb-run'), use: $('tb-use'), yell: $('tb-yell'), fly: $('tb-fly'), taunt: $('tb-taunt') };
+const TB = { light: $('tb-light'), crouch: $('tb-crouch'), run: $('tb-run'), use: $('tb-use'), yell: $('tb-yell'), fly: $('tb-fly'), taunt: $('tb-taunt'), box: $('tb-box'), fire: $('tb-fire') };
 function joyHome() { const k = settings.tb; return [Math.max(96 * k, Math.min(150 * k, innerWidth * 0.12)), innerHeight - Math.max(112 * k, Math.min(170 * k, innerHeight * 0.3))]; }
 function placeJoy(x, y, on) { joyBase.style.left = x + 'px'; joyBase.style.top = y + 'px'; joyBase.classList.toggle('on', on); }
 function resetJoy() { touch.joyId = null; touch.jx = touch.jy = 0; joyKnob.style.transform = ''; const [x, y] = joyHome(); placeJoy(x, y, false); }
@@ -3598,6 +3708,8 @@ onTap(TB.crouch, () => VP.mine ? voiceSearch() : toggleCrouch());
 onTap(TB.yell, yell);
 onTap(TB.use, () => VP.mine ? voiceBite() : interact());
 onTap(TB.fly, () => voiceFly());
+onTap(TB.box, () => useBox());
+onTap(TB.fire, () => firePortal());
 onTap(TB.taunt, () => voiceTaunt(VP.tauntK));
 onTap(TB.run, () => { touch.run = !touch.run; if (touch.run) player.crouch = false; });
 onTap($('tb-pause'), () => pauseGame());
@@ -3654,7 +3766,7 @@ const PERK_TAGS = {
   crescendo: ['Speed', 'Stamina', 'Temperature', 'Flashlight', 'Team'], frigid: ['Temperature'], critical: ['Temperature', 'Sight'], hotshot: ['Temperature', 'Speed', 'Stamina'],
   cleanse: ['Stealth', 'Speed', 'Sight', 'Team'], ironnerve: ['Combat', 'Vitality'], lowprofile: ['Stealth'], loosecannon: ['Speed', 'Vitality', 'Sight', 'Combat', 'Scotopia'],
   rapport: ['Vitality', 'Temperature', 'Team'], muffinman: ['Items'], brawler: ['Items', 'Speed', 'Vitality'], icepatroller: ['Items', 'Temperature'],
-  thirdeye: ['Scotopia', 'Team'], cagm: ['Stealth', 'Team'],
+  thirdeye: ['Scotopia', 'Team'], cagm: ['Stealth', 'Team'], thebox: ['Combat', 'Items'], portnport: ['Combat', 'Items', 'Team'],
 };
 const PERK_TAG_LIST = ['Speed', 'Vitality', 'Stamina', 'Temperature', 'Stealth', 'Sight', 'Scotopia', 'Flashlight', 'Items', 'Team', 'Combat'];
 // how many runs each perk has been brought into (for Most used / Least used)
@@ -3666,12 +3778,13 @@ $('pk-tag').innerHTML = '<option value="">All</option>' + PERK_TAG_LIST.map(t =>
 function perkList() {
   const q = PKF.q.trim().toLowerCase();
   const ids = Object.keys(PERKS).filter(id => (!PKF.tag || (PERK_TAGS[id] || []).includes(PKF.tag))
-    && (!q || (PERKS[id].name + ' ' + perkDesc(id) + ' ' + (PERK_TAGS[id] || []).join(' ')).toLowerCase().includes(q)));
+    && (!q || (PERKS[id].name + ' ' + perkDesc(id) + ' ' + (PERKS[id].owner ? CHARS[PERKS[id].owner].name + ' ' : '') + ' ' + (PERK_TAGS[id] || []).join(' ')).toLowerCase().includes(q)));
   const name = id => PERKS[id].name, use = id => PERK_USE[id] || 0;
   return ids.sort((a, b) => PKF.sort === 'za' ? name(b).localeCompare(name(a)) : PKF.sort === 'most' ? use(b) - use(a) || name(a).localeCompare(name(b))
     : PKF.sort === 'least' ? use(a) - use(b) || name(a).localeCompare(name(b)) : name(a).localeCompare(name(b)));
 }
-const perkInfo = id => `<b>${PERKS[id].name}</b><p class="pk-tags">${(PERK_TAGS[id] || []).map(t => `<span>${t}</span>`).join('')}</p><p>${perkDesc(id)}</p>`;
+const ownerLine = id => PERKS[id].owner ? `<p class="pk-owner">${CHARS[PERKS[id].owner].name}'s perk</p>` : '';
+const perkInfo = id => `<b>${PERKS[id].name}</b>${ownerLine(id)}<p class="pk-tags">${(PERK_TAGS[id] || []).map(t => `<span>${t}</span>`).join('')}</p><p>${perkDesc(id)}</p>`;
 function togglePerk(id) {
   const i = loadout.perks.indexOf(id);
   if (i >= 0) loadout.perks.splice(i, 1);
@@ -3680,7 +3793,7 @@ function togglePerk(id) {
 }
 function openPerkSheet(id) {   // phones: tap a perk to read it, then Equip
   PKF.sheet = id; const on = loadout.perks.includes(id);
-  $('pk-sheet-ico').innerHTML = icon(id); $('pk-sheet-name').textContent = PERKS[id].name; $('pk-sheet-desc').textContent = perkDesc(id);
+  $('pk-sheet-ico').innerHTML = icon(id); $('pk-sheet-name').textContent = PERKS[id].name + (PERKS[id].owner ? ` (${CHARS[PERKS[id].owner].name}'s perk)` : ''); $('pk-sheet-desc').textContent = perkDesc(id);
   $('pk-sheet-tags').innerHTML = (PERK_TAGS[id] || []).map(t => `<span>${t}</span>`).join('');
   $('pk-equip').textContent = on ? 'Unequip' : 'Equip'; $('pk-sheet').hidden = false;
   for (const b of document.querySelectorAll('#perk-cards .pk-pick')) b.classList.toggle('sel', b.dataset.perk === id);
@@ -3739,7 +3852,7 @@ let perksFrom = 'scr-start';
 $('perks-done').addEventListener('click', () => { if (!loadoutValid()) return; saveLoadout(); closePerkSheet(); hidePerkTip(); $('scr-perks').hidden = true; $('scr-' + perksFrom.replace('scr-', '')).hidden = false; renderLoadoutSummary(); shareLoadout(); });
 $('rm-voice').addEventListener('change', e => { if (!MP.host || MP.inGame) return; MP.voiceId = e.target.value || null; hostBroadcastLobby(true); renderRoom(); });
 $('rm-players').addEventListener('click', e => { const b = e.target.closest('.pl-btn'); if (!b) return; MP.loOpen = MP.loOpen === b.dataset.pid ? null : b.dataset.pid; renderRoom(); const nb = $('rm-players').querySelector(`[data-pid="${b.dataset.pid}"]`); if (nb) nb.focus({ preventScroll: true }); });
-$('btn-skins').addEventListener('click', () => { $('scr-start').hidden = true; $('scr-skins').hidden = false; });
+$('btn-skins').addEventListener('click', () => { $('scr-start').hidden = true; $('scr-skins').hidden = false; renderCharacters(); });
 // placeholder sound on every menu button (before a run starts); the first click also wakes the audio up
 document.addEventListener('click', e => {
   if (state !== 'menu' || !e.target.closest || !e.target.closest('.screen button')) return;
@@ -3831,11 +3944,13 @@ function startQTE(kind, o, cb) {
   }
   const lbl = $('qte-label');
   lbl.className = o.want.length > 1 ? 'small' : '';
-  lbl.textContent = o.want === 'tap' ? 'Tap!' : o.want;
-  $('qte-hint').textContent = o.hint || ''; $('qte').className = kind === 'spam' ? 'spam' : ''; $('qte').hidden = false; drawQTE();
+  lbl.textContent = o.want === 'tap' ? 'Tap!' : o.want === 'skill' ? (isMobile() ? 'Tap' : 'Space') : o.want;
+  if (kind === 'skill') { QTE.zone = o.zone; const z = $('qte-zone'); z.style.strokeDasharray = `${((o.zone[1] - o.zone[0]) * 276.5).toFixed(1)} 276.5`; z.style.strokeDashoffset = (-o.zone[0] * 276.5).toFixed(1); }
+  $('qte-hint').textContent = o.hint || ''; $('qte').className = kind === 'spam' ? 'spam' : kind === 'skill' ? 'skill' : ''; $('qte').hidden = false; drawQTE();
 }
 function drawQTE() {
   // spam: the ring fills (eased, so it slides instead of stepping); one: the time drains
+  if (QTE.kind === 'skill') { $('qte-needle').style.transform = `rotate(${(QTE.t / QTE.dur * 360).toFixed(1)}deg)`; return; }
   const f = QTE.kind === 'spam' ? QTE.shown : 1 - QTE.t / QTE.dur;
   if (QTE.want === 'tapbtn') $('qte-tap-ring').style.strokeDashoffset = (219 * (1 - clamp(f, 0, 1))).toFixed(1);
   else $('qte-fg').style.strokeDashoffset = (276.5 * (1 - clamp(f, 0, 1))).toFixed(1);
@@ -3852,6 +3967,7 @@ function updateQTE(dt) {
 function qteInput(tok) {
   if (!QTE.on || QTE.t < 0.05) return;
   if (QTE.kind === 'one') { endQTE(tok === QTE.want); return; }
+  if (QTE.kind === 'skill') { if (!['SPACE', 'E', 'M1', 'tap', 'Q'].includes(tok)) return; const f = QTE.t / QTE.dur; endQTE(f >= QTE.zone[0] && f <= QTE.zone[1]); return; }
   if (tok !== QTE.want) return;   // mashing: other keys don't count, and don't hurt
   QTE.count++; $('qte').classList.add('pop'); QTE.popT = 0.08; if (PIN.on) PIN.kick = 1;   // each press shoves its head back a bit
   if (QTE.count >= QTE.need) endQTE(true);
@@ -3860,7 +3976,7 @@ addEventListener('keydown', e => {
   if (!QTE.on) return;
   e.preventDefault(); e.stopImmediatePropagation();
   if (e.repeat || ['ShiftLeft', 'ShiftRight', 'ControlLeft', 'ControlRight', 'AltLeft', 'AltRight', 'MetaLeft', 'MetaRight', 'Escape'].includes(e.code)) return;
-  qteInput(e.code === 'KeyE' ? 'E' : e.code === 'KeyQ' ? 'Q' : 'other:' + e.code);
+  qteInput(e.code === 'KeyE' ? 'E' : e.code === 'KeyQ' ? 'Q' : e.code === 'Space' ? 'SPACE' : 'other:' + e.code);
 }, true);
 addEventListener('mousedown', e => { if (!QTE.on || isMobile()) return; e.preventDefault(); if (e.button === 0) qteInput('M1'); else if (e.button === 2) qteInput('M2'); }, true);
 addEventListener('contextmenu', e => { if (QTE.on || state === 'playing') e.preventDefault(); });
@@ -3871,7 +3987,7 @@ function guardBack() { try { if (!(history.state && history.state.gf)) history.p
 addEventListener('popstate', () => { if (state !== 'menu') { try { history.pushState({ gf: 1 }, ''); } catch (e) { /* ignore */ } } });   // Back (or Mouse 4) doesn't leave mid-run
 addEventListener('touchstart', e => {
   if (!QTE.on) return; const t = e.changedTouches[0];
-  if (QTE.kind === 'spam') { qteInput('tap'); return; }
+  if (QTE.kind === 'spam' || QTE.kind === 'skill') { qteInput('tap'); return; }
   if (QTE.want === 'tapbtn') {   // on the TAP button (with a little slack) or not
     const r = $('qte-tap').getBoundingClientRect(), pad = 10;
     qteInput(t.clientX >= r.left - pad && t.clientX <= r.right + pad && t.clientY >= r.top - pad && t.clientY <= r.bottom + pad ? 'tapbtn' : 'miss');
@@ -3936,6 +4052,8 @@ function interact() {
   else if (tgt.kind === 'fridge') toggleFridge(tgt.f, true);
   else if (tgt.kind === 'fsearch') startSearch(tgt.f);
   else if (tgt.kind === 'cabinet') startSearch(tgt.c);
+  else if (tgt.kind === 'part') takePart(tgt.p);
+  else if (tgt.kind === 'build') startBuild();
 }
 function hidePickup(p) { p.taken = true; p.mesh.visible = false; p.glow.visible = false; }
 // what you get from a battery or a tape you picked up. n: the tape count afterwards (the team's, in a room).
@@ -3993,11 +4111,11 @@ function exitSpot() {
 /* ================= ITEMS ================= */
 const INV = { muffin: 0, propel: 0, undies: 0, glasses: 0, ice: 0 };
 const ITEMS = {
-  muffin: { name: 'Blueberry muffin', key: 'Q', found: "A blueberry muffin. Throw it and The Voice will go for it." },
-  propel: { name: 'Blueberry Propel', key: '1', found: 'Blueberry Propel! Drink it for 5 seconds of Vitality and +60% Speed.' },
-  undies: { name: "Adam's Underwear", key: '2', found: "Adam's Underwear! Put it on your head and you're Undetectable for 30 seconds." },
+  muffin: { name: 'Blueberry muffin', key: 'Q', found: "A blueberry muffin. Throw it and The Voice goes after it." },
+  propel: { name: 'Blueberry Propel', key: '1', found: 'Blueberry Propel! Drink it: full stamina, then 5 seconds of no stamina loss and 60% more speed.' },
+  undies: { name: "Adam's Underwear", key: '2', found: "Adam's Underwear! Wear it on your head and nothing can track you for 30 seconds." },
   glasses: { name: "HardLife's Glasses", key: '3', found: "HardLife's Glasses! See The Voice and the tapes through walls for 15 seconds." },
-  ice: { name: 'Ice pack', key: '4', found: 'An ice pack. Use it anywhere to cool down by up to 3 degrees over 30 seconds.' },
+  ice: { name: 'Ice pack', key: '4', found: 'An ice pack. Use it anywhere: cools you down by up to 3°F over 30 seconds.' },
 };
 function giveItem(kind) {
   INV[kind]++; AU.battery();
@@ -4014,9 +4132,9 @@ function useItem(kind) {
     return;
   }
   if (!INV[kind]) return;
-  if (kind === 'muffin') { if (P.hidden) { toast("You can't throw from in here."); return; } throwMuffin(); return; }
+  if (kind === 'muffin') { if (P.hidden) { toast("You can't throw from in here."); return; } if (P.pendingThrow) return; startHold('muffin', 0.35); P.pendingThrow = 'muffin'; return; }
   INV[kind]--;
-  if (kind === 'propel') { P.propelT = propelTime(); if (P.stamina < CFG.STAMINA_MAX) P.stamShowT = 3; P.stamina = CFG.STAMINA_MAX; P.exhausted = false; P.stamLockT = 0; AU.drink(); }
+  if (kind === 'propel') { startHold('propel', 0.9); P.propelT = propelTime(); if (P.stamina < CFG.STAMINA_MAX) P.stamShowT = 3; P.stamina = CFG.STAMINA_MAX; P.exhausted = false; P.stamLockT = 0; AU.drink(); }
   if (kind === 'undies') { P.undiesT = CFG.UNDIES_TIME; P.linger = 0; if (!AU.play('supadam', { gain: 1.2 })) AU.paper(); }
   if (kind === 'glasses') { P.glassesT = CFG.GLASSES_TIME; AU.click(); }
 }
@@ -4141,12 +4259,14 @@ function updateItems(dt) {
   const xr = P.glassesT > 0;
   if (FX.xray !== xr) { FX.xray = xr; for (const x of W.xray) x.visible = xr; }
   const xrv = xr && !voiceUp(); if (FX.xrayV !== xrv) { FX.xrayV = xrv; for (const x of GOOSE_XRAY) x.visible = xrv; }   // not while it's in the air
-  updateThrown(dt); updateCabinets(dt);
+  updateThrown(dt); updateCabinets(dt); updateBolts(dt);
+  if (QTE.on && state === 'playing') updateQTE(dt);
+  updateSkill(dt);
 }
 // perk timers, and what each perk is pointing at right now
 function updatePerks(dt) {
   const P = player;
-  for (const k of ['aseT', 'headT', 'evadeSpeedT', 'evadeHideT', 'flickerT', 'blinkT', 'lbRevealT', 'endCD', 'scavBuffT', 'rapportT', 'scentHideT', 'coldBoostT', 'graceT', 'cleanseT', 'strikeT', 'icePatrolT', 'pinVitalT', 'lpOdorT', 'lcCD', 'lcSpeedT', 'lcVitalT', 'lcTapeT', 'strikeVitalT', 'scotoT', 'yellUdT']) if (P[k] > 0) P[k] = Math.max(0, P[k] - dt);
+  for (const k of ['aseT', 'headT', 'evadeSpeedT', 'evadeHideT', 'flickerT', 'blinkT', 'lbRevealT', 'endCD', 'scavBuffT', 'rapportT', 'scentHideT', 'coldBoostT', 'graceT', 'cleanseT', 'strikeT', 'icePatrolT', 'pinVitalT', 'lpOdorT', 'lcCD', 'lcSpeedT', 'lcVitalT', 'lcTapeT', 'strikeVitalT', 'scotoT', 'yellUdT', 'buildCD', 'voiceRevealT', 'holdT']) if (P[k] > 0) P[k] = Math.max(0, P[k] - dt);
   if (P.evadePending && P.evadeSpeedT <= 0 && P.evadeHideT <= 0) {   // Evasive Maneuvers is over: stamina empties and stays empty
     P.evadePending = false; P.stamina = 0; P.exhausted = true; P.stamLockT = CFG.EVADE_LOCK; P.sprinting = false; touch.run = false;
   }
@@ -4170,6 +4290,10 @@ function updatePerks(dt) {
     P.lcRollT += CFG.LC_EVERY;
     if (P.lcCD <= 0 && Math.random() < CFG.LC_CHANCE) looseCannon();
   }
+  // The Box: a second use once the team has 4 tapes
+  if (hasPerk('thebox') && !P.boxSecond && P.tapes >= 4) { P.boxSecond = true; P.boxUses = Math.min(2, P.boxUses + 1); toast('The Box: one more use.', false, 2.5); }
+  // a muffin leaves your hand at the end of the throw
+  if (P.pendingThrow && P.holdT <= 0.14) { const k = P.pendingThrow; P.pendingThrow = null; if (k === 'muffin' && INV.muffin > 0) throwMuffin(); }
   // Evasive Maneuvers recharges once the team has the 3rd tape (after any run of it that's still going)
   if (hasPerk('evasive') && !P.evadeRearmed && P.tapes >= Math.ceil(CFG.EVADE_RECHARGE_TAPE * CFG.TAPES / BASE_CFG.TAPES) && !P.evadePending && P.evadeSpeedT <= 0 && P.evadeHideT <= 0 && P.stamLockT <= 0) {
     P.evadeRearmed = true; P.evadeUsed = false;
@@ -4213,6 +4337,12 @@ function findInteract() {
     const dot = (dx * fx + dz * fz) / (d || 1); if (d > 0.8 && dot < 0.35) continue;
     if (d < bestD) { bestD = d; best = { kind: 'pickup', p, label: p.type === 'tape' ? 'Pick up the tape' : 'Take the battery' }; }
   }
+  for (const p of W.parts || []) {   // Port 'n' Port: your portal gun parts
+    if (p.taken) continue;
+    const dx = p.x - P.x, dz = p.z - P.z, d = Math.hypot(dx, dz); if (d > 1.9) continue;
+    const dot = (dx * fx + dz * fz) / (d || 1); if (d > 0.8 && dot < 0.35) continue;
+    if (d < bestD) { bestD = d; best = { kind: 'part', p, label: `Pick up the portal gun ${p.name}` }; }
+  }
   if (best) return best;
   for (const f of W.fridges) {
     const d = Math.hypot(f.fx - P.x, f.fz - P.z); if (d > 1.5) continue;
@@ -4238,6 +4368,7 @@ function findInteract() {
     if (dot < 0.25) continue;
     if (d < bestD) { bestD = d; best = { kind: 'spot', s, label: s.type === 'bed' ? 'Crawl under the bed' : s.type === 'shower' ? 'Step into the shower' : 'Hide in the locker' }; }
   }
+  if (!best && partsDone() && !(P.portalAmmo > 0) && !P.building && !P.portalBuilt) best = { kind: 'build', label: P.buildCD > 0 ? `Build the portal gun (${Math.ceil(P.buildCD)} s)` : 'Build the portal gun' };
   return best;
 }
 // in a shower: the knob the crosshair is on
@@ -4284,7 +4415,7 @@ function updatePlayer(dt) {
     }
     if (mag > 0) { ix /= mag; iz /= mag; }
     if (P.searching && mag > 0) cancelSearch();
-    if (P.searching) { ix = iz = 0; mag = 0; }
+    if (P.searching || P.building) { ix = iz = 0; mag = 0; }
     const moving = mag > 0, shift = keys.ShiftLeft || keys.ShiftRight || touch.run;
     const canRun = !P.exhausted && P.stamina > 0 && !HE.noRun;
     if (shift && moving && P.crouch && canRun) P.crouch = false;
@@ -4382,19 +4513,13 @@ function updatePlayer(dt) {
   DUSTY.root.position.set(P.x, 0, P.z); DUSTY.root.rotation.set(0, P.face, 0);
   animateCharacter(DUSTY, dt, {
     phase: P.bob * 0.5, speed: P.speedNow, run: P.sprinting && P.speedNow > 2, crouch: P.crouch, aimPitch: FL.pitch, flash: P.flashOn,
-    exhausted: P.stamina / CFG.STAMINA_MAX <= CFG.LOW_STAMINA, searching: !!P.searching, breathPh: P.breathPh, breathB: P.breathB, turnRate: P.turnRate, t: gameTime,
+    exhausted: P.stamina / CFG.STAMINA_MAX <= CFG.LOW_STAMINA, searching: !!P.searching || !!P.building, breathPh: P.breathPh, breathB: P.breathB, turnRate: P.turnRate, t: gameTime,
+    hold: playerHold(), holdT: P.holdT,
   });
   DUSTY.undies.visible = P.undiesT > 0; DUSTY.glasses.visible = P.glassesT > 0;
   DUSTY.lens.material.color.setHex(P.flashOn ? 0xfff3d6 : 0x55524a);
   updateAim();
   updateFlashRig(dt);
-  // locker doors
-  for (const s of W.spots) if (s.door) {
-    if (s.openT > 0) s.openT -= dt;
-    const want = s.openT > 0 ? 1 : 0; s.open += (want - s.open) * (1 - Math.exp(-dt * 14));
-    s.door.rotation.y = -1.25 * s.open;
-    s.door.visible = P.hidden !== s;
-  }
   P.target = findInteract();
 }
 
@@ -4902,6 +5027,16 @@ function playVfx(k, a) {
     case 'sting': AU.chaseSting(); break;
     case 'flycue': AU.flyCue(); break;
     case 'spot': { const s = W && W.spots[num(a.i, -1) | 0]; if (s) { s.openT = 0.7; if (d < 22) AU.creak(); } break; }
+    case 'rip': {   // The Voice tears a hiding spot open
+      const s = W && W.spots[num(a.i, -1) | 0]; if (!s) break;
+      s.ripT = 1.3; if (W.goose) W.goose.rip = { t: 0 };
+      AU.creak(); AU.clang(x, z);
+      if (d < 9) shakeAmt = Math.max(shakeAmt, 0.025);
+      break;
+    }
+    case 'boxopen': AU.windUp(x, z); break;
+    case 'boxpop': AU.boxPop(x, z, !!a.g); sparkBurst(x, 0.6, z, a.g ? 22 : 14); emitDust(x, z, 10); break;
+    case 'portal': spawnPortal(x, z, 0, 1.6); spawnPortal(num(a.x2), num(a.z2), 0.75, 1.6); AU.whoosh(x, z); setTimeout(() => AU.whoosh(num(a.x2), num(a.z2)), 750); break;
     case 'dive': AU.dive(x, z); break;
     case 'slam': AU.slam(x, z); break;
   }
@@ -5076,14 +5211,14 @@ function updateFlight(G, dt) {
       if (k >= 1) {
         G.y = 0; G.x = v.x; G.z = v.z; gooseSet(G, 'pin'); G.pinT = 0;
         vfx('slam', { x: v.x, z: v.z });
-        if (v === player) pinScene(); else netHost({ t: 'pinned', to: v.id });
+        if (v === player) pinScene(!!G.played); else netHost({ t: 'pinned', to: v.id, q: G.played ? 1 : 0 });
       }
       break;
     }
     case 'pin': {   // on top of them, beak snapping, until they fight it off or don't
       const v = pinVictim(G); G.pinT += dt; G.beakT = 0.2;
       if (v) { G.x = v.x; G.z = v.z; }
-      if (G.pinT > CFG.PIN_TIME + 4) pinResolved(false, v);   // never heard back
+      if (G.pinT > (G.played ? 5 : CFG.PIN_TIME + 4)) pinResolved(false, v);   // never heard back
       break;
     }
     case 'land':
@@ -5097,6 +5232,7 @@ function updateFlight(G, dt) {
 function updateGoose(dt) {
   const G = W.goose;
   if (G.holdT > 0) { G.holdT -= dt; G.curSpeed = 0; animateGoose(G, dt, false); return; }   // frozen in someone's face (Strike prompt)
+  if (G.state === 'portal') { updatePortalGoose(G, dt); animateGoose(G, dt, false); return; }   // Port 'n' Port
   if (G.yell) { if ((G.yell.t -= dt) <= 0) G.yell = null; else applyYell(G); }   // Come And Get Me!
   if (updateFlight(G, dt)) return;
   // 70 s without finding anyone (not seen, not chased): it takes to the air
@@ -5106,7 +5242,7 @@ function updateGoose(dt) {
   const cands = voiceTargets();
   if (!cands.length) { G.sees = G.light = false; animateGoose(G, dt, false); return; }
   const distTo = p => Math.hypot(p.x - G.x, p.z - G.z);
-  const busy = G.state === 'blind' || G.state === 'bait' || G.catchCD > 0;   // blind, busy with a muffin, or with someone it caught
+  const busy = G.state === 'blind' || G.state === 'bait' || G.state === 'lure' || G.catchCD > 0;   // blind, busy with a muffin, or with someone it caught
   // who it's dealing with: whoever it's after, else the nearest
   let P = (G.state === 'chase' || G.state === 'alert' || G.state === 'hunt' || G.state === 'investigate') ? cands.find(p => p.id === G.tid) : null;
   if (!P) P = cands.reduce((a, p) => distTo(p) < distTo(a) ? p : a);
@@ -5182,6 +5318,10 @@ function updateGoose(dt) {
         if (G.eatT <= 0) { m.gone = true; m.mesh.visible = false; netHost({ t: 'mgone', id: m.id }); gooseAfterMuffin(G); }
       }
       break;
+    }
+    case 'lure': {   // The Box: it can't help chasing the wind-up helper
+      const h = G.lureH; if (!h || !HELPERS.includes(h)) { G.lureH = null; gooseSearch(G); break; }
+      moveGoose(G, h.x, h.z, CFG.CHASE, dt); moving = true; break;
     }
     case 'alert':
       G.alertT -= dt; G.curSpeed = Math.max(0, G.curSpeed - dt * 12); faceToward(G, dx, dz, dt, 10);
@@ -5284,7 +5424,7 @@ function updateGoose(dt) {
       if (d < CFG.CATCH && ((G.sees && p === P) || G.state === 'chase' || G.state === 'alert' || G.state === 'hunt')) { catchPlayer(p); return; }
     } else if (p === P && G.state === 'hunt' && (G.knowT > 0 || G.scent)) {
       const s = p.hidden;
-      if (Math.hypot(s.ex - G.x, s.ez - G.z) < 1.5 || d < 2.0) { catchPlayer(p); return; }
+      if (Math.hypot(s.ex - G.x, s.ez - G.z) < 1.5 || d < 2.0) { vfx('rip', { i: W.spots.indexOf(s), x: s.x, z: s.z }); catchPlayer(p); return; }
     }
   }
 }
@@ -5325,6 +5465,7 @@ function animateGoose(G, dt, moving, R = GOOSE_RIG) {
     R.wings[0].rotation.z = -flap * 0.5 - 0.6 + Math.sin(gameTime * 23) * 0.05; R.wings[0].rotation.x = 0.5;
     R.wings[1].rotation.z = flap * 0.8 + 0.25; R.wings[1].rotation.x = -0.3;
   }
+  if (R === GOOSE_RIG) { ripPose(G, R, dt); R.root.scale.setScalar(portalScale(G)); }
   mouthParts(R);
 }
 
@@ -5669,6 +5810,12 @@ function updateFx(dt) {
     p.glow.position.y = p.mesh.position.y + 0.08; p.glow.scale.setScalar(1.3 + 1.8 * h);
     p.glow.material.opacity = (0.35 + 0.6 * h) * pulse; p.glow.material.depthTest = !xr;
   }
+  for (const p of W.parts || []) {
+    if (p.taken) continue;
+    const d = Math.hypot(p.x - me.x, p.z - me.z), want = clamp(1 - d / 10, 0, 1); p.hl += (want - p.hl) * (1 - Math.exp(-dt * 4));
+    p.mesh.position.y = 0.05 + p.hl * (0.3 + Math.sin(gameTime * 2 + p.ph) * 0.05); p.mesh.rotation.y += dt * (0.4 + p.hl * 1.4);
+    p.glow.position.y = p.mesh.position.y + 0.12; p.glow.material.opacity = 0.35 + 0.5 * p.hl * (0.75 + 0.25 * Math.sin(gameTime * 3 + p.ph));
+  }
   // batteries: a faint glint from afar; within about 4 m they light up, lift and turn
   for (const p of W.pickups) {
     if (p.type !== 'battery' || p.taken) continue;
@@ -5701,7 +5848,7 @@ function updateFx(dt) {
 // perk outlines through walls: All Seeing Eye, Headstart, Scavenger
 function updateOutlines(dt) {
   const P = player, ase = P.aseT > 0, head = P.headT > 0;
-  setOutline(GOOSE_OL, !voiceUp() && (ase || (P.cooling && P.critOn) || cleanseReveal() || P.lbRevealT > 0));   // Critical Condition: while you cool down; Deep Cleanse
+  setOutline(GOOSE_OL, !voiceUp() && (ase || (P.cooling && P.critOn) || cleanseReveal() || P.lbRevealT > 0 || P.voiceRevealT > 0));   // Critical Condition: while you cool down; Deep Cleanse
   for (const S of W.sgeese) setOutline(S.rig.ol, ase && !S.dead);
   for (const f of W.fridges) setOutline(f.ol, ase && f === P.aseFridge);
   for (const p of W.pickups) {
@@ -5759,6 +5906,8 @@ function perkState(id) {
     case 'frigid': return [P.graceT > 0, P.graceT > 0 ? P.graceT / P.graceMax : -1, '', false, false];
     case 'thirdeye': return [P.scotoT > 0, P.scotoT > 0 ? P.scotoT / P.scotoMax : -1, '', false, false];
     case 'cagm': return [false, -1, '', P.yellUsed, false];
+    case 'thebox': return [P.boxUses > 0 && beingChased(), -1, String(P.boxUses), P.boxUses <= 0, false];
+    case 'portnport': return [P.portalAmmo > 0, -1, P.portalAmmo > 0 ? '1' : W.parts ? String(W.parts.filter(p => p.taken).length) : '', !!P.portalBuilt && !(P.portalAmmo > 0), false];
   }
   return [false, -1, '', false, false];
 }
@@ -5812,6 +5961,7 @@ function drawMapBase() {
     const cx = o.x / T * s, cz = o.z / T * s;
     g.fillStyle = '#05080b'; g.beginPath(); g.arc(cx, cz, 6, 0, 6.29); g.fill(); g.fillStyle = '#bfe8dc'; g.beginPath(); g.arc(cx, cz, 4.5, 0, 6.29); g.fill();
   }
+  for (const p of W.parts || []) if (!p.taken && seen[tileOf(p.z) * N + tileOf(p.x)]) { g.fillStyle = '#061a0c'; g.beginPath(); g.arc(p.x / T * s, p.z / T * s, 5, 0, 6.29); g.fill(); g.fillStyle = '#5dff92'; g.beginPath(); g.arc(p.x / T * s, p.z / T * s, 3.5, 0, 6.29); g.fill(); }
   for (const f of W.fridges) if (seen[tileOf(f.z) * N + tileOf(f.x)]) {   // refrigerators you've seen, dim while out of power
     const cx = f.x / T * s, cz = f.z / T * s;
     g.fillStyle = '#05080b'; g.fillRect(cx - 5, cz - 5, 10, 10); g.fillStyle = f.powered ? '#9fd6ff' : '#3b4a55'; g.fillRect(cx - 4, cz - 4, 8, 8);
@@ -5859,6 +6009,10 @@ function updateHUD(dt) {
     return;
   }
   setText('pc', els.pc, `${P.tapes}/${CFG.TAPES}`);
+  // Port 'n' Port: the checklist, then the gun
+  const task = !W.parts || !W.parts.length ? '' : P.portalAmmo > 0 ? '<b>Portal gun</b><span>1 shot: ' + (isMobile() ? 'tap Fire' : 'click to fire') + '</span>'
+    : P.portalBuilt ? '' : '<b>Portal gun</b>' + W.parts.map(p => `<span class="${p.taken ? 'got' : ''}">${p.name}</span>`).join('') + (partsDone() ? `<span>${P.buildCD > 0 ? 'Build again in ' + Math.ceil(P.buildCD) + ' s' : 'Build it: ' + (isMobile() ? 'Use' : 'E')}</span>` : '');
+  if (hudCache.task !== task) { hudCache.task = task; $('hud-task').innerHTML = task; $('hud-task').hidden = !task; }
   // the reticle only shows when you're looking at something you can use
   const aimOn = !!(P.target && P.target.kind !== 'leave');
   if (hudCache.cross !== aimOn) { hudCache.cross = aimOn; els.cross.hidden = !aimOn; }
@@ -5921,6 +6075,9 @@ function updateHUD(dt) {
     setClass('tbc', TB.crouch, 'on', stk ? P.strikeT > 0 : P.crouch); setClass('tbc', TB.crouch, 'strike', stk);
     setClass('tbl', TB.light, 'on', P.flashOn);
     const cagm = hasPerk('cagm'); if (hudCache.tby !== cagm) { hudCache.tby = cagm; TB.yell.hidden = !cagm; }
+    const bx = hasPerk('thebox'); if (hudCache.tbbx !== bx) { hudCache.tbbx = bx; TB.box.hidden = !bx; }
+    if (bx) { setClass('tbbx', TB.box, 'off', P.boxUses <= 0); setClass('tbbx', TB.box, 'ready', P.boxUses > 0 && beingChased()); setText('tbbxt', TB.box, `Box ${P.boxUses}`); }
+    const fr = P.portalAmmo > 0; if (hudCache.tbfr !== fr) { hudCache.tbfr = fr; TB.fire.hidden = !fr; }
     if (cagm) { setClass('tby', TB.yell, 'off', P.yellUsed); setClass('tby', TB.yell, 'ready', yellReady()); }
     setClass('tbu', TB.use, 'ready', !!P.target);
     setText('tbut', TB.use, !P.target ? 'Use' : P.target.kind === 'leave' ? 'Leave' : P.target.kind === 'spot' ? 'Hide' : P.target.kind === 'fridge' ? (P.target.f.open ? 'Close' : 'Open') : P.target.kind === 'cabinet' || P.target.kind === 'fsearch' ? 'Search' : P.target.kind === 'knob' ? 'Turn' : 'Take');
@@ -5959,13 +6116,13 @@ function emitDust(x, z, n) {
     q.max = q.life = rr(0.9, 1.6); q.s0 = rr(0.3, 0.55); q.s.visible = true; q.rise = false; q.s.material.color.setHex(0x8c8070);
   }
 }
-function pinScene() {
+function pinScene(quick) {
   if (state !== 'playing' && !(MP.inGame && state === 'paused')) return;
   const P = player;
   state = 'pinned'; $('scr-pause').hidden = true; els.hud.hidden = true; $('touch').hidden = true; hideSpeedLines(); releaseTouches();
   for (const k in keys) keys[k] = false;
   P.pinned = true; P.sprinting = false; P.vx = P.vz = 0; P.searching = null;
-  Object.assign(PIN, { on: true, t: 0, res: null, endT: 0, qte: false, snapT: 0, kick: 0 });
+  Object.assign(PIN, { on: true, t: 0, res: null, endT: 0, qte: false, snapT: 0, kick: 0, quick: !!quick });
   DUSTY.root.visible = false; JS.group.visible = true; JS.neck.visible = true; HANDS.visible = true; jumpLights(true);
   AU.slam(P.x, P.z); emitDust(P.x, P.z, 22);
   els.flashFx.style.transition = 'none'; els.flashFx.style.background = '#fff'; els.flashFx.style.opacity = 0.6;
@@ -6000,7 +6157,8 @@ function updatePinScene(dt) {
   const come = clamp((t - 0.08) / 0.18, 0, 1), away = PIN.res === true ? clamp((t - (PIN.endT - 0.8)) / 0.35, 0, 1) : 0;
   const prog = PIN.res === true ? 1 : QTE.on && QTE.kind === 'spam' ? QTE.shown : 0;
   PIN.kick = Math.max(0, PIN.kick - dt * 6);
-  const lunge = PIN.res === null ? Math.pow(Math.max(0, Math.sin(t * 4.3)), 3) * (1 - prog * 0.55) : 0;   // sharp lunges at your face
+  let lunge = PIN.res === null ? Math.pow(Math.max(0, Math.sin(t * 4.3)), 3) * (1 - prog * 0.55) : 0;   // sharp lunges at your face
+  if (PIN.quick && PIN.res === null) lunge = t < 1.35 ? -0.9 * clamp((t - 0.4) / 0.9, 0, 1) : 0.6;   // rears back, then comes at you
   const ea = away * away;
   JS.group.position.set(Math.sin(t * 2.3) * 0.025 + rr(-0.008, 0.008), lerp(1.6, 0.1, come) + ea * 0.9, lerp(-1.6, lerp(-0.98, -1.42, prog) - PIN.kick * 0.1 + lunge * 0.24, come) - ea * 1.6);
   JS.group.rotation.set(0.12 + lunge * 0.14 - ea * 0.9 + rr(-0.02, 0.02), Math.sin(t * 3.1) * 0.13 * (1 - away), Math.sin(t * 2.6) * 0.09 + ea * 0.6);   // beak pointed at you, thrashing
@@ -6017,7 +6175,10 @@ function updatePinScene(dt) {
   updateSmoke(dt);   // the dust from the slam
   aura.intensity = 3.2 * (Math.random() < 0.15 ? 0.4 : 1);
   camera.updateMatrixWorld(); aura.position.set(0, 0.5, -0.2); camera.localToWorld(aura.position);
-  if (!PIN.qte && t >= 0.5) {
+  if (PIN.quick && !PIN.qte && t >= 1.35) {   // a person is playing it: it rears back, then strikes; one quick, well-timed shove
+    PIN.qte = true; skillCheck({ dur: 0.9, size: 0.2, hint: isMobile() ? 'Shove it off: tap in the white' : 'Shove it off: Space in the white' }, ok => pinResult(ok));
+  }
+  if (!PIN.quick && !PIN.qte && t >= 0.5) {
     PIN.qte = true; const m = isMobile();
     startQTE('spam', { want: m ? 'tap' : 'Q', need: CFG.PIN_PRESSES, dur: CFG.PIN_TIME, hint: m ? 'Tap as fast as you can' : 'Mash Q' }, ok => pinResult(ok));
   }
@@ -6363,12 +6524,12 @@ function cleanLoadout(lo) {
   if (!lo || typeof lo !== 'object') return null;
   const perks = (Array.isArray(lo.p) ? lo.p : []).map(x => cleanText(x, 16)).filter(id => PERKS[id]).slice(0, PERK_SLOTS);
   const item = LOADOUT_ITEMS[lo.i] ? lo.i : null;
-  return perks.length || item ? { p: perks, i: item } : null;
+  return perks.length || item ? { p: perks, i: item, c: CHARS[lo.c] ? lo.c : 'dusty' } : null;
 }
-const myLoadout = () => ({ p: loadout.perks.slice(0, PERK_SLOTS), i: loadout.item });
+const myLoadout = () => ({ p: loadout.perks.slice(0, PERK_SLOTS), i: loadout.item, c: CHAR.id });
 function loadoutChips(lo) {
   if (!lo) return '<span class="chip">Hasn\'t picked yet</span>';
-  return lo.p.map(id => `<span class="chip" title="${PERKS[id].desc.replace(/"/g, '&quot;')}">${icon(id)}${PERKS[id].name}</span>`).join('')
+  return `<span class="chip">${(CHARS[lo.c] || CHARS.dusty).name}</span>` + lo.p.map(id => `<span class="chip" title="${PERKS[id].desc.replace(/"/g, '&quot;')}">${icon(id)}${PERKS[id].name}</span>`).join('')
     + (lo.i ? `<span class="chip" title="${LOADOUT_ITEMS[lo.i].desc.replace(/"/g, '&quot;')}">${icon(lo.i)}${LOADOUT_ITEMS[lo.i].name}</span>` : '');
 }
 // a teammate changed perks or items in the lobby: tell the room
@@ -6469,7 +6630,7 @@ function onLobbyState(m) {
 /* ---------- starting a game ---------- */
 function hostStart() {
   if (!MP.host || MP.inGame) return;
-  const seed = Math.floor(Math.random() * 2147483647), players = MP.players.map(p => ({ id: p.id, name: p.name, slot: p.slot }));
+  const seed = Math.floor(Math.random() * 2147483647), players = MP.players.map(p => ({ id: p.id, name: p.name, slot: p.slot, c: p.id === MP.id ? CHAR.id : (p.lo && p.lo.c) || 'dusty' }));
   const voice = MP.voiceId && players.some(p => p.id === MP.voiceId) && players.length > 1 ? MP.voiceId : null;
   netHost({ t: 'start', seed, players, voice });
   beginMpRun(seed, players, voice);
@@ -6483,7 +6644,7 @@ function beginMpRun(seed, players, voiceId) {
   setRunMode(false); applyDifficulty(MP.n);
   clearRemotes();
   const me = players.find(p => p.id === MP.id); MP.slot = me ? me.slot : 0;
-  skinMats('dusty').jacket.color.set(SLOT_COLORS[MP.slot % 6]);
+  skinMats('dusty').jacket.color.set(SLOT_COLORS[MP.slot % 6]); skinMats('fenwick').shirt.color.set(SLOT_COLORS[MP.slot % 6]);
   newGame(seed);
   for (const p of players) if (p.id !== MP.id) { const R = addRemote(p); if (p.id === voice) { R.isVoice = true; R.alive = false; } }
   if (VP.on) setupPlayedVoice();
@@ -6497,8 +6658,8 @@ function beginMpRun(seed, players, voiceId) {
 
 /* ---------- other players: avatars, flashlights, name tags ---------- */
 function addRemote(p) {
-  const slot = p.slot % 6, sid = 'mp' + slot;
-  if (!SKINS[sid]) SKINS[sid] = { ...SKINS.dusty, name: 'Player ' + (slot + 1), jacket: new THREE.Color(SLOT_COLORS[slot]).getHex() };
+  const slot = p.slot % 6, fen = p.c === 'fenwick', sid = (fen ? 'mpf' : 'mp') + slot;   // their character, with their colour on it
+  if (!SKINS[sid]) SKINS[sid] = fen ? { ...SKINS.fenwick, name: 'Player ' + (slot + 1), shirt: new THREE.Color(SLOT_COLORS[slot]).getHex() } : { ...SKINS.dusty, name: 'Player ' + (slot + 1), jacket: new THREE.Color(SLOT_COLORS[slot]).getHex() };
   const C = buildCharacter(sid); C.root.visible = false; scene.add(C.root);
   const light = new THREE.SpotLight(0xfff0d4, 0, 30, 0.42, 0.45, 1.15); light.castShadow = false; scene.add(light); scene.add(light.target);
   const tag = document.createElement('div'); tag.className = 'ntag'; tag.style.color = SLOT_COLORS[slot]; tag.hidden = true;
@@ -6522,7 +6683,7 @@ function onPeerState(id, m) {
   R.nx = clamp(num(m.x, R.nx), 0, lim); R.nz = clamp(num(m.z, R.nz), 0, lim); R.eye = clamp(num(m.e, R.eye), 0.2, 2);
   R.nyaw = num(m.y, R.nyaw); R.pitch = clamp(num(m.p, R.pitch), -1.5, 1.5); R.nface = num(m.f, R.nface); R.ap = clamp(num(m.ap), -1.5, 1.5);
   R.speedNow = clamp(num(m.v), 0, 15); R.crouch = !!m.c; R.sprinting = !!m.r; R.flashOn = !!m.l; R.bf = clamp(num(m.b, 1), 0, 1);
-  R.hid = num(m.h, -1) | 0; R.linger = clamp(num(m.lg), 0, 999); R.undiesT = m.u ? 1 : 0; R.evadeHideT = m.ev ? 1 : 0; R.scentHideT = m.sh ? 1 : 0; R.dc = !!m.dc; R.strikeOn = !!m.sk; R.rapport = !!m.rp; R.pinned = !!m.pn; R.exhausted = !!m.x2; R.searching = !!m.sr;
+  R.hid = num(m.h, -1) | 0; R.linger = clamp(num(m.lg), 0, 999); R.undiesT = m.u ? 1 : 0; R.evadeHideT = m.ev ? 1 : 0; R.scentHideT = m.sh ? 1 : 0; R.dc = !!m.dc; R.strikeOn = !!m.sk; R.rapport = !!m.rp; R.pinned = !!m.pn; R.exhausted = !!m.x2; R.searching = !!m.sr; { const hd = ['muffin', 'propel', 'ice', 'gun', 'box'].includes(m.hd) ? m.hd : ''; if (hd !== R.hold) { R.hold = hd; R.holdT = hd === 'muffin' || hd === 'box' ? 0.35 : 0; } }
   const v3 = a => Array.isArray(a) && a.length === 3 && a.every(Number.isFinite) ? a : null;
   R.bo = v3(m.bo); R.bd = v3(m.bd); R.beam = R.flashOn ? v3(m.bs) : null;
   if (R.alive && m.a === 0) { R.alive = false; if (MP.host) checkAllDead(); }   // dead stays dead until the next game
@@ -6534,13 +6695,14 @@ function updateRemotes(dt) {
     R.face += angDiff(R.face, R.nface) * k; R.yaw += angDiff(R.yaw, R.nyaw) * k;
     const hidden = R.hid >= 0 ? (W.spots[R.hid] || null) : null;
     if (hidden !== R.hidden) { const s = hidden || R.hidden; if (s && s.door) s.openT = 0.45; R.hidden = hidden; }   // their locker door swings
-    const vis = R.alive && R.ready && !R.hidden && !R.isVoice && !(VP.mine && undetectable(R));
+    const vis = R.alive && R.ready && !R.hidden && !R.isVoice && !(VP.mine && (undetectable(R) || voiceAirborne()));   // flying, The Voice sees nobody: only scratch marks
     R.C.root.visible = vis;
     if (vis) {
       R.bob += R.speedNow * dt * (R.sprinting ? 3.2 : R.crouch ? 4.6 : 4.2);
       R.C.root.position.set(R.x, 0, R.z); R.C.root.rotation.set(0, R.face, 0);
+      if (R.holdT > 0) R.holdT -= dt;
       animateCharacter(R.C, dt, { phase: R.bob * 0.5, speed: R.speedNow, run: R.sprinting, crouch: R.crouch, aimPitch: R.ap, flash: R.flashOn,
-        exhausted: R.exhausted, searching: R.searching, breathPh: gameTime * 2 + R.slot, breathB: 0.3, turnRate: 0, t: gameTime });
+        exhausted: R.exhausted, searching: R.searching, breathPh: gameTime * 2 + R.slot, breathB: 0.3, turnRate: 0, t: gameTime, hold: R.hold || '', holdT: R.holdT || 0 });
       if (R.pinned) { R.C.root.rotation.x = -1.45; R.C.root.position.y = 0.32; }   // on their back under The Voice
       R.C.lens.material.color.setHex(R.flashOn ? 0xfff3d6 : 0x55524a);
     }
@@ -6582,7 +6744,7 @@ function renderTeam() {
 }
 
 /* ---------- sync during a game ---------- */
-const VST = ['patrol', 'investigate', 'search', 'alert', 'chase', 'hunt', 'blind', 'bait', 'takeoff', 'fly', 'dive', 'pin', 'land'], SST = ['patrol', 'follow', 'disabled', 'destroyed'];
+const VST = ['patrol', 'investigate', 'search', 'alert', 'chase', 'hunt', 'blind', 'bait', 'takeoff', 'fly', 'dive', 'pin', 'land', 'lure', 'portal'], SST = ['patrol', 'follow', 'disabled', 'destroyed'];
 function netTick(dt) {
   MP.sendT -= dt;
   if (MP.sendT <= 0) { MP.sendT = 1 / 12; publishMyState(); }
@@ -6596,7 +6758,7 @@ function publishMyState() {
   const P = player, on = P.flashOn && P.alive && state !== 'spectate';
   const m = { x: r2(P.x), z: r2(P.z), e: r2(P.eye), y: r3(P.yaw), p: r3(P.pitch), f: r3(P.face), ap: r3(FL.pitch), v: r2(P.speedNow), c: P.crouch ? 1 : 0,
     r: P.sprinting && P.speedNow > 2 ? 1 : 0, l: on ? 1 : 0, b: r3(batFrac(P)), h: P.hidden ? W.spots.indexOf(P.hidden) : -1, a: P.alive ? 1 : 0,
-    lg: r2(P.linger), u: undetectable(P) ? 1 : 0, ev: P.evadeHideT > 0 ? 1 : 0, pn: P.pinned ? 1 : 0, sh: isOdorless(P) ? 1 : 0, rp: hasPerk('rapport') ? 1 : 0, dc: P.cleanseT > 0 ? 1 : 0, sk: P.strikeT > 0 ? 1 : 0, x2: P.exhausted ? 1 : 0, sr: P.searching ? 1 : 0 };
+    lg: r2(P.linger), u: undetectable(P) ? 1 : 0, ev: P.evadeHideT > 0 ? 1 : 0, pn: P.pinned ? 1 : 0, sh: isOdorless(P) ? 1 : 0, rp: hasPerk('rapport') ? 1 : 0, dc: P.cleanseT > 0 ? 1 : 0, sk: P.strikeT > 0 ? 1 : 0, x2: P.exhausted ? 1 : 0, sr: P.searching || P.building ? 1 : 0, hd: playerHold() };
   if (on) { m.bo = [r2(flash.position.x), r2(flash.position.y), r2(flash.position.z)]; m.bd = [r3(FL.dir.x), r3(FL.dir.y), r3(FL.dir.z)]; m.bs = beamSpot().map(r2); }
   if (VP.mine) voiceStateMsg(m);
   pub(TOPIC.s(MP.code, MP.id), m);
@@ -6608,6 +6770,7 @@ function publishWorld() {
     s: W.sgeese.map(S => [r2(S.x), r2(S.z), r3(S.yaw), SST.indexOf(S.state), r2(S.curSpeed), S.beakT > 0 ? 1 : 0, S.flapT > 0 ? 1 : 0, S.tid || 0, r2(S.lookX ?? S.x), r2(S.lookZ ?? S.z)]),
     f: W.fridges.map(f => [f.open ? 1 : 0, r2(f.used), f.powered ? 1 : 0]),
     sh: W.showers.map(o => [o.run === 'hot' ? 1 : o.run === 'cold' ? 2 : 0, r2(o.runT), r2(Math.max(0, o.readyAt - gameTime))]),
+    hp: HELPERS.map(h => [h.id, r2(h.x), r2(h.z), r3(h.yaw), h.gold ? 1 : 0]),
     tp: MP.tapes });
 }
 function applyWorld(m) {
@@ -6646,6 +6809,7 @@ function applyWorld(m) {
     f.used = clamp(num(a[1], f.used), 0, CFG.FRIDGE_POWER);
   });
   if (Number.isFinite(m.tp) && m.tp > player.tapes) player.tapes = m.tp;
+  if (Array.isArray(m.hp)) syncHelpers(m.hp.slice(0, 8));
 }
 // someone else's room: The Voice and the geese are puppets of the host's, smoothed between updates
 function updatePuppets(dt) {
@@ -6685,6 +6849,8 @@ function onClientMsg(m) {
     case 'lbbat': if (R.alive) { lbBoost(); netHost({ t: 'lbbat' }); } break;
     case 'punch': if (R.alive) strikeStun(); break;
     case 'va': if (VP.on && VP.id === id) hostVoiceAct(cleanText(m.a, 8), m); break;
+    case 'box': if (R.alive) hostBox(clamp(num(m.x, R.x), 0, W.N * T), clamp(num(m.z, R.z), 0, W.N * T)); break;
+    case 'portal': if (R.alive && W.goose && Math.hypot(W.goose.x - R.x, W.goose.z - R.z) < 45) hostPortalVoice(); break;
     case 'yell': if (R.alive && !R.yelled) { R.yelled = true; hostYell(clamp(num(m.x, R.x), 0, W.N * T), clamp(num(m.z, R.z), 0, W.N * T), id); } break;
     case 'sgkill': { const S = W.sgeese[i]; if (S && !S.dead && R.alive) wreckSG(S); break; }
     case 'shw': { const o = W.showers[i]; if (o && R.alive && (m.k === 'hot' || m.k === 'cold')) showerApply(o, m.k); break; }
@@ -6709,7 +6875,7 @@ function onHostMsg(m) {
     case 'close': mpFail('The host closed the room.'); return;
     case 'kick': mpFail('Your connection to the room dropped for too long, so the host lost you.'); return;
     case 'start':
-      if (MP.joined && !MP.inGame && Array.isArray(m.players)) beginMpRun(num(m.seed) | 0, m.players.slice(0, 6).map(p => ({ id: cleanText(p.id, 16), name: cleanText(p.name, 14) || 'Player', slot: clamp(num(p.slot) | 0, 0, 5) })), m.voice ? cleanText(m.voice, 16) : null);
+      if (MP.joined && !MP.inGame && Array.isArray(m.players)) beginMpRun(num(m.seed) | 0, m.players.slice(0, 6).map(p => ({ id: cleanText(p.id, 16), name: cleanText(p.name, 14) || 'Player', slot: clamp(num(p.slot) | 0, 0, 5), c: CHARS[p.c] ? p.c : 'dusty' })), m.voice ? cleanText(m.voice, 16) : null);
       return;
   }
   if (!MP.inGame || !W) return;
@@ -6739,9 +6905,10 @@ function onHostMsg(m) {
       break;
     case 'mgone': { const t = W.thrown.find(q => q.id === m.id); if (t) { t.gone = true; t.mesh.visible = false; } break; }
     case 'struck': strikeScare(); break;
-    case 'pinned': pinScene(); break;
+    case 'pinned': pinScene(!!m.q); break;
     case 'diving': player.diveLookT = CFG.DIVE_TIME + 0.25; break;
     case 'vping': if (VP.mine) addPing(num(m.x), num(m.z), cleanText(m.k, 8)); break;
+    case 'vreveal': revealVoice(clamp(num(m.d, 5), 0, 10)); break;
     case 'vleft': VP.on = false; if (W.goose) W.goose.played = false; toast(`${MP.voiceName || 'The Voice'} left. The AI is The Voice now.`, true, 3.5); break;
     case 'lbbat': lbBoost(); break;
     case 'yell': if (m.by !== MP.id) yellHeard(cleanText(m.by, 16), num(m.x), num(m.z)); break;
@@ -6920,7 +7087,7 @@ function voiceBite() {
   if (G.state === 'fly') {   // in the air: drop on whoever's under you
     let best = null, bd = VCFG.DROP_R;
     for (const R of voicePrey()) { if (!dropTarget(R) || undetectable(R)) continue; const d = Math.hypot(R.x - G.x, R.z - G.z); if (d < bd) { bd = d; best = R; } }
-    if (best) voiceAct('dive', { id: best.id }); else toast('Nobody under you.', false, 1.2);
+    voiceAct('dive', { id: best ? best.id : '' }); if (!best) toast('Nobody there.', false, 1.5);   // a guess: if nobody's under you, you just come down
     return;
   }
   if (VP.lungeT > 0 || VP.biteCD > 0 || VP.missT > 0 || VP.searchT > 0) return;
@@ -6945,6 +7112,7 @@ function voiceSearch() {
   const G = W.goose; if (!VP.mine || state !== 'playing' || !voiceFree(G) || G.state === 'fly' || VP.searchT > 0 || VP.lungeT > 0) return;
   const s = VP.near; if (!s) return;
   VP.searchT = VCFG.SEARCH_T; VP.searchSpot = s; G.yaw = Math.atan2(s.x - G.x, s.z - G.z); G.vx = G.vz = 0; VP.charging = false;
+  voiceAct('rip', { i: W.spots.indexOf(s) }); shakeAmt = Math.max(shakeAmt, 0.03);
 }
 function voiceTaunt(k) {
   const G = W.goose; if (!VP.mine || state !== 'playing' || VP.tauntCD > 0 || !G || AIR.has(G.state)) return;
@@ -7068,10 +7236,10 @@ function hostVoiceAct(a, m) {
       break;
     case 'fly': if (voiceFree(G) && G.state !== 'fly' && (G.y || 0) < 0.1) { G.vx = G.vz = 0; startTakeoff(G); } break;
     case 'land': if (G.state === 'fly') startLand(G); break;
-    case 'dive': { const v = find(m.id); if (G.state === 'fly' && dropTarget(v) && Math.hypot(v.x - G.x, v.z - G.z) < VCFG.DROP_R + 1.5) startDive(G, v); break; }
+    case 'dive': { const v = find(m.id); if (G.state !== 'fly') break; if (dropTarget(v) && Math.hypot(v.x - G.x, v.z - G.z) < VCFG.DROP_R + 1.5) startDive(G, v); else startLand(G); break; }
+    case 'rip': { const s = W.spots[num(m.i, -1) | 0]; if (s) vfx('rip', { i: W.spots.indexOf(s), x: s.x, z: s.z }); break; }
     case 'search': {   // tear open a locker, a bed or a shower: whoever's inside is caught
       const s = W.spots[num(m.i, -1) | 0]; if (!s || G.catchCD > 0) break;
-      vfx('spot', { i: W.spots.indexOf(s), x: s.x, z: s.z });
       const p = prey.find(q => q.hidden === s);
       if (p) catchPlayer(p);
       break;
@@ -7084,6 +7252,7 @@ function updatePlayedGoose(dt) {
   G.stingCD -= dt; if (G.catchCD > 0) G.catchCD -= dt;
   if (G.holdT > 0) { G.holdT -= dt; G.curSpeed = 0; animateGoose(G, dt, false); return; }   // frozen in someone's face (Strike prompt)
   G.yell = null;
+  if (G.state === 'portal') { updatePortalGoose(G, dt); animateGoose(G, dt, false); return; }
   if (updateFlight(G, dt)) return;
   G.stateT += dt;
   if (G.ctl && !VP.mine && voiceFree(G)) {   // steered from another screen: eased toward where they say it is
@@ -7096,6 +7265,9 @@ function updatePlayedGoose(dt) {
   if (G.state === 'blind') {
     G.curSpeed = Math.max(0, G.curSpeed - dt * 14); G.blindT -= dt; moving = false;
     if (G.blindT <= 0) gooseSet(G, 'patrol');
+  } else if (G.state === 'lure') {   // The Box: chasing the helper, whether its player likes it or not
+    const h = G.lureH; if (!h || !HELPERS.includes(h)) { G.lureH = null; gooseSet(G, 'patrol'); }
+    else { moveGoose(G, h.x, h.z, CFG.CHASE, dt); moving = true; }
   } else if (G.state === 'bait') {   // blueberry muffins: it can't help itself
     const m = G.bait;
     if (!m || m.gone) gooseAfterMuffin(G);
@@ -7161,7 +7333,8 @@ function updatePings(dt) {
   }
 }
 // survivors this screen can see as The Voice, outlined: revealed by a honk, by their scent, or from the air
-const voiceSees = R => R.revealT > 0 || (R.linger >= CFG.LINGER_TIME && !isOdorless(R)) || (W.goose && W.goose.state === 'fly' && Math.hypot(R.x - W.goose.x, R.z - W.goose.z) < VCFG.AIR_SEE);
+const voiceAirborne = () => !!(W && W.goose && (W.goose.state === 'takeoff' || W.goose.state === 'fly' || W.goose.state === 'land' || W.goose.state === 'dive'));
+const voiceSees = R => !voiceAirborne() && (R.revealT > 0 || (R.linger >= CFG.LINGER_TIME && !isOdorless(R)));
 
 /* ---------- the Voice's screen ---------- */
 const VAB = {};
@@ -7176,7 +7349,7 @@ function updateVoiceHud(dt) {
   setText('vab-bite', VAB.bite.querySelector('b'), air ? 'Dive' : 'Bite'); setText('vab-fly', VAB.fly.querySelector('b'), air ? 'Land' : 'Fly');
   setClass('vab-s', VAB.search, 'ready', !!VP.near); setClass('vab-s', VAB.search, 'off', !VP.near && VP.searchT <= 0);
   setClass('vab-h', VAB.honk, 'off', VP.honkCD > 0); setClass('vab-f', VAB.fly, 'off', VP.flyCD > 0 && !air);
-  setClass('vab-b', VAB.bite, 'ready', air && voicePrey().some(R => dropTarget(R) && !undetectable(R) && Math.hypot(R.x - G.x, R.z - G.z) < VCFG.DROP_R));
+
   $('vh-fury-fill').style.transform = `scaleX(${VP.fury.toFixed(3)})`; setClass('vfu', $('vh-fury'), 'on', VP.charging);
   // what's happening to it
   const msg = voiceAsleep() && G.state !== 'fly' ? `Waking up ${Math.ceil(VP.wakeAt - gameTime)}` : G.state === 'blind' ? 'Blinded' : G.state === 'bait' ? 'Blueberry muffins' : G.holdT > 0 ? 'Punched' : G.state === 'pin' ? 'Pinned them' : G.state === 'takeoff' ? 'Taking off' : G.state === 'land' ? 'Landing' : '';
@@ -7243,7 +7416,7 @@ function spawnBots(n) {
   clearRemotes();
   const names = shuffle(BOT_NAMES.slice()), sk = BOT_SKILL[VP.skill] || BOT_SKILL.normal;
   for (let i = 0; i < n; i++) {
-    const R = addRemote({ id: 'bot' + i, name: names[i], slot: i });
+    const R = addRemote({ id: 'bot' + i, name: names[i], slot: i, c: Math.random() < 0.35 ? 'fenwick' : 'dusty' });
     const off = [[0, 0], [0.8, 0], [-0.8, 0], [0, 0.8]][i % 4];
     R.x = R.nx = center(1) + off[0]; R.z = R.nz = center(1) + off[1]; R.ready = true; R.alive = true; collide(R, CFG.PLAYER_R); R.nx = R.x; R.nz = R.z;
     R.bot = { sk, mode: 'seek', goal: null, path: null, pathI: 0, repathT: 0, pathGoal: -1, stam: CFG.STAMINA_MAX, exh: false, sees: false, sawT: 99, senseT: rr(0, 0.15),
@@ -7312,7 +7485,7 @@ function botMuffin(R, G) {   // thrown between it and The Voice
   const b = R.bot, d = Math.hypot(G.x - R.x, G.z - R.z) || 1; b.muffins--;
   let x = R.x + (G.x - R.x) / d * Math.min(2.2, d * 0.5), z = R.z + (G.z - R.z) / d * Math.min(2.2, d * 0.5);
   if (isWallAt(x, z)) { x = R.x; z = R.z; }
-  AU.paper(); hostMuffin(x, z, 0);
+  AU.paper(); R.hold = 'muffin'; R.holdT = 0.35; hostMuffin(x, z, 0);
 }
 function botCaught(R) {
   if (!R.alive) return;
@@ -7329,7 +7502,7 @@ function botThink(R, G, dt) {
   const b = R.bot, sk = b.sk;
   // pinned under a drop attack: it fights, and wins or it doesn't
   if (G.state === 'pin' && G.diveV === R) {
-    if (!R.pinned) { R.pinned = true; b.pinAt = G.pinT + rr(3, 8); b.pinWin = Math.random() < sk.pinWin; R.speedNow = 0; b.vx = b.vz = 0; }
+    if (!R.pinned) { R.pinned = true; b.pinAt = G.pinT + (G.played ? 1.7 : rr(3, 8)); b.pinWin = Math.random() < sk.pinWin; R.speedNow = 0; b.vx = b.vz = 0; }
     R.flashOn = false;
     if (G.pinT >= b.pinAt) { R.pinned = false; pinResolved(b.pinWin, R); if (b.pinWin) { b.stam = CFG.STAMINA_MAX; b.exh = false; b.sawT = 0; botFlee(R, G); } }
     return;
@@ -7412,6 +7585,359 @@ function botThink(R, G, dt) {
   if (b.exh && (b.breathT -= dt) <= 0) { b.breathT = 1.3; gooseHear(R.x, R.z, CFG.BREATH_R_MAX * 0.7, { kind: 'breath', pri: 1.5, player: true, p: R }); }
 }
 
+/* ================= SKILL CHECKS ================= */
+// A needle sweeps once around a ring: hit Space (or E, a click, or a tap) while it's inside the white zone.
+const SKS = { on: false, left: 0, gap: 0, cb: null, o: null, next: null };
+function skillCheck(o, cb) {
+  const size = o.size || 0.15, start = rr(0.4, 0.88 - size);
+  startQTE('skill', { want: 'skill', dur: o.dur || 1, zone: [start, start + size], hint: o.hint || (isMobile() ? 'Tap in the white' : 'Space in the white') }, cb);
+}
+function skillSeries(n, o, cb) {   // several in a row, fast; one miss ends it
+  Object.assign(SKS, { on: true, left: n, gap: 0, cb, o });
+  SKS.next = () => skillCheck(o, ok => {
+    if (!ok) { SKS.on = false; cb(false); return; }
+    AU.click();
+    if (--SKS.left <= 0) { SKS.on = false; cb(true); return; }
+    SKS.gap = 0.18;
+  });
+  SKS.next();
+}
+function updateSkill(dt) { if (SKS.on && !QTE.on && SKS.gap > 0 && (SKS.gap -= dt) <= 0) SKS.next(); }
+
+/* ================= ITEMS IN YOUR HAND ================= */
+// what the player's free hand is holding right now (the other hand has the flashlight)
+function playerHold() {
+  const P = player;
+  if (P.holdT > 0) return P.holdK;
+  if (P.iceOn && P.iceLeft > 0) return 'ice';
+  if (P.portalAmmo > 0) return 'gun';
+  return '';
+}
+function startHold(k, t) { const P = player; P.holdK = k; P.holdT = t; }
+
+/* ================= CHARACTERS ================= */
+const CHARS = {
+  dusty: { name: 'Dusty', skin: 'dusty', bio: 'The one who came looking for the tapes. Steady, quiet, ordinary.' },
+  fenwick: { name: 'Fenwick', skin: 'fenwick', bio: 'A rumpled inventor who builds things out of whatever he finds. Bring his perks: Loose Cannon, The Box and Port ’n’ Port.' },
+};
+const CHAR_PREVIEW = {};
+// a picture of a character for the Characters screen, drawn once on a small throwaway canvas
+function charPreview(id) {
+  if (id in CHAR_PREVIEW) return CHAR_PREVIEW[id];
+  try {
+    const r = new THREE.WebGLRenderer({ antialias: true, alpha: true, preserveDrawingBuffer: true }); r.setPixelRatio(1); r.setSize(200, 280, false);
+    const sc = new THREE.Scene(), cam = new THREE.PerspectiveCamera(28, 200 / 280, 0.1, 30);
+    sc.add(new THREE.AmbientLight(0xffffff, 0.6)); const d = new THREE.DirectionalLight(0xfff0dc, 0.95); d.position.set(1.6, 2.6, 3.2); sc.add(d);
+    const C = buildCharacter(CHARS[id].skin); C.root.rotation.y = 0.4; sc.add(C.root);
+    animateCharacter(C, 1, { phase: 0, speed: 0, run: false, crouch: false, aimPitch: 0, flash: false, exhausted: false, searching: false, breathPh: 0, breathB: 0, turnRate: 0, t: 0 });
+    cam.position.set(0, 1.0, 4.6); cam.lookAt(0, 0.88, 0);
+    r.render(sc, cam); CHAR_PREVIEW[id] = r.domElement.toDataURL('image/png');
+    r.dispose(); if (r.forceContextLoss) r.forceContextLoss();
+  } catch (e) { CHAR_PREVIEW[id] = ''; }
+  return CHAR_PREVIEW[id];
+}
+function renderCharacters() {
+  const el = $('char-list');
+  el.innerHTML = Object.entries(CHARS).map(([id, c]) => {
+    const mine = Object.keys(PERKS).filter(p => PERKS[p].owner === id);
+    return `<button class="char-card${CHAR.id === id ? ' sel' : ''}" type="button" data-char="${id}" aria-pressed="${CHAR.id === id}">
+      <span class="char-pic">${charPreview(id) ? `<img alt="" src="${charPreview(id)}">` : ''}</span>
+      <b>${c.name}</b><span class="char-bio">${c.bio}</span>
+      ${mine.length ? `<span class="char-perks">${mine.map(p => `<span class="chip">${icon(p)}${PERKS[p].name}</span>`).join('')}</span>` : ''}
+      <i>${CHAR.id === id ? 'Playing as' : 'Choose'}</i></button>`;
+  }).join('');
+}
+$('char-list').addEventListener('click', e => { const b = e.target.closest('[data-char]'); if (!b) return; setCharacter(b.dataset.char); renderCharacters(); shareLoadout(); });
+
+/* ================= THE BOX: a wind-up helper The Voice can't ignore ================= */
+const HELPERS = [];
+let HELPER_ID = 0;
+function buildTinker(gold) {
+  const root = new THREE.Group(), B = geo('box'), CYL = geo('cyl', () => new THREE.CylinderGeometry(1, 1, 1, 10));
+  const metal = new THREE.MeshStandardMaterial({ color: gold ? 0xf4c23a : 0xa8783e, roughness: gold ? 0.22 : 0.4, metalness: 0.85 });
+  const dark = new THREE.MeshStandardMaterial({ color: 0x2b2420, roughness: 0.6, metalness: 0.5 });
+  const lamp = new THREE.MeshBasicMaterial({ color: gold ? 0xff3322 : 0x9fe6ff });
+  addMesh(root, CYL, metal, [0, 0.36, 0], [0.13, 0.3, 0.11], null, false);            // barrel body
+  addMesh(root, CYL, dark, [0, 0.36, 0], [0.135, 0.03, 0.115], null, false);          // a band round its middle
+  addMesh(root, SPH, metal, [0, 0.62, 0], [0.12, 0.11, 0.12], null, false);           // head
+  addMesh(root, SPH, lamp, [0, 0.63, 0.1], [0.045, 0.045, 0.03], null, false);       // one lamp eye
+  addMesh(root, CYL, dark, [0, 0.76, 0], [0.008, 0.07, 0.008], null, false); addMesh(root, SPH, lamp, [0, 0.8, 0], [0.018, 0.018, 0.018], null, false);   // antenna
+  const key = new THREE.Group(); key.position.set(0, 0.4, -0.13); root.add(key);    // the wind-up key on its back
+  addMesh(key, CYL, metal, [0, 0, -0.04], [0.012, 0.08, 0.012], [Math.PI / 2, 0, 0], false);
+  addMesh(key, B, metal, [0, 0, -0.08], [0.12, 0.05, 0.015], null, false);
+  const legs = [-1, 1].map(s => { const g = new THREE.Group(); g.position.set(0.06 * s, 0.22, 0); root.add(g); addMesh(g, CYL, dark, [0, -0.1, 0], [0.018, 0.2, 0.018], null, false); addMesh(g, B, metal, [0, -0.2, 0.02], [0.05, 0.03, 0.08], null, false); return g; });
+  const arms = [-1, 1].map(s => { const g = new THREE.Group(); g.position.set(0.14 * s, 0.48, 0); root.add(g); addMesh(g, CYL, dark, [0, -0.09, 0], [0.014, 0.18, 0.014], null, false); addMesh(g, SPH, metal, [0, -0.19, 0], [0.025, 0.025, 0.025], null, false); return g; });
+  const halo = new THREE.Sprite(new THREE.SpriteMaterial({ map: PART_GLOW, color: gold ? 0xff5533 : 0x9fe6ff, blending: THREE.AdditiveBlending, depthWrite: false, transparent: true, opacity: 0.9 }));
+  halo.position.set(0, 0.64, 0.14); halo.scale.setScalar(0.55); root.add(halo);
+  root.scale.setScalar(1.6); scene.add(root);
+  return { root, key, legs, arms, mats: [metal, dark, lamp, halo.material] };
+}
+function dropHelper(h) { scene.remove(h.m.root); for (const m of h.m.mats) m.dispose(); }
+// the host (or single player) lets one out at x, z
+function hostBox(x, z) {
+  const gold = Math.random() < 1 / 1000;   // a very rare golden one runs twice as long and knocks The Voice out longer
+  const h = { id: ++HELPER_ID, gold, x, z, yaw: 0, t: 0, life: gold ? 10 : 5, vx: 0, vz: 0, goal: null, path: null, pathI: 0, repathT: 0, pathGoal: -1, phase: 0 };
+  h.m = buildTinker(gold); HELPERS.push(h);
+  vfx('boxopen', { x, z });
+  const G = W.goose;
+  if (G && !AIR.has(G.state) && G.state !== 'portal' && G.state !== 'blind') { G.lureH = h; G.bait = null; gooseSet(G, 'lure'); voice(G, { alert: true, pitch: 1.2, loud: 1.3 }); }
+}
+function helperMove(h, dt) {   // runs away from The Voice, along the corridors
+  const G = W.goose;
+  if (!h.goal || (h.repathT -= dt) <= 0) {
+    h.repathT = 0.9;
+    const dH = bfs(clamp(tileOf(h.x), 0, W.N - 1), clamp(tileOf(h.z), 0, W.N - 1)), dG = bfs(clamp(tileOf(G.x), 0, W.N - 1), clamp(tileOf(G.z), 0, W.N - 1));
+    let best = -1, bs = -1e9; for (const i of W.floors) { const a = dH[i], g = dG[i]; if (a < 2 || a > 9 || g < 0) continue; const s = g - a * 0.4 + rr(0, 1); if (s > bs) { bs = s; best = i; } }
+    if (best >= 0) { h.goal = { x: center(best % W.N), z: center((best / W.N) | 0) }; h.path = null; }
+  }
+  if (!h.goal) return;
+  const N = W.N, tx = tileOf(h.x), tz = tileOf(h.z), gx = tileOf(h.goal.x), gz = tileOf(h.goal.z), gid = gz * N + gx;
+  if (!h.path || h.pathGoal !== gid) { h.path = botPath(tx, tz, gx, gz) || []; h.pathI = 0; h.pathGoal = gid; }
+  while (h.pathI < h.path.length && Math.hypot(center(h.path[h.pathI].x) - h.x, center(h.path[h.pathI].z) - h.z) < 0.7) h.pathI++;
+  let wx = h.goal.x, wz = h.goal.z; if (h.pathI < h.path.length) { const w = h.path[h.pathI]; wx = center(w.x); wz = center(w.z); }
+  const dx = wx - h.x, dz = wz - h.z, d = Math.hypot(dx, dz) || 1, sp = CFG.CHASE * 0.9, k = 1 - Math.exp(-dt * 10);
+  h.vx += (dx / d * sp - h.vx) * k; h.vz += (dz / d * sp - h.vz) * k;
+  h.x += h.vx * dt; h.z += h.vz * dt; collide(h, 0.25);
+  if (Math.hypot(h.vx, h.vz) > 0.3) h.yaw += angDiff(h.yaw, Math.atan2(h.vx, h.vz)) * Math.min(1, dt * 12);
+}
+function animateHelper(h, dt, speed) {
+  const m = h.m; h.phase += dt * (4 + speed * 2.6);
+  m.root.position.set(h.x, Math.abs(Math.sin(h.phase)) * 0.04, h.z); m.root.rotation.y = h.yaw;
+  m.legs[0].rotation.x = Math.sin(h.phase) * 0.7; m.legs[1].rotation.x = -Math.sin(h.phase) * 0.7;
+  m.arms[0].rotation.x = -Math.sin(h.phase) * 0.9; m.arms[1].rotation.x = Math.sin(h.phase) * 0.9;
+  m.key.rotation.z += dt * 9;
+}
+function updateHelpers(dt) {   // host or single player
+  const G = W.goose;
+  for (let i = HELPERS.length - 1; i >= 0; i--) {
+    const h = HELPERS[i]; h.t += dt;
+    if (G) helperMove(h, dt);
+    animateHelper(h, dt, Math.hypot(h.vx, h.vz));
+    if (h.t >= h.life) {   // its job's done: it bursts, and The Voice is knocked back
+      HELPERS.splice(i, 1); dropHelper(h);
+      vfx('boxpop', { x: h.x, z: h.z, g: h.gold ? 1 : 0 });
+      if (G && G.lureH === h) { G.lureH = null; G.blindT = h.gold ? 5 : 2; G.blindCharge = 0; G.curSpeed = 0; gooseSet(G, 'blind'); G.flapT = 1; G.lastSeen = { x: G.x, z: G.z }; }
+    }
+  }
+}
+// someone else's game: the host's helpers, mirrored
+function syncHelpers(list) {
+  const seen = new Set();
+  for (const a of list) {
+    if (!Array.isArray(a)) continue;
+    const id = num(a[0]) | 0; seen.add(id);
+    let h = HELPERS.find(q => q.id === id);
+    if (!h) { h = { id, gold: !!a[4], x: num(a[1]), z: num(a[2]), yaw: num(a[3]), vx: 0, vz: 0, phase: 0, nx: num(a[1]), nz: num(a[2]) }; h.m = buildTinker(h.gold); HELPERS.push(h); }
+    h.nx = num(a[1], h.x); h.nz = num(a[2], h.z); h.nyaw = num(a[3], h.yaw);
+  }
+  for (let i = HELPERS.length - 1; i >= 0; i--) if (!seen.has(HELPERS[i].id)) { dropHelper(HELPERS[i]); HELPERS.splice(i, 1); }
+}
+function updateHelperPuppets(dt) {
+  const k = 1 - Math.exp(-dt * 10);
+  for (const h of HELPERS) { const ox = h.x, oz = h.z; h.x += ((h.nx ?? h.x) - h.x) * k; h.z += ((h.nz ?? h.z) - h.z) * k; h.yaw += angDiff(h.yaw, h.nyaw ?? h.yaw) * k; animateHelper(h, dt, Math.hypot(h.x - ox, h.z - oz) / Math.max(dt, 1e-4)); }
+}
+function clearHelpers() { for (const h of HELPERS) dropHelper(h); HELPERS.length = 0; }
+// is The Voice chasing me right now? (The Box only works then)
+function beingChased() {
+  const G = W.goose, P = player; if (!G) return false;
+  const d = Math.hypot(G.x - P.x, G.z - P.z), clear = !wallsBetween(G.x, G.z, P.x, P.z);
+  if (G.played) return G.state === 'chase' && d < 18 && clear || (d < 7 && clear && voiceFree(G));
+  return (G.state === 'chase' || G.state === 'alert') && (!MP.inGame || G.tid === MP.id) && d < 26;
+}
+function useBox() {
+  const P = player, G = W.goose;
+  if (!hasPerk('thebox') || state !== 'playing' || P.alive === false) return;
+  if (P.hidden) { toast("Not from in here."); return; }
+  if (P.boxUses <= 0) { toast(P.boxSecond ? 'The Box is empty.' : 'The Box is empty. You get another use once 4 tapes are found.', false, 2.5); return; }
+  if (!beingChased()) { toast('The Box only works while The Voice is chasing you.', false, 2.5); return; }
+  P.boxUses--; startHold('box', 0.4); AU.click();
+  const d = Math.hypot(G.x - P.x, G.z - P.z) || 1; let x = P.x + (G.x - P.x) / d * 1.1, z = P.z + (G.z - P.z) / d * 1.1;
+  if (isWallAt(x, z)) { x = P.x; z = P.z; }
+  if (!MP.inGame || MP.host) hostBox(x, z); else netClient({ t: 'box', x: +x.toFixed(2), z: +z.toFixed(2) });
+}
+
+/* ================= PORT 'N' PORT: build a portal gun, send The Voice away ================= */
+const PART_INFO = { barrel: 'barrel', grip: 'grip', core: 'core', cell: 'battery' };
+function buildPartMesh(kind) {
+  const g = new THREE.Group(), CYL = geo('cyl', () => new THREE.CylinderGeometry(1, 1, 1, 10)), B = geo('box');
+  const brass = new THREE.MeshStandardMaterial({ color: 0xb08d45, roughness: 0.35, metalness: 0.8 }), dark = new THREE.MeshStandardMaterial({ color: 0x24262a, roughness: 0.5, metalness: 0.6 });
+  const glow = new THREE.MeshStandardMaterial({ color: 0x1a3a22, emissive: 0x39ff7a, emissiveIntensity: 1.2 });
+  if (kind === 'barrel') { addMesh(g, CYL, dark, [0, 0.07, 0], [0.04, 0.3, 0.04], [0, 0, Math.PI / 2], false); addMesh(g, CYL, brass, [0.1, 0.07, 0], [0.05, 0.04, 0.05], [0, 0, Math.PI / 2], false); }
+  else if (kind === 'grip') { addMesh(g, B, dark, [0, 0.09, 0], [0.07, 0.16, 0.05], [0.25, 0, 0], false); addMesh(g, B, brass, [0, 0.18, 0.03], [0.08, 0.03, 0.12], null, false); }
+  else if (kind === 'core') { addMesh(g, SPH, glow, [0, 0.09, 0], [0.06, 0.06, 0.06], null, false); for (let k = 0; k < 3; k++) addMesh(g, geo('ring', () => new THREE.TorusGeometry(0.027, 0.006, 6, 14)), brass, [0, 0.09, 0], [2.8, 2.8, 2.8], [k, k * 1.3, 0], false); }
+  else { addMesh(g, CYL, new THREE.MeshStandardMaterial({ color: 0xd8b52a, roughness: 0.5, metalness: 0.3 }), [0, 0.08, 0], [0.045, 0.14, 0.045], null, false); addMesh(g, CYL, glow, [0, 0.17, 0], [0.02, 0.03, 0.02], null, false); }
+  return g;
+}
+// your own pieces, scattered far from the start (nobody else sees them)
+function spawnParts() {
+  W.parts = [];
+  if (!hasPerk('portnport')) return;
+  const N = W.N, sd = W.startDist, picked = [];
+  for (const i of shuffle(W.floors.slice())) {
+    if (picked.length >= 4) break;
+    if (W.avoid[i] || W.used[i] || (sd && sd[i] < 7) || picked.some(j => Math.abs(j % N - i % N) + Math.abs(((j / N) | 0) - ((i / N) | 0)) < 7)) continue;
+    picked.push(i);
+  }
+  ['barrel', 'grip', 'core', 'cell'].forEach((kind, k) => {
+    const i = picked[k] ?? pick(W.floors), x = center(i % N) + rr(-0.6, 0.6), z = center((i / N) | 0) + rr(-0.6, 0.6);
+    const mesh = buildPartMesh(kind); mesh.position.set(x, 0.05, z); W.group.add(mesh);
+    const glow = new THREE.Sprite(new THREE.SpriteMaterial({ map: PART_GLOW, color: 0x5dff92, blending: THREE.AdditiveBlending, depthWrite: false, transparent: true, opacity: 0.6 }));
+    glow.position.set(x, 0.22, z); glow.scale.setScalar(0.9); W.group.add(glow);
+    W.parts.push({ kind, name: PART_INFO[kind], x, z, mesh, glow, taken: false, ph: rr(0, 6.28), hl: 0 });
+  });
+}
+const PART_GLOW = (() => { const c = mkCanvas(32, 32), g = c.getContext('2d'), gr = g.createRadialGradient(16, 16, 0, 16, 16, 16); gr.addColorStop(0, 'rgba(200,255,210,.9)'); gr.addColorStop(0.35, 'rgba(80,255,140,.35)'); gr.addColorStop(1, 'rgba(0,120,40,0)'); g.fillStyle = gr; g.fillRect(0, 0, 32, 32); return new THREE.CanvasTexture(c); })();
+const partsDone = () => !!(W.parts && W.parts.length && W.parts.every(p => p.taken));
+function takePart(p) {
+  p.taken = true; p.mesh.visible = false; p.glow.visible = false; AU.battery();
+  const left = W.parts.filter(q => !q.taken).length;
+  toast(left ? `Portal gun ${p.name} found. ${left} to go.` : 'All the portal gun parts! Press ' + (isMobile() ? 'Use' : 'E') + ' anywhere to build it.', false, 3);
+}
+function startBuild() {
+  const P = player; if (P.building || P.portalAmmo > 0) return;
+  if (P.buildCD > 0) { toast(`Your hands are still shaking. Try again in ${Math.ceil(P.buildCD)} s.`, false, 2); return; }
+  P.building = true; P.vx = P.vz = 0; P.sprinting = false; AU.paper();
+  skillSeries(5, { dur: 0.78, size: 0.14, hint: isMobile() ? 'Build it: tap in the white' : 'Build it: Space in the white' }, ok => {
+    P.building = false;
+    if (state !== 'playing' && state !== 'paused') return;
+    if (ok) { P.portalAmmo = 1; P.portalBuilt = true; AU.battery(); toast((isMobile() ? 'Portal gun built. 1 shot: tap Fire.' : 'Portal gun built. 1 shot: click to fire.'), false, 3.5); }
+    else { P.buildCD = 30; AU.click(); toast('It sparks and falls apart. Try again in 30 seconds.', true, 3); }
+  });
+}
+// the shot: a green bolt from your hand toward where you're aiming
+const BOLTS = [];
+const BOLT_MAT = new THREE.MeshBasicMaterial({ color: 0x8dffb0 });
+function firePortal() {
+  const P = player; if (!(P.portalAmmo > 0) || state !== 'playing' || P.hidden || P.building) return;
+  P.portalAmmo = 0; startHold('gun', 0.35); AU.portalShot();
+  const o = new V3();
+  if (firstPerson()) o.copy(camera.position).add(tmpV.set(0, -0.15, 0)); else { DUSTY.root.updateMatrixWorld(true); DUSTY.arms[0].hand.getWorldPosition(o); }
+  const d = new V3(); if (firstPerson()) camera.getWorldDirection(d); else d.set(AIM.x - o.x, AIM.y - o.y, AIM.z - o.z).normalize();
+  const mesh = new THREE.Mesh(geo('bolt', () => new THREE.SphereGeometry(0.09, 10, 8)), BOLT_MAT); mesh.scale.set(1, 1, 3); mesh.position.copy(o); mesh.lookAt(o.x + d.x, o.y + d.y, o.z + d.z); scene.add(mesh);
+  const glow = new THREE.Sprite(new THREE.SpriteMaterial({ map: PART_GLOW, color: 0x6dff9a, blending: THREE.AdditiveBlending, depthWrite: false, transparent: true })); glow.scale.setScalar(1.1); mesh.add(glow);
+  BOLTS.push({ p: o, d, t: 0, mesh, glow });
+}
+function updateBolts(dt) {
+  const G = W.goose;
+  for (let i = BOLTS.length - 1; i >= 0; i--) {
+    const b = BOLTS[i]; b.t += dt; let hit = false, done = b.t > 1.4;
+    for (let s = 0; s < 3 && !done; s++) {   // small steps, so it can't skip through a wall or past The Voice
+      b.p.addScaledVector(b.d, 34 * dt / 3);
+      if (b.p.y < 0.02 || isWallAt(b.p.x, b.p.z)) done = true;
+      else if (G && !AIR.has(G.state) && G.state !== 'portal' && Math.hypot(b.p.x - G.x, b.p.z - G.z) < 1.35 && b.p.y < 3.4) { hit = done = true; }
+    }
+    b.mesh.position.copy(b.p);
+    if (done) {
+      scene.remove(b.mesh); b.glow.material.dispose(); BOLTS.splice(i, 1); sparkBurst(b.p.x, Math.max(0.2, b.p.y), b.p.z, 6);
+      if (hit) { toast('Direct hit!', false, 2); if (!MP.inGame || MP.host) hostPortalVoice(); else netClient({ t: 'portal' }); }
+    }
+  }
+}
+// The Voice is pulled through a portal and spat out wherever's farthest from all of you, stunned, and you all see it
+function hostPortalVoice() {
+  const G = W.goose; if (!G || AIR.has(G.state) || G.state === 'portal') return;
+  const surv = voiceTargets(), ds = surv.map(p => bfs(clamp(tileOf(p.x), 0, W.N - 1), clamp(tileOf(p.z), 0, W.N - 1)));
+  let best = W.gooseStart, bs = -1;
+  for (const i of W.floors) { let m = 1e9; for (const d of ds) { const v = d[i]; if (v >= 0 && v < m) m = v; } if (m === 1e9) m = 0; if (m > bs) { bs = m; best = i; } }
+  const to = { x: center(best % W.N), z: center((best / W.N) | 0) };
+  G.portal = { to, moved: false }; G.lureH = null; G.bait = null; G.curSpeed = 0; G.holdT = 0;
+  gooseSet(G, 'portal');
+  vfx('portal', { x: G.x, z: G.z, x2: to.x, z2: to.z });
+  revealVoice(5); if (MP.inGame) netHost({ t: 'vreveal', d: 5 });
+}
+function revealVoice(s) { if (player.alive !== false && !VP.mine) player.voiceRevealT = Math.max(player.voiceRevealT || 0, s); }
+function updatePortalGoose(G, dt) {   // host: in, across, out, stunned
+  G.stateT += dt; const t = G.stateT;
+  if (t < 0.9) G.yaw += dt * 14;
+  else if (!G.portal.moved) { G.portal.moved = true; G.x = G.portal.to.x; G.z = G.portal.to.z; G.ctl = null; }
+  if (t >= 1.6) { G.blindT = 8; G.blindCharge = 0; gooseSet(G, 'blind'); G.flapT = 1; G.lastSeen = { x: G.x, z: G.z }; }
+}
+const portalScale = G => { if (G.state !== 'portal') return 1; const t = G.stateT; return t < 0.9 ? Math.max(0.001, 1 - t / 0.9) : t < 1.6 ? Math.max(0.001, (t - 0.9) / 0.7) : 1; };
+// the portal itself: a swirling green disc, turned to face you
+const PORTALS = [];
+const PORTAL_MAT = new THREE.ShaderMaterial({
+  uniforms: { uT: { value: 0 }, uA: { value: 1 } },
+  vertexShader: 'varying vec2 vU;\nvoid main() { vU = uv; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }',
+  fragmentShader: 'uniform float uT; uniform float uA; varying vec2 vU;\nvoid main() { vec2 p = vU * 2.0 - 1.0; float r = length(p); if (r > 1.0) discard; float a = atan(p.y, p.x);\n float s = sin(a * 5.0 + r * 15.0 - uT * 7.0) * 0.5 + 0.5; float core = 1.0 - r;\n vec3 c = mix(vec3(0.08, 0.85, 0.3), vec3(0.8, 1.0, 0.55), s * core);\n gl_FragColor = vec4(c * (0.5 + 0.9 * core) * uA * (0.55 + 0.45 * s) * smoothstep(1.0, 0.86, r), 1.0); }',
+  transparent: true, depthWrite: false, side: THREE.DoubleSide, blending: THREE.AdditiveBlending,
+});
+function spawnPortal(x, z, delay, life) {
+  const m = new THREE.Mesh(geo('portalDisc', () => new THREE.CircleGeometry(1, 40)), PORTAL_MAT.clone());
+  const rim = new THREE.Mesh(geo('portalRim', () => new THREE.TorusGeometry(1, 0.06, 8, 40)), new THREE.MeshBasicMaterial({ color: 0x7dffa0, transparent: true }));
+  m.add(rim); m.position.set(x, 1.9, z); m.scale.setScalar(0.001); m.visible = false; scene.add(m);
+  PORTALS.push({ m, rim, t: -delay, life });
+}
+function updatePortals(dt) {
+  for (let i = PORTALS.length - 1; i >= 0; i--) {
+    const q = PORTALS[i]; q.t += dt;
+    if (q.t < 0) continue;
+    if (q.t > q.life) { scene.remove(q.m); q.m.material.dispose(); q.rim.material.dispose(); PORTALS.splice(i, 1); continue; }
+    const grow = Math.min(1, q.t / 0.3), fade = Math.min(1, (q.life - q.t) / 0.4), s = 1.9 * grow * fade;
+    q.m.visible = true; q.m.scale.setScalar(Math.max(0.001, s)); q.m.material.uniforms.uT.value += dt; q.m.material.uniforms.uA.value = fade;
+    q.m.rotation.set(0, Math.atan2(camera.position.x - q.m.position.x, camera.position.z - q.m.position.z), 0);
+    q.rim.material.opacity = fade; q.rim.rotation.z += dt * 2;
+  }
+}
+function clearPortals() { for (const q of PORTALS) { scene.remove(q.m); q.m.material.dispose(); q.rim.material.dispose(); } PORTALS.length = 0; for (const b of BOLTS) scene.remove(b.mesh); BOLTS.length = 0; }
+
+/* ================= THE VOICE: TEARING OPEN A HIDING SPOT ================= */
+// everyone sees it: it rears back, lunges at the door, rips it wide, shoves its head in and thrashes, then pulls out
+function ripPose(G, R, dt) {
+  const rip = G.rip; if (!rip) { R.body.rotation.x = 0; return; }
+  const t = (rip.t += dt), T1 = 0.22, T2 = 0.42, T3 = 0.95, T4 = 1.3;
+  if (t > T4) { G.rip = null; R.body.rotation.x = 0; return; }
+  let lean, neck, flare, shake = 0;
+  if (t < T1) { const u = t / T1; lean = -0.2 * u; neck = -0.35 * u; flare = 0.5 * u; }
+  else if (t < T2) { const u = (t - T1) / (T2 - T1); lean = lerp(-0.2, 0.45, u); neck = lerp(-0.35, 1.05, u); flare = 1.15; }
+  else if (t < T3) { lean = 0.45 + Math.sin(t * 19) * 0.03; neck = 1.05 + Math.sin(t * 26) * 0.08; flare = 0.95; shake = Math.sin(t * 31) * 0.4; }
+  else { const u = (t - T3) / (T4 - T3); lean = lerp(0.45, 0, u); neck = lerp(1.05, 0.18, u); flare = 0.95 * (1 - u); }
+  R.body.rotation.x = lean; R.neck.rotation.x = neck; G.neckX = neck; R.headPivot.rotation.y = shake; G.headYaw = shake;
+  R.wings[0].rotation.z = -flare; R.wings[1].rotation.z = flare;
+  if (t > T1 && t < T3) R.jaw.rotation.x = 0.3 + Math.abs(Math.sin(t * 22)) * 0.45;
+}
+function updateSpotDoors(dt) {
+  for (const s of W.spots) {
+    if (s.ripT > 0) s.ripT -= dt;
+    if (!s.door) continue;
+    if (s.openT > 0) s.openT -= dt;
+    const u = s.ripT > 0 ? 1.3 - s.ripT : -1;
+    const want = u >= 0.25 && u < 1.05 ? 1.75 : u >= 0 ? 0 : s.openT > 0 ? 1 : 0;   // ripped wide open, then it swings back
+    s.open += (want - s.open) * (1 - Math.exp(-dt * (u >= 0.25 && u < 0.45 ? 30 : 14)));
+    s.door.rotation.y = -1.25 * s.open + (u > 0.45 && u < 1.0 ? Math.sin(u * 40) * 0.06 : 0);
+    s.door.visible = player.hidden !== s;
+  }
+}
+
+/* ================= THE VOICE IN THE AIR: SCRATCH MARKS ================= */
+// Flying, you can't see anyone (like a ghost between worlds): only the scratch marks of whoever's running, and what you hear.
+const SCRATCH = (() => {
+  const c = mkCanvas(64, 64), g = c.getContext('2d');
+  g.strokeStyle = 'rgba(255,70,40,.95)'; g.lineCap = 'round';
+  for (let k = 0; k < 4; k++) { g.lineWidth = rr(2, 4); g.beginPath(); const x = 12 + k * 11 + rr(-3, 3); g.moveTo(x, 8 + rr(0, 8)); g.quadraticCurveTo(x + rr(-6, 6), 32, x + rr(-8, 8), 56 - rr(0, 8)); g.stroke(); }
+  const map = new THREE.CanvasTexture(c), list = [];
+  for (let i = 0; i < 120; i++) {
+    const m = new THREE.Mesh(geo('scratch', () => { const p = new THREE.PlaneGeometry(0.9, 0.9); p.rotateX(-Math.PI / 2); return p; }), new THREE.MeshBasicMaterial({ map, transparent: true, depthWrite: false, opacity: 0, polygonOffset: true, polygonOffsetFactor: -3 }));
+    m.visible = false; m.position.y = 0.035; scene.add(m); list.push({ m, t: 0 });
+  }
+  return { list, i: 0 };
+})();
+function updateScratches(dt) {
+  const show = VP.mine && state !== 'menu';
+  for (const s of SCRATCH.list) {
+    if (s.t <= 0) continue;
+    s.t -= dt; s.m.visible = show && s.t > 0; s.m.material.opacity = clamp(s.t / 7, 0, 1) * 0.85;
+  }
+  if (!show) return;
+  for (const R of voicePrey()) {
+    if (R.hidden || !(R.sprinting && R.speedNow > 3)) continue;
+    if ((R.scrT = (R.scrT || 0) - dt) > 0) continue;
+    R.scrT = 0.28;
+    const s = SCRATCH.list[SCRATCH.i = (SCRATCH.i + 1) % SCRATCH.list.length];
+    s.t = 7; s.m.position.set(R.x + rr(-0.5, 0.5), 0.035, R.z + rr(-0.5, 0.5)); s.m.rotation.y = rr(0, 6.28); s.m.scale.setScalar(rr(0.7, 1.1)); s.m.visible = true;
+  }
+}
+function clearScratches() { for (const s of SCRATCH.list) { s.t = 0; s.m.visible = false; } }
+
 function simStep(dt) {
   gameTime += dt;
   if (W && W.showers) updateShowers(dt);
@@ -7422,6 +7948,8 @@ function simStep(dt) {
     if (!DBG.freeze) { if (VP.on) updatePlayedGoose(dt); else updateGoose(dt); if (MP.inGame || state === 'playing') updateSurveillance(dt); }
     else { animateGoose(W.goose, dt, false); for (const S of W.sgeese) animateGoose(S, dt, false, S.rig); }
   } else updatePuppets(dt);
+  if (!MP.inGame || MP.host) updateHelpers(dt); else updateHelperPuppets(dt);
+  updatePortals(dt); updateScratches(dt); updateSpotDoors(dt);
   if (VP.bots) { updateBots(dt); updateRemotes(dt); }
   if (MP.inGame) { updateRemotes(dt); netTick(dt); }
   updateScotopia(dt);
@@ -7522,7 +8050,7 @@ window.__gooseflesh = {
   interact: () => interact(), blindVoice: () => blindGoose(W.goose), sgDetects: S => sgDetects(S),
   start: beginNewRun, caught: () => caught(), win: () => { player.tapes = CFG.TAPES; win(); },
   goose: () => W && W.goose, step: (n = 60, dt = 1 / 60) => { for (let i = 0; i < n; i++) { if (state === 'caught' && JS.strike && !MP.inGame) { updateJumpscare(dt); continue; } if (state === 'pinned' && !MP.inGame) { updatePinScene(dt); continue; } if (!(state === 'playing' || mpSimulating())) break; simStep(dt); if (state === 'caught') updateJumpscare(dt); else if (state === 'collapse') updateCollapse(dt); else if (state === 'pinned') updatePinScene(dt); } },
-  mp: MP, MLOOK, DIFF, BUILD, TEX, QTE, PIN, HANDS, VP, VCFG, beginVoiceRun: () => beginVoiceRun(), voiceBite: () => voiceBite(), voiceHonk: () => voiceHonk(), voiceFly: () => voiceFly(), voiceSearch: () => voiceSearch(), voiceTaunt: k => voiceTaunt(k), hostVoiceAct: (a, m) => hostVoiceAct(a, m || {}), botCaught: R => botCaught(R), voiceEnd: w => voiceEnd(w), addPing: (x, z, k) => addPing(x, z, k), restartRun: () => restartRun(), NM, NM_LOOK, setRunMode: n => setRunMode(n), BASE_CFG, recordingOf: n => recordingOf(n), alertMainGoose: (x, z) => alertMainGoose(x, z), smellsThrough: P => smellsThrough(P), SCOTO, ambient, yell: () => yell(), yellReady: () => yellReady(), grantScotopia: t => grantScotopia(t), canStrikeNow: () => canStrikeNow(), renderRoom: () => renderRoom(), shareLoadout: () => shareLoadout(), tempFloor: () => tempFloor(), toggleCrouch: () => toggleCrouch(), startTakeoff: () => startTakeoff(W.goose), startDive: v => startDive(W.goose, v || player), qteInput: t => qteInput(t), PERK_USE, looseCannon: () => looseCannon(), wreckSG: S => wreckSG(S), SPARKS, strike: () => strike(), JS, FIST, renderer, scene, showerUse, aimedKnob, exitSpot: () => exitSpot(), enterSpot: s => enterSpot(s), mpLeave: () => mpLeave(), hostStart: () => hostStart(), specCycle: d => specCycle(d), applyDifficulty, difficultyText,
+  mp: MP, MLOOK, DIFF, BUILD, TEX, QTE, PIN, HANDS, VP, VCFG, CHAR, setCharacter: id => setCharacter(id), get dusty() { return DUSTY; }, HELPERS, PORTALS, SCRATCH, useBox: () => useBox(), firePortal: () => firePortal(), startBuild: () => startBuild(), hostPortalVoice: () => hostPortalVoice(), hostBox: (x, z) => hostBox(x, z), skillCheck: (o, cb) => skillCheck(o, cb), charPreview: id => charPreview(id), takePart: p => takePart(p), playerHold: () => playerHold(), beginVoiceRun: () => beginVoiceRun(), voiceBite: () => voiceBite(), voiceHonk: () => voiceHonk(), voiceFly: () => voiceFly(), voiceSearch: () => voiceSearch(), voiceTaunt: k => voiceTaunt(k), hostVoiceAct: (a, m) => hostVoiceAct(a, m || {}), botCaught: R => botCaught(R), voiceEnd: w => voiceEnd(w), addPing: (x, z, k) => addPing(x, z, k), restartRun: () => restartRun(), NM, NM_LOOK, setRunMode: n => setRunMode(n), BASE_CFG, recordingOf: n => recordingOf(n), alertMainGoose: (x, z) => alertMainGoose(x, z), smellsThrough: P => smellsThrough(P), SCOTO, ambient, yell: () => yell(), yellReady: () => yellReady(), grantScotopia: t => grantScotopia(t), canStrikeNow: () => canStrikeNow(), renderRoom: () => renderRoom(), shareLoadout: () => shareLoadout(), tempFloor: () => tempFloor(), toggleCrouch: () => toggleCrouch(), startTakeoff: () => startTakeoff(W.goose), startDive: v => startDive(W.goose, v || player), qteInput: t => qteInput(t), PERK_USE, looseCannon: () => looseCannon(), wreckSG: S => wreckSG(S), SPARKS, strike: () => strike(), JS, FIST, renderer, scene, showerUse, aimedKnob, exitSpot: () => exitSpot(), enterSpot: s => enterSpot(s), mpLeave: () => mpLeave(), hostStart: () => hostStart(), specCycle: d => specCycle(d), applyDifficulty, difficultyText,
 };
 })();
 </script>
