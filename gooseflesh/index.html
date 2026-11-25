@@ -1620,7 +1620,7 @@ function buildGooseRig() {
 // A look is just data: add an entry here to make a new skin.
 const SKINS = {
   dusty: { name: 'Dusty', skin: 0xc8916c, hair: 0x4a2e1d, jacket: 0x7a5d3f, trim: 0x54402c, shirt: 0x6d7a5a, pants: 0x2c3746, shoes: 0x2a1e15 },
-  rick: { name: 'Rick', style: 'rick', skin: 0xe6d8c3, hair: 0x7f4fd6, jacket: 0xd6d4cc, trim: 0xadaba3, shirt: 0x2a2a31, pants: 0x3b3d45, shoes: 0x121214, brow: 0x2b2330, tired: 0xa08d7b },
+  rick: { name: 'Rick', style: 'rick', skin: 0xe6d8c3, hair: 0x162a6a, jacket: 0xd6d4cc, trim: 0xadaba3, shirt: 0x2a2a31, pants: 0x3b3d45, shoes: 0x121214, tired: 0xa08d7b },
 };
 // who you play as (Characters screen)
 const CHAR_KEY = 'gooseflesh.char.v1';
@@ -1683,7 +1683,7 @@ function dustyBody(M, hips, spine) {
   }
   return { head, arms, legs };
 }
-// Rick: tall, thin and a little hunched, big head, spiky dyed hair, a long open lab coat over a tee,
+// Rick: tall, thin and a little hunched, big head, spiky dark blue hair and a unibrow, a long open lab coat over a tee,
 // tired eyes, and a gaming headset round his neck
 function rickBody(M, hips, spine) {
   const B = geo('box'), CYL = geo('cyl', () => new THREE.CylinderGeometry(1, 1, 1, 10));
@@ -1716,11 +1716,11 @@ function rickBody(M, hips, spine) {
     addMesh(head, SPH, M.skin, [0.125 * sx, 0.1, -0.005], [0.018, 0.03, 0.017]);              // small ears
     addMesh(head, B, M.hair, [0.112 * sx, 0.135, 0.012], [0.02, 0.05, 0.03]);                // short sideburns
     addMesh(head, geo('eyeR', () => new THREE.SphereGeometry(0.018, 8, 6)), M.eye, [0.046 * sx, 0.128, 0.117]);
-    addMesh(head, B, M.brow, [0.046 * sx, 0.158, 0.12], [0.046, 0.009, 0.01], [0, 0, -0.2 * sx]);   // thin, a bit furrowed
+    addMesh(head, B, M.brow, [0.037 * sx, 0.157, 0.119], [0.076, 0.012, 0.012], [0, 0.28 * sx, -0.16 * sx]);   // one brow, dipping in the middle
     addMesh(head, B, M.tired, [0.046 * sx, 0.104, 0.118], [0.034, 0.005, 0.005], [0, 0, 0.12 * sx]);   // bags under the eyes
   }
   addMesh(head, B, M.skin, [0, 0.098, 0.128], [0.018, 0.036, 0.026]);   // a narrow nose
-  addMesh(head, B, M.brow, [0, 0.058, 0.118], [0.062, 0.006, 0.006]);     // a flat line of a mouth
+  addMesh(head, B, M.eye, [0, 0.058, 0.118], [0.062, 0.006, 0.006]);      // a flat line of a mouth
   const arms = [];
   for (const sx of [-1, 1]) {
     const sh = new THREE.Group(); sh.position.set(0.215 * sx, 0.52, 0); up.add(sh);
