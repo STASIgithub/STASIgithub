@@ -1166,7 +1166,7 @@ const PERKS = {
   ironnerve: { name: 'Iron Nerve', desc: "Once per game, press Crouch (C or Ctrl) while running to get ready to punch. If The Voice grabs you in the next 0.35 seconds, a key pops up (E, Q, left click or right click). Press it fast: The Voice is stunned for 5.5 seconds and you get 3 seconds of Vitality. Wrong key or too slow and you're caught.",
     mob: "Once per game, tap Strike (the Crouch button while you run) to get ready to punch. If The Voice grabs you in the next 0.35 seconds, a TAP button pops up somewhere on the screen. Tap it fast: The Voice is stunned for 5.5 seconds and you get 3 seconds of Vitality. Miss it or too slow and you're caught." },
   lowprofile: { name: 'Low Profile', desc: "Crouch for 3 seconds and The Voice can't smell you (Odorless), and surveillance geese only notice you if you bump into them. Odorless lasts 8 more seconds after you stand up." },
-  loosecannon: { name: 'Loose Cannon', owner: 'fenwick', desc: "Every 25 seconds there's a 1 in 50 chance you go wild for 10 seconds: triple speed, no stamina loss, you see in the dark, and every tape shows through walls. Run into a surveillance goose while it lasts to destroy it for good. Once it ends it can't happen again for 100 seconds." },
+  loosecannon: { name: 'Loose Cannon', owner: 'rick', desc: "Every 25 seconds there's a 1 in 50 chance you go wild for 10 seconds: triple speed, no stamina loss, you see in the dark, and every tape shows through walls. Run into a surveillance goose while it lasts to destroy it for good. Once it ends it can't happen again for 100 seconds." },
   rapport: { name: 'Rapport', desc: "Multiplayer only. Teammates within 5 meters of you don't lose stamina and heat up 5% slower. You get the same while you're near a teammate. It keeps going for 15 seconds after you split up." },
   muffinman: { name: 'Muffin Man', desc: "Start with an extra Blueberry Muffin. Every muffin you throw keeps The Voice busy 1.5 seconds longer." },
   brawler: { name: 'Blueberry Brawler', desc: "Start with an extra Blueberry Propel. Your Propels last 1.5 seconds longer." },
@@ -1176,9 +1176,9 @@ const PERKS = {
   cagm: { name: 'Come And Get Me!', desc: "Once per game, stand still and press Mouse 4 (the side button on your mouse) to scream. The Voice runs to where you screamed, even if it's chasing someone else, and nobody else can be tracked for 10 seconds. Doesn't work from a hiding spot.",
     mob: "Once per game, stand still and tap the scream button (above Run) to scream. The Voice runs to where you screamed, even if it's chasing someone else, and nobody else can be tracked for 10 seconds. Doesn't work from a hiding spot." },
   hotshot: { name: 'Hot Shot', desc: "Heat never slows you down, drains your stamina or blurs your vision, but you heat up 120% faster. You still pass out at 104°F, just 30 seconds later. Above 100°F you get stronger: every 0.1° means 2% faster running, 3% less stamina used and 4% faster stamina recovery (at 102°F that's +40%, -60%, +80%). Below 100°F, every 0.1° makes those 0.5% worse." },
-  thebox: { name: 'The Box', owner: 'fenwick', desc: "Only while The Voice is chasing you: press R. A wind-up helper pops out and runs, and The Voice has to chase it. After 5 seconds it bursts and stuns The Voice for 2 seconds. You get 1 use, plus 1 more when your team finds 4 tapes (2 at most).",
+  thebox: { name: 'The Box', owner: 'rick', desc: "Only while The Voice is chasing you: press R. A wind-up helper pops out and runs, and The Voice has to chase it. After 5 seconds it bursts and stuns The Voice for 2 seconds. You get 1 use, plus 1 more when your team finds 4 tapes (2 at most).",
     mob: "Only while The Voice is chasing you: tap Box. A wind-up helper pops out and runs, and The Voice has to chase it. After 5 seconds it bursts and stuns The Voice for 2 seconds. You get 1 use, plus 1 more when your team finds 4 tapes (2 at most)." },
-  portnport: { name: "Port 'n' Port", owner: 'fenwick', desc: "Port 'n' Port means Portal 'n' Teleport. Find the 3 portal gun parts and the battery hidden in the maze (your checklist is top left). Press E to build the gun and hit 5 quick skill checks (miss one and you can try again in 30 seconds). Click to fire its 1 shot. Hit The Voice and it's sent through a portal to the spot farthest from all of you, stunned for 8 seconds, and everyone sees it through walls for 5 seconds.",
+  portnport: { name: "Port 'n' Port", owner: 'rick', desc: "Port 'n' Port means Portal 'n' Teleport. Find the 3 portal gun parts and the battery hidden in the maze (your checklist is top left). Press E to build the gun and hit 5 quick skill checks (miss one and you can try again in 30 seconds). Click to fire its 1 shot. Hit The Voice and it's sent through a portal to the spot farthest from all of you, stunned for 8 seconds, and everyone sees it through walls for 5 seconds.",
     mob: "Port 'n' Port means Portal 'n' Teleport. Find the 3 portal gun parts and the battery hidden in the maze (your checklist is top left). Tap Use to build the gun and hit 5 quick skill checks (miss one and you can try again in 30 seconds). Tap Fire to shoot its 1 shot. Hit The Voice and it's sent through a portal to the spot farthest from all of you, stunned for 8 seconds, and everyone sees it through walls for 5 seconds." },
   critical: { name: 'Critical Condition', desc: "At 102°F or hotter, fridges cool you twice as fast, and you see The Voice through walls while you cool down." },
 };
@@ -1620,12 +1620,12 @@ function buildGooseRig() {
 // A look is just data: add an entry here to make a new skin.
 const SKINS = {
   dusty: { name: 'Dusty', skin: 0xc8916c, hair: 0x4a2e1d, jacket: 0x7a5d3f, trim: 0x54402c, shirt: 0x6d7a5a, pants: 0x2c3746, shoes: 0x2a1e15 },
-  fenwick: { name: 'Fenwick', style: 'fenwick', skin: 0xd6ad8c, hair: 0xbcb6a8, jacket: 0x55593a, trim: 0x2f3123, shirt: 0xb8892f, pants: 0x36342f, shoes: 0x3b2718 },
+  rick: { name: 'Rick', style: 'rick', skin: 0xe6d8c3, hair: 0x7f4fd6, jacket: 0xd6d4cc, trim: 0xadaba3, shirt: 0x2a2a31, pants: 0x3b3d45, shoes: 0x121214, brow: 0x2b2330, tired: 0xa08d7b },
 };
 // who you play as (Characters screen)
 const CHAR_KEY = 'gooseflesh.char.v1';
 const CHAR = { id: 'dusty' };
-try { const c = localStorage.getItem(CHAR_KEY); if (c === 'fenwick') CHAR.id = c; } catch (e) { /* ignore */ }
+try { const c = localStorage.getItem(CHAR_KEY); if (c === 'rick' || c === 'fenwick') CHAR.id = 'rick'; } catch (e) { /* ignore */ }
 const SKIN_MATS = {};
 function skinMats(id) {
   if (SKIN_MATS[id]) return SKIN_MATS[id];
@@ -1636,16 +1636,15 @@ function skinMats(id) {
     torch: new THREE.MeshStandardMaterial({ color: 0x2a2a2c, roughness: 0.4, metalness: 0.6 }),
     lens: new THREE.MeshBasicMaterial({ color: 0x55524a }),
     undies: m(0xf0efe8), band: m(0x2f5fd0), frames: new THREE.MeshStandardMaterial({ color: 0x101010, roughness: 0.3 }),
-    brass: new THREE.MeshStandardMaterial({ color: 0xb08d45, roughness: 0.35, metalness: 0.75 }), lensG: new THREE.MeshStandardMaterial({ color: 0x4f8f68, roughness: 0.15, metalness: 0.2, emissive: 0x0b2a16 }),
+    brass: new THREE.MeshStandardMaterial({ color: 0xb08d45, roughness: 0.35, metalness: 0.75 }), brow: m(S.brow ?? S.hair), tired: m(S.tired ?? S.skin),
+    headset: new THREE.MeshStandardMaterial({ color: 0x1b1b20, roughness: 0.45, metalness: 0.3 }), glow: new THREE.MeshBasicMaterial({ color: 0x3dff86 }),
     shades: new THREE.MeshBasicMaterial({ color: 0x5fe0ff, transparent: true, opacity: 0.55 }),
   });
 }
-function buildCharacter(id) {
-  const M = skinMats(id), B = geo('box'), CYL = geo('cyl', () => new THREE.CylinderGeometry(1, 1, 1, 10)), fen = (SKINS[id] || {}).style === 'fenwick';
-  const root = new THREE.Group(); root.rotation.order = 'YXZ';
-  const hips = new THREE.Group(); hips.position.y = 0.95; root.add(hips);
+// Dusty: a plain jacket, short messy hair
+function dustyBody(M, hips, spine) {
+  const B = geo('box'), CYL = geo('cyl', () => new THREE.CylinderGeometry(1, 1, 1, 10));
   addMesh(hips, B, M.pants, [0, -0.02, 0], [0.34, 0.2, 0.21]);
-  const spine = new THREE.Group(); spine.position.y = 0.06; hips.add(spine);
   addMesh(spine, B, M.jacket, [0, 0.26, -0.005], [0.42, 0.48, 0.24]);
   addMesh(spine, B, M.shirt, [0, 0.3, 0.118], [0.15, 0.34, 0.012]);
   addMesh(spine, B, M.trim, [0, 0.52, -0.01], [0.32, 0.06, 0.23]);
@@ -1653,36 +1652,15 @@ function buildCharacter(id) {
   addMesh(spine, CYL, M.skin, [0, 0.57, 0], [0.055, 0.08, 0.055]);
   const head = new THREE.Group(); head.position.set(0, 0.62, 0.01); spine.add(head);
   addMesh(head, SPH, M.skin, [0, 0.1, 0], [0.105, 0.125, 0.115]);
-  if (fen) {   // bald on top, grey tufts round the sides and back, brass goggles up on his forehead, a big moustache
-    for (const [x, y, z, r] of [[0.1, 0.12, -0.03, 0.045], [-0.1, 0.12, -0.03, 0.045], [0.085, 0.16, -0.06, 0.04], [-0.085, 0.16, -0.06, 0.04], [0.04, 0.1, -0.1, 0.05], [-0.04, 0.1, -0.1, 0.05], [0, 0.14, -0.1, 0.045]])
-      addMesh(head, SPH, M.hair, [x, y, z], [r, r * 0.85, r]);
-    addMesh(head, CYL, M.trim, [0, 0.175, -0.005], [0.108, 0.022, 0.118]);   // goggle strap
-    for (const sx of [-1, 1]) {
-      addMesh(head, geo('gogR', () => new THREE.TorusGeometry(0.032, 0.01, 6, 16)), M.brass, [0.042 * sx, 0.2, 0.085], null, [-0.5, 0, 0]);
-      addMesh(head, geo('gogL', () => new THREE.CircleGeometry(0.03, 14)), M.lensG, [0.042 * sx, 0.2, 0.086], null, [-0.5, 0, 0]);
-    }
-    addMesh(head, B, M.hair, [0, 0.07, 0.112], [0.085, 0.022, 0.03], [0.1, 0, 0]);   // moustache
-  } else {
-    addMesh(head, SPH, M.hair, [0, 0.165, -0.02], [0.112, 0.085, 0.118]);
-    for (const [x, y, z, r] of [[0.05, 0.22, 0.03, 0.045], [-0.04, 0.225, 0.01, 0.05], [0, 0.215, -0.06, 0.05], [0.07, 0.19, -0.05, 0.04], [-0.07, 0.19, -0.04, 0.04], [0.02, 0.2, 0.08, 0.04]])
-      addMesh(head, SPH, M.hair, [x, y, z], [r, r * 0.8, r]);
-  }
+  addMesh(head, SPH, M.hair, [0, 0.165, -0.02], [0.112, 0.085, 0.118]);
+  for (const [x, y, z, r] of [[0.05, 0.22, 0.03, 0.045], [-0.04, 0.225, 0.01, 0.05], [0, 0.215, -0.06, 0.05], [0.07, 0.19, -0.05, 0.04], [-0.07, 0.19, -0.04, 0.04], [0.02, 0.2, 0.08, 0.04]])
+    addMesh(head, SPH, M.hair, [x, y, z], [r, r * 0.8, r]);
   for (const sx of [-1, 1]) {
     addMesh(head, SPH, M.skin, [0.105 * sx, 0.09, -0.005], [0.022, 0.035, 0.02]);
     addMesh(head, geo('eyeC', () => new THREE.SphereGeometry(0.016, 8, 6)), M.eye, [0.038 * sx, 0.115, 0.1]);
-    addMesh(head, B, M.hair, [0.038 * sx, 0.145, 0.105], fen ? [0.05, 0.016, 0.014] : [0.04, 0.008, 0.01], fen ? [0, 0, -0.18 * sx] : null);   // eyebrows (his are bushy)
+    addMesh(head, B, M.hair, [0.038 * sx, 0.145, 0.105], [0.04, 0.008, 0.01]);
   }
-  addMesh(head, B, M.skin, [0, 0.085, 0.115], fen ? [0.028, 0.042, 0.032] : [0.022, 0.035, 0.025]);
-  const undies = new THREE.Group(); undies.visible = false; head.add(undies);   // Adam's Underwear, worn as a hat
-  addMesh(undies, SPH, M.undies, [0, 0.2, -0.01], [0.135, 0.095, 0.14]);
-  addMesh(undies, CYL, M.band, [0, 0.14, -0.01], [0.138, 0.028, 0.142]);
-  for (const sx of [-1, 1]) addMesh(undies, SPH, M.undies, [0.09 * sx, 0.155, 0.08], [0.05, 0.03, 0.04]);
-  const glasses = new THREE.Group(); glasses.visible = false; head.add(glasses);   // HardLife's Glasses
-  for (const sx of [-1, 1]) {
-    addMesh(glasses, geo('ring', () => new THREE.TorusGeometry(0.027, 0.006, 6, 14)), M.frames, [0.04 * sx, 0.115, 0.12]);
-    addMesh(glasses, geo('lensC', () => new THREE.CircleGeometry(0.026, 14)), M.shades, [0.04 * sx, 0.115, 0.121]);
-  }
-  addMesh(glasses, B, M.frames, [0, 0.118, 0.12], [0.03, 0.006, 0.006]);
+  addMesh(head, B, M.skin, [0, 0.085, 0.115], [0.022, 0.035, 0.025]);
   const arms = [];
   for (const sx of [-1, 1]) {
     const sh = new THREE.Group(); sh.position.set(0.255 * sx, 0.46, 0); spine.add(sh);
@@ -1694,13 +1672,102 @@ function buildCharacter(id) {
     addMesh(hand, SPH, M.skin, [0, 0, 0], [0.045, 0.055, 0.035]);
     arms.push({ sh, el, hand });
   }
-  if (fen) {   // a long duster coat: tails to the knee, a tool belt with a pouch
-    addMesh(hips, B, M.jacket, [0, -0.25, -0.1], [0.42, 0.46, 0.03]);
-    for (const sx of [-1, 1]) addMesh(hips, B, M.jacket, [0.17 * sx, -0.23, 0.03], [0.1, 0.42, 0.22], [0, 0, 0.06 * sx]);
-    addMesh(hips, B, M.trim, [0, 0.06, 0], [0.44, 0.06, 0.26]);
-    addMesh(hips, B, M.brass, [0, 0.06, 0.13], [0.06, 0.04, 0.01]);
-    addMesh(hips, B, M.trim, [0.16, 0.0, 0.11], [0.09, 0.1, 0.05]);
+  const legs = [];
+  for (const sx of [-1, 1]) {
+    const hp = new THREE.Group(); hp.position.set(0.095 * sx, -0.07, 0); hips.add(hp);
+    addMesh(hp, CYL, M.pants, [0, -0.21, 0], [0.075, 0.43, 0.075]);
+    const kn = new THREE.Group(); kn.position.y = -0.43; hp.add(kn);
+    addMesh(kn, CYL, M.pants, [0, -0.2, 0], [0.065, 0.41, 0.065]);
+    addMesh(kn, B, M.shoes, [0, -0.43, 0.04], [0.1, 0.07, 0.24]);
+    legs.push({ hp, kn });
   }
+  return { head, arms, legs };
+}
+// Rick: tall, thin and a little hunched, big head, spiky dyed hair, a long open lab coat over a tee,
+// tired eyes, and a gaming headset round his neck
+function rickBody(M, hips, spine) {
+  const B = geo('box'), CYL = geo('cyl', () => new THREE.CylinderGeometry(1, 1, 1, 10));
+  const SPIKE = geo('spike', () => new THREE.ConeGeometry(1, 1, 5).translate(0, 0.5, 0));
+  addMesh(hips, B, M.pants, [0, -0.02, 0], [0.3, 0.2, 0.17]);
+  const up = new THREE.Group(); up.rotation.x = 0.13; spine.add(up);   // the hunch
+  addMesh(up, B, M.jacket, [0, 0.3, -0.005], [0.36, 0.58, 0.21]);    // coat body: long torso, narrow shoulders
+  addMesh(up, B, M.shirt, [0, 0.28, 0.104], [0.11, 0.56, 0.012]);     // the tee down the open front
+  for (const sx of [-1, 1]) {
+    addMesh(up, B, M.trim, [0.078 * sx, 0.42, 0.108], [0.05, 0.3, 0.012], [0, 0, -0.22 * sx]);   // lapels
+    addMesh(up, B, M.trim, [0.1 * sx, 0.56, 0.104], [0.045, 0.05, 0.012], [0, 0, -0.7 * sx]);   // the notch
+  }
+  addMesh(up, B, M.jacket, [0, 0.585, -0.045], [0.25, 0.05, 0.14]);   // flat collar at the back
+  addMesh(up, CYL, M.skin, [0, 0.62, 0.04], [0.042, 0.08, 0.042]);
+  // headset resting on the collarbones
+  addMesh(up, geo('hsBand', () => new THREE.TorusGeometry(0.1, 0.012, 6, 16, Math.PI)), M.headset, [0, 0.6, 0.02], null, [-Math.PI / 2, 0, 0]);
+  for (const sx of [-1, 1]) {
+    addMesh(up, CYL, M.headset, [0.1 * sx, 0.6, 0.03], [0.038, 0.035, 0.038], [0, 0, Math.PI / 2]);
+    addMesh(up, CYL, M.glow, [0.12 * sx, 0.6, 0.03], [0.026, 0.006, 0.026], [0, 0, Math.PI / 2]);
+  }
+  const nk = new THREE.Group(); nk.position.set(0, 0.6, 0.06); nk.rotation.x = -0.12; up.add(nk);   // head pushed forward
+  const head = new THREE.Group(); head.position.set(0, 0.0, 0.02); nk.add(head);
+  addMesh(head, SPH, M.skin, [0, 0.12, 0], [0.125, 0.145, 0.13]);
+  addMesh(head, SPH, M.hair, [0, 0.19, -0.025], [0.127, 0.095, 0.13]);
+  for (const [x, y, z, rx, rz, h, r] of [[0, 0.26, -0.04, -0.42, 0, 0.21, 0.046], [0.055, 0.255, 0.02, -0.18, -0.38, 0.15, 0.04], [-0.055, 0.255, 0.02, -0.18, 0.38, 0.15, 0.04],
+    [0.095, 0.21, -0.05, -0.5, -0.78, 0.14, 0.038], [-0.095, 0.21, -0.05, -0.5, 0.78, 0.14, 0.038], [0.035, 0.23, -0.095, -0.95, -0.22, 0.17, 0.042],
+    [-0.035, 0.23, -0.095, -0.95, 0.22, 0.17, 0.042], [0, 0.255, 0.065, 0.05, 0, 0.11, 0.034]])
+    addMesh(head, SPIKE, M.hair, [x, y, z], [r, h, r], [rx, 0, rz]);
+  for (const sx of [-1, 1]) {
+    addMesh(head, SPH, M.skin, [0.125 * sx, 0.1, -0.005], [0.018, 0.03, 0.017]);              // small ears
+    addMesh(head, B, M.hair, [0.112 * sx, 0.135, 0.012], [0.02, 0.05, 0.03]);                // short sideburns
+    addMesh(head, geo('eyeR', () => new THREE.SphereGeometry(0.018, 8, 6)), M.eye, [0.046 * sx, 0.128, 0.117]);
+    addMesh(head, B, M.brow, [0.046 * sx, 0.158, 0.12], [0.046, 0.009, 0.01], [0, 0, -0.2 * sx]);   // thin, a bit furrowed
+    addMesh(head, B, M.tired, [0.046 * sx, 0.104, 0.118], [0.034, 0.005, 0.005], [0, 0, 0.12 * sx]);   // bags under the eyes
+  }
+  addMesh(head, B, M.skin, [0, 0.098, 0.128], [0.018, 0.036, 0.026]);   // a narrow nose
+  addMesh(head, B, M.brow, [0, 0.058, 0.118], [0.062, 0.006, 0.006]);     // a flat line of a mouth
+  const arms = [];
+  for (const sx of [-1, 1]) {
+    const sh = new THREE.Group(); sh.position.set(0.215 * sx, 0.52, 0); up.add(sh);
+    addMesh(sh, CYL, M.jacket, [0, -0.15, 0], [0.054, 0.31, 0.054]);
+    const el = new THREE.Group(); el.position.y = -0.3; sh.add(el);
+    addMesh(el, CYL, M.jacket, [0, -0.135, 0], [0.052, 0.28, 0.052]);
+    addMesh(el, CYL, M.trim, [0, -0.27, 0], [0.056, 0.03, 0.056]);   // baggy cuffs
+    const hand = new THREE.Group(); hand.position.y = -0.3; el.add(hand);
+    addMesh(hand, SPH, M.skin, [0, 0, 0], [0.038, 0.048, 0.03]);
+    arms.push({ sh, el, hand });
+  }
+  // the coat skirt, open at the front, to the knee, flaring a little at the hem
+  addMesh(hips, B, M.jacket, [0, -0.22, -0.104], [0.37, 0.62, 0.025], [0.06, 0, 0]);
+  addMesh(hips, B, M.trim, [0, -0.4, -0.123], [0.012, 0.28, 0.006], [0.06, 0, 0]);   // back seam and vent
+  for (const sx of [-1, 1]) {
+    addMesh(hips, B, M.jacket, [0.165 * sx, -0.2, 0.01], [0.09, 0.6, 0.2], [0, 0, 0.07 * sx]);
+    addMesh(hips, B, M.trim, [0.168 * sx, -0.12, 0.112], [0.07, 0.05, 0.008], [0, 0, 0.07 * sx]);   // pockets
+  }
+  const legs = [];
+  for (const sx of [-1, 1]) {
+    const hp = new THREE.Group(); hp.position.set(0.08 * sx, -0.07, 0); hips.add(hp);
+    addMesh(hp, CYL, M.pants, [0, -0.21, 0], [0.062, 0.43, 0.062]);
+    const kn = new THREE.Group(); kn.position.y = -0.43; hp.add(kn);
+    addMesh(kn, CYL, M.pants, [0, -0.2, 0], [0.054, 0.41, 0.054]);
+    addMesh(kn, CYL, M.pants, [0, -0.37, 0], [0.062, 0.05, 0.062]);   // bunched at the ankle
+    addMesh(kn, B, M.shoes, [0, -0.43, 0.05], [0.088, 0.06, 0.27]);  // long flat shoes
+    legs.push({ hp, kn });
+  }
+  return { head, arms, legs };
+}
+function buildCharacter(id) {
+  const M = skinMats(id), B = geo('box'), CYL = geo('cyl', () => new THREE.CylinderGeometry(1, 1, 1, 10)), rick = (SKINS[id] || {}).style === 'rick';
+  const root = new THREE.Group(); root.rotation.order = 'YXZ';
+  const hips = new THREE.Group(); hips.position.y = 0.95; root.add(hips);
+  const spine = new THREE.Group(); spine.position.y = 0.06; hips.add(spine);
+  const { head, arms, legs } = (rick ? rickBody : dustyBody)(M, hips, spine);
+  const undies = new THREE.Group(); undies.visible = false; head.add(undies);   // Adam's Underwear, worn as a hat
+  addMesh(undies, SPH, M.undies, [0, 0.2, -0.01], [0.135, 0.095, 0.14]);
+  addMesh(undies, CYL, M.band, [0, 0.14, -0.01], [0.138, 0.028, 0.142]);
+  for (const sx of [-1, 1]) addMesh(undies, SPH, M.undies, [0.09 * sx, 0.155, 0.08], [0.05, 0.03, 0.04]);
+  const glasses = new THREE.Group(); glasses.visible = false; head.add(glasses);   // HardLife's Glasses
+  for (const sx of [-1, 1]) {
+    addMesh(glasses, geo('ring', () => new THREE.TorusGeometry(0.027, 0.006, 6, 14)), M.frames, [0.04 * sx, 0.115, 0.12]);
+    addMesh(glasses, geo('lensC', () => new THREE.CircleGeometry(0.026, 14)), M.shades, [0.04 * sx, 0.115, 0.121]);
+  }
+  addMesh(glasses, B, M.frames, [0, 0.118, 0.12], [0.03, 0.006, 0.006]);
+  if (rick) { undies.position.set(0, 0.05, -0.01); undies.scale.setScalar(1.14); glasses.position.set(0, 0.013, 0.008); glasses.scale.set(1.15, 1, 1); }
   // whatever your free hand holds (the other one has the flashlight)
   const held = new THREE.Group(); held.position.set(0, -0.04, 0.02); arms[0].hand.add(held);
   const pm = (c, r = 0.55, mt = 0, em) => new THREE.MeshStandardMaterial({ color: c, roughness: r, metalness: mt, emissive: em || 0x000000 });
@@ -1717,18 +1784,8 @@ function buildCharacter(id) {
   addMesh(torch, CYL, M.torch, [0, -0.16, 0], [0.032, 0.04, 0.032]);
   const lens = addMesh(torch, CYL, M.lens, [0, -0.181, 0], [0.028, 0.004, 0.028]);
   const tip = new THREE.Object3D(); tip.position.y = -0.2; torch.add(tip);
-  const legs = [];
-  for (const sx of [-1, 1]) {
-    const hp = new THREE.Group(); hp.position.set(0.095 * sx, -0.07, 0); hips.add(hp);
-    addMesh(hp, CYL, M.pants, [0, -0.21, 0], [0.075, 0.43, 0.075]);
-    const kn = new THREE.Group(); kn.position.y = -0.43; hp.add(kn);
-    addMesh(kn, CYL, M.pants, [0, -0.2, 0], [0.065, 0.41, 0.065]);
-    addMesh(kn, B, M.shoes, [0, -0.43, 0.04], [0.1, 0.07, 0.24]);
-    if (fen) addMesh(kn, CYL, M.shoes, [0, -0.36, 0], [0.072, 0.12, 0.072]);   // boots
-    legs.push({ hp, kn });
-  }
   root.traverse(o => { if (o.isMesh) { o.castShadow = false; o.receiveShadow = false; } });
-  root.scale.setScalar(0.92);
+  root.scale.setScalar(rick ? 0.95 : 0.92);
   return { root, hips, spine, head, arms, legs, torch, tip, lens, undies, glasses, hold, pose: {} };
 }
 // Procedural animation in the style of the old Dead by Daylight survivors: stiff forward-leaning run with big
@@ -1765,7 +1822,7 @@ function animateCharacter(C, dt, o) {
   set('thL', C.legs[0].hp, 'x', thL); set('thR', C.legs[1].hp, 'x', thR);
   set('knL', C.legs[0].kn, 'x', knL); set('knR', C.legs[1].kn, 'x', knR);
 }
-let DUSTY = buildCharacter(CHAR.id === 'fenwick' ? 'fenwick' : 'dusty'); DUSTY.root.visible = false;
+let DUSTY = buildCharacter(CHAR.id === 'rick' ? 'rick' : 'dusty'); DUSTY.root.visible = false;
 function setCharacter(id) {
   if (!CHARS[id] || id === CHAR.id) return;
   CHAR.id = id; try { localStorage.setItem(CHAR_KEY, id); } catch (e) { /* ignore */ }
@@ -3498,7 +3555,7 @@ function startPlaying() {
 function beginNewRun() {
   if (MP.active) { backToRoom(); return; }
   AU.init(); countPerkUse(); guardBack(); VP.last = 'survivor'; setVoiceRole(false, false, null, false); clearRemotes();
-  setRunMode(NM.mode === 'nightmare'); applyDifficulty(1); skinMats('dusty').jacket.color.setHex(SKINS.dusty.jacket); skinMats('fenwick').shirt.color.setHex(SKINS.fenwick.shirt);
+  setRunMode(NM.mode === 'nightmare'); applyDifficulty(1); skinMats('dusty').jacket.color.setHex(SKINS.dusty.jacket); skinMats('rick').shirt.color.setHex(SKINS.rick.shirt);
   newGame();
   startPlaying();
   touch.run = false;
@@ -6644,7 +6701,7 @@ function beginMpRun(seed, players, voiceId) {
   setRunMode(false); applyDifficulty(MP.n);
   clearRemotes();
   const me = players.find(p => p.id === MP.id); MP.slot = me ? me.slot : 0;
-  skinMats('dusty').jacket.color.set(SLOT_COLORS[MP.slot % 6]); skinMats('fenwick').shirt.color.set(SLOT_COLORS[MP.slot % 6]);
+  skinMats('dusty').jacket.color.set(SLOT_COLORS[MP.slot % 6]); skinMats('rick').shirt.color.set(SLOT_COLORS[MP.slot % 6]);
   newGame(seed);
   for (const p of players) if (p.id !== MP.id) { const R = addRemote(p); if (p.id === voice) { R.isVoice = true; R.alive = false; } }
   if (VP.on) setupPlayedVoice();
@@ -6658,8 +6715,8 @@ function beginMpRun(seed, players, voiceId) {
 
 /* ---------- other players: avatars, flashlights, name tags ---------- */
 function addRemote(p) {
-  const slot = p.slot % 6, fen = p.c === 'fenwick', sid = (fen ? 'mpf' : 'mp') + slot;   // their character, with their colour on it
-  if (!SKINS[sid]) SKINS[sid] = fen ? { ...SKINS.fenwick, name: 'Player ' + (slot + 1), shirt: new THREE.Color(SLOT_COLORS[slot]).getHex() } : { ...SKINS.dusty, name: 'Player ' + (slot + 1), jacket: new THREE.Color(SLOT_COLORS[slot]).getHex() };
+  const slot = p.slot % 6, rk = p.c === 'rick' || p.c === 'fenwick', sid = (rk ? 'mpr' : 'mp') + slot;   // their character, with their colour on it
+  if (!SKINS[sid]) SKINS[sid] = rk ? { ...SKINS.rick, name: 'Player ' + (slot + 1), shirt: new THREE.Color(SLOT_COLORS[slot]).getHex() } : { ...SKINS.dusty, name: 'Player ' + (slot + 1), jacket: new THREE.Color(SLOT_COLORS[slot]).getHex() };
   const C = buildCharacter(sid); C.root.visible = false; scene.add(C.root);
   const light = new THREE.SpotLight(0xfff0d4, 0, 30, 0.42, 0.45, 1.15); light.castShadow = false; scene.add(light); scene.add(light.target);
   const tag = document.createElement('div'); tag.className = 'ntag'; tag.style.color = SLOT_COLORS[slot]; tag.hidden = true;
@@ -7416,7 +7473,7 @@ function spawnBots(n) {
   clearRemotes();
   const names = shuffle(BOT_NAMES.slice()), sk = BOT_SKILL[VP.skill] || BOT_SKILL.normal;
   for (let i = 0; i < n; i++) {
-    const R = addRemote({ id: 'bot' + i, name: names[i], slot: i, c: Math.random() < 0.35 ? 'fenwick' : 'dusty' });
+    const R = addRemote({ id: 'bot' + i, name: names[i], slot: i, c: Math.random() < 0.35 ? 'rick' : 'dusty' });
     const off = [[0, 0], [0.8, 0], [-0.8, 0], [0, 0.8]][i % 4];
     R.x = R.nx = center(1) + off[0]; R.z = R.nz = center(1) + off[1]; R.ready = true; R.alive = true; collide(R, CFG.PLAYER_R); R.nx = R.x; R.nz = R.z;
     R.bot = { sk, mode: 'seek', goal: null, path: null, pathI: 0, repathT: 0, pathGoal: -1, stam: CFG.STAMINA_MAX, exh: false, sees: false, sawT: 99, senseT: rr(0, 0.15),
@@ -7618,7 +7675,7 @@ function startHold(k, t) { const P = player; P.holdK = k; P.holdT = t; }
 /* ================= CHARACTERS ================= */
 const CHARS = {
   dusty: { name: 'Dusty', skin: 'dusty', bio: 'The one who came looking for the tapes. Steady, quiet, ordinary.' },
-  fenwick: { name: 'Fenwick', skin: 'fenwick', bio: 'A rumpled inventor who builds things out of whatever he finds. Bring his perks: Loose Cannon, The Box and Port ’n’ Port.' },
+  rick: { name: 'Rick', skin: 'rick', bio: 'A worn-out scientist who games all night and builds gadgets out of whatever he finds. Bring his perks: Loose Cannon, The Box and Port ’n’ Port.' },
 };
 const CHAR_PREVIEW = {};
 // a picture of a character for the Characters screen, drawn once on a small throwaway canvas
@@ -8050,7 +8107,7 @@ window.__gooseflesh = {
   interact: () => interact(), blindVoice: () => blindGoose(W.goose), sgDetects: S => sgDetects(S),
   start: beginNewRun, caught: () => caught(), win: () => { player.tapes = CFG.TAPES; win(); },
   goose: () => W && W.goose, step: (n = 60, dt = 1 / 60) => { for (let i = 0; i < n; i++) { if (state === 'caught' && JS.strike && !MP.inGame) { updateJumpscare(dt); continue; } if (state === 'pinned' && !MP.inGame) { updatePinScene(dt); continue; } if (!(state === 'playing' || mpSimulating())) break; simStep(dt); if (state === 'caught') updateJumpscare(dt); else if (state === 'collapse') updateCollapse(dt); else if (state === 'pinned') updatePinScene(dt); } },
-  mp: MP, MLOOK, DIFF, BUILD, TEX, QTE, PIN, HANDS, VP, VCFG, CHAR, setCharacter: id => setCharacter(id), get dusty() { return DUSTY; }, HELPERS, PORTALS, SCRATCH, useBox: () => useBox(), firePortal: () => firePortal(), startBuild: () => startBuild(), hostPortalVoice: () => hostPortalVoice(), hostBox: (x, z) => hostBox(x, z), skillCheck: (o, cb) => skillCheck(o, cb), charPreview: id => charPreview(id), takePart: p => takePart(p), playerHold: () => playerHold(), beginVoiceRun: () => beginVoiceRun(), voiceBite: () => voiceBite(), voiceHonk: () => voiceHonk(), voiceFly: () => voiceFly(), voiceSearch: () => voiceSearch(), voiceTaunt: k => voiceTaunt(k), hostVoiceAct: (a, m) => hostVoiceAct(a, m || {}), botCaught: R => botCaught(R), voiceEnd: w => voiceEnd(w), addPing: (x, z, k) => addPing(x, z, k), restartRun: () => restartRun(), NM, NM_LOOK, setRunMode: n => setRunMode(n), BASE_CFG, recordingOf: n => recordingOf(n), alertMainGoose: (x, z) => alertMainGoose(x, z), smellsThrough: P => smellsThrough(P), SCOTO, ambient, yell: () => yell(), yellReady: () => yellReady(), grantScotopia: t => grantScotopia(t), canStrikeNow: () => canStrikeNow(), renderRoom: () => renderRoom(), shareLoadout: () => shareLoadout(), tempFloor: () => tempFloor(), toggleCrouch: () => toggleCrouch(), startTakeoff: () => startTakeoff(W.goose), startDive: v => startDive(W.goose, v || player), qteInput: t => qteInput(t), PERK_USE, looseCannon: () => looseCannon(), wreckSG: S => wreckSG(S), SPARKS, strike: () => strike(), JS, FIST, renderer, scene, showerUse, aimedKnob, exitSpot: () => exitSpot(), enterSpot: s => enterSpot(s), mpLeave: () => mpLeave(), hostStart: () => hostStart(), specCycle: d => specCycle(d), applyDifficulty, difficultyText,
+  mp: MP, MLOOK, DIFF, BUILD, TEX, QTE, PIN, HANDS, VP, VCFG, CHAR, setCharacter: id => setCharacter(id), get dusty() { return DUSTY; }, HELPERS, PORTALS, SCRATCH, useBox: () => useBox(), firePortal: () => firePortal(), startBuild: () => startBuild(), hostPortalVoice: () => hostPortalVoice(), hostBox: (x, z) => hostBox(x, z), skillCheck: (o, cb) => skillCheck(o, cb), charPreview: id => charPreview(id), buildCharacter: id => buildCharacter(id), animateCharacter: (C, dt, o) => animateCharacter(C, dt, o), takePart: p => takePart(p), playerHold: () => playerHold(), beginVoiceRun: () => beginVoiceRun(), voiceBite: () => voiceBite(), voiceHonk: () => voiceHonk(), voiceFly: () => voiceFly(), voiceSearch: () => voiceSearch(), voiceTaunt: k => voiceTaunt(k), hostVoiceAct: (a, m) => hostVoiceAct(a, m || {}), botCaught: R => botCaught(R), voiceEnd: w => voiceEnd(w), addPing: (x, z, k) => addPing(x, z, k), restartRun: () => restartRun(), NM, NM_LOOK, setRunMode: n => setRunMode(n), BASE_CFG, recordingOf: n => recordingOf(n), alertMainGoose: (x, z) => alertMainGoose(x, z), smellsThrough: P => smellsThrough(P), SCOTO, ambient, yell: () => yell(), yellReady: () => yellReady(), grantScotopia: t => grantScotopia(t), canStrikeNow: () => canStrikeNow(), renderRoom: () => renderRoom(), shareLoadout: () => shareLoadout(), tempFloor: () => tempFloor(), toggleCrouch: () => toggleCrouch(), startTakeoff: () => startTakeoff(W.goose), startDive: v => startDive(W.goose, v || player), qteInput: t => qteInput(t), PERK_USE, looseCannon: () => looseCannon(), wreckSG: S => wreckSG(S), SPARKS, strike: () => strike(), JS, FIST, renderer, scene, showerUse, aimedKnob, exitSpot: () => exitSpot(), enterSpot: s => enterSpot(s), mpLeave: () => mpLeave(), hostStart: () => hostStart(), specCycle: d => specCycle(d), applyDifficulty, difficultyText,
 };
 })();
 </script>
